@@ -63,7 +63,8 @@ public class Controller {
         IRM_TOS,
         CRM_HERO,
         CRM_MPC,
-        SIG_Pretimed }
+        SIG_Pretimed,
+        SIG_MaxPressure }
 
     public static enum ActuatorType {
 		ramp_meter,

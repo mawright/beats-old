@@ -4,15 +4,12 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 
     public enum Implementation {beats,aimsun};
     protected InterfaceActuator implementor;
-
 	protected Scenario myScenario;
-	//protected edu.berkeley.path.beats.jaxb.Actuator jaxbA;
 
 	public static enum Type	{ ramp_meter,
 							  signalized_intersection,
 							  vsl,
 							  cms };
-	
 
 	/////////////////////////////////////////////////////////////////////
 	// construction
@@ -24,7 +21,6 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	public Actuator (Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA,InterfaceActuator act_implementor){
 
         this.myScenario = myScenario;
-        //this.jaxbA = jaxbA;
         this.implementor = act_implementor;
 
         // copy jaxb data
@@ -52,15 +48,16 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 		return;
 	}
 	
-	protected void deploy(){};	
+	protected void deploy(double current_time_in_seconds){
+    };
 
 //    public long getId() {
 //        return jaxbA.getId();
 //    }
 
-    public InterfaceActuator get_implementor(){
-        return implementor;
-    }
+//    public InterfaceActuator get_implementor(){
+//        return implementor;
+//    }
 
 //    public String getScenarioElementType() {
 //        return jaxbA.getScenarioElement().getType();
@@ -70,12 +67,12 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 //        return jaxbA.getScenarioElement().getId();
 //    }
 
-    public Signal getSignal(){
-        ScenarioElement se = (ScenarioElement) jaxbA.getScenarioElement();
-        if(se.getType().compareTo("signal")==0)
-            return (Signal) se.getReference();
-        else
-            return null;
-    }
+//    public Signal getSignal(){
+//        ScenarioElement se = (ScenarioElement) getScenarioElement();
+//        if(se.getType().compareTo("signal")==0)
+//            return (Signal) se.getReference();
+//        else
+//            return null;
+//    }
 
 }

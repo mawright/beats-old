@@ -2,17 +2,13 @@ package edu.berkeley.path.beats.control;
 
 import java.lang.Math;
 
-import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.simulator.Controller;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.actuator.ActuatorSignalStageSplits;
+import edu.berkeley.path.beats.actuator.StageSplit;
+import edu.berkeley.path.beats.simulator.*;
 
 public class Controller_SIG_CycleMP extends Controller_SIG {
 
     private Node myNode;
-    public double [] cycle_splits;          // [sums to 1] in the order of stages.
-	    
 
     /////////////////////////////////////////////////////////////////////
     // Construction
@@ -103,8 +99,7 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 				splits[i][j]=myNode.getSplitRatio(i, j, 0);
 			}
 		}
-		
-        
+
         //calculate SIMPLE weights
         //later this will be changed, to calculate max/min/average/etc weights, and to include minimum green time constraints. 
         double[] weights = new double [nInputs];
@@ -127,12 +122,18 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
         //determine max pressure stage
         int mpStage = 0;
         for (int s=1;s<nStages;s++){
-        	if (pressures[s]>pressures[mpStage]){mpStage = s;}
+        	if (pressures[s]>pressures[mpStage]){
+                mpStage = s;
+            }
         }
    
         //calculate cycle_splits for signal cycle
-        cycle_splits = new double[nStages];
-        cycle_splits[mpStage]=1;
+        StageSplit [] stage_splits = new StageSplit[nStages];
+        for (int s=0; s<nStages;s++)
+            stage_splits[s] = new StageSplit(stages[s],0d);
+        stage_splits[mpStage] .split = 1d;
+
+        ((ActuatorSignalStageSplits)actuators.get(0)).setStageSplits(stage_splits);
 		
 	}
 

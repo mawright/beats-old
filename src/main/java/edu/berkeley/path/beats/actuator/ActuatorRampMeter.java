@@ -9,8 +9,12 @@ public class ActuatorRampMeter extends Actuator {
     private Link myLink;
 	private double max_rate_in_vph;
 	private double min_rate_in_vph;
-	
-	public void setMeteringRateInVeh(Double rate){
+
+    /////////////////////////////////////////////////////////////////////
+    // actuation command
+    /////////////////////////////////////////////////////////////////////
+
+    public void setMeteringRateInVeh(Double rate){
         metering_rate_in_vph = rate/(myScenario.getSimdtinseconds()/3600d);
         metering_rate_in_vph = Math.max(metering_rate_in_vph,min_rate_in_vph);
         metering_rate_in_vph = Math.min(metering_rate_in_vph,max_rate_in_vph);
@@ -80,7 +84,7 @@ public class ActuatorRampMeter extends Actuator {
 	}
 
 	@Override
-	public void deploy() {
+	public void deploy(double current_time_in_seconds) {
 		this.implementor.deploy_metering_rate_in_vph(metering_rate_in_vph);
 	}
 	

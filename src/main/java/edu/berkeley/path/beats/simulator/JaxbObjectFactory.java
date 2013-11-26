@@ -83,10 +83,10 @@ public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.Object
 		return new Scenario();
 	}
 
-	@Override
-	public edu.berkeley.path.beats.jaxb.ScenarioElement createScenarioElement() {
-		return new ScenarioElement();
-	}
+//	@Override
+//	public edu.berkeley.path.beats.jaxb.ScenarioElement createScenarioElement() {
+//		return new ScenarioElement();
+//	}
 	
 	@Override
 	public edu.berkeley.path.beats.jaxb.Signal createSignal() {

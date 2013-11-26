@@ -1,32 +1,46 @@
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.jaxb.*;
-import edu.berkeley.path.beats.jaxb.ScenarioElement;
+import edu.berkeley.path.beats.actuator.StageSplit;
 
 import java.util.List;
 
 public class BeatsActuatorImplementation implements InterfaceActuator {
 
-	private Link myLink;
+	private Object target;      // Link or Node
 
 	public BeatsActuatorImplementation(edu.berkeley.path.beats.jaxb.Actuator parent,Object context){
-        ScenarioElement se = parent.getScenarioElement();
-        if(se.getType().compareTo("link")==0)
-            myLink = ((Scenario) context).getLinkWithId(se.getId());
-	}
-	
-	public Link getLink(){
-		return myLink;
+
+        Scenario scenario = (Scenario) context;
+        edu.berkeley.path.beats.jaxb.ScenarioElement se = parent.getScenarioElement();
+
+        switch(Actuator.Type.valueOf(parent.getActuatorType().getName())){
+            case ramp_meter:
+            case vsl:
+                if(se.getType().compareTo("link")==0)
+                    target = scenario.getLinkWithId(se.getId());
+                break;
+            case signalized_intersection:
+            case cms:
+                if(se.getType().compareTo("node")==0)
+                    target = scenario.getNodeWithId(se.getId());
+                break;
+        }
 	}
 	
 	@Override
 	public void deploy_metering_rate_in_vph(Double metering_rate_in_vph) {
-		myLink.set_external_max_flow_in_vph(metering_rate_in_vph);
+        ((Link)target).set_external_max_flow_in_vph(metering_rate_in_vph);
 	}
 
 	@Override
-	public void deploy_green_times(List<Double> green_times) {
-		// TODO Auto-generated method stub
+	public void deploy_stage_splits(StageSplit[] stage_splits) {
+
+
+
+
+        for(StageSplit ss:stage_splits)
+            System.out.print(ss.split + "\t");
+        System.out.print("\n");
 	}
 
 	@Override

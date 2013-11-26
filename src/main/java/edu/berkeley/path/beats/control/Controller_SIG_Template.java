@@ -51,8 +51,8 @@ public class Controller_SIG_Template extends Controller {
 //		.
 //		.
 //		
-//		ActuatorSignal act = (ActuatorSignal) = this.actuators.get(0);
-//		act.setGreenTimes(List<Double> green_times);
+//		ActuatorSignalGreenSplits act = (ActuatorSignalGreenSplits) = this.actuators.get(0);
+//		act.setGreenSplits(List<Double> green_times);
 		
 		
 		

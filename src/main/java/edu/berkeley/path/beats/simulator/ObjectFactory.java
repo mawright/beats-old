@@ -176,7 +176,7 @@ final public class ObjectFactory {
 				break;
 
 			case signalized_intersection:
-				//A = new ActuatorSignal(myScenario, jaxbA);
+				A = new ActuatorSignalStageSplits(myScenario,jaxbA,imp);
 				break;
 
 			case vsl:
