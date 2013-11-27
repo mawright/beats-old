@@ -8,7 +8,7 @@ import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
 
-public class Controller_SIG_CycleMP extends Controller_SIG {
+public class Controller_SIG_CycleDistMP extends Controller_SIG {
 
     private Node myNode;
     private Link [] inputLinks;
@@ -18,6 +18,7 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 	private int[] satFlows;
 	private int nStages;
     private int [][] controlMat;
+    private double[] minGreens;
     
     public double [] green_splits;          // [sums to 1] in the order of stages.
 	    
@@ -26,7 +27,7 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
     // Construction
     /////////////////////////////////////////////////////////////////////
 
-    public Controller_SIG_CycleMP(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
+    public Controller_SIG_CycleDistMP(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
         super(myScenario,c,myType);
     }
 
@@ -44,10 +45,12 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
     	nInputs = inputLinks.length;
 		nOutputs = outputLinks.length;
         
-      //construct control matrices
+      //construct control matrices and get min greens
         nStages = stages.length;
         controlMat = new int [nStages][nInputs]; // initializes to filled with 0
+        minGreens = new double [nStages];
         for(int s=0; s<nStages; s++){
+        	minGreens[s] = Math.min(stages[s].phaseA.getMingreen(), stages[s].phaseB.getMingreen());
         	for (Link a: stages[s].phaseA.getTargetlinks()){
         		for (int i=0;i<nInputs;i++){
         			if (inputLinks[i].getId()==a.getId()){
@@ -102,7 +105,7 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
             inputCounts[j]=(int) Math.round(outputLinks[j].getTotalDensityInVeh(0));
         }
 
-		// get splits from node:  CAN THIS BE MOVED TO THE POPULATE FUNCTION? Assuming time invariant...
+		// get splits from node
         double[][] splits = new double[nInputs][nOutputs];        
 		for(int i=0;i<nInputs;i++){
 			for(int j=0;j<nOutputs;j++){
@@ -134,10 +137,17 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
         for (int s=1;s<nStages;s++){
         	if (pressures[s]>pressures[mpStage]){mpStage = s;}
         }
-
-        //calculate green_splits for signal cycle
+        
+      //calculate green_splits for signal cycle
+        double flexTime = 0;
+        for (double m : minGreens)
+        	flexTime += m;
+        flexTime = cycle_time - flexTime;
         green_splits = new double[nStages];
-        green_splits[mpStage]=1;
-		
+        for (int s=0; s<nStages;s++){
+        	int isMP =  (s==mpStage)? 1 : 0;
+        	green_splits[s]= minGreens[s]/cycle_time + (flexTime*isMP);
+        }
+
 	}
 }
