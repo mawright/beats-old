@@ -114,13 +114,13 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// sensors
 		sensorset.populate(this);
 		
-		// actuators
-		actuatorset.populate(this);
-		
 		// signals
 		if(signalSet!=null)
 			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
 				((Signal) signal).populate(this);
+
+        // actuators
+        actuatorset.populate(this);
 		
 		// split ratio profile set (must follow network)
 		if(splitRatioSet!=null)
@@ -278,16 +278,16 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         // update signals ...............................
 		// NOTE: ensembles have not been implemented for signals. They do not apply
 		// to pretimed control, but would make a differnece for feedback control. 
-		if(signalSet!=null)
-			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
-				((Signal)signal).update();
+//		if(signalSet!=null)
+//			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
+//				((Signal)signal).update();
 
         // update controllers
     	if(global_control_on)
     		controllerset.update();
     	
     	// deploy actuators
-    	actuatorset.deploy();
+    	actuatorset.deploy(getCurrentTimeInSeconds());
     	
     	// update events
     	eventset.update();

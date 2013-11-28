@@ -1,11 +1,14 @@
 package edu.berkeley.path.beats.actuator;
 
-import edu.berkeley.path.beats.simulator.Actuator;
-import edu.berkeley.path.beats.simulator.InterfaceActuator;
-import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class ActuatorSignalStageSplits extends Actuator {
 
+    public List<Link> inlinks;
+    private Signal mySignal;
     private StageSplit [] stage_splits;
 
     /////////////////////////////////////////////////////////////////////
@@ -24,7 +27,7 @@ public class ActuatorSignalStageSplits extends Actuator {
 //		super(myScenario,jaxbA);
 //	}
 
-    public ActuatorSignalStageSplits(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA,InterfaceActuator act_implementor){
+    public ActuatorSignalStageSplits(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA,ActuatorImplementation act_implementor){
         super(myScenario,jaxbA,act_implementor);
     }
 
@@ -32,11 +35,13 @@ public class ActuatorSignalStageSplits extends Actuator {
 	// populate / validate / reset / deploy
 	/////////////////////////////////////////////////////////////////////
 
-//	@Override
-//	protected void populate(Object jaxbobject) {
-//		return;
-//	}
-//
+	@Override
+	protected void populate(Object jaxbobject,Scenario myScenario) {
+        mySignal = myScenario.getSignalWithId(getScenarioElement().getId());
+        inlinks = Arrays.asList(mySignal.getMyNode().getInput_link());
+		return;
+	}
+
 //	@Override
 //	protected void validate() {
 //	}

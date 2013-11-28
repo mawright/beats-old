@@ -7,6 +7,7 @@ import edu.berkeley.path.beats.jaxb.ActuatorType;
 
 public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 
+    Scenario myScenario;
 	private ArrayList<Actuator> actuators = new ArrayList<Actuator>();
 
 	/////////////////////////////////////////////////////////////////////
@@ -22,7 +23,9 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 	/////////////////////////////////////////////////////////////////////
 	
 	protected void populate(Scenario myScenario) {
-		
+
+        this.myScenario = myScenario;
+
 		// replace jaxb.Actuator with simulator.Actuator
 		if(myScenario.getActuatorSet()!=null){
 			for(edu.berkeley.path.beats.jaxb.Actuator jaxba : myScenario.getActuatorSet().getActuator()) {
@@ -57,8 +60,12 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 			actuator.reset();
 	}
 
-	protected void deploy() throws BeatsException {
-		for(Actuator actuator : actuators)
-			actuator.deploy();
+	protected void deploy(double current_time_in_seconds) throws BeatsException {
+        for(Actuator actuator : actuators){
+            if(actuator.myController==null)
+                continue;
+            if(myScenario.getClock().istimetosample(actuator.myController.getSamplesteps(),0))
+                actuator.deploy(current_time_in_seconds);
+        }
 	}
 }

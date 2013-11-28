@@ -127,7 +127,9 @@ public class Controller {
 			actuator_usage = new ArrayList<String>();
 			if(jaxbC.getTargetActuators()!=null && jaxbC.getTargetActuators().getTargetActuator()!=null){
 				for(TargetActuator ta : jaxbC.getTargetActuators().getTargetActuator()){
-                    actuators.add(myScenario.getActuatorWithId(ta.getId()));
+                    Actuator act = myScenario.getActuatorWithId(ta.getId());
+                    actuators.add(act);
+                    act.myController = this;
 					actuator_usage.add(ta.getUsage()==null ? "" : ta.getUsage());
 				}
 			}

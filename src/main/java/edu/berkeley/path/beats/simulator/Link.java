@@ -376,9 +376,13 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 
 	// controller registration .........................................
-	
-	public void set_external_max_flow_in_vph(double value){
-		external_max_flow = value*getMyNetwork().getMyScenario().getSimdtinseconds()/3600d;
+
+    public void set_external_max_flow_in_veh(double value_in_veh){
+        external_max_flow = value_in_veh;
+    }
+
+	public void set_external_max_flow_in_vph(double value_in_vph){
+		external_max_flow = value_in_vph*getMyNetwork().getMyScenario().getSimdtinseconds()/3600d;
 	}
 	
 	public void set_external_max_speed(double value){

@@ -169,7 +169,7 @@ final public class ObjectFactory {
 		if(myScenario==null)
 			return null;
 		Actuator A = null;
-        InterfaceActuator imp = new BeatsActuatorImplementation(jaxbA,myScenario);
+        ActuatorImplementation imp = new BeatsActuatorImplementation(jaxbA,myScenario);
         switch(myType){
 			case ramp_meter:
 				A = new ActuatorRampMeter(myScenario,jaxbA,imp);
@@ -191,7 +191,8 @@ final public class ObjectFactory {
 				A = null;
 				break;
 		}
-		A.populate(jaxbA);
+        imp.setActuator(A);
+		A.populate(jaxbA,myScenario);
 		return A;
 	}
 

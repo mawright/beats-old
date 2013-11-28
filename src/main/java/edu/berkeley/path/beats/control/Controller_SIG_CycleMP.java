@@ -34,6 +34,10 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 	@Override
 	protected void validate() {
 		super.validate();
+
+        if(!BeatsMath.equals(dtinseconds,cycle_time)){
+            BeatsErrorLog.addError("Controller_SIG_CycleMP requires dt==cycle_time");
+        }
 	}
 	
 	// called before simulation starts. Set controller state to initial values. 
@@ -48,7 +52,7 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 	protected void update() throws BeatsException {
 		super.update();
 
-		//get link index information from node
+        //get link index information from node
 		Link [] inputLinks = myNode.getInput_link();
 		Link [] outputLinks = myNode.getOutput_link();
 		int nInputs = inputLinks.length;

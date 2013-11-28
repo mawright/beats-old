@@ -322,7 +322,11 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	/////////////////////////////////////////////////////////////////////
 	// public methods
 	/////////////////////////////////////////////////////////////////////
-	
+
+    public Node getMyNode(){
+        return myNode;
+    }
+
 	public SignalPhase getPhaseByNEMA(Signal.NEMA nema){
 		if(nema==null)
 			return null;

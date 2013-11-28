@@ -159,9 +159,8 @@ public class Controller_IRM_Alinea extends Controller {
 			target_vehicles = mainline_link.getDensityCriticalInVeh(0);
 		
 		// metering rate
-		ramp_meter.setMeteringRateInVeh(
-				Math.max(onramp_link.getTotalOutflowInVeh(0) + gain_normalized*(target_vehicles-mainlinevehicles),0)
-				);
+        double metering_rate_veh = Math.max(onramp_link.getTotalOutflowInVeh(0) + gain_normalized*(target_vehicles-mainlinevehicles),0);
+		ramp_meter.setMeteringRateInVeh(metering_rate_veh);
 				
 	}
 

@@ -2,9 +2,9 @@ package edu.berkeley.path.beats.simulator;
 
 public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 
+    protected Controller myController;
     public enum Implementation {beats,aimsun};
-    protected InterfaceActuator implementor;
-	protected Scenario myScenario;
+    protected ActuatorImplementation implementor;
 
 	public static enum Type	{ ramp_meter,
 							  signalized_intersection,
@@ -18,9 +18,8 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	public Actuator (){
 	}
 	
-	public Actuator (Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA,InterfaceActuator act_implementor){
+	public Actuator (Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA,ActuatorImplementation act_implementor){
 
-        this.myScenario = myScenario;
         this.implementor = act_implementor;
 
         // copy jaxb data
@@ -35,7 +34,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	// populate / validate / reset / deploy
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate(Object jaxbobject) {
+	protected void populate(Object jaxbobject,Scenario myScenario) {
 		return;
 	}
 
@@ -55,7 +54,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 //        return jaxbA.getId();
 //    }
 
-//    public InterfaceActuator get_implementor(){
+//    public ActuatorImplementation get_implementor(){
 //        return implementor;
 //    }
 

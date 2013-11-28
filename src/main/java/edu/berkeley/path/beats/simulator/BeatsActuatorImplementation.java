@@ -1,12 +1,9 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.actuator.ActuatorSignalStageSplits;
 import edu.berkeley.path.beats.actuator.StageSplit;
 
-import java.util.List;
-
-public class BeatsActuatorImplementation implements InterfaceActuator {
-
-	private Object target;      // Link or Node
+public class BeatsActuatorImplementation extends ActuatorImplementation {
 
 	public BeatsActuatorImplementation(edu.berkeley.path.beats.jaxb.Actuator parent,Object context){
 
@@ -16,31 +13,56 @@ public class BeatsActuatorImplementation implements InterfaceActuator {
         switch(Actuator.Type.valueOf(parent.getActuatorType().getName())){
             case ramp_meter:
             case vsl:
-                if(se.getType().compareTo("link")==0)
-                    target = scenario.getLinkWithId(se.getId());
+                target = scenario.getLinkWithId(se.getId());
                 break;
             case signalized_intersection:
+                target = scenario.getSignalWithId(se.getId());
+                break;
             case cms:
-                if(se.getType().compareTo("node")==0)
-                    target = scenario.getNodeWithId(se.getId());
+                target = scenario.getNodeWithId(se.getId());
                 break;
         }
 	}
 	
 	@Override
-	public void deploy_metering_rate_in_vph(Double metering_rate_in_vph) {
-        ((Link)target).set_external_max_flow_in_vph(metering_rate_in_vph);
+	public void deploy_metering_rate_in_veh(Double metering_rate_in_veh) {
+        ((Link)target).set_external_max_flow_in_veh(metering_rate_in_veh);
 	}
 
 	@Override
 	public void deploy_stage_splits(StageSplit[] stage_splits) {
 
+        // normalize splits
+        double sum_splits = 0d;
+        for(StageSplit stage_split : stage_splits)
+            sum_splits += stage_split.split;
+        if(BeatsMath.greaterthan(sum_splits,0d))
+            for(StageSplit stage_split : stage_splits)
+                stage_split.split /= sum_splits;
+        else{
+            for(StageSplit stage_split : stage_splits)
+                stage_split.split = 0d;
+            stage_splits[0].split = 1d;
+        }
 
+        // map splits onto links
+        ActuatorSignalStageSplits myAct =(ActuatorSignalStageSplits) myActuator;
+        double [] link_splits = BeatsMath.zeros(myAct.inlinks.size());
+        for(StageSplit stage_split:stage_splits){
+            if(stage_split.stage.phaseA!=null)
+                for(Link link : stage_split.stage.phaseA.getTargetlinks())
+                    link_splits[myAct.inlinks.indexOf(link)] += stage_split.split;
+            if(stage_split.stage.phaseB!=null)
+                for(Link link : stage_split.stage.phaseB.getTargetlinks())
+                    link_splits[myAct.inlinks.indexOf(link)] += stage_split.split;
+        }
 
+        // send capacities to links
+        for(int i=0;i<myAct.inlinks.size();i++){
+            Link link = myAct.inlinks.get(i);
+            link.set_external_max_flow_in_vph(link.getCapacityInVPS(0)*3600d*link_splits[i]);
+        }
 
-        for(StageSplit ss:stage_splits)
-            System.out.print(ss.split + "\t");
-        System.out.print("\n");
 	}
 
 	@Override
@@ -53,5 +75,15 @@ public class BeatsActuatorImplementation implements InterfaceActuator {
 		// TODO Auto-generated method stub
 	}
 
+
+    private class LinkSplit {
+        public Link link;
+        double split;
+        public LinkSplit(Link link){
+            this.link = link;
+            this.split = 0d;
+        }
+
+    }
 
 }
