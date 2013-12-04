@@ -34,14 +34,13 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 	private double dtinseconds;
 	private int samplesteps;
 	private int laststep;
-    private double start_time;
 	private BeatsTimeProfile [][][] profile; 	// profile[i][j][v] is the split ratio profile for
 												// input link i, output link j, vehicle type v.
 	
 	// does change ........................................
 	private Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
 	private boolean isdone; 
-	private int stepinitial;
+	private int step_initial_abs;
 
 	
 	/////////////////////////////////////////////////////////////////////
@@ -98,17 +97,16 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 		// inform the node
 		myNode.setMySplitRatioProfile(this);
 
-        // start_time
-        if( Double.isInfinite(getStartTime()))
-            start_time = 0d;
-        else
-            start_time = getStartTime();	// assume given in seconds
+        // step_initial
+        double start_time = Double.isInfinite(getStartTime()) ? 0d : getStartTime();
+        step_initial_abs = BeatsMath.round(start_time/myScenario.getSimdtinseconds());
 
     }
 
 	protected void reset() {
-		stepinitial = BeatsMath.round((start_time-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
-		isdone = false;
+
+        isdone = false;
+
 		currentSplitRatio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
 	}
 
@@ -182,9 +180,9 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 			return;
 		if(isdone)
 			return;
-		if(myScenario.getClock().istimetosample(samplesteps,stepinitial)){
+		if(myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
 			
-			int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
+			int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
 
 			// zeroth sample extends to the left
 			step = Math.max(0,step);
@@ -245,7 +243,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
     // public API
     /////////////////////////////////////////////////////////////////////
 
-    public double [] predict(long inlink_id,long outlink_id,int vt_index,double start,double time_step,int num_steps){
+    public double [] predict(long inlink_id,long outlink_id,int vt_index,double start_time,double time_step,int num_steps){
 
         int in_index = myNode.getInputLinkIndex(inlink_id);
         int out_index = myNode.getOutputLinkIndex(outlink_id);
@@ -264,7 +262,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
         for(int i=0;i<num_steps;i++){
 
             // time in seconds after midnight
-            double time = start + i*time_step + 0.5*time_step;
+            double time = start_time + i*time_step + 0.5*time_step;
 
             // corresponding profile step
             int profile_step = BeatsMath.floor( (time-start_time)/dtinseconds );

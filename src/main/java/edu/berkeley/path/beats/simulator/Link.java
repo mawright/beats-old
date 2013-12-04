@@ -627,7 +627,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	public double computeSpeedInMPS(int ensemble){
 		try{
 
-			if(myNetwork.getMyScenario().getClock().getCurrentstep()==0)
+			if(myNetwork.getMyScenario().getClock().getRelativeTimeStep()==0)
 				return Double.NaN;
 
 			double totaldensity = BeatsMath.sum(density[ensemble]);

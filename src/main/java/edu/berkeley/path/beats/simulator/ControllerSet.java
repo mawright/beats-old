@@ -181,9 +181,8 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 	
 	protected void update() throws BeatsException {
 		processActivations(myScenario.getClock().getT());			
-		
     	for(Controller controller : controllers){
-    		if(controller.isIson() && myScenario.getClock().istimetosample(controller.getSamplesteps(),0))
+    		if(controller.isIson() && myScenario.getClock().is_time_to_sample_abs(controller.getSamplesteps(),0))
     			controller.update();
     	}
 	}

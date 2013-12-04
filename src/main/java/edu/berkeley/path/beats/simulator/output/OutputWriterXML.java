@@ -119,7 +119,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 
 	@Override
 	public void recordstate(double time, boolean exportflows, int outsteps) throws BeatsException {
-		boolean firststep = 0 == scenario.getCurrentTimeStep();
+		boolean firststep = 0 == scenario.getClock().getRelativeTimeStep();
 		String dt = String.format(SEC_FORMAT, firststep ? .0d : scenario.getSimdtinseconds() * outsteps);
 		try {
 			xmlsw.writeStartElement("ts");

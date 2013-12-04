@@ -247,11 +247,11 @@ final public class SignalPhase {
 			break;
 		case YELLOW:
 			// iff near end yellow time and there is no red clear time
-			permitopposinghold =  BeatsMath.greaterorequalthan(bulbtimer.getT(),actualyellowtime-bulbtimer.dt) && redcleartime==0 ;
+			permitopposinghold =  BeatsMath.greaterorequalthan(bulbtimer.getT(),actualyellowtime-bulbtimer.getDt()) && redcleartime==0 ;
 			break;
 		case RED:	
 			// iff near end of red clear time and not starting again.
-			permitopposinghold =  BeatsMath.greaterorequalthan(bulbtimer.getT(),redcleartime-bulbtimer.dt) && !hold_requested;
+			permitopposinghold =  BeatsMath.greaterorequalthan(bulbtimer.getT(),redcleartime-bulbtimer.getDt()) && !hold_requested;
 			break;
 		case DARK:
 			break;

@@ -45,20 +45,19 @@ public class Event implements Comparable {
 	private Event.Type myType;
 	
 	/** Activation time of the event, in number of simulation time steps. */
-	private int timestampstep;
+	private int abs_time_step;
 	
 	/** List of targets for the event. */
 	private ArrayList<ScenarioElement> targets;
 	
 	/** Type of event. */
-	public static enum Type	{  
-		/** see {@link ObjectFactory#createEvent_Fundamental_Diagram} 	*/ fundamental_diagram,
-		/** see {@link ObjectFactory#createEvent_Link_Demand_Knob} 		*/ link_demand_knob,
-		/** see {@link ObjectFactory#createEvent_Link_Lanes} 			*/ link_lanes, 
-		/** see {@link ObjectFactory#createEvent_Node_Split_Ratio} 		*/ node_split_ratio,
-		/** see {@link ObjectFactory#createEvent_Control_Toggle} 		*/ control_toggle,
-		/** see {@link ObjectFactory#createEvent_Global_Control_Toggle} */ global_control_toggle,
-		/** see {@link ObjectFactory#createEvent_Global_Demand_Knob} 	*/ global_demand_knob }
+	public static enum Type	{   fundamental_diagram,
+                                link_demand_knob,
+                                link_lanes,
+                                node_split_ratio,
+                                control_toggle,
+                                global_control_toggle,
+                                global_demand_knob }
 		   
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -70,7 +69,7 @@ public class Event implements Comparable {
 		this.jaxbEvent = jaxbE;
 		this.myScenario = myScenario;
 		this.myType = myType;
-		this.timestampstep = BeatsMath.round(jaxbE.getTstamp()/myScenario.getSimdtinseconds());		// assume in seconds
+		this.abs_time_step = BeatsMath.round(jaxbE.getTstamp()/myScenario.getSimdtinseconds());		// assume in seconds
 		this.targets = new ArrayList<ScenarioElement>();
 		if(jaxbE.getTargetElements()!=null)
 			for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() )
@@ -101,8 +100,8 @@ public class Event implements Comparable {
 		return myType;
 	}
 
-	public int getTimestampstep() {
-		return timestampstep;
+	public int getAbsTimeStep() {
+		return abs_time_step;
 	}
 
 	public ArrayList<ScenarioElement> getTargets() {
@@ -151,8 +150,8 @@ public class Event implements Comparable {
 		Event that = ((Event) arg0);
 		
 		// first ordering by time stamp
-		Integer thiststamp = this.timestampstep;
-		Integer thattstamp = that.timestampstep;
+		Integer thiststamp = this.abs_time_step;
+		Integer thattstamp = that.abs_time_step;
 		compare = thiststamp.compareTo(thattstamp);
 		if(compare!=0)
 			return compare;

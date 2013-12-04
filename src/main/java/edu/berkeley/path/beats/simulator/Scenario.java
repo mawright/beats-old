@@ -586,20 +586,20 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** Current simulation time step.
 	 * @return	Integer number of time steps since the start of the simulation. 
 	 */
-	public int getCurrentTimeStep() {
-		if(clock==null)
-			return 0;
-		return clock.getCurrentstep();
-	}
+//	public int getCurrentTimeStep() {
+//		if(clock==null)
+//			return 0;
+//		return clock.getCurrentstep();
+//	}
 
 	/** Total number of time steps that will be simulated, regardless of the simulation mode.
 	 * @return	Integer number of time steps to simulate.
 	 */
-	public int getTotalTimeStepsToSimulate(){
-		if(clock==null)
-			return -1;
-		return clock.getTotalSteps();
-	}
+//	public int getTotalTimeStepsToSimulate(){
+//		if(clock==null)
+//			return -1;
+//		return clock.getTotalSteps();
+//	}
 	
 	/** Number of vehicle types included in the scenario.
 	 * @return Integer number of vehicle types
@@ -1184,7 +1184,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         	// update scenario
         	update();
 
-            if(started_writing && clock.getCurrentstep()%outputwriter.outSteps == 0 )
+            if(started_writing && clock.getRelativeTimeStep()%outputwriter.outSteps == 0 )
 	        	recordstate(writefiles,outputwriter,true);
             
         	if(clock.expired())

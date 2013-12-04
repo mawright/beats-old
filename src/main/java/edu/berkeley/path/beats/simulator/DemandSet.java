@@ -77,7 +77,7 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 
 	protected void update() {
     	for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
-    		((DemandProfile) dp).update(false);	
+    		((DemandProfile) dp).update(false);
 	}
 	
 	/////////////////////////////////////////////////////////////////////

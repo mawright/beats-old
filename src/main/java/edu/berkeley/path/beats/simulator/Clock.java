@@ -26,79 +26,102 @@
 
 package edu.berkeley.path.beats.simulator;
 
-final class Clock {
-	
-	protected double t;					// [sec]
-	protected double to;				// [sec]
-	protected double dt;				// [sec]
-	protected double maxt;				// [sec]
-	protected int currentstep;			// [sec]
-	
-	public Clock(double to,double tf,double dt){
-		this.t = to;
+public final class Clock {
+
+    private final double to;    // [sec after midnight] reset time
+    private final int step_o;   // [-] # time steps from midnight to to
+    private final double dt;    // [sec] time step
+    private final double maxt;	// [sec after midnight] final time
+	private double t;			// [sec after midnight] current time
+    private int rel_step;		// [-] # time steps after to
+
+    /////////////////////////////////////////////////////////////////////
+    // Construction
+    /////////////////////////////////////////////////////////////////////
+
+    public Clock(double to,double tf,double dt){
 		this.to = to;
+        this.step_o = BeatsMath.round(to/dt);
 		this.dt = dt;
-		this.maxt = tf;
-		this.currentstep = 0;
-	}
-	
-	protected void reset(){
-		t = to;
-		currentstep = 0;
+        this.maxt = tf;
+        reset();
 	}
 
-	/** current time in seconds **/
-	protected double getT() {
+    /////////////////////////////////////////////////////////////////////
+    // reset / advance
+    /////////////////////////////////////////////////////////////////////
+
+    protected void reset(){
+        rel_step = 0;
+		t = to;
+	}
+
+    protected void advance(){
+        rel_step++;
+        t = to + rel_step*dt;
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // sampling
+    /////////////////////////////////////////////////////////////////////
+
+    protected boolean is_time_to_sample_abs(int dt_steps,int step_initial_abs){
+        if(rel_step<=1)
+            return true;
+        int abs_step = rel_step + step_o;
+        if(abs_step<step_initial_abs)
+            return false;
+        return (abs_step-step_initial_abs) % dt_steps == 0;
+    }
+
+    protected int sample_index_abs(int dt_steps,int step_initial_abs){
+        return dt_steps>0 ? BeatsMath.floor((rel_step+step_o-step_initial_abs)/((float)dt_steps)) : 0;
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // getters
+    /////////////////////////////////////////////////////////////////////
+
+    /** current time in seconds **/
+	public double getT() {
 		return t;
 	}
-	
-	protected double getTElapsed(){
+
+    public double getTElapsed(){
 		return t-to;
 	}
 
 	/** time steps since beginning of simulation */
-	protected int getCurrentstep() {
-		return currentstep;
+    public int getRelativeTimeStep() {
+		return rel_step;
 	}
 
-	protected int getTotalSteps(){
-		if(Double.isInfinite(maxt))
-			return -1;
-		return (int) Math.ceil((maxt-to)/dt);
-	}
-	
-	protected void advance(){
-		currentstep++;
-		t = to + currentstep*dt;
-	}
-	
-	protected boolean expired(){
+    public int getAbsoluteTimeStep() {
+        return rel_step+step_o;
+    }
+
+//	protected int getTotalSteps(){
+//		if(Double.isInfinite(maxt))
+//			return -1;
+//		return (int) Math.ceil((maxt-to)/dt);
+//	}
+
+    public boolean expired(){
 		return t>maxt;
 	}
 
-	protected boolean istimetosample(int samplesteps,int stepinitial){	
-		if(currentstep<=1)
-			return true;
-		if(currentstep<stepinitial)
-			return false;
-		return (currentstep-stepinitial) % samplesteps == 0;
-	}
-	
-	protected int sampleindex(int stepinitial,int samplesteps){
-		if(samplesteps>0)
-			return BeatsMath.floor((currentstep-stepinitial)/((float)samplesteps));
-		return 0;
-	}
-	
-	public double getStartTime(){
+    public double getStartTime(){
 		return to;
 	}
 
 	public double getEndTime(){
 		return maxt;
 	}
-	
-	public void print(){
-		System.out.println("t=" + t + "\t\tstep=" + currentstep);
-	}
+
+    public double getDt(){
+        return dt;
+    }
+//	public void print(){
+//		System.out.println("t=" + t + "\t\tstep=" + currentstep);
+//	}
 }

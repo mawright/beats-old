@@ -34,7 +34,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBound
 	private double dtinseconds;			// not really necessary
 	private int samplesteps;
 	private BeatsTimeProfile capacity;	// [veh]
-	private int stepinitial;
+	private int step_initial_abs;       // time steps at start since midnight
 
 	// does change ........................................
 	private boolean isdone;
@@ -83,16 +83,12 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBound
 				return;
 			}
 		}
-		
-		// read start time, convert to stepinitial
-		double starttime;
-		if( !Double.isNaN(getStartTime()) )
-			starttime = getStartTime();
-		else
-			starttime = 0f;
-		stepinitial = (int) Math.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 
-	}
+
+        // step_initial
+        double start_time = Double.isInfinite(getStartTime()) ? 0d : getStartTime();
+        step_initial_abs = BeatsMath.round(start_time/myScenario.getSimdtinseconds());
+    }
 	
 	protected void validate() {
 
@@ -123,9 +119,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBound
 			return;
 		
 		isdone = false;
-	
-		current_sample = capacity.get(0);
-		
+        current_sample = capacity.get(0);
 	}
 	
 	protected void update() {
@@ -139,10 +133,10 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBound
 		if(isdone)
 			return;
 		
-		if(myScenario.getClock().istimetosample(samplesteps,stepinitial)){
+		if(myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
 			
 			int n = capacity.getNumTime()-1;
-			int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
+			int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
 
 			// zeroth sample extends to the left
 			if(step<=0){

@@ -33,8 +33,8 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	private boolean isOrphan;
 	private double dtinseconds;				// not really necessary
 	private int samplesteps;				// [sim steps] profile sample period
-	private int stepinitial;
-	private BeatsTimeProfile [] demand_nominal;	// [veh] demand profile per vehicle type
+	private int step_initial_abs;
+    private BeatsTimeProfile [] demand_nominal;	// [veh] demand profile per vehicle type
 	private int [] vehicle_type_index;		// vehicle type indices for demand_nominal
 	private double std_dev_add;				// [veh]
 	private double std_dev_mult;			// [veh]
@@ -138,9 +138,12 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 						  (getStdDevMult()==null || std_dev_mult==0.0);
 		
 		_knob = getKnob();
-		stepinitial = BeatsMath.round((getStartTime()-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 
-	}
+        // step_initial
+        double start_time = Double.isInfinite(getStartTime()) ? 0d : getStartTime();
+        step_initial_abs = BeatsMath.round(start_time/myScenario.getSimdtinseconds());
+
+    }
 
 	protected void validate() {
 		
@@ -188,7 +191,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 					
 		isdone = false;
 
-		// set current sample to zero
+        // set current sample to zero
 		current_sample = BeatsMath.zeros(myScenario.getNumVehicleTypes());
 		
 		// set knob back to its original value
@@ -206,11 +209,11 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		if(isdone && !forcesample)
 			return;
 		
-		if(forcesample || myScenario.getClock().istimetosample(samplesteps,stepinitial)){
+		if(forcesample || myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
 			
 			// REMOVE THESE
 			int n = profile_length-1;
-			int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
+			int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
 			int i;
 			
 			// forced sample due to knob change
@@ -220,8 +223,8 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 				return;
 			}
 			
-			// demand is zero before stepinitial
-			if(myScenario.getClock().getCurrentstep()<stepinitial)
+			// demand is zero before step_initial_abs
+			if(myScenario.getClock().getAbsoluteTimeStep()< step_initial_abs)
 				return;
 			
 			// sample the profile
@@ -255,7 +258,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	}
 	
 	private double sample_currentTime_addNoise_applyKnob(int vtype_index){
-		int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
+		int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
 		return sample_KthTime_addNoise_applyKnob(step,vtype_index);
 	}
 
@@ -311,7 +314,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		return current_sample;
 	}
 
-    public double [] predict_in_VPS(int vehicle_type_index, double start_time, double time_step, int num_steps){
+    public double [] predict_in_VPS(int vehicle_type_index, double begin_time, double time_step, int num_steps){
 
         double [] val = BeatsMath.zeros(num_steps);
 
@@ -321,7 +324,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
         for(int i=0;i<num_steps;i++){
 
             // time in seconds after midnight
-            double time = start_time + i*time_step + 0.5*time_step;
+            double time = begin_time + i*time_step + 0.5*time_step;
 
             // corresponding profile step
             int profile_step = BeatsMath.floor( (time-getStartTime())/getDt().floatValue() );

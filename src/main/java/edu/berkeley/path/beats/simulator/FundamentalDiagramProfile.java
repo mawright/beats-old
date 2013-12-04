@@ -36,7 +36,7 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
 	private double dtinseconds;
 	private int samplesteps;
 	private ArrayList<FundamentalDiagram> FD;
-	private int stepinitial;
+    private int step_initial_abs;
 
 	// does change ........................................
 	private boolean isdone; 
@@ -49,7 +49,7 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
 	protected void set_Lanes(double newlanes){
 		if(newlanes<=0 || FD.isEmpty())
 			return;
-		int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
+		int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
 		step = Math.max(0,step);
 		for(int i=step;i<FD.size();i++){
 			FD.get(i).setLanes(newlanes);
@@ -97,10 +97,11 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
 			FD.add(_fd);
 		}
 
-		// read start time, convert to stepinitial		
-		stepinitial = BeatsMath.round((getStartTime()-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
-				
-	}
+        // step_initial
+        double start_time = Double.isInfinite(getStartTime()) ? 0d : getStartTime();
+        step_initial_abs = BeatsMath.round(start_time/myScenario.getSimdtinseconds());
+
+    }
 	
 	protected void validate() {
 		
@@ -122,8 +123,8 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
 
 	protected void reset() throws BeatsException {
 		isdone = false;
-		
-		if(FD!=null)
+
+        if(FD!=null)
 			for(FundamentalDiagram fd : FD)
 				fd.reset(myScenario.getUncertaintyModel());
 		
@@ -137,10 +138,10 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
 			return;
 		if(isdone || FD.isEmpty())
 			return;
-		if(myScenario.getClock().istimetosample(samplesteps,stepinitial)){
+		if(myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
 			
 			int n = FD.size()-1;
-			int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
+			int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
 
 			// zeroth sample extends to the left
 			step = Math.max(0,step);
