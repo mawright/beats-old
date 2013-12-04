@@ -2,11 +2,13 @@ package edu.berkeley.path.beats.control;
 
 import java.lang.Math;
 
-import edu.berkeley.path.beats.actuator.ActuatorSignalStageSplits;
-import edu.berkeley.path.beats.actuator.StageSplit;
-import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Node;
+import edu.berkeley.path.beats.simulator.Scenario;
 
-public class Controller_SIG_CycleMP extends Controller_SIG {
+public class Controller_SIG_CycleDistMP extends Controller_SIG {
 
     private Node myNode;
     private Link [] inputLinks;
@@ -16,6 +18,7 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 	private int[] satFlows;
 	private int nStages;
     private int [][] controlMat;
+    private double[] minGreens;
     
     public double [] green_splits;          // [sums to 1] in the order of stages.
 	    
@@ -24,7 +27,7 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
     // Construction
     /////////////////////////////////////////////////////////////////////
 
-    public Controller_SIG_CycleMP(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
+    public Controller_SIG_CycleDistMP(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
         super(myScenario,c,myType);
     }
 
@@ -37,41 +40,17 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 	protected void populate(Object jaxbobject) {
 		super.populate(jaxbobject);
         myNode = myScenario.getNodeWithId(mySignal.getNodeId());
-	}
-
-	// validate the controller parameters.
-	// use BeatsErrorLog.addError() or BeatsErrorLog.addWarning() to register problems
-	@Override
-	protected void validate() {
-		super.validate();
-
-        if(!BeatsMath.equals(dtinseconds,cycle_time)){
-            BeatsErrorLog.addError("Controller_SIG_CycleMP requires dt==cycle_time");
-        }
-	}
-	
-	// called before simulation starts. Set controller state to initial values. 
-	@Override
-	protected void reset() {
-		super.reset();
-	}
-	
-	// main controller update function, called every controller dt.
-	// use this.sensors to get information, and this.actuators to apply the control command.
-	@Override
-	protected void update() throws BeatsException {
-		super.update();
-
-        //get link index information from node
-		Link [] inputLinks = myNode.getInput_link();
-		Link [] outputLinks = myNode.getOutput_link();
-		int nInputs = inputLinks.length;
-        int nOutputs = outputLinks.length;
-		
-        //construct control matrices
-        int nStages = stages.length;
-        int[][] controlMat = new int [nStages][nInputs]; // initializes to filled with 0
+        inputLinks = myNode.getInput_link();
+    	outputLinks = myNode.getOutput_link();
+    	nInputs = inputLinks.length;
+		nOutputs = outputLinks.length;
+        
+      //construct control matrices and get min greens
+        nStages = stages.length;
+        controlMat = new int [nStages][nInputs]; // initializes to filled with 0
+        minGreens = new double [nStages];
         for(int s=0; s<nStages; s++){
+        	minGreens[s] = Math.min(stages[s].phaseA.getMingreen(), stages[s].phaseB.getMingreen());
         	for (Link a: stages[s].phaseA.getTargetlinks()){
         		for (int i=0;i<nInputs;i++){
         			if (inputLinks[i].getId()==a.getId()){
@@ -126,16 +105,13 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
             inputCounts[j]=(int) Math.round(outputLinks[j].getTotalDensityInVeh(0));
         }
 
-		// get splits from node:  CAN THIS BE MOVED TO THE POPULATE FUNCTION? Assuming time invariant...
+		// get splits from node
         double[][] splits = new double[nInputs][nOutputs];        
 		for(int i=0;i<nInputs;i++){
 			for(int j=0;j<nOutputs;j++){
 				splits[i][j]=myNode.getSplitRatio(i, j, 0);
 			}
 		}
-		
-        
-
         
         //calculate SIMPLE weights
         //later this will be changed, to calculate max/min/average/etc weights, and to include minimum green time constraints. 
@@ -159,20 +135,19 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
         //determine max pressure stage
         int mpStage = 0;
         for (int s=1;s<nStages;s++){
-        	if (pressures[s]>pressures[mpStage]){
-                mpStage = s;
-            }
+        	if (pressures[s]>pressures[mpStage]){mpStage = s;}
         }
-        StageSplit [] stage_splits = new StageSplit[nStages];
-        for (int s=0; s<nStages;s++)
-            stage_splits[s] = new StageSplit(stages[s],0d);
-        stage_splits[mpStage] .split = 1d;
-
-        cycle_splits[mpStage]=1;
-        ((ActuatorSignalStageSplits)actuators.get(0)).setStageSplits(stage_splits);
-        //calculate green_splits for signal cycle
+        
+      //calculate green_splits for signal cycle
+        double flexTime = 0;
+        for (double m : minGreens)
+        	flexTime += m;
+        flexTime = cycle_time - flexTime;
         green_splits = new double[nStages];
-        green_splits[mpStage]=1;
-		
+        for (int s=0; s<nStages;s++){
+        	int isMP =  (s==mpStage)? 1 : 0;
+        	green_splits[s]= minGreens[s]/cycle_time + (flexTime*isMP);
+        }
+
 	}
 }
