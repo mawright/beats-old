@@ -415,10 +415,10 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		if(BeatsMath.greaterthan(density_critical,dens_crit_congestion))
 			BeatsErrorLog.addError("Maximum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion + "(current="+density_critical+")");
 		
-		if(_vf>1)
+		if(_vf>1 && !myLink.isSource())
 			BeatsErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has vf=" + _vf);
 
-		if(_w>1)
+		if(_w>1 && !myLink.isSource())
 			BeatsErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has w=" + _w);
 	}
 
