@@ -221,7 +221,11 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 			this.hasSRprofile = true;
 		}
 	}
-	
+
+    public double getSplitRatioProfileValue(int i,int j,int k){
+        return this.mySplitRatioProfile.getCurrentSplitRatio().get(i,j,k);
+    }
+
 	// controllers ......................................................
 
 //	protected void setControllerOn(boolean controlleron) {
