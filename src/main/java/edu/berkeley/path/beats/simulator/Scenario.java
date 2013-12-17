@@ -257,6 +257,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	private void update() throws BeatsException {	
 
+
         // sample profiles .............................	
     	if(downstreamBoundaryCapacitySet!=null)
         	for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
@@ -1098,30 +1099,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				simulationMode = ModeType.left_of_init_dens;
 				
 			}		
-		}		
-		
-		// what to do in each case
-		boolean use_initial_density_profile;
-		boolean run_singleton_to_start_output;
-		switch(simulationMode){
-		case left_of_init_dens:
-			use_initial_density_profile = false;
-			run_singleton_to_start_output = true;
-			break;
-		case on_init_dens:
-			use_initial_density_profile = true;
-			run_singleton_to_start_output = false;
-			break;
-		case right_of_init_dens:
-			use_initial_density_profile = true;
-			run_singleton_to_start_output = true;
-			break;
-		default:
-			throw new BeatsException("bad case.");
 		}
 				
-		// initial density
-		if(use_initial_density_profile && getInitialDensitySet()!=null){
+		// copy InitialDensityState to initial_state if starting from or to the right of InitialDensitySet time stamp
+		if(simulationMode.compareTo(ModeType.left_of_init_dens)!=0 && getInitialDensitySet()!=null){
 			for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
 				for(edu.berkeley.path.beats.jaxb.Link jlink:network.getLinkList().getLink()){
 					double [] density = ((InitialDensitySet)getInitialDensitySet()).getDensityForLinkIdInVeh(network.getId(),jlink.getId());
@@ -1137,37 +1118,33 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 					((Link) jlink).set_initial_state(BeatsMath.zeros(numVehicleTypes));
 		}
 			
-		// run the density forward
-		
-		if(run_singleton_to_start_output){
-			
-			// temporary warmup clock
-			clock = new Clock(sim_start,runParam.t_end_output,runParam.dt_sim);		
-			
-	        // advance a point ensemble to start_output time
-	        int original_numEnsemble = runParam.numEnsemble;
-	        runParam.numEnsemble = 1;
-	        
-			// reset the simulation (copy initial_density to density)
-			reset();
-	        
-	        // advance to start of output time  		
-	        while( BeatsMath.lessthan(getCurrentTimeInSeconds(),runParam.t_start_output) )
-	        	update();
+        // warmup
 
-			// copy the result to the initial density
-			for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
-				for(edu.berkeley.path.beats.jaxb.Link link:network.getLinkList().getLink())
-					((Link) link).copy_state_to_initial_state();
-			
-	        // revert numEnsemble
-	        runParam.numEnsemble = original_numEnsemble;
-	        
-	        // delete the warmup clock
-	        clock = null;
-		}
-		
-        
+        // temporary warmup clock
+        clock = new Clock(sim_start,runParam.t_end_output,runParam.dt_sim);
+
+        // advance a point ensemble to start_output time
+        int original_numEnsemble = runParam.numEnsemble;
+        runParam.numEnsemble = 1;
+
+        // reset the simulation (copy initial_density to density)
+        reset();
+
+        // advance to start of output time
+        while( BeatsMath.lessthan(getCurrentTimeInSeconds(),runParam.t_start_output) )
+            update();
+
+        // copy the result to the initial density
+        for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
+            for(edu.berkeley.path.beats.jaxb.Link link:network.getLinkList().getLink())
+                ((Link) link).copy_state_to_initial_state();
+
+        // revert numEnsemble
+        runParam.numEnsemble = original_numEnsemble;
+
+        // delete the warmup clock
+        clock = null;
+
 	}
 	
 	private boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
