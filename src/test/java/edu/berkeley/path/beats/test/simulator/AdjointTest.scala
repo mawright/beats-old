@@ -46,11 +46,53 @@ class AdjointTest extends FunSuite with ShouldMatchers {
     val pm = new AdjointRampMeteringPolicyMaker
     val time_current = 18000
     val pm_dt = 5
-    val pm_horizon_steps = 100
+    val pm_horizon_steps = 20
     // call policy maker (everything in SI units)
     println("here")
-    val policy = pm.givePolicy(scenario.getNetworkSet.getNetwork.get(0).asInstanceOf[Network], scenario.gather_current_fds(time_current), scenario.predict_demands(time_current, pm_dt, pm_horizon_steps), scenario.predict_split_ratios(time_current, pm_dt, pm_horizon_steps), scenario.gather_current_densities, meters, scenario.getSimdtinseconds)
-    policy.print()
+    var policy = pm.givePolicy(scenario.getNetworkSet.getNetwork.get(0).asInstanceOf[Network], scenario.gather_current_fds(time_current), scenario.predict_demands(time_current, pm_dt, pm_horizon_steps), scenario.predict_split_ratios(time_current, pm_dt, pm_horizon_steps), scenario.gather_current_densities, meters, scenario.getSimdtinseconds)
+    val rMax = .556
+    scala.collection.convert.WrapAsScala.asScalaIterator(policy.profiles.iterator()).foreach{prof => {
+      scala.collection.convert.WrapAsScala.asScalaIterator(prof.rampMeteringPolicy.iterator()).foreach{
+        v => {
+          assert(v <= 1.0)
+          assert(v <= rMax)
+          assert(v >= .2)
+        }
+      }
+    }}
+    var demands = scenario.predict_demands(time_current, pm_dt, pm_horizon_steps)
+    scala.collection.convert.WrapAsScala.asScalaIterator(demands.getDemandProfile.iterator()).foreach{prof => {
+      scala.collection.convert.WrapAsScala.asScalaIterator(prof.getDemand.iterator()).foreach{demand => {
+        val nzeros = demand.getContent.split(",").size
+        demand.setContent(List.fill(nzeros)("0").mkString(","))
+      }}
+    }}
+    policy = pm.givePolicy(scenario.getNetworkSet.getNetwork.get(0).asInstanceOf[Network], scenario.gather_current_fds(time_current), demands, scenario.predict_split_ratios(time_current, pm_dt, pm_horizon_steps), scenario.gather_current_densities, meters, scenario.getSimdtinseconds)
+    scala.collection.convert.WrapAsScala.asScalaIterator(policy.profiles.iterator()).foreach{prof => {
+      scala.collection.convert.WrapAsScala.asScalaIterator(prof.rampMeteringPolicy.iterator()).foreach{
+        v => {
+          assert(v <= rMax)
+          assert(v >= rMax * .99)
+        }
+      }
+    }}
+    demands = scenario.predict_demands(time_current, pm_dt, pm_horizon_steps)
+    scala.collection.convert.WrapAsScala.asScalaIterator(demands.getDemandProfile.iterator()).foreach{prof => {
+      scala.collection.convert.WrapAsScala.asScalaIterator(prof.getDemand.iterator()).foreach{demand => {
+        val nzeros = demand.getContent.split(",").size
+        demand.setContent(List.fill(nzeros)(".02").mkString(","))
+      }}
+    }}
+    policy = pm.givePolicy(scenario.getNetworkSet.getNetwork.get(0).asInstanceOf[Network], scenario.gather_current_fds(time_current), demands, scenario.predict_split_ratios(time_current, pm_dt, pm_horizon_steps), scenario.gather_current_densities, meters, scenario.getSimdtinseconds)
+    scala.collection.convert.WrapAsScala.asScalaIterator(policy.profiles.iterator()).foreach{prof => {
+      scala.collection.convert.WrapAsScala.asScalaIterator(prof.rampMeteringPolicy.iterator()).foreach{
+        v => {
+          println(v)
+          assert(v <= rMax)
+          assert(v >= rMax * .99)
+        }
+      }
+    }}
   }
 
 }

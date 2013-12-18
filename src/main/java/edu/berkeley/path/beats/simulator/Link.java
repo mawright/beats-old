@@ -463,12 +463,12 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	
 	public boolean isOnramp(){
 		String name = getType();
-		return name==null ? null : name.compareToIgnoreCase("onramp")==0;
+		return name==null ? null : name.compareToIgnoreCase("On-Ramp")==0;
 	}
 
 	public boolean isFreeway(){
 		String name = getType();
-		return name==null ? null : name.compareToIgnoreCase("freeway")==0;
+		return name==null ? null : name.compareToIgnoreCase("Freeway")==0;
 	}
 
 	// Link geometry ....................

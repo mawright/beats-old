@@ -109,7 +109,7 @@ public class Controller_CRM_MPC extends Controller {
         controller_parameters = new RampMeteringControlSet();
         for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getLinkList().getLink()){
             Link L = (Link) jaxbL;
-            if(L.isSource()){
+            if(L.isOnramp()){
                 RampMeteringControl con = new RampMeteringControl();
                 con.link = L;
                 con.max_rate = 1;    // veh/sec

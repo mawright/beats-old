@@ -49,7 +49,7 @@ object ScenarioConverter {
     val onrampSources = sources.filter{source => onrampNodes.contains(source.getEnd_node)}
     val mainlineSource = sources.diff(onrampSources).head
     val firstPair = mainline.head -> mainlineSource
-    val backPairs = onramps.map{case (i, onramp) => onramp -> onrampSources.filter{_.getEnd_node == onramp.getBegin_node}.head}
+    val backPairs = onramps.values.map{case onramp => onramp -> onrampSources.filter{_.getEnd_node == onramp.getBegin_node}.head}.toList
     val onrampSourcePairs = firstPair :: backPairs.toList
     val offramps = TreeMap(extractOfframps(net).map {
       offramp => mlNodes.indexOf(offramp.getBegin_node) -> offramp
@@ -69,7 +69,7 @@ object ScenarioConverter {
         FreewayLink(FundamentalDiagram(fd.getFreeFlowSpeed, fd.getCapacity, fd.getJamDensity), link.getLength, rmax, p)
       }
     }
-    val freeway = Freeway(links.toIndexedSeq, onramps.keys.toIndexedSeq, offramps.keys.toIndexedSeq)
+    val freeway = Freeway(links.toIndexedSeq,  0 +: onramps.keys.toIndexedSeq, offramps.keys.toIndexedSeq)
     val policyParams = extractPolicyParameters(dt)
     // This is assumed to be evenly divisible
     assert(demand.getDemandProfile.head.getDt % dt.toInt == 0)
@@ -79,23 +79,35 @@ object ScenarioConverter {
         net.getLinkWithId(profile.getLinkIdOrg) -> profile.getDemand.toList.head
       }
     }.toMap
-    val demands = onrampSourcePairs.map {
-      case (ramp, source) => {
-        indexedDemand(source).getContent.split(",").map { p =>
-          Array.fill(bcDtFactor)(p.toDouble)
-        }
-      }.flatten
-    }.toIndexedSeq.transpose
+   val demands = onrampSourcePairs.map {
+     case (ramp, source) => {
+       indexedDemand(source).getContent.split(",").map { p =>
+         Array.fill(bcDtFactor)(p.toDouble)
+       }
+     }.flatten
+   }.toIndexedSeq.transpose
+    println(onrampSourcePairs.map{case(r,s) => r.getId}.mkString(","))
+    println(onrampSourcePairs.map{case(r,s) => s.getId}.mkString(","))
+    // val demands = onrampSourcePairs.map {
+    //   case (ramp, source) => {
+    //     indexedDemand(source).getContent.split(",").map{_.toDouble}.toIndexedSeq
+    //   }
+    // }.toIndexedSeq.transpose
     val srIndex = splitRatios.getSplitRatioProfile.toList.flatMap{_.getSplitratio.toList}.map{profile => net.getLinkWithId(profile.getLinkOut) -> profile.getContent.split(",").map{_.toDouble}}.toMap
-    val splits = offramps.values.map {
-      srIndex(_).toIndexedSeq.map { p =>
-        Array.fill(bcDtFactor)(1 - p)
-      }.flatten
-    }.toIndexedSeq.transpose
-
+    val splits = {
+      val withoutLast = offramps.values.map {
+        srIndex(_).toIndexedSeq.map { p =>
+          Array.fill(bcDtFactor)(1 - p)
+          }.flatten
+          }.toIndexedSeq
+      val lastPiece = IndexedSeq.fill(withoutLast.head.size)(1.0)
+      (withoutLast :+ lastPiece).transpose
+    }
     val bc = BoundaryConditions(demands, splits)
     val icLookup = ics.getDensity.toList.map {
-      d => net.getLinkWithId(d.getLinkId) -> d.getContent.toDouble
+      d => {
+        net.getLinkWithId(d.getLinkId) -> d.getContent.toDouble
+      }
     }.toMap
     val ic = InitialConditions(
       mainline.map {p =>
@@ -112,7 +124,8 @@ object ScenarioConverter {
     )
     val index = control.control.toList.map{s => s.link -> (s.min_rate / fds(s.link).getCapacity -> s.max_rate / fds(s.link).getCapacity)}.toMap
     val simParams = SimulationParameters(bc, ic, Some(MeterSpec(onrampSourcePairs.tail.map{case (o, s) => index(o)}.toList)))
-    (FreewayScenario(freeway, simParams, policyParams), onramps.values)
+    val scen = (FreewayScenario(freeway, simParams, policyParams), onramps.values)
+    scen
   }
 
   def extractPolicyParameters(dt: Double) = {
@@ -183,23 +196,44 @@ where the first ramp must exist at the beginning of the network and the horizont
 */
 
 class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
+  def padZeros(arr: IndexedSeq[IndexedSeq[Double]], factor: Double) = {
+    arr ++ IndexedSeq.fill[IndexedSeq[Double]](math.round(arr.length * factor).toInt)(IndexedSeq.fill[Double](arr(0).length)(0.0))
+  }
+  def padSplits(arr: IndexedSeq[IndexedSeq[Double]], factor: Double) = {
+    arr ++ IndexedSeq.fill[IndexedSeq[Double]](math.round(arr.length * factor).toInt)(arr.last)
+  }
   def givePolicy(net: Network, fd: FundamentalDiagramSet, demand: DemandSet, splitRatios: SplitRatioSet, ics: InitialDensitySet, control: RampMeteringControlSet, dt: lang.Double): RampMeteringPolicySet = {
-    val (scen, onramps) = ScenarioConverter.convertScenario(net, fd, demand, splitRatios, ics, control, dt)
-    // Adjoint.optimizer = new IpOptAdjointOptimizer
+    val (scenario, onramps) = ScenarioConverter.convertScenario(net, fd, demand, splitRatios, ics, control, dt)
+    var scen = scenario
+
+    var params = scen.simParams
+    val origT = params.numTimesteps
+    var simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
+    while (simstate.density.last.sum + simstate.queue.last.sum > params.bc.demands.map{_.sum}.sum * .01) {
+      println(simstate.density.last.sum + ", " + simstate.queue.last.sum  + ", " + params.bc.demands.map{_.sum}.sum * .01)
+      params = SimulationParameters(BoundaryConditions(padZeros(params.bc.demands, .3), padSplits(params.bc.splitRatios, .3)), params.ic)
+      scen = FreewayScenario(scen.fw, params, scen.policyParams)
+      simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
+    }
+    println(scen)
+//    Adjoint.optimizer = new IpOptAdjointOptimizer
     Adjoint.maxIter = 20
     val output = AdjointRampMetering.controlledOutput(scen, new AdjointRampMetering(scen.fw))
-    val flux = output.fluxRamp.transpose
-    val queues = output.queue.transpose.map{_.map{_ / scen.policyParams.deltaTimeSeconds}}
+    println(output)
+    val flux = output.fluxRamp.take(origT).transpose
+    val queues = output.queue.take(origT).transpose.map{_.map{_ / scen.policyParams.deltaTimeSeconds}}
     val rmax = scen.fw.rMaxs
     val rampPolicy = (flux, queues, rmax).zipped.map{case (f,q,r) => {
-      (f,q).zipped.map{case (ff,qq) => if (ff >= qq) r else ff}
+      (f,q).zipped.map{case (ff,qq) => {
+        if (ff >= qq || ff >= .95 * r || qq / scen.policyParams.deltaTimeSeconds <= .01 * r) r else ff
+        }}
     }
     }
     val set = new RampMeteringPolicySet
-    scen.fw.onramps.tail.map{rampPolicy(_)}.zip(onramps.tail).foreach{ case (fl, or) => {
+    scen.fw.onramps.tail.map{rampPolicy(_)}.zip(onramps).foreach{ case (fl, or) => {
       val limits = control.control.filter{_.link == or}.head
       val lower_limit = limits.min_rate
-      val upper_limit = limits.max_rate   
+      val upper_limit = limits.max_rate
       val profile = new RampMeteringPolicyProfile
       profile.sensorLink = or
       profile.rampMeteringPolicy = fl.toList.map{v => math.min(upper_limit, math.max(lower_limit, v))}
