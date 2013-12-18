@@ -105,12 +105,10 @@ object ScenarioConverter {
       mainline.map {p =>
         icLookup.getOrElse(p, 0.0)
       }.toIndexedSeq,
-      onrampSourcePairs.zipWithIndex.map {
-        case ((o , s), i) => {
-          if (i == 0) icLookup.getOrElse(s, 0.0)
-          else icLookup.getOrElse(o, icLookup.getOrElse(s, 0.0))
-        }
-      }.toIndexedSeq
+      (icLookup.getOrElse(mainlineSource, 0.0) +: (1 until mainline.size).map{i => onramps.get(i) match {
+        case Some(onramp) => icLookup.getOrElse(onramp, 0.0)
+        case None => 0.0
+        }}).toIndexedSeq
     )
     val index = control.control.toList.map{s => s.link -> (s.min_rate / fds(s.link).getCapacity -> s.max_rate / fds(s.link).getCapacity)}.toMap
     val simParams = SimulationParameters(bc, ic, Some(MeterSpec(onrampSourcePairs.tail.map{case (o, s) => index(o)}.toList)))
