@@ -20,7 +20,7 @@ import scala.collection.immutable.TreeMap
 class SparseNetworkTest extends FunSuite with ShouldMatchers {
   val logger = Logger.getLogger(classOf[SparseNetworkTest])
   test("test mpc network") {
-    val scenario = ObjectFactory.createAndLoadScenario("/Users/jdr/Documents/github/net-create/sparse.xml")
+    val scenario = ObjectFactory.createAndLoadScenario("src/test/resources/sparse.xml")
     scenario.initialize(1, 0, 30, 1, "xml", "hi", 1, 1)
     scenario.run()
   }
