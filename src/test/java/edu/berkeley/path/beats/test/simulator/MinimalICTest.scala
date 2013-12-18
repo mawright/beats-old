@@ -22,10 +22,10 @@ import edu.berkeley.path.ramp_metering.AdjointRampMetering
 class MinimalICTest extends FunSuite with ShouldMatchers {
   val logger = Logger.getLogger(classOf[MinimalICTest])
   test("samitha") {
-    val scenario = ObjectFactory.createAndLoadScenario("/Users/jdr/Documents/github/beats/data/config/minimal.xml")
+    val scenario = ObjectFactory.createAndLoadScenario("src/test/resources/minimal.xml")
     scenario.initialize(1,0, 6, 1, "xml", "hi", 1, 1)
-    println(scenario.getNetworkSet.getNetwork.head.asInstanceOf[Network].getListOfLinks.toList.head.asInstanceOf[Link].getDensityInVeh(0))
+    scenario.getNetworkSet.getNetwork.head.asInstanceOf[Network].getListOfLinks.toList.head.asInstanceOf[Link].getDensityInVeh(0).toList.head should be (.5)
     val ic_densities = scenario.gather_current_densities
-    println(ic_densities.getDensity.toList.map{_.getContent}.mkString("\n"))
+    ic_densities.getDensity.toList.map{_.getContent}.head.split(",").head.toDouble should be (.5)
   }
 }

@@ -86,13 +86,6 @@ object ScenarioConverter {
        }
      }.flatten
    }.toIndexedSeq.transpose
-    println(onrampSourcePairs.map{case(r,s) => r.getId}.mkString(","))
-    println(onrampSourcePairs.map{case(r,s) => s.getId}.mkString(","))
-    // val demands = onrampSourcePairs.map {
-    //   case (ramp, source) => {
-    //     indexedDemand(source).getContent.split(",").map{_.toDouble}.toIndexedSeq
-    //   }
-    // }.toIndexedSeq.transpose
     val srIndex = splitRatios.getSplitRatioProfile.toList.flatMap{_.getSplitratio.toList}.map{profile => net.getLinkWithId(profile.getLinkOut) -> profile.getContent.split(",").map{_.toDouble}}.toMap
     val splits = {
       val withoutLast = offramps.values.map {
@@ -100,8 +93,7 @@ object ScenarioConverter {
           Array.fill(bcDtFactor)(1 - p)
           }.flatten
           }.toIndexedSeq
-      val lastPiece = IndexedSeq.fill(withoutLast.head.size)(1.0)
-      (withoutLast :+ lastPiece).transpose
+      withoutLast.transpose
     }
     val bc = BoundaryConditions(demands, splits)
     val icLookup = ics.getDensity.toList.map {
@@ -113,12 +105,10 @@ object ScenarioConverter {
       mainline.map {p =>
         icLookup.getOrElse(p, 0.0)
       }.toIndexedSeq,
-      (0 until mainline.length).map {
-        i => {
-          onramps.get(i) match {
-            case None => 0.0
-            case Some(onramp) => icLookup(onramp)
-          }
+      onrampSourcePairs.zipWithIndex.map {
+        case ((o , s), i) => {
+          if (i == 0) icLookup.getOrElse(s, 0.0)
+          else icLookup.getOrElse(o, icLookup.getOrElse(s, 0.0))
         }
       }.toIndexedSeq
     )
@@ -210,16 +200,13 @@ class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
     val origT = params.numTimesteps
     var simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
     while (simstate.density.last.sum + simstate.queue.last.sum > params.bc.demands.map{_.sum}.sum * .01) {
-      println(simstate.density.last.sum + ", " + simstate.queue.last.sum  + ", " + params.bc.demands.map{_.sum}.sum * .01)
       params = SimulationParameters(BoundaryConditions(padZeros(params.bc.demands, .3), padSplits(params.bc.splitRatios, .3)), params.ic)
       scen = FreewayScenario(scen.fw, params, scen.policyParams)
       simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
     }
-    println(scen)
 //    Adjoint.optimizer = new IpOptAdjointOptimizer
     Adjoint.maxIter = 20
     val output = AdjointRampMetering.controlledOutput(scen, new AdjointRampMetering(scen.fw))
-    println(output)
     val flux = output.fluxRamp.take(origT).transpose
     val queues = output.queue.take(origT).transpose.map{_.map{_ / scen.policyParams.deltaTimeSeconds}}
     val rmax = scen.fw.rMaxs

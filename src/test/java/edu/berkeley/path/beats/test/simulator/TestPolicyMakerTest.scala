@@ -22,8 +22,8 @@ import edu.berkeley.path.beats.test.simulator.output.TestPolicyMaker
 @RunWith(classOf[JUnitRunner])
 class TestPolicyMakerTest extends FunSuite with ShouldMatchers {
   val logger = Logger.getLogger(classOf[TestPolicyMakerTest])
-  test("test mpc network") {
-    val scenario = ObjectFactory.createAndLoadScenario("/Users/jdr/Documents/github/net-create/mpc.xml")
+  test("test mpc network hand-crafted") {
+    val scenario = ObjectFactory.createAndLoadScenario("src/test/resources/mpc.xml")
     scenario.initialize(1, 0, 20, 1, "xml", "hi", 1, 1)
     val meters = {
       val mtrs = new RampMeteringControlSet
@@ -49,7 +49,6 @@ class TestPolicyMakerTest extends FunSuite with ShouldMatchers {
     val pm_dt = 1
     val pm_horizon_steps = 80
     val (scen, onramps) = ScenarioConverter.convertScenario(scenario.getNetworkSet.getNetwork.get(0).asInstanceOf[Network], scenario.gather_current_fds(time_current), scenario.predict_demands(time_current, pm_dt, pm_horizon_steps), scenario.predict_split_ratios(time_current, pm_dt, pm_horizon_steps), scenario.gather_current_densities, meters, scenario.getSimdtinseconds)
-    println(scen)
     val nLinks = 12
     val nTimesteps = 80
     val dt = 1
@@ -62,18 +61,13 @@ class TestPolicyMakerTest extends FunSuite with ShouldMatchers {
       }}
       ar.map{_.toIndexedSeq}.toIndexedSeq
     }
+    scen.fw.offramps should be (offramps.map{_ + 1})
     scen.simParams.numTimesteps should be (nTimesteps)
     scen.fw.nLinks should be (nLinks)
     scen.policyParams.deltaTimeSeconds should be (dt)
     scen.simParams.ic.density should be(List.fill(nLinks)(0.0))
     scen.simParams.ic.queue should be(List.fill(nLinks)(0.0))
-    val allSplitRatios = {
-      val row = Array.fill(nLinks)(1.0)
-      offramps.foreach{a => row(a) = .9}
-      IndexedSeq.fill(nTimesteps)(row.toIndexedSeq)
-    }
-    println(allSplitRatios.map{_.mkString(",")}.mkString("\n"))
-    println(allDemands.map{_.mkString(",")}.mkString("\n"))
+    val allSplitRatios = IndexedSeq.fill(nTimesteps, offramps.size)(.9)
     scen.simParams.bc.splitRatios should be(allSplitRatios)
     scen.simParams.bc.demands should be(allDemands)
   }
