@@ -102,11 +102,9 @@ object ScenarioConverter {
       }
     }.toMap
     val ic = InitialConditions(
-      mainline.map {p =>
-        icLookup.getOrElse(p, 0.0)
-      }.toIndexedSeq,
+      mainline.map {p => icLookup.getOrElse(p, 0.0)}.toIndexedSeq,
       (icLookup.getOrElse(mainlineSource, 0.0) +: (1 until mainline.size).map{i => onramps.get(i) match {
-        case Some(onramp) => icLookup.getOrElse(onramp, 0.0)
+        case Some(onramp) => icLookup.getOrElse(onrampSourcePairs.toMap.get(onramp).get, 0.0)
         case None => 0.0
         }}).toIndexedSeq
     )
@@ -197,7 +195,7 @@ class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
     var params = scen.simParams
     val origT = params.numTimesteps
     var simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
-    while (simstate.density.last.sum + simstate.queue.last.sum > params.bc.demands.map{_.sum}.sum * .01) {
+    while (simstate.density.last.sum + simstate.queue.last.sum > params.bc.demands.map{_.sum}.sum * .01 + .1) {
       params = SimulationParameters(BoundaryConditions(padZeros(params.bc.demands, .3), padSplits(params.bc.splitRatios, .3)), params.ic)
       scen = FreewayScenario(scen.fw, params, scen.policyParams)
       simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
