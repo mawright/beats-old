@@ -198,7 +198,9 @@ public class Controller_CRM_MPC extends Controller {
             ActuatorRampMeter act = (ActuatorRampMeter) link_actuator_map.get(rmprofile.sensorLink.getId());
             if(act!=null){
                 int clipped_time_index = Math.min(time_index,rmprofile.rampMeteringPolicy.size()-1);
-                act.setMeteringRateInVPH( rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d);
+		double policy = rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d;
+		System.out.println(policy);
+                act.setMeteringRateInVPH( policy);
             }
         }
     }
