@@ -201,8 +201,9 @@ class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
       simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
     }
 //    Adjoint.optimizer = new IpOptAdjointOptimizer
-    Adjoint.maxIter = 20
-    val output = AdjointRampMetering.controlledOutput(scen, new AdjointRampMetering(scen.fw))
+    Adjoint.maxIter = 35
+    val uValue = new AdjointRampMetering(scen.fw).givePolicy(scen.simParams, scen.policyParams)
+    val output = FreewaySimulator.simpleSim(scen, uValue.flatten)
     val flux = output.fluxRamp.take(origT).transpose
     val queues = output.queue.take(origT).transpose.map{_.map{_ / scen.policyParams.deltaTimeSeconds}}
     val rmax = scen.fw.rMaxs
@@ -213,13 +214,13 @@ class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
     }
     }
     val set = new RampMeteringPolicySet
-    scen.fw.onramps.tail.map{rampPolicy(_)}.zip(onramps).foreach{ case (fl, or) => {
+    (scen.fw.onramps.tail.map{rampPolicy(_)}, uValue, onramps).zipped.foreach{ case (fl, u, or) => {
       val limits = control.control.filter{_.link == or}.head
       val lower_limit = limits.min_rate
       val upper_limit = limits.max_rate
       val profile = new RampMeteringPolicyProfile
       profile.sensorLink = or
-      profile.rampMeteringPolicy = fl.toList.map{v => math.min(upper_limit, math.max(lower_limit, v))}
+      profile.rampMeteringPolicy = fl.toList.zip(u).map{case (v, uu) => if (uu >= 1.0) upper_limit else math.min(upper_limit, math.max(lower_limit, v))}
       set.profiles.add(profile)
     }}
     set
