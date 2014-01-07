@@ -21,6 +21,7 @@ import edu.berkeley.path.ramp_metering.BoundaryConditions
 import edu.berkeley.path.ramp_metering.FreewayScenario
 import edu.berkeley.path.ramp_metering.FundamentalDiagram
 import java.{lang, util}
+import edu.berkeley.path.beats.control.predictive.RampMeteringControlSet
 
 /**
  * Created with IntelliJ IDEA.
