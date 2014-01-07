@@ -23,6 +23,12 @@ public class ActuatorRampMeter extends Actuator {
 	public void setMeteringRateInVPH(Double rate_in_vph){
         double dt_in_hours = myController.getMyScenario().getSimdtinseconds()/3600d;
         metering_rate_in_veh = rate_in_vph*dt_in_hours;
+	if (metering_rate_in_veh > min_rate_in_veh * 1.1 && metering_rate_in_veh * 1.1 < max_rate_in_veh) {
+	    System.out.println("actually fixed");
+	    System.out.println(metering_rate_in_veh);
+	    System.out.println(min_rate_in_veh);
+	    System.out.println(max_rate_in_veh);
+	}
         metering_rate_in_veh = Math.max(metering_rate_in_veh,min_rate_in_veh);
         metering_rate_in_veh = Math.min(metering_rate_in_veh,max_rate_in_veh);
 	}

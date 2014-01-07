@@ -200,27 +200,37 @@ class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
       scen = FreewayScenario(scen.fw, params, scen.policyParams)
       simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
     }
-//    Adjoint.optimizer = new IpOptAdjointOptimizer
-    Adjoint.maxIter = 35
+    Adjoint.maxIter = 80
+    Adjoint.optimizer = new IpOptAdjointOptimizer
     val uValue = new AdjointRampMetering(scen.fw).givePolicy(scen.simParams, scen.policyParams)
+    var trimmedU = uValue.take(origT).transpose
+    trimmedU = Array.fill(trimmedU(0).size)(0.0) +: trimmedU
     val output = FreewaySimulator.simpleSim(scen, uValue.flatten)
     val flux = output.fluxRamp.take(origT).transpose
     val queues = output.queue.take(origT).transpose.map{_.map{_ / scen.policyParams.deltaTimeSeconds}}
     val rmax = scen.fw.rMaxs
-    val rampPolicy = (flux, queues, rmax).zipped.map{case (f,q,r) => {
-      (f,q).zipped.map{case (ff,qq) => {
+    println(flux.size, flux(0).size, queues.size, queues(0).size, rmax.size, trimmedU.size, trimmedU(0).size)
+    val rampPolicy = (flux, queues, rmax).zipped.toList.zipWithIndex.map{case (a, b) => {
+      val f = a._1
+      val q = a._2
+      val r = a._3
+      val u = {
+	val ind = scen.fw.onramps.indexOf(b)
+	if (ind >= 0) trimmedU(ind) else Array.fill(trimmedU(0).size)(0.0)
+      }
+      (f,q, u).zipped.map{case (ff,qq, bb) => { if (bb >= 1.0) r else
         if (ff >= qq || ff >= .95 * r || qq / scen.policyParams.deltaTimeSeconds <= .01 * r) r else ff
-        }}
+        }
+	}
     }
     }
     val set = new RampMeteringPolicySet
-    (scen.fw.onramps.tail.map{rampPolicy(_)}, uValue, onramps).zipped.foreach{ case (fl, u, or) => {
+    (scen.fw.onramps.tail.map{rampPolicy(_)}, onramps).zipped.foreach{ case (fl, or) => {
       val limits = control.control.filter{_.link == or}.head
       val lower_limit = limits.min_rate
-      val upper_limit = limits.max_rate
       val profile = new RampMeteringPolicyProfile
       profile.sensorLink = or
-      profile.rampMeteringPolicy = fl.toList.zip(u).map{case (v, uu) => if (uu >= 1.0) upper_limit else math.min(upper_limit, math.max(lower_limit, v))}
+      profile.rampMeteringPolicy = fl.toList.map{v =>   math.max(lower_limit, v)}
       set.profiles.add(profile)
     }}
     set

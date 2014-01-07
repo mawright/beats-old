@@ -199,7 +199,7 @@ public class Controller_CRM_MPC extends Controller {
             if(act!=null){
                 int clipped_time_index = Math.min(time_index,rmprofile.rampMeteringPolicy.size()-1);
 		double policy = rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d;
-		System.out.println(policy);
+		// System.out.println(policy);
                 act.setMeteringRateInVPH( policy);
             }
         }
