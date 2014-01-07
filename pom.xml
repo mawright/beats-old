@@ -25,6 +25,33 @@
   <build>
     <plugins>
       <plugin>
+  <groupId>org.codehaus.mojo</groupId>
+  <artifactId>exec-maven-plugin</artifactId>
+  <version>1.1</version>
+  <configuration>
+    <mainClass>edu.berkeley.path.beats.Runner</mainClass>
+    <arguments>
+<!--         <argument>simulate</argument>
+        <argument>/Users/jdr/Documents/github/L0-utilities/simulation/samitha1onramp.xml</argument>
+        <argument>1</argument>
+        <argument>output</argument>
+        <argument>text</argument>
+        <argument>0</argument>
+        <argument>100</argument>
+        <argument>1</argument>   -->
+
+        <argument>simulate</argument>
+        <argument>/Users/jdr/Documents/github/L0-utilities/simulation/mpc.xml</argument>
+        <argument>1</argument>
+        <argument>output</argument>
+        <argument>text</argument>
+        <argument>0</argument>
+        <argument>100</argument>
+        <argument>1</argument>        
+      </arguments>
+  </configuration>
+</plugin>
+      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <archive>

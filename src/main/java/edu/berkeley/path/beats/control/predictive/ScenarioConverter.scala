@@ -65,7 +65,7 @@ object ScenarioConverter {
           case None => 0.0
         }
       }
-        val p = 4.0
+        val p = 3.0
         FreewayLink(FundamentalDiagram(fd.getFreeFlowSpeed, fd.getCapacity, fd.getJamDensity), link.getLength, rmax, p)
       }
     }
@@ -200,8 +200,10 @@ class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
       scen = FreewayScenario(scen.fw, params, scen.policyParams)
       simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
     }
-    Adjoint.maxIter = 80
-    Adjoint.optimizer = new IpOptAdjointOptimizer
+    Adjoint.maxIter = 40
+    MultiStartOptimizer.nStarts = 40
+    Adjoint.optimizer = new MultiStartOptimizer(() => new Rprop)
+    // Adjoint.optimizer = new IpOptAdjointOptimizer
     val uValue = new AdjointRampMetering(scen.fw).givePolicy(scen.simParams, scen.policyParams)
     var trimmedU = uValue.take(origT).transpose
     trimmedU = Array.fill(trimmedU(0).size)(0.0) +: trimmedU
@@ -209,7 +211,6 @@ class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
     val flux = output.fluxRamp.take(origT).transpose
     val queues = output.queue.take(origT).transpose.map{_.map{_ / scen.policyParams.deltaTimeSeconds}}
     val rmax = scen.fw.rMaxs
-    println(flux.size, flux(0).size, queues.size, queues(0).size, rmax.size, trimmedU.size, trimmedU(0).size)
     val rampPolicy = (flux, queues, rmax).zipped.toList.zipWithIndex.map{case (a, b) => {
       val f = a._1
       val q = a._2
