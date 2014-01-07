@@ -20,10 +20,9 @@ import scala.collection.immutable.TreeMap
 class AdjointTest extends FunSuite with ShouldMatchers {
   val logger = Logger.getLogger(classOf[AdjointTest])
   test("woohoo") {
+    /*
     val scenario = ObjectFactory.createAndLoadScenario("data/config/x.xml")
-//    val scenario = ObjectFactory.createAndLoadScenario("/Users/jdr/Desktop/bla.xml")
     scenario.initialize(1, 0, 5, 1, "xml", "hi", 1, 1)
-//  scenario.initialize(30, 0, 1000, 30, "xml", "hi", 1, 1)
     val meters = {
       val mtrs = new RampMeteringControlSet
       val net = scenario.getNetworkSet.getNetwork.get(0).asInstanceOf[Network]
@@ -56,6 +55,7 @@ class AdjointTest extends FunSuite with ShouldMatchers {
       scenario.getSimdtinseconds
     )
     policy.print();
+    */
   }
 
 }
