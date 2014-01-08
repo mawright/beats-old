@@ -66,7 +66,7 @@ object ScenarioConverter {
         }
       }
         val p = 3.0
-        FreewayLink(FundamentalDiagram(fd.getFreeFlowSpeed, fd.getCapacity * link.getLanes(), fd.getJamDensity), link.getLength, rmax, p)
+        FreewayLink(FundamentalDiagram(fd.getFreeFlowSpeed, fd.getCapacity * link.getLanes(), fd.getJamDensity * link.getLanes()), link.getLength, rmax, p)
       }
     }
     val freeway = Freeway(links.toIndexedSeq,  0 +: onramps.keys.toIndexedSeq, offramps.keys.toIndexedSeq)
