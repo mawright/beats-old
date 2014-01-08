@@ -61,12 +61,12 @@ object ScenarioConverter {
       case (link, i) => {
         val fd = fds(link)
         val rmax = if (i == 0) fds(onrampSourcePairs.head._2).getCapacity else { onramps.get(i) match {
-          case Some(onramp) => fds(onramp).getCapacity
+          case Some(onramp) => fds(onramp).getCapacity * onramp.getLanes()
           case None => 0.0
         }
       }
         val p = 3.0
-        FreewayLink(FundamentalDiagram(fd.getFreeFlowSpeed, fd.getCapacity, fd.getJamDensity), link.getLength, rmax, p)
+        FreewayLink(FundamentalDiagram(fd.getFreeFlowSpeed, fd.getCapacity * link.getLanes(), fd.getJamDensity), link.getLength, rmax, p)
       }
     }
     val freeway = Freeway(links.toIndexedSeq,  0 +: onramps.keys.toIndexedSeq, offramps.keys.toIndexedSeq)
@@ -181,6 +181,20 @@ The network is assumed to have the following structure:
 where the first ramp must exist at the beginning of the network and the horizontal part must be all Freeway links.
 */
 
+class DummyPolicyMaker extends RampMeteringPolicyMaker {
+  def givePolicy(net: Network, fd: FundamentalDiagramSet, demand: DemandSet, splitRatios: SplitRatioSet, ics: InitialDensitySet, control: RampMeteringControlSet, dt: lang.Double): RampMeteringPolicySet = {
+    val (scenario, onramps) = ScenarioConverter.convertScenario(net, fd, demand, splitRatios, ics, control, dt)
+    val set = new RampMeteringPolicySet
+    onramps.foreach{ or => {
+      val profile = new RampMeteringPolicyProfile
+      profile.sensorLink = or
+      profile.rampMeteringPolicy = List.fill(scenario.simParams.numTimesteps)(1.111111111)
+      set.profiles.add(profile)
+    }}
+    set
+    }
+}
+
 class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
   def padZeros(arr: IndexedSeq[IndexedSeq[Double]], factor: Double) = {
     arr ++ IndexedSeq.fill[IndexedSeq[Double]](math.round(arr.length * factor).toInt)(IndexedSeq.fill[Double](arr(0).length)(0.0))
@@ -200,8 +214,8 @@ class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
       scen = FreewayScenario(scen.fw, params, scen.policyParams)
       simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
     }
-    Adjoint.maxIter = 40
-    MultiStartOptimizer.nStarts = 40
+    Adjoint.maxIter = 20
+    MultiStartOptimizer.nStarts = 10
     Adjoint.optimizer = new MultiStartOptimizer(() => new Rprop)
     // Adjoint.optimizer = new IpOptAdjointOptimizer
     val uValue = new AdjointRampMetering(scen.fw).givePolicy(scen.simParams, scen.policyParams)
