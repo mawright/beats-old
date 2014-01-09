@@ -130,7 +130,9 @@ object ScenarioConverter {
     }
     orderedMainlineBuffer.toList
   }
-
+  def extractSources(net: Network) = {
+    net.getListOfLinks.toList.map{_.asInstanceOf[Link]}.filter{_.getLinkType.getName == "Source"}
+  }
   def extractOnramps(net: Network) = {
     net.getListOfLinks.toList.map {
       _.asInstanceOf[Link]
@@ -139,9 +141,7 @@ object ScenarioConverter {
     }
   }
 
-  def extractSources(net: Network) = {
-    net.getListOfLinks.toList.map{_.asInstanceOf[Link]}.filter{_.getLinkType.getName == "Source"}
-  }
+  
 
   def extractOfframps(net: Network) = {
     net.getListOfLinks.toList.map {
@@ -214,8 +214,9 @@ class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
       scen = FreewayScenario(scen.fw, params, scen.policyParams)
       simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
     }
-    Adjoint.maxIter = 20
-    MultiStartOptimizer.nStarts = 10
+    StandardOptimizer.maxEvaluations = 20
+    // Adjoint.optimizer = new Rprop
+    MultiStartOptimizer.nStarts = 5
     Adjoint.optimizer = new MultiStartOptimizer(() => new Rprop)
     // Adjoint.optimizer = new IpOptAdjointOptimizer
     val uValue = new AdjointRampMetering(scen.fw).givePolicy(scen.simParams, scen.policyParams)
