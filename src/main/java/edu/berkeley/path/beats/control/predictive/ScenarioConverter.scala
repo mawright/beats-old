@@ -21,6 +21,10 @@ import edu.berkeley.path.ramp_metering.BoundaryConditions
 import edu.berkeley.path.ramp_metering.FreewayScenario
 import edu.berkeley.path.ramp_metering.FundamentalDiagram
 import java.{lang, util}
+import edu.berkeley.path.ramp_metering._
+import org.apache.commons.math3.optimization._
+import org.apache.commons.math3.analysis.DifferentiableMultivariateFunction
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -60,7 +64,7 @@ object ScenarioConverter {
     val links = mainline.zipWithIndex.map {
       case (link, i) => {
         val fd = fds(link)
-        val rmax = if (i == 0) fds(onrampSourcePairs.head._2).getCapacity else { onramps.get(i) match {
+        val rmax = if (i == 0) fds(onrampSourcePairs.head._2).getCapacity * onrampSourcePairs.head._2.getLanes() else { onramps.get(i) match {
           case Some(onramp) => fds(onramp).getCapacity * onramp.getLanes()
           case None => 0.0
         }
@@ -181,18 +185,26 @@ The network is assumed to have the following structure:
 where the first ramp must exist at the beginning of the network and the horizontal part must be all Freeway links.
 */
 
-class DummyPolicyMaker extends RampMeteringPolicyMaker {
-  def givePolicy(net: Network, fd: FundamentalDiagramSet, demand: DemandSet, splitRatios: SplitRatioSet, ics: InitialDensitySet, control: RampMeteringControlSet, dt: lang.Double): RampMeteringPolicySet = {
-    val (scenario, onramps) = ScenarioConverter.convertScenario(net, fd, demand, splitRatios, ics, control, dt)
-    val set = new RampMeteringPolicySet
-    onramps.foreach{ or => {
-      val profile = new RampMeteringPolicyProfile
-      profile.sensorLink = or
-      profile.rampMeteringPolicy = List.fill(scenario.simParams.numTimesteps)(1.111111111)
-      set.profiles.add(profile)
-    }}
-    set
-    }
+class ChainedOptimizer extends StandardOptimizer {
+  def optimize(p1: Int, p2: DifferentiableMultivariateFunction, p3: GoalType, p4: Array[Double]): PointValuePair = {
+    MultiStartOptimizer.nStarts = 10
+    var nIters = 30
+    StandardOptimizer.maxEvaluations = nIters
+    Adjoint.maxIter = nIters
+    val multistart = new MultiStartOptimizer(() => new Rprop)
+    val slnMS = multistart.optimize(p1, p2, p3, p4)
+    nIters = 40
+    StandardOptimizer.maxEvaluations = nIters
+    Adjoint.maxIter = nIters
+
+    val ipopt = new IpOptAdjointOptimizer
+    val rprop =  new Rprop
+
+    val sln1 = ipopt.optimize(p1, p2, p3, p4)
+    val sln2 = rprop.optimize(p1, p2, p3, sln1.getPoint)
+    List(sln1, sln2, slnMS).minBy{_.getValue}
+    // List(slnMS).minBy{_.getValue}
+  }
 }
 
 class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
@@ -205,7 +217,7 @@ class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
   def givePolicy(net: Network, fd: FundamentalDiagramSet, demand: DemandSet, splitRatios: SplitRatioSet, ics: InitialDensitySet, control: RampMeteringControlSet, dt: lang.Double): RampMeteringPolicySet = {
     val (scenario, onramps) = ScenarioConverter.convertScenario(net, fd, demand, splitRatios, ics, control, dt)
     var scen = scenario
-
+    println(scen)
     var params = scen.simParams
     val origT = params.numTimesteps
     var simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
@@ -214,11 +226,7 @@ class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
       scen = FreewayScenario(scen.fw, params, scen.policyParams)
       simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
     }
-    StandardOptimizer.maxEvaluations = 20
-    // Adjoint.optimizer = new Rprop
-    MultiStartOptimizer.nStarts = 5
-    Adjoint.optimizer = new MultiStartOptimizer(() => new Rprop)
-    // Adjoint.optimizer = new IpOptAdjointOptimizer
+    Adjoint.optimizer = new ChainedOptimizer
     val uValue = new AdjointRampMetering(scen.fw).givePolicy(scen.simParams, scen.policyParams)
     var trimmedU = uValue.take(origT).transpose
     trimmedU = Array.fill(trimmedU(0).size)(0.0) +: trimmedU
