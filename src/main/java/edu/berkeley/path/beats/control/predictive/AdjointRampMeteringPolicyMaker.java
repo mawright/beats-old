@@ -196,16 +196,19 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
         RampMeteringPolicySet policySet = new RampMeteringPolicySet();
 
         // Start from 1 because we don't think of the first onramp as controllable
-        for (int i = 1; i <  mainlineStructure.onrampIndices().size(); ++i) {
-            int rampIndex = mainlineStructure.onrampIndices().get(i);
+        List<Integer> onrampIndices = mainlineStructure.onrampIndices();
+        for (int i = 1; i <  onrampIndices.size(); ++i) {
+            int rampIndex = onrampIndices.get(i);
             RampMeteringPolicyProfile policy = new RampMeteringPolicyProfile();
             policySet.profiles.add(policy);
-            policy.sensorLink = mainlineStructure.mainlineOnrampMap.get(mainlineStructure.links.get(i));
+            policy.sensorLink = mainlineStructure.mainlineOnrampMap.get(mainlineStructure.links.get(onrampIndices.get(i)));
             double maxFlux = (Double) (scenario.fw().rMaxs().apply(rampIndex));
             double lowerLimitFlux = 0.0;
+            double upperLimitFlux = Double.MAX_VALUE;
             for (RampMeteringControl limit : control.control) {
                 if (limit.link.equals(policy.sensorLink)) {
                     lowerLimitFlux = limit.min_rate;
+                    upperLimitFlux = limit.max_rate;
                     break;
                 }
             }
@@ -217,7 +220,7 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
                     policy.rampMeteringPolicy.add(Math.max(maxFlux, lowerLimitFlux));
                     continue;
                 }
-                policy.rampMeteringPolicy.add(Math.max(rampFlux, lowerLimitFlux));
+                policy.rampMeteringPolicy.add(Math.min(upperLimitFlux, Math.max(rampFlux, lowerLimitFlux)));
             }
         }
         return policySet;
