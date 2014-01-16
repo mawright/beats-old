@@ -84,10 +84,10 @@
 
         <node id="-2" >
           <outputs>
-            <output link_id="-12"/>
+            <output link_id="-2"/>
           </outputs>
           <inputs>
-            <input link_id="-2"/>                        
+            <input link_id="-12"/>
           </inputs>
         </node>
 

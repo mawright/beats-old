@@ -3,11 +3,12 @@ package edu.berkeley.path.beats.test.simulator
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FunSuite
 import edu.berkeley.path.beats.simulator._
-import edu.berkeley.path.beats.control.predictive.{RampMeteringControl, RampMeteringControlSet, AdjointRampMeteringPolicyMaker, ScenarioConverter}
+import edu.berkeley.path.beats.control.predictive.{RampMeteringControl, RampMeteringControlSet, AdjointRampMeteringPolicyMaker}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.apache.log4j.Logger
 import scala.collection.immutable.TreeMap
+import scala.collection.JavaConversions._
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,28 +23,19 @@ class AdjointTest extends FunSuite with ShouldMatchers {
   test("woohoo") {
     val scenario = ObjectFactory.createAndLoadScenario("/Users/jdr/Documents/github/net-create/i15s_fix.xml")
     scenario.initialize(5, 0, 18000, 5, "xml", "hi", 1, 1)
-//    scenario.run()
-    val meters = {
-      val mtrs = new RampMeteringControlSet
-      val net = scenario.getNetworkSet.getNetwork.get(0).asInstanceOf[Network]
-      val mainline = ScenarioConverter.extractMainline(net)
-      val mlNodes = mainline.map {
-        _.getBegin_node
-      }
-      TreeMap(ScenarioConverter.extractOnramps(net).map {
-        onramp => mlNodes.indexOf(onramp.getEnd_node) -> onramp
-      }: _*).values.foreach {
-        or => {
-          val meter = new RampMeteringControl
-          meter.min_rate = 0.2
-          meter.max_rate = 1.0
-          meter.link = or
-          mtrs.control.add(meter)
-        }
-      }
-      mtrs
-    }
     val pm = new AdjointRampMeteringPolicyMaker
+    val meters = {
+      val mainlineStructure = new AdjointRampMeteringPolicyMaker.MainlineStructure(scenario.getNetworkSet.getNetwork.get(0).asInstanceOf[Network])
+      val x = new RampMeteringControlSet
+      mainlineStructure.orderedOnramps().toList.foreach { link => {
+        val y = new RampMeteringControl
+        x.control.add(y)
+        y.link = link
+        y.min_rate = 0.0
+        y.max_rate = 1.0
+      }}
+      x
+    }
     val time_current = 18000
     val pm_dt = 5
     val pm_horizon_steps = 20

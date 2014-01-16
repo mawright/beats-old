@@ -10,7 +10,7 @@
    </VehicleTypeSet>  
 
   <InitialDensitySet project_id="-1" id="-1" >
-    <density id="-1" vehicle_type_id="0" link_id="-2">0.2</density>
+    <density id="-1" vehicle_type_id="0" link_id="-12">0.2</density>
     <density id="-1" vehicle_type_id="0" link_id="1">0.9</density>
     <density id="-1" vehicle_type_id="0" link_id="-11">0.9</density>
   </InitialDensitySet>
@@ -90,10 +90,10 @@
 
         <node id="-2" >
           <outputs>
-            <output link_id="-12"/>
+            <output link_id="-2"/>
           </outputs>
           <inputs>
-            <input link_id="-2"/>                        
+            <input link_id="-12"/>
           </inputs>
         </node>
 
