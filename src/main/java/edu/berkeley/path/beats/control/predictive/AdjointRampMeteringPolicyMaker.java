@@ -2,12 +2,8 @@ package edu.berkeley.path.beats.control.predictive;
 
 import edu.berkeley.path.beats.jaxb.Density;
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
-import edu.berkeley.path.beats.simulator.DemandSet;
+import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.FundamentalDiagram;
-import edu.berkeley.path.beats.simulator.InitialDensitySet;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Network;
-import edu.berkeley.path.beats.simulator.SplitRatioSet;
 import edu.berkeley.path.ramp_metering.*;
 
 import java.util.HashMap;
@@ -187,7 +183,6 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
     public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt) {
         ScenarioMainlinePair pair = convertScenario(net, fd, demand, splitRatios, ics, control, dt);
         FreewayScenario scenario = pair.scenario;
-        System.out.println(scenario);
         MainlineStructure mainlineStructure = pair.mainlineStructure;
         int origT = scenario.simParams().numTimesteps();
         SimulationOutput simstate = FreewaySimulator.simpleSim(scenario);

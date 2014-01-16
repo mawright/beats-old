@@ -1,9 +1,10 @@
 package edu.berkeley.path.beats.control.predictive;
 
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
-import edu.berkeley.path.beats.simulator.*;
-
-import java.util.List;
+import edu.berkeley.path.beats.simulator.DemandSet;
+import edu.berkeley.path.beats.simulator.InitialDensitySet;
+import edu.berkeley.path.beats.simulator.Network;
+import edu.berkeley.path.beats.simulator.SplitRatioSet;
 
 /**
  * Created with IntelliJ IDEA.

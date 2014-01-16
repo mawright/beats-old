@@ -4,12 +4,9 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FunSuite
 import scala.collection.JavaConversions._
 import edu.berkeley.path.beats.simulator._
-import edu.berkeley.path.beats.control.predictive.{RampMeteringControl, RampMeteringControlSet, AdjointRampMeteringPolicyMaker, OldScenarioConverter}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.apache.log4j.Logger
-import scala.collection.immutable.TreeMap
-import edu.berkeley.path.ramp_metering.AdjointRampMetering
 
 /**
  * Created with IntelliJ IDEA.
