@@ -9,67 +9,28 @@
 		<vehicleType id="0" name="car" size_factor="1.0"/>					
    </VehicleTypeSet>  
 
-  <InitialDensitySet project_id="-1" id="-1" >
-    <density id="-1" vehicle_type_id="0" link_id="-1">.9</density>
-    <density id="-1" vehicle_type_id="0" link_id="-2">.2</density>
-    <density id="-1" vehicle_type_id="0" link_id="1">0.9</density>
-    <density id="-1" vehicle_type_id="0" link_id="2">0.00</density>
-  </InitialDensitySet>
-
   <SplitRatioSet  id="-1" project_id="-1">
   </SplitRatioSet>
 
   <DemandSet id="-1" project_id="-1">
-   <demandProfile dt="5" id="-1" link_id_org="-2">
-      <demand vehicle_type_id="0">0,0,0,0,0</demand>
+   <demandProfile dt="1" id="-1" link_id_org="-12">
+      <demand vehicle_type_id="0">0,0.2,0,0,0,0</demand>
    </demandProfile>
-   <demandProfile dt="5" id="-1" link_id_org="-1">
-      <demand vehicle_type_id="0">0.9,0,0,0,0</demand>
+   <demandProfile dt="1" id="-1" link_id_org="-11">
+      <demand vehicle_type_id="0">0.9,0.9,0.9,0,0.0,0.0</demand>
    </demandProfile>
   </DemandSet>
 
-  <ControllerSet project_id="-1" id="-1">
-    <controller dt="5" id="0" name="MPC" type="CRM_MPC" enabled="true">
-      <parameters>
-        <parameter name="policy" value="adjoint"/>
-        <parameter name="dt_optimize" value="25"/>
-        <parameter name="policy_maker_timestep" value="5"/>
-        <parameter name="policy_maker_horizon" value="25"/>
-      </parameters>
-      <target_actuators>
-        <target_actuator id="0" usage="onramp"/>
-        <target_actuator id="1" usage="onramp"/>
-      </target_actuators>
-      <feedback_sensors>
-        <feedback_sensor id="0" usage="mainlinelink"/>
-      </feedback_sensors>
-    </controller>
-  </ControllerSet>
-  
-  <ActuatorSet id="0" project_id="0">
-	<actuator id="0">
-		<scenarioElement id="-1" type="link"/>
-		<actuator_type id="0" name="ramp_meter"/>
-	</actuator>
-	<actuator id="1">
-		<scenarioElement id="-2" type="link"/>
-		<actuator_type id="0" name="ramp_meter"/>
-	</actuator>
-  </ActuatorSet>
-
-  <SensorSet id="0" project_id="0">	
-	<sensor id="0" link_id="-2">
-	   <sensor_type id="-1" name="loop"/>
-	</sensor>
-  </SensorSet>
-  
   <FundamentalDiagramSet project_id="-1" id="-1">
-
-    <fundamentalDiagramProfile id="-1" link_id="-1">
+    
+    <fundamentalDiagramProfile id="-1" link_id="-2">
+      <fundamentalDiagram id="-1" capacity="1" congestion_speed="1" jam_density="100" free_flow_speed="1"/>
+    </fundamentalDiagramProfile>
+    <fundamentalDiagramProfile id="-1" link_id="-11">
       <fundamentalDiagram id="-1" capacity="1" congestion_speed="1" jam_density="100" free_flow_speed="1" />
     </fundamentalDiagramProfile>
     
-    <fundamentalDiagramProfile id="-1" link_id="-2">
+    <fundamentalDiagramProfile id="-1" link_id="-12">
       <fundamentalDiagram id="-1" capacity="1" congestion_speed="1" jam_density="100" free_flow_speed="1"/>
     </fundamentalDiagramProfile>
 
@@ -84,9 +45,17 @@
   <NetworkSet project_id="-1" id="-1">
     <network id="-1" name="New Network">
       <NodeList>
-        <node id="-1" >
+        <node id="-11" >
           <outputs>
-            <output link_id="-1"/>
+            <output link_id="-11"/>
+          </outputs>
+          <inputs>
+          </inputs>
+        </node>
+
+        <node id="-12" >
+          <outputs>
+            <output link_id="-12"/>
           </outputs>
           <inputs>
           </inputs>
@@ -97,6 +66,7 @@
             <output link_id="-2"/>
           </outputs>
           <inputs>
+            <input link_id="-12"/>                        
           </inputs>
         </node>
 
@@ -113,7 +83,7 @@
             <output link_id="1"/>            
           </outputs>
           <inputs>
-            <input link_id="-1"/>
+            <input link_id="-11"/>
           </inputs>
         </node>
 
@@ -128,16 +98,22 @@
         </node>
       </NodeList>
       <LinkList>
-        <link id="-1" lanes="1" length="1" >
-          <link_type id="-1" name="On-Ramp"/>
-          <begin node_id="-1"/>
-          <end node_id="1"/>
-          <dynamics type="CTM"/>
-        </link>
         <link id="-2" lanes="1" length="1" >
           <link_type id="-1" name="On-Ramp"/>
           <begin node_id="-2"/>
           <end node_id="2"/>
+          <dynamics type="CTM"/>
+        </link>
+        <link id="-11" lanes="1" length="1" >
+          <link_type id="-1" name="Source"/>
+          <begin node_id="-11"/>
+          <end node_id="1"/>
+          <dynamics type="CTM"/>
+        </link>
+        <link id="-12" lanes="1" length="1" >
+          <link_type id="-1" name="Source"/>
+          <begin node_id="-12"/>
+          <end node_id="-2"/>
           <dynamics type="CTM"/>
         </link>
 

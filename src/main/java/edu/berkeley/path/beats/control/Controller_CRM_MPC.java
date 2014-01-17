@@ -67,9 +67,9 @@ public class Controller_CRM_MPC extends Controller {
                 case tester:
                     policy_maker = new PolicyMaker_Tester();
                     break;
-//				case adjoint:
-//					policy_maker = new AdjointRampMeteringPolicyMaker();
-//					break;
+				case adjoint:
+					policy_maker = new AdjointRampMeteringPolicyMaker();
+					break;
 //				case actm_lp:
 //                    policy_maker = new PolicyMaker_CRM_ACTM_LP();
 //					break;
@@ -109,7 +109,7 @@ public class Controller_CRM_MPC extends Controller {
         controller_parameters = new RampMeteringControlSet();
         for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getLinkList().getLink()){
             Link L = (Link) jaxbL;
-            if(L.isSource()){
+            if(L.isOnramp()){
                 RampMeteringControl con = new RampMeteringControl();
                 con.link = L;
                 con.max_rate = 1;    // veh/sec
@@ -198,7 +198,9 @@ public class Controller_CRM_MPC extends Controller {
             ActuatorRampMeter act = (ActuatorRampMeter) link_actuator_map.get(rmprofile.sensorLink.getId());
             if(act!=null){
                 int clipped_time_index = Math.min(time_index,rmprofile.rampMeteringPolicy.size()-1);
-                act.setMeteringRateInVPH( rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d);
+		double policy = rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d;
+		// System.out.println(policy);
+                act.setMeteringRateInVPH( policy);
             }
         }
     }

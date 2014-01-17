@@ -21,7 +21,10 @@ import edu.berkeley.path.ramp_metering.BoundaryConditions
 import edu.berkeley.path.ramp_metering.FreewayScenario
 import edu.berkeley.path.ramp_metering.FundamentalDiagram
 import java.{lang, util}
-import edu.berkeley.path.beats.control.predictive.RampMeteringControlSet
+import edu.berkeley.path.ramp_metering._
+import org.apache.commons.math3.optimization._
+import org.apache.commons.math3.analysis.DifferentiableMultivariateFunction
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,12 +44,17 @@ object ScenarioConverter {
                       control: RampMeteringControlSet,
                       dt: Double) = {
     val mainline = extractMainline(net)
-    val mlNodes = mainline.map {
-      _.getBegin_node
-    }
+    val mlNodes = mainline.map {_.getBegin_node}
     val onramps = TreeMap(extractOnramps(net).map {
       onramp => mlNodes.indexOf(onramp.getEnd_node) -> onramp
     }: _*)
+    val onrampNodes = onramps.map{case (i,l) => l.getBegin_node}
+    val sources = extractSources(net)
+    val onrampSources = sources.filter{source => onrampNodes.contains(source.getEnd_node)}
+    val mainlineSource = sources.diff(onrampSources).head
+    val firstPair = mainline.head -> mainlineSource
+    val backPairs = onramps.values.map{case onramp => onramp -> onrampSources.filter{_.getEnd_node == onramp.getBegin_node}.head}.toList
+    val onrampSourcePairs = firstPair :: backPairs.toList
     val offramps = TreeMap(extractOfframps(net).map {
       offramp => mlNodes.indexOf(offramp.getBegin_node) -> offramp
     }: _*)
@@ -56,60 +64,58 @@ object ScenarioConverter {
     val links = mainline.zipWithIndex.map {
       case (link, i) => {
         val fd = fds(link)
-        val rmax = onramps.get(i) match {
-          case Some(onramp) => fds(onramp).getCapacity
+        val rmax = if (i == 0) fds(onrampSourcePairs.head._2).getCapacity * onrampSourcePairs.head._2.getLanes() else { onramps.get(i) match {
+          case Some(onramp) => fds(onramp).getCapacity * onramp.getLanes()
           case None => 0.0
         }
-        val p = 4.0
-        FreewayLink(FundamentalDiagram(fd.getFreeFlowSpeed, fd.getCapacity, fd.getJamDensity), link.getLength, rmax, p)
+      }
+        val p = 3.0
+        FreewayLink(FundamentalDiagram(fd.getFreeFlowSpeed, fd.getCapacity * link.getLanes(), fd.getJamDensity * link.getLanes()), link.getLength, rmax, p)
       }
     }
-    val freeway = Freeway(links.toIndexedSeq, onramps.keys.toIndexedSeq, offramps.keys.toIndexedSeq)
+    val freeway = Freeway(links.toIndexedSeq,  0 +: onramps.keys.toIndexedSeq, offramps.keys.toIndexedSeq)
     val policyParams = extractPolicyParameters(dt)
+    // This is assumed to be evenly divisible
+    assert(demand.getDemandProfile.head.getDt % dt.toInt == 0)
+    val bcDtFactor = (demand.getDemandProfile.head.getDt / dt.toInt).toInt
     val indexedDemand = demand.getDemandProfile.map {
       profile => {
         net.getLinkWithId(profile.getLinkIdOrg) -> profile.getDemand.toList.head
       }
     }.toMap
-    val demands = onramps.values.map {
-      ramp => {
-        indexedDemand(ramp).getContent.split(",").map {
-          _.toDouble
-        }
-      }
-    }.toIndexedSeq.transpose
-
-    val srIndex = splitRatios.getSplitRatioProfile.toList.map {
-      profile => net.getLinkWithId(profile.getSplitratio.toList.head.getLinkOut) -> profile.getSplitratio.toList.head.getContent.split(",").map {
-        _.toDouble
-      }
-    }.toMap
-    val splits = offramps.values.map {
-      srIndex(_).toIndexedSeq.map {
-        1 - _
-      }
-    }.toIndexedSeq.transpose
-
+   val demands = onrampSourcePairs.map {
+     case (ramp, source) => {
+       indexedDemand(source).getContent.split(",").map { p =>
+         Array.fill(bcDtFactor)(p.toDouble)
+       }
+     }.flatten
+   }.toIndexedSeq.transpose
+    val srIndex = splitRatios.getSplitRatioProfile.toList.flatMap{_.getSplitratio.toList}.map{profile => net.getLinkWithId(profile.getLinkOut) -> profile.getContent.split(",").map{_.toDouble}}.toMap
+    val splits = {
+      val withoutLast = offramps.values.map {
+        srIndex(_).toIndexedSeq.map { p =>
+          Array.fill(bcDtFactor)(1 - p)
+          }.flatten
+          }.toIndexedSeq
+      withoutLast.transpose
+    }
     val bc = BoundaryConditions(demands, splits)
     val icLookup = ics.getDensity.toList.map {
-      d => net.getLinkWithId(d.getLinkId) -> d.getContent.toDouble
+      d => {
+        net.getLinkWithId(d.getLinkId) -> d.getContent.toDouble
+      }
     }.toMap
     val ic = InitialConditions(
-      mainline.map {
-        icLookup.getOrElse(_, 0.0)
-      }.toIndexedSeq,
-      (0 until mainline.length).map {
-        i => {
-          onramps.get(i) match {
-            case None => 0.0
-            case Some(onramp) => icLookup(onramp)
-          }
-        }
-      }.toIndexedSeq
+      mainline.map {p => icLookup.getOrElse(p, 0.0)}.toIndexedSeq,
+      (icLookup.getOrElse(mainlineSource, 0.0) +: (1 until mainline.size).map{i => onramps.get(i) match {
+        case Some(onramp) => icLookup.getOrElse(onrampSourcePairs.toMap.get(onramp).get, 0.0)
+        case None => 0.0
+        }}).toIndexedSeq
     )
     val index = control.control.toList.map{s => s.link -> (s.min_rate / fds(s.link).getCapacity -> s.max_rate / fds(s.link).getCapacity)}.toMap
-    val simParams = SimulationParameters(bc, ic, Some(MeterSpec(onramps.values.tail.map{index(_)}.toList)))
-    (FreewayScenario(freeway, simParams, policyParams), onramps.values)
+    val simParams = SimulationParameters(bc, ic, Some(MeterSpec(onrampSourcePairs.tail.map{case (o, s) => index(o)}.toList)))
+    val scen = (FreewayScenario(freeway, simParams, policyParams), onramps.values)
+    scen
   }
 
   def extractPolicyParameters(dt: Double) = {
@@ -128,7 +134,9 @@ object ScenarioConverter {
     }
     orderedMainlineBuffer.toList
   }
-
+  def extractSources(net: Network) = {
+    net.getListOfLinks.toList.map{_.asInstanceOf[Link]}.filter{_.getLinkType.getName == "Source"}
+  }
   def extractOnramps(net: Network) = {
     net.getListOfLinks.toList.map {
       _.asInstanceOf[Link]
@@ -136,6 +144,8 @@ object ScenarioConverter {
       _.getLinkType.getName == "On-Ramp"
     }
   }
+
+  
 
   def extractOfframps(net: Network) = {
     net.getListOfLinks.toList.map {
@@ -175,15 +185,76 @@ The network is assumed to have the following structure:
 where the first ramp must exist at the beginning of the network and the horizontal part must be all Freeway links.
 */
 
+class ChainedOptimizer extends StandardOptimizer {
+  def optimize(p1: Int, p2: DifferentiableMultivariateFunction, p3: GoalType, p4: Array[Double]): PointValuePair = {
+    MultiStartOptimizer.nStarts = 10
+    var nIters = 30
+    StandardOptimizer.maxEvaluations = nIters
+    Adjoint.maxIter = nIters
+    val multistart = new MultiStartOptimizer(() => new Rprop)
+    val slnMS = multistart.optimize(p1, p2, p3, p4)
+    nIters = 40
+    StandardOptimizer.maxEvaluations = nIters
+    Adjoint.maxIter = nIters
+
+    val ipopt = new IpOptAdjointOptimizer
+    val rprop =  new Rprop
+
+    val sln1 = ipopt.optimize(p1, p2, p3, p4)
+    val sln2 = rprop.optimize(p1, p2, p3, sln1.getPoint)
+    List(sln1, sln2, slnMS).minBy{_.getValue}
+    // List(slnMS).minBy{_.getValue}
+  }
+}
+
 class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
+  def padZeros(arr: IndexedSeq[IndexedSeq[Double]], factor: Double) = {
+    arr ++ IndexedSeq.fill[IndexedSeq[Double]](math.round(arr.length * factor).toInt)(IndexedSeq.fill[Double](arr(0).length)(0.0))
+  }
+  def padSplits(arr: IndexedSeq[IndexedSeq[Double]], factor: Double) = {
+    arr ++ IndexedSeq.fill[IndexedSeq[Double]](math.round(arr.length * factor).toInt)(arr.last)
+  }
   def givePolicy(net: Network, fd: FundamentalDiagramSet, demand: DemandSet, splitRatios: SplitRatioSet, ics: InitialDensitySet, control: RampMeteringControlSet, dt: lang.Double): RampMeteringPolicySet = {
-    val (scen, onramps) = ScenarioConverter.convertScenario(net, fd, demand, splitRatios, ics, control, dt)
-    val flux = AdjointRampMetering.controlledOutput(scen, new AdjointRampMetering(scen.fw)).fluxRamp.transpose
+    val (scenario, onramps) = ScenarioConverter.convertScenario(net, fd, demand, splitRatios, ics, control, dt)
+    var scen = scenario
+    println(scen)
+    var params = scen.simParams
+    val origT = params.numTimesteps
+    var simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
+    while (simstate.density.last.sum + simstate.queue.last.sum > params.bc.demands.map{_.sum}.sum * .01 + .1) {
+      params = SimulationParameters(BoundaryConditions(padZeros(params.bc.demands, .3), padSplits(params.bc.splitRatios, .3)), params.ic)
+      scen = FreewayScenario(scen.fw, params, scen.policyParams)
+      simstate = new BufferCtmSimulator(scen).simulate(AdjointRampMetering.noControl(scen))
+    }
+    Adjoint.optimizer = new ChainedOptimizer
+    val uValue = new AdjointRampMetering(scen.fw).givePolicy(scen.simParams, scen.policyParams)
+    var trimmedU = uValue.take(origT).transpose
+    trimmedU = Array.fill(trimmedU(0).size)(0.0) +: trimmedU
+    val output = FreewaySimulator.simpleSim(scen, uValue.flatten)
+    val flux = output.fluxRamp.take(origT).transpose
+    val queues = output.queue.take(origT).transpose.map{_.map{_ / scen.policyParams.deltaTimeSeconds}}
+    val rmax = scen.fw.rMaxs
+    val rampPolicy = (flux, queues, rmax).zipped.toList.zipWithIndex.map{case (a, b) => {
+      val f = a._1
+      val q = a._2
+      val r = a._3
+      val u = {
+	val ind = scen.fw.onramps.indexOf(b)
+	if (ind >= 0) trimmedU(ind) else Array.fill(trimmedU(0).size)(0.0)
+      }
+      (f,q, u).zipped.map{case (ff,qq, bb) => { if (bb >= 1.0) r else
+        if (ff >= qq || ff >= .95 * r || qq / scen.policyParams.deltaTimeSeconds <= .01 * r) r else ff
+        }
+	}
+    }
+    }
     val set = new RampMeteringPolicySet
-    scen.fw.onramps.tail.map{flux(_)}.zip(onramps.tail).foreach{ case (fl, or) => {
+    (scen.fw.onramps.tail.map{rampPolicy(_)}, onramps).zipped.foreach{ case (fl, or) => {
+      val limits = control.control.filter{_.link == or}.head
+      val lower_limit = limits.min_rate
       val profile = new RampMeteringPolicyProfile
       profile.sensorLink = or
-      profile.rampMeteringPolicy = fl.toList
+      profile.rampMeteringPolicy = fl.toList.map{v =>   math.max(lower_limit, v)}
       set.profiles.add(profile)
     }}
     set
