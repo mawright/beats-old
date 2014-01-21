@@ -20,7 +20,7 @@ import org.apache.log4j.Logger
 class TestPolicyMakerTest extends FunSuite with ShouldMatchers {
   val logger = Logger.getLogger(classOf[TestPolicyMakerTest])
   test("test mpc network hand-crafted") {
-    val scenario = ObjectFactory.createAndLoadScenario("src/test/resources/mpc.xml")
+    val scenario = ObjectFactory.createAndLoadScenario("data/config/mpc.xml")
     scenario.initialize(1, 0, 20, 1, "xml", "hi", 1, 1)
     val pm = new AdjointRampMeteringPolicyMaker
     val meters = {

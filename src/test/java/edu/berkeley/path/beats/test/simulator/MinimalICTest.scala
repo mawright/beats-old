@@ -19,7 +19,7 @@ import org.apache.log4j.Logger
 class MinimalICTest extends FunSuite with ShouldMatchers {
   val logger = Logger.getLogger(classOf[MinimalICTest])
   test("samitha") {
-    val scenario = ObjectFactory.createAndLoadScenario("src/test/resources/minimal.xml")
+    val scenario = ObjectFactory.createAndLoadScenario("data/config/minimal.xml")
     scenario.initialize(1,0, 6, 1, "xml", "hi", 1, 1)
     scenario.getNetworkSet.getNetwork.head.asInstanceOf[Network].getListOfLinks.toList.head.asInstanceOf[Link].getDensityInVeh(0).toList.head should be (.5)
     val ic_densities = scenario.gather_current_densities

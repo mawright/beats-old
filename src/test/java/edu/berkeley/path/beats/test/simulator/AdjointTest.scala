@@ -21,7 +21,7 @@ import scala.collection.JavaConversions._
 class AdjointTest extends FunSuite with ShouldMatchers {
   val logger = Logger.getLogger(classOf[AdjointTest])
   test("Testing proper fallback procedures for converting ramp metering values to flow rates") {
-    val scenario = ObjectFactory.createAndLoadScenario("src/test/resources/15sc.xml")
+    val scenario = ObjectFactory.createAndLoadScenario("data/config/15sc.xml")
     scenario.initialize(5, 0, 18000, 5, "xml", "hi", 1, 1)
     val maxRate = 1000.0
     val pm = new AdjointRampMeteringPolicyMaker

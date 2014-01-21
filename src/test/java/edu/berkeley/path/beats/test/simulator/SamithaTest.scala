@@ -21,7 +21,7 @@ import edu.berkeley.path.ramp_metering.AdjointRampMetering
 class SamithaTest extends FunSuite with ShouldMatchers {
   val logger = Logger.getLogger(classOf[SamithaTest])
   test("samitha") {
-    val scenario = ObjectFactory.createAndLoadScenario("src/test/resources/samitha1onramp2.xml")
+    val scenario = ObjectFactory.createAndLoadScenario("data/config/samitha1onramp2.xml")
     scenario.initialize(1,0, 6, 1, "xml", "hi", 1, 1)
     val pm = new AdjointRampMeteringPolicyMaker
     val meters = {
@@ -50,7 +50,7 @@ class SamithaTest extends FunSuite with ShouldMatchers {
   }
 
   test("samitha with initial conditions") {
-    val scenario = ObjectFactory.createAndLoadScenario("src/test/resources/samitha1onramp.xml")
+    val scenario = ObjectFactory.createAndLoadScenario("data/config/samitha1onramp.xml")
     scenario.initialize(1,0, 6, 1, "xml", "hi", 1, 1)
     val pm = new AdjointRampMeteringPolicyMaker
     val meters = {
