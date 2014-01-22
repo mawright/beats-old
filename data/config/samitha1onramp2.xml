@@ -21,6 +21,27 @@
    </demandProfile>
   </DemandSet>
 
+  <ControllerSet project_id="-1" id="-1">
+    <controller dt="1" id="0" name="MPC" type="CRM_MPC" enabled="true">
+      <parameters>
+        <parameter name="policy" value="adjoint"/>
+        <parameter name="dt_optimize" value="5"/>
+        <parameter name="policy_maker_timestep" value="1"/>
+        <parameter name="policy_maker_horizon" value="5"/>
+      </parameters>
+      <target_actuators>
+        <target_actuator id="1" usage="onramp"/>
+      </target_actuators>
+    </controller>
+  </ControllerSet>
+  
+  <ActuatorSet id="0" project_id="0">
+	<actuator id="1">
+		<scenarioElement id="-2" type="link"/>
+		<actuator_type id="0" name="ramp_meter"/>
+	</actuator>
+  </ActuatorSet>
+  
   <FundamentalDiagramSet project_id="-1" id="-1">
     
     <fundamentalDiagramProfile id="-1" link_id="-2">
@@ -66,7 +87,7 @@
             <output link_id="-2"/>
           </outputs>
           <inputs>
-            <input link_id="-12"/>                        
+            <input link_id="-12"/>
           </inputs>
         </node>
 

@@ -5,6 +5,7 @@ import edu.berkeley.path.beats.simulator.{InitialDensitySet, SplitRatioSet, Dema
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet
 import java.lang.Double
 import scala.collection.JavaConversions
+import scala.collection.JavaConversions._
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,11 +16,13 @@ import scala.collection.JavaConversions
  */
 class TestPolicyMaker extends RampMeteringPolicyMaker {
   def givePolicy(net: Network, fd: FundamentalDiagramSet, demand: DemandSet, splitRatios: SplitRatioSet, ics: InitialDensitySet, control: RampMeteringControlSet, dt: Double): RampMeteringPolicySet = {
-    val (scen, onramps)= ScenarioConverter.convertScenario(net, fd, demand, splitRatios, ics, control, dt)
+    val pair = AdjointRampMeteringPolicyMaker.convertScenario(net, fd, demand, splitRatios, ics, control, dt)
+    val scen = pair.scenario
+    val mainline = pair.mainlineStructure
     val policySet = new RampMeteringPolicySet
-    for (i <- 0 until onramps.size) {
+    mainline.orderedOnramps().toList.zipWithIndex.foreach{ case(onramp , i) =>
       val policy = new RampMeteringPolicyProfile
-      policy.sensorLink = onramps.toList(i)
+      policy.sensorLink = onramp
       policy.rampMeteringPolicy =  JavaConversions.seqAsJavaList(List.fill(scen.simParams.numTimesteps)( .1 * i))
       policySet.profiles.add(policy)
     }

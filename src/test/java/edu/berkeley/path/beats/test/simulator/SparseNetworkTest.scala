@@ -3,11 +3,9 @@ package edu.berkeley.path.beats.test.simulator
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FunSuite
 import edu.berkeley.path.beats.simulator._
-import edu.berkeley.path.beats.control.predictive.{RampMeteringControl, RampMeteringControlSet, ScenarioConverter}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.apache.log4j.Logger
-import scala.collection.immutable.TreeMap
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,7 +18,7 @@ import scala.collection.immutable.TreeMap
 class SparseNetworkTest extends FunSuite with ShouldMatchers {
   val logger = Logger.getLogger(classOf[SparseNetworkTest])
   test("test mpc network") {
-    val scenario = ObjectFactory.createAndLoadScenario("src/test/resources/sparse.xml")
+    val scenario = ObjectFactory.createAndLoadScenario("data/config/sparse.xml")
     scenario.initialize(1, 0, 30, 1, "xml", "hi", 1, 1)
     scenario.run()
   }
