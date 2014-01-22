@@ -28,7 +28,7 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.Properties;
 
-import edu.berkeley.path.beats.simulator.output.OutputWriterDB;
+//import edu.berkeley.path.beats.simulator.output.OutputWriterDB;
 import edu.berkeley.path.beats.simulator.output.OutputWriterTSV;
 import edu.berkeley.path.beats.simulator.output.OutputWriterTXT;
 import edu.berkeley.path.beats.simulator.output.OutputWriterXML;
@@ -49,8 +49,8 @@ final public class OutputWriterFactory {
 		final String type = props.getProperty("type");
 		if (type.equals("xml")) 
 			return new OutputWriterXML(scenario, props,outDt,outsteps);
-		else if (type.equals("db")) 
-			return new OutputWriterDB(scenario,outDt,outsteps);
+//		else if (type.equals("db")) 
+//			return new OutputWriterDB(scenario,outDt,outsteps);
 		else if (type.equals("text") || type.equals("plaintext")) 
 			return new OutputWriterTXT(scenario, props,outDt,outsteps);
 		else if (type.equals("tsv")) 
