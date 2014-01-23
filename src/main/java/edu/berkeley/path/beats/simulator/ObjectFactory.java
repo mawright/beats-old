@@ -90,6 +90,10 @@ final public class ObjectFactory {
 			case CRM_MPC:
 				C = new Controller_CRM_MPC(myScenario, jaxbC);
 				break;
+
+            case FRR_MPC:
+                C = new Controller_FRR_MPC(myScenario, jaxbC);
+                break;
 				
 			case SIG_Pretimed:
 				C = new Controller_SIG_Pretimed(myScenario, jaxbC);
@@ -184,7 +188,7 @@ final public class ObjectFactory {
 				break;
 
 			case cms:
-				//A = new ActuatorCMS(myScenario, jaxbA);
+				A = new ActuatorCMS(myScenario,jaxbA,imp);
 				break;
 				
 			default:
