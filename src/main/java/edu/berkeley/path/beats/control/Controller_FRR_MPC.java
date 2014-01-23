@@ -1,19 +1,17 @@
 package edu.berkeley.path.beats.control;
 
-import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
 import edu.berkeley.path.beats.control.predictive_reroute.*;
+import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import edu.berkeley.path.beats.jaxb.ScenarioElement;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;
-import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 import java.util.HashMap;
 
 public class Controller_FRR_MPC extends Controller {
-
 
     // policy maker
     private ReroutePolicyMaker policy_maker;
@@ -30,7 +28,7 @@ public class Controller_FRR_MPC extends Controller {
     // variable
     private double time_last_opt;     // [sec] time of last policy maker call
 
-    private static enum PolicyMakerType {tester,adjoint,NULL}
+    private static enum PolicyMakerType {adjoint,NULL}
 
 
     // derived
@@ -63,15 +61,9 @@ public class Controller_FRR_MPC extends Controller {
 			}
 
 			switch(myPMType){
-                case tester:
-                    policy_maker = new PolicyMaker_Tester();
-                    break;
-//				case adjoint:
-//					policy_maker = new AdjointRampMeteringPolicyMaker();
-//					break;
-//				case actm_lp:
-//                    policy_maker = new PolicyMaker_CRM_ACTM_LP();
-//					break;
+				case adjoint:
+					policy_maker = new ScenarioConverter();
+					break;
 				case NULL:
 					break;
 			}
@@ -105,12 +97,12 @@ public class Controller_FRR_MPC extends Controller {
             network = (Network) myScenario.getNetworkSet().getNetwork().get(0);
 
         // controller parameters
-        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getLinkList().getLink()){
-            Link L = (Link) jaxbL;
-            if(L.isSource()){
-            	RerouteControl con = new RerouteControl();
-            }
-        }
+//        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getLinkList().getLink()){
+//            Link L = (Link) jaxbL;
+//            if(L.isSource()){
+//            	RerouteControl con = new RerouteControl();
+//            }
+//        }
 
     }
 
@@ -171,6 +163,7 @@ public class Controller_FRR_MPC extends Controller {
                                               myScenario.predict_demands(time_current,pm_dt,pm_horizon_steps),
                                               myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon_steps),
                                               myScenario.gather_current_densities(),
+                                              myScenario.getRouteSet(),
                                               pm_dt);
 
             // update time keeper
@@ -185,15 +178,15 @@ public class Controller_FRR_MPC extends Controller {
     public void send_policy_to_actuators(double time_current){
         if(policy==null)
             return;
-        double time_since_last_pm_call = time_current-time_last_opt;
-        int time_index = (int) (time_since_last_pm_call/pm_dt);
-        for(ReroutePolicyProfile rmprofile : policy.profiles){
-            ActuatorRampMeter act = (ActuatorRampMeter) link_actuator_map.get(rmprofile.sensorLink.getId());
-            if(act!=null){
-                int clipped_time_index = Math.min(time_index,rmprofile.rampMeteringPolicy.size()-1);
-                act.setMeteringRateInVPH( rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d);
-            }
-        }
+//        double time_since_last_pm_call = time_current-time_last_opt;
+//        int time_index = (int) (time_since_last_pm_call/pm_dt);
+//        for(ReroutePolicyProfile rmprofile : policy.profiles){
+//            ActuatorRampMeter act = (ActuatorRampMeter) link_actuator_map.get(rmprofile.sensorLink.getId());
+//            if(act!=null){
+//                int clipped_time_index = Math.min(time_index,rmprofile.rampMeteringPolicy.size()-1);
+//                act.setMeteringRateInVPH( rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d);
+//            }
+//        }
     }
 
 }

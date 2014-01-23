@@ -63,6 +63,7 @@ public class Controller {
         IRM_TOS,
         CRM_HERO,
         CRM_MPC,
+        FRR_MPC,
         SIG_Pretimed,
         SIG_MaxPressure }
 
