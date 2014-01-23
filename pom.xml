@@ -39,6 +39,7 @@
 		
 		<plugins>
 		
+		<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
@@ -52,7 +53,6 @@
 						</goals>
 						<configuration>
 							<file>C:\Users\gomes\code\L0\DTA-PC\target\dtapc-1.0-SNAPSHOT-jar-with-dependencies.jar</file>
-							<!--<classifier>${classifier_if_this_isnt_the_main_artifact_of_this_project}</classifier>-->
 							<groupId>dtapc</groupId>
 							<artifactId>dtapc</artifactId>
 							<version>1.0-SNAPSHOT</version>
@@ -63,7 +63,6 @@
 				</executions>
 			</plugin>
 	  
-		<!--
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
