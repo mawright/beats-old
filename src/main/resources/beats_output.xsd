@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0.2">
+
+	<xs:element name="OutputRequest">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="output" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="output">
+		<xs:complexType>
+			<xs:attribute name="scenario_id" type="xs:long" use="required"/>
+			<xs:attribute name="performance" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="veh_time|veh_distance|delay"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="agg_time" 			type="xs:boolean" use="optional"  default="false"/>
+			<xs:attribute name="agg_links" 			type="xs:boolean" use="optional"  default="false"/>
+			<xs:attribute name="agg_ensemble" 		type="xs:boolean" use="optional"  default="false"/>
+			<xs:attribute name="agg_vehicle_type" 	type="xs:boolean" use="optional"  default="false"/>
+			<xs:attribute name="vehicle_type_id" 	type="xs:long"    use="optional"  default="-1"/>
+			<xs:attribute name="route_id" 			type="xs:long"    use="optional"  default="-1"/>
+		</xs:complexType>
+
+	</xs:element>
+
+</xs:schema>

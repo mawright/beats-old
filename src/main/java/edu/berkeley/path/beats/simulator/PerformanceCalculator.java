@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class PerformanceCalculator {
 
-    protected enum CumulativePerformanceMeasure {veh_hr,veh_km,delay};
+    protected enum CumulativePerformanceMeasure {veh_time,veh_distance,delay};
     protected Scenario myScenario;
     protected List<CumulativeMeasure> pm_cumulative;
 
@@ -28,8 +28,8 @@ public class PerformanceCalculator {
     public PerformanceCalculator(Scenario S){
         myScenario = S;
         pm_cumulative = new ArrayList<CumulativeMeasure>();
-        pm_cumulative.add(new CumulativeMeasure(myScenario,true,true,true,null,-1,CumulativePerformanceMeasure.veh_hr));
-        pm_cumulative.add(new CumulativeMeasure(myScenario,true,true,true,null,-1,CumulativePerformanceMeasure.veh_km));
+        pm_cumulative.add(new CumulativeMeasure(myScenario,true,true,true,null,-1,CumulativePerformanceMeasure.veh_time));
+        pm_cumulative.add(new CumulativeMeasure(myScenario,true,true,true,null,-1,CumulativePerformanceMeasure.veh_distance));
         pm_cumulative.add(new CumulativeMeasure(myScenario,true,true,true,null,-1,CumulativePerformanceMeasure.delay));
     }
 
@@ -131,14 +131,14 @@ public class PerformanceCalculator {
                     for(v=0;v<vehicle_types.length;v++){
                         vv = agg_vehicle_type ? 0 : v;
                         switch(pm){
-                            case veh_hr:
+                            case veh_time:
                                 X[ee][ii][vv] = link.getDensityInVeh(e,vehicle_types[v]);
                                 break;
-                            case veh_km:
+                            case veh_distance:
                                 X[ee][ii][vv] = link.getOutflowInVeh(e,vehicle_types[v]);
                                 break;
                             case delay:
-                                X[ee][ii][vv] = link.computeDelayInVeh(e,vehicle_types[v]);
+                                X[ee][ii][vv] = link.computeDelayInVeh(e, vehicle_types[v]);
                                 break;
                         } 
                     }
