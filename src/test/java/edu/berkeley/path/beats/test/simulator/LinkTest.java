@@ -397,27 +397,27 @@ public class LinkTest {
 
 	@Test
 	public void test_getInputFlow() {
-		double x = link.getInputFlow(0,0);
+		double x = link.getInflowInVeh(0,0);
 		double exp = 0.41666666666666663;
 		assertEquals(x,exp,1e-4);
 		
 		// edge cases
-		assertTrue(Double.isNaN(link.getInputFlow(-1,0)));
-		assertTrue(Double.isNaN(link.getInputFlow(100,0)));
-		assertTrue(Double.isNaN(link.getInputFlow(0,-1)));
-		assertTrue(Double.isNaN(link.getInputFlow(0,100)));
+		assertTrue(Double.isNaN(link.getInflowInVeh(-1,0)));
+		assertTrue(Double.isNaN(link.getInflowInVeh(100,0)));
+		assertTrue(Double.isNaN(link.getInflowInVeh(0,-1)));
+		assertTrue(Double.isNaN(link.getInflowInVeh(0,100)));
 	}
 
 	@Test
 	public void test_getOutputFlow() {
-		double x = link.getOutputFlow(0,0);
+		double x = link.getOutflowInVeh(0,0);
 		double exp = 0.39459704442691024;
 		assertEquals(x,exp,1e-4);
 
 		// edge cases
-		assertTrue(Double.isNaN(link.getOutputFlow(-1,0)));
-		assertTrue(Double.isNaN(link.getOutputFlow(100,0)));
-		assertTrue(Double.isNaN(link.getOutputFlow(0,-1)));
-		assertTrue(Double.isNaN(link.getOutputFlow(0,100)));
+		assertTrue(Double.isNaN(link.getOutflowInVeh(-1,0)));
+		assertTrue(Double.isNaN(link.getOutflowInVeh(100,0)));
+		assertTrue(Double.isNaN(link.getOutflowInVeh(0,-1)));
+		assertTrue(Double.isNaN(link.getOutflowInVeh(0,100)));
 	}
 }

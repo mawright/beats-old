@@ -531,7 +531,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Number of vehicles for a given vehicle type in normalized units (vehicles/link). 
+	/** Number of vehicles for a given vehicle type in normalized units (vehicles/link).
 	 * @return Number of vehicles of a given vehicle type in the link. 0 if something goes wrong.
 	 */
 	public double getDensityInVeh(int ensemble,int vehicletype) {
@@ -563,6 +563,14 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		return getTotalDensityInVeh(ensemble)/_length;
 	}
 
+    public double getOutflowInVeh(int ensemble,int vehicletype) {
+        try{
+            return outflow[ensemble][vehicletype];
+        } catch(Exception e){
+            return 0d;
+        }
+    }
+
 	/** Number of vehicles per vehicle type exiting the link 
 	 * during the current time step. The return array is indexed by 
 	 * vehicle type in the order given in the <code>settings</code> 
@@ -590,6 +598,14 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return 0d;
 		}
 	}
+
+    public double getInflowInVeh(int ensemble,int vehicletype) {
+        try{
+            return inflow[ensemble][vehicletype];
+        } catch(Exception e){
+            return 0d;
+        }
+    }
 
 	/** Number of vehicles per vehicle type entering the link 
 	 * during the current time step. The return array is indexed by 
@@ -641,6 +657,13 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return Double.NaN;
 		}
 	}
+
+    public double computeDelayInVeh(int ensemble,int vehicletype){
+        double n = getDensityInVeh(ensemble, vehicletype);
+        double f = getOutflowInVeh(ensemble, vehicletype);
+        double vf = getNormalizedVf(ensemble);
+        return Math.max(0d,vf*n-f);
+    }
 
 	// Fundamental diagram ....................
 
@@ -831,52 +854,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 				return;
 		for(i=0;i<x.length;i++)
 			density[ensemble][i] = x[i];
-	}
-
-	/** Get the density in [veh] for a given ensemble member and vehicle type.
-	 * @param ensemble number of ensemble
-	 * @param vt_ind vehicle type index
-	 * @return density for the given ensemble and vehicle type [vehicles]
-	 */
-	public double getDensity(int ensemble, int vt_ind) {
-		try{
-			if(density==null)
-				return Double.NaN;
-			return density[ensemble][vt_ind];
-		} catch(Exception e){
-			return Double.NaN;
-		}
-	}
-
-	/** Flow entering the link in [veh] for a given ensemble and vehicle type.
-	 * @param ensemble number of ensemble
-	 * @param vt_ind vehicle type index
-	 * @return input flow for the given ensemble and vehicle type [vehicles]
-	 */
-	public double getInputFlow(int ensemble, int vt_ind) {
-		try{
-			if(inflow==null)
-				return Double.NaN;
-			return inflow[ensemble][vt_ind];
-		} catch(Exception e){
-			return Double.NaN;
-		}
-
-	}
-
-	/**
-	 * @param ensemble number of ensemble
-	 * @param vt_ind vehicle type index
-	 * @return output flow for the given ensemble and vehicle type [vehicles]
-	 */
-	public double getOutputFlow(int ensemble, int vt_ind) {
-		try{
-			if(outflow==null)
-				return Double.NaN;
-			return outflow[ensemble][vt_ind];
-		} catch(Exception e){
-			return Double.NaN;
-		}
 	}
 
     public DemandProfile getDemandProfile(){

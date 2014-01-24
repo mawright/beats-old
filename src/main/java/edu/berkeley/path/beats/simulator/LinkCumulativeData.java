@@ -35,9 +35,9 @@ final public class LinkCumulativeData {
 	void update() throws BeatsException {
 		for (int i = 0; i < nensemble; ++i)
 			for (int j = 0; j < nvehtype; ++j) {
-				density[i][j] += link.getDensity(i, j);
-				iflow[i][j] += link.getInputFlow(i, j);
-				oflow[i][j] += link.getOutputFlow(i, j);
+				density[i][j] += link.getDensityInVeh(i, j);
+				iflow[i][j] += link.getInflowInVeh(i, j);
+				oflow[i][j] += link.getOutflowInVeh(i, j);
 			}
 		++nsteps;
 	}

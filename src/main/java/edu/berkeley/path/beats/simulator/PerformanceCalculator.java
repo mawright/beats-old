@@ -1,10 +1,6 @@
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.jaxb.Route;
-import edu.berkeley.path.beats.jaxb.RouteLink;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -30,13 +26,11 @@ public class PerformanceCalculator {
     /////////////////////////////////////////////////////////////////////
 
     public PerformanceCalculator(Scenario S){
-
         myScenario = S;
-
         pm_cumulative = new ArrayList<CumulativeMeasure>();
-//        pm_cumulative.add(new CumulativeMeasure(true,null,-1,CumulativePerformanceMeasure.veh_hr));
-//        pm_cumulative.add(new CumulativeMeasure(true,null,-1,CumulativePerformanceMeasure.veh_km));
-//        pm_cumulative.add(new CumulativeMeasure(true,null,-1,CumulativePerformanceMeasure.delay));
+        pm_cumulative.add(new CumulativeMeasure(myScenario,true,true,true,null,-1,CumulativePerformanceMeasure.veh_hr));
+        pm_cumulative.add(new CumulativeMeasure(myScenario,true,true,true,null,-1,CumulativePerformanceMeasure.veh_km));
+        pm_cumulative.add(new CumulativeMeasure(myScenario,true,true,true,null,-1,CumulativePerformanceMeasure.delay));
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -54,30 +48,7 @@ public class PerformanceCalculator {
         if(pm_cumulative==null)
             return;
         for(CumulativeMeasure cm : pm_cumulative)
-            cm.update(myScenario);
-    }
-
-    /////////////////////////////////////////////////////////////////////
-    // private
-    /////////////////////////////////////////////////////////////////////
-
-    private static Double [] compute_veh_hr(Scenario scenario,Route route,int vehicle_type_index){
-        Double [] x = null;
-
-
-
-
-        return x;
-    }
-
-    private static Double [] compute_veh_km(Scenario scenario,Route route,int vehicle_type_index){
-        Double [] x = null;
-        return x;
-    }
-
-    private static Double [] compute_delay(Scenario scenario,Route route,int vehicle_type_index){
-        Double [] x = null;
-        return x;
+            cm.update();
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -85,57 +56,103 @@ public class PerformanceCalculator {
     /////////////////////////////////////////////////////////////////////
 
     protected class CumulativeMeasure{
-        protected boolean sum_over_time;
-        protected Route route;
-        protected int vehicle_type_index;
-        protected CumulativePerformanceMeasure pm;
-        protected ArrayList<Double []> value;
-        protected int space_dim;
-        protected List<edu.berkeley.path.beats.simulator.Link> link_list;
 
-        /*  sum_over_time=true      => integrate the performance over time
-        *   route=null              => do whole network
-        *   vehicle_type_index<0    => sum over vehicle types
-         */
-        public CumulativeMeasure(Scenario scenario,boolean sum_over_time,Route route,int vehicle_type_index,CumulativePerformanceMeasure pm){
-            this.sum_over_time = sum_over_time;
-            this.route = route;
-            this.vehicle_type_index = vehicle_type_index;
+        // value.get(k)[e][l][v] is pm for time k, link l, vehicle type v,ensemble e.
+        protected ArrayList<double [][][]> value;
+        protected CumulativePerformanceMeasure pm;
+
+        // flags for aggregating the various dimensions
+        protected boolean agg_time;
+        protected boolean agg_links;
+        protected boolean agg_ensemble;
+        protected boolean agg_vehicle_type;
+
+        // vehicle type index. negative => aggregate over all
+        protected int [] vehicle_types;
+
+        protected int num_ensemble;
+
+        // list of links to include
+        protected List<Link> link_list;
+
+
+        public CumulativeMeasure(Scenario scenario,boolean agg_time,boolean agg_links,boolean agg_ensemble,Route route,int vehicle_type_index,CumulativePerformanceMeasure pm){
+
+            this.agg_time = agg_time;
+            this.agg_links = agg_links;
+            this.agg_ensemble = agg_ensemble;
+
             this.pm = pm;
-            if(route==null)
-                space_dim = 1;
-            else
-                space_dim = route.getRouteLink().size();
+            this.num_ensemble = scenario.getNumEnsemble();
+
+            // vehicle types to consider
+            if(vehicle_type_index<0){
+                vehicle_types = new int[scenario.getNumVehicleTypes()];
+                for(int i=0;i<scenario.getNumVehicleTypes();i++)
+                    vehicle_types[i]=i;
+                agg_vehicle_type = true;
+            }
+            else{
+                vehicle_types = new int[1];
+                vehicle_types[0] = vehicle_type_index;
+                agg_vehicle_type = false;
+            }
+
+            // links to consider
             link_list = new ArrayList<Link>();
             if(route==null)
                 for(edu.berkeley.path.beats.jaxb.Link link : scenario.getNetworkSet().getNetwork().get(0).getLinkList().getLink())
-                    link_list.add((Link) link);
-
-
+                    link_list.add((Link)link);
+            else
+                for(Link link : route.ordered_links)
+                    link_list.add(link);
         }
 
         protected void reset(){
-            value = new ArrayList<Double []>();
+            value = new ArrayList<double [][][]>();
         }
 
-        protected void update(Scenario scenario){
-            Double [] x = null;
-//            switch(pm){
-//                case veh_hr:
-//                    x = PerformanceCalculator.compute_veh_hr(scenario,sum_over_time,route,vehicle_type_index);
-//                    break;
-//                case veh_km:
-//                    x = PerformanceCalculator.compute_veh_km(scenario, sum_over_time, route, vehicle_type_index);
-//                    break;
-//                case delay:
-//                    x = PerformanceCalculator.compute_delay(scenario, sum_over_time, route, vehicle_type_index);
-//                    break;
-//            }
-            if(x==null)
-                return;
-            if(x.length!=space_dim)
-                return;
-            value.add(x);
+        protected void update(){
+
+            int i,e,v;
+            int ii,ee,vv;
+
+            // dimensions of the saved data
+            int nE = agg_ensemble ? 1 : num_ensemble;
+            int nL = agg_links ? 1 : link_list.size();
+            int nV = agg_vehicle_type ? 1 : vehicle_types.length;
+            double [][][] X = new double[nE][nL][nV];
+
+            for(i=0;i<link_list.size();i++){
+                Link link = link_list.get(i);
+                ii = agg_links ? 0 : i;
+                for(e=0;e<num_ensemble;e++){
+                    ee = agg_ensemble ? 0 : e;
+                    for(v=0;v<vehicle_types.length;v++){
+                        vv = agg_vehicle_type ? 0 : v;
+                        switch(pm){
+                            case veh_hr:
+                                X[ee][ii][vv] = link.getDensityInVeh(e,vehicle_types[v]);
+                                break;
+                            case veh_km:
+                                X[ee][ii][vv] = link.getOutflowInVeh(e,vehicle_types[v]);
+                                break;
+                            case delay:
+                                X[ee][ii][vv] = link.computeDelayInVeh(e,vehicle_types[v]);
+                                break;
+                        } 
+                    }
+                }
+            }
+
+            if(agg_time && !value.isEmpty()){
+                for(ii=0;ii<nL;ii++)
+                    for(ee=0;ee<nE;ee++)
+                        for(vv=0;vv<nV;vv++)
+                            value.get(0)[ee][ii][vv] += X[ee][ii][vv];
+            }
+            else
+                value.add(X);
         }
 
 
