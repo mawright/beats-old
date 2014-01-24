@@ -269,4 +269,36 @@
     </network>
   </NetworkSet>
 
-  </scenario>
+  <RouteSet project_id="-1" id="-1">
+	<route id="0">
+		<route_link id="0" link_id="-1" link_order="0"/>
+		<route_link id="0" link_id="-2" link_order="1"/>
+		<route_link id="0" link_id="-3" link_order="2"/>
+		<route_link id="0" link_id="-4" link_order="3"/>
+		<route_link id="0" link_id="-5" link_order="4"/>
+	</route>
+	<route id="1">
+		<route_link id="0" link_id="-1" link_order="0"/>
+		<route_link id="0" link_id="-4" link_order="3"/>
+		<route_link id="0" link_id="-5" link_order="4"/>
+		<route_link id="0" link_id="-2" link_order="1"/>
+		<route_link id="0" link_id="-3" link_order="2"/>
+	</route>
+	
+	<!-- bad continuity
+	<route id="2">
+		<route_link id="0" link_id="-1" link_order="0"/>
+		<route_link id="0" link_id="-2" link_order="1"/>
+		<route_link id="0" link_id="-4" link_order="2"/>
+	</route>-->
+	
+	<!-- missing order 
+	<route id="3">
+		<route_link id="0" link_id="-1" link_order="0"/>
+		<route_link id="0" link_id="-3" link_order="2"/>
+		<route_link id="0" link_id="-4" link_order="3"/>
+		<route_link id="0" link_id="-5" link_order="4"/>
+	</route>-->
+	
+  </RouteSet>
+</scenario>

@@ -1057,37 +1057,37 @@
 	
 	<xs:element name="RouteSet">
 		<xs:complexType>
-      <xs:sequence>
-        <xs:element ref="route" minOccurs="0" maxOccurs="unbounded" />
-      </xs:sequence>
+			<xs:sequence>
+				<xs:element ref="route" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
 			<xs:attribute name="project_id" type="xs:long" use="required" />
 			<xs:attribute name="id" type="xs:long" use="required" />
 			<xs:attribute name="name" type="xs:string" use="optional" />
-      <xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
+			<xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
 		</xs:complexType>
 	</xs:element>
 
-		<xs:element name="route">
-			<xs:complexType>
-        <xs:sequence>
-          <xs:element ref="route_link" minOccurs="0" maxOccurs="unbounded" />
-        </xs:sequence>
-				<xs:attribute name="id" type="xs:long" use="required" />
-				<xs:attribute name="name" type="xs:string" use="optional" />
-        <xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
-        <xs:attribute name="crudFlag" type="xs:string" use="optional"/>
-			</xs:complexType>
-		</xs:element>
-			
-			<xs:element name="route_link">
-				<xs:complexType>
-          <xs:attribute name="id" type="xs:long" use="required" />
-					<xs:attribute name="link_id" type="xs:long" use="required" />
-					<xs:attribute name="link_order" type="xs:int" use="required" />
-          <xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
-          <xs:attribute name="crudFlag" type="xs:string" use="optional"/>
-				</xs:complexType>
-			</xs:element>
+	<xs:element name="route">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="route_link" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:long" use="required" />
+			<xs:attribute name="name" type="xs:string" use="optional" />
+			<xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
+			<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="route_link">
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:long" use="required" />
+			<xs:attribute name="link_id" type="xs:long" use="required" />
+			<xs:attribute name="link_order" type="xs:int" use="required" />
+			<xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
+			<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
 			
 
 	 <!-- ActuatorSet ...................................................  -->

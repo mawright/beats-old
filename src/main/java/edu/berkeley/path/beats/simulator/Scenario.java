@@ -58,6 +58,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	private static Logger logger = Logger.getLogger(Scenario.class);
 	private Cumulatives cumulatives;
+    private PerformanceCalculator perf_calc;
 	private Clock clock;
 	private int numVehicleTypes;			// number of vehicle types
 	private boolean global_control_on;	// global control switch
@@ -142,14 +143,20 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// initial density profile 
 		if(initialDensitySet!=null)
 			((InitialDensitySet) initialDensitySet).populate(this);
-		
-		// populate controllers 
+
+        // routes
+        if(routeSet!=null)
+            for(edu.berkeley.path.beats.jaxb.Route route : routeSet.getRoute())
+                ((Route) route).populate(this);
+
+        // populate controllers
 		controllerset.populate(this);
 
 		// populate events 
 		eventset.populate(this);
 
 		cumulatives = new Cumulatives(this);
+        perf_calc = new PerformanceCalculator(this);
 	}
 
 	public static void validate(Scenario S) {
@@ -199,7 +206,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(S.fundamentalDiagramSet!=null)
 			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : S.fundamentalDiagramSet.getFundamentalDiagramProfile())
 				((FundamentalDiagramProfile)fd).validate();
-		
+
+        // validate routes
+        if(S.routeSet!=null)
+            for(edu.berkeley.path.beats.jaxb.Route route:S.routeSet.getRoute())
+                ((Route)route).validate();
+
 		// validate controllers
 		S.controllerset.validate();
 
@@ -252,11 +264,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		eventset.reset();
 
 		cumulatives.reset();
+        perf_calc.reset();
 		
 	}	
 
 	private void update() throws BeatsException {	
-
 
         // sample profiles .............................	
     	if(downstreamBoundaryCapacitySet!=null)
@@ -298,6 +310,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			((Network) network).update();
 
 		cumulatives.update();
+        perf_calc.update();
 		
 		// advance the clock
     	clock.advance();
@@ -583,25 +596,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			return Double.NaN;
 		return clock.getTElapsed();
 	}
-	
-	/** Current simulation time step.
-	 * @return	Integer number of time steps since the start of the simulation. 
-	 */
-//	public int getCurrentTimeStep() {
-//		if(clock==null)
-//			return 0;
-//		return clock.getCurrentstep();
-//	}
 
-	/** Total number of time steps that will be simulated, regardless of the simulation mode.
-	 * @return	Integer number of time steps to simulate.
-	 */
-//	public int getTotalTimeStepsToSimulate(){
-//		if(clock==null)
-//			return -1;
-//		return clock.getTotalSteps();
-//	}
-	
 	/** Number of vehicle types included in the scenario.
 	 * @return Integer number of vehicle types
 	 */
@@ -738,7 +733,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return density;           
 		
 	}
-	
 
 	public double [][] getTotalDensity(long network_id){
 		Network network = getNetworkWithId(network_id);
@@ -758,7 +752,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// object getters ........................................................
 
 	public Cumulatives getCumulatives() {
-		return cumulatives;
+        return cumulatives;
 	}
 
 	public Clock getClock() {
@@ -888,57 +882,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
-    // state and bc getters .............................................
-
-//    public FundamentalDiagramSet getCurrentFundamentalDiagrams(){
-//        return null;
-//    }
-//
-//    public DemandSet getDemandsForLinkAndPeriod(double start_time,double end_time,double dt){
-//        return null;
-//    }
-//
-//    public SplitRatioSet getSplitRatiosForPeriod(double start_time,double end_time,double dt){
-//        return null;
-//    }
-//
-//    public InitialDensitySet getCurrentStateAsInitialDensitySet(int ensemble){
-//        return null;
-//    }
-
-
     /////////////////////////////////////////////////////////////////////
 	// scenario modification
 	/////////////////////////////////////////////////////////////////////
-
-	/** Add a controller to the scenario.
-	 * 
-	 * <p>Controllers can only be added if a) the scenario is not currently running, and
-	 * b) the controller is valid. 
-	 * @param C The controller
-	 * @return <code>true</code> if the controller was successfully added, <code>false</code> otherwise. 
-
-	public boolean addController(Controller C){
-		if(scenariolocked)
-			return false;
-		if(C==null)
-			return false;
-		if(C.myType==null)
-			return false;
-		
-		// validate
-		BeatsErrorLog.clearErrorMessage();
-		C.validate();
-		BeatsErrorLog.print();
-		if(BeatsErrorLog.haserror())
-			return false;
-		
-		// add
-		controllerset.controllers.add(C);
-		
-		return true;
-	}
-		 */
 
 	/** Add an event to the scenario.
 	 * 
@@ -959,47 +905,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		return true;
 	}
-	
-	// override a profile ...............................................	
-	
-//	/** Add a demand profile to the scenario. If a profile already exists for the
-//	 * origin link, then replace it.
-//	 * @throws BeatsException
-//	 */
-//	public void addDemandProfile(edu.berkeley.path.beats.simulator.DemandProfile dem) throws BeatsException  {
-//
-//		if(scenario_locked)
-//			throw new BeatsException("Cannot modify the scenario while it is locked.");
-//
-//		if(demandSet==null){
-//			demandSet = new edu.berkeley.path.beats.jaxb.DemandSet();
-//			@SuppressWarnings("unused")
-//			List<DemandProfile> temp = (List<DemandProfile>) demandSet.getDemandProfile(); // artifficially initialize the profile
-//		}
-//
-//		// validate the profile
-//		BeatsErrorLog.clearErrorMessage();
-//		dem.validate();
-//		if(BeatsErrorLog.haserror())
-//			throw new BeatsException(BeatsErrorLog.format());
-//
-//		// replace an existing profile
-//		boolean foundit = false;
-//		for(int i=0;i<demandSet.getDemandProfile().size();i++){
-//			edu.berkeley.path.beats.jaxb.DemandProfile d = demandSet.getDemandProfile().get(i);
-//			if(d.getLinkIdOrg()==dem.getLinkIdOrg()){
-//				demandSet.getDemandProfile().set(i,dem);
-//				foundit = true;
-//				break;
-//			}
-//		}
-//
-//		// or add a new one
-//		if(!foundit)
-//			demandSet.getDemandProfile().add(dem);
-//
-//	}
-	
+
 	/////////////////////////////////////////////////////////////////////
 	// calibration
 	/////////////////////////////////////////////////////////////////////
@@ -1376,11 +1282,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		this.uncertaintyModel = Scenario.UncertaintyType.valueOf(uncertaintyModel);
 	}
 
-
     /////////////////////////////////////////////////////////////////////
     // predictors
     /////////////////////////////////////////////////////////////////////
-
 
     public InitialDensitySet gather_current_densities(){
 
