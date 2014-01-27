@@ -14,7 +14,7 @@
 	<xs:element name="simulation_output">
 		<xs:complexType>
 			<xs:attribute name="scenario_id" type="xs:long" use="required"/>
-			<!--
+
 			<xs:attribute name="performance" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
@@ -28,7 +28,7 @@
 			<xs:attribute name="agg_vehicle_type" 	type="xs:boolean" use="optional"  default="false"/>
 			<xs:attribute name="vehicle_type_id" 	type="xs:long"    use="optional"  default="-1"/>
 			<xs:attribute name="route_id" 			type="xs:long"    use="optional"  default="-1"/>
-			-->
+
 		</xs:complexType>
 
 	</xs:element>

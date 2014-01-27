@@ -85,13 +85,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private RunParameters runParam;
 	private boolean initialized = true;
 	private boolean scenario_locked=false;				// true when the simulation is running
-	
-	/////////////////////////////////////////////////////////////////////
-	// protected constructor
-	/////////////////////////////////////////////////////////////////////
 
-	public Scenario(){}
-		
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
@@ -156,7 +150,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		eventset.populate(this);
 
 		cumulatives = new Cumulatives(this);
-        perf_calc = new PerformanceCalculator(this);
+
+        if(perf_calc!=null)
+            perf_calc.populate(this);
 	}
 
 	public static void validate(Scenario S) {
@@ -264,7 +260,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		eventset.reset();
 
 		cumulatives.reset();
-        perf_calc.reset();
+
+        if(perf_calc!=null)
+            perf_calc.reset();
 		
 	}	
 
@@ -310,7 +308,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			((Network) network).update();
 
 		cumulatives.update();
-        perf_calc.update();
+
+        if(perf_calc!=null)
+            perf_calc.update();
 		
 		// advance the clock
     	clock.advance();
@@ -882,9 +882,24 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
+    public Route getRouteWithId(long id) {
+        if(getRouteSet()==null)
+            return null;
+        for(edu.berkeley.path.beats.jaxb.Route route : getRouteSet().getRoute()){
+            if(route.getId()==id)
+                return (Route)route;
+        }
+        return null;
+    }
+
+
     /////////////////////////////////////////////////////////////////////
 	// scenario modification
 	/////////////////////////////////////////////////////////////////////
+
+    public void set_performance_calculator(PerformanceCalculator pcalc){
+        this.perf_calc = pcalc;
+    }
 
 	/** Add an event to the scenario.
 	 * 

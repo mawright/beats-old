@@ -1,5 +1,8 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.jaxb.OutputRequest;
+import edu.berkeley.path.beats.jaxb.SimulationOutput;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +20,8 @@ import java.util.List;
  */
 public class PerformanceCalculator {
 
-    protected enum CumulativePerformanceMeasure {veh_time,veh_distance,delay};
+    protected OutputRequest output_request;
+    protected enum PerformanceMeasure {veh_time,veh_distance,delay,travel_time,speed_contour};
     protected Scenario myScenario;
     protected List<CumulativeMeasure> pm_cumulative;
 
@@ -25,17 +29,41 @@ public class PerformanceCalculator {
     // construction
     /////////////////////////////////////////////////////////////////////
 
-    public PerformanceCalculator(Scenario S){
-        myScenario = S;
-        pm_cumulative = new ArrayList<CumulativeMeasure>();
-        pm_cumulative.add(new CumulativeMeasure(myScenario,true,true,true,null,-1,CumulativePerformanceMeasure.veh_time));
-        pm_cumulative.add(new CumulativeMeasure(myScenario,true,true,true,null,-1,CumulativePerformanceMeasure.veh_distance));
-        pm_cumulative.add(new CumulativeMeasure(myScenario,true,true,true,null,-1,CumulativePerformanceMeasure.delay));
+    public PerformanceCalculator(OutputRequest output_request){
+        this.output_request = output_request;
     }
 
     /////////////////////////////////////////////////////////////////////
-    // reset / update
+    // populate / reset / update
     /////////////////////////////////////////////////////////////////////
+
+    public void populate(Scenario myScenario){
+
+        this.myScenario = myScenario;
+        pm_cumulative = new ArrayList<CumulativeMeasure>();
+        for(SimulationOutput sim_out : output_request.getSimulationOutput()){
+            PerformanceMeasure cpm = PerformanceMeasure.valueOf(sim_out.getPerformance());
+            switch(cpm){
+                case delay:
+                case veh_distance:
+                case veh_time:
+                    pm_cumulative.add(
+                            new CumulativeMeasure(
+                                    myScenario,
+                                    sim_out.isAggTime(),
+                                    sim_out.isAggLinks(),
+                                    sim_out.isAggEnsemble(),
+                                    myScenario.getRouteWithId(sim_out.getRouteId()),
+                                    myScenario.getVehicleTypeIndexForId(sim_out.getVehicleTypeId()),
+                                    cpm));
+                    break;
+                case travel_time:
+                case speed_contour:
+                    break;
+            }
+        }
+
+    }
 
     public void reset() {
         if(pm_cumulative==null)
@@ -59,7 +87,7 @@ public class PerformanceCalculator {
 
         // value.get(k)[e][l][v] is pm for time k, link l, vehicle type v,ensemble e.
         protected ArrayList<double [][][]> value;
-        protected CumulativePerformanceMeasure pm;
+        protected PerformanceMeasure pm;
 
         // flags for aggregating the various dimensions
         protected boolean agg_time;
@@ -76,7 +104,7 @@ public class PerformanceCalculator {
         protected List<Link> link_list;
 
 
-        public CumulativeMeasure(Scenario scenario,boolean agg_time,boolean agg_links,boolean agg_ensemble,Route route,int vehicle_type_index,CumulativePerformanceMeasure pm){
+        public CumulativeMeasure(Scenario scenario,boolean agg_time,boolean agg_links,boolean agg_ensemble,Route route,int vehicle_type_index,PerformanceMeasure pm){
 
             this.agg_time = agg_time;
             this.agg_links = agg_links;

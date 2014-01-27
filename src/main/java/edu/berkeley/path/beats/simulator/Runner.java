@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.jaxb.OutputRequest;
 import org.apache.log4j.Logger;
 //import org.apache.torque.NoRowsException;
 //import org.apache.torque.TooManyRowsException;
@@ -42,7 +43,7 @@ import org.apache.log4j.Logger;
  */
 public final class Runner {
 
-	private static Logger logger = Logger.getLogger(Runner.class);
+	//private static Logger logger = Logger.getLogger(Runner.class);
 
 	public static void main(String[] args) {
 
@@ -56,10 +57,16 @@ public final class Runner {
 
 			// load configuration file
 			Scenario scenario = ObjectFactory.createAndLoadScenario(runargs.getConfigfilename(),runargs.getUncertaintyModel(),runargs.getNodeFlowSolver(),runargs.getNodeSRSolver());
-			
+
 			if (null == scenario)
 				throw new BeatsException("Scenario did not load");
-			
+
+
+            // performance output
+            String perf_config_file = "data//perf//p1.xml";
+            PerformanceCalculator perf_calc = ObjectFactory.createPerformanceCalculator(perf_config_file);
+            scenario.set_performance_calculator(perf_calc);
+
 			// initialize
 			scenario.initialize( runargs.getDt(),
 								 runargs.getStartTime(),
@@ -69,7 +76,8 @@ public final class Runner {
 								 runargs.getOutputfileprefix(),
 								 runargs.getNumReps(),
 								 1 );
-			
+
+
 			// run the scenario
 			scenario.run();
 			
@@ -83,7 +91,6 @@ public final class Runner {
 				BeatsErrorLog.clearErrorMessage();
 			}
 		}
-		
 	}
 
 	private static RunnerArguments parseInput(String[] args){
