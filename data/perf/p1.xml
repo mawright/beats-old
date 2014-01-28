@@ -2,7 +2,7 @@
 <OutputRequest scenario_id="33">
 
 	<simulation_output
-		file="C:\\Users\\gomes\\code\\L0\\beats\\data\\perf\\out.txt"
+		file="data\\output\\pm_delay.txt"
 		dt="50"
 		performance="delay"
 		agg_time="false"
@@ -12,17 +12,12 @@
 		route_id="1"
 	/>
 	
-	<!--
 	<simulation_output
-		dt="5"
-		performance="veh_time"
+		file="data\\output\\pm_tvm.txt"
+		performance="veh_distance"
 		agg_time="true"
 		agg_links="true"
-		agg_ensemble="true"
 		agg_vehicle_type="true"
-		vehicle_type_id="0"
-		route_id="1"
 	/>
-	-->
   
 </OutputRequest>

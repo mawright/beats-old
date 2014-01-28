@@ -59,7 +59,7 @@ public class PerformanceCalculator {
 
     protected void validate() {
         for(CumulativeMeasure cm : pm_cumulative)
-            cm.validate(myScenario);
+            cm.validate();
     }
 
     public void reset() {
@@ -98,6 +98,7 @@ public class PerformanceCalculator {
     protected class CumulativeMeasure{
 
         protected int dt_steps;
+        protected double sim_dt;
 
         protected String filename;
         protected Writer filewriter;
@@ -114,6 +115,10 @@ public class PerformanceCalculator {
 
         // vehicle type index. negative => aggregate over all
         protected int vt_index;
+
+        // dimension of the stored data
+        protected int nE;       // ensemble dimension
+        protected int nL;       // link dimension
 
         protected int num_ensemble;
 
@@ -137,7 +142,8 @@ public class PerformanceCalculator {
             filename = fname+".txt";
 
             // dt
-            dt_steps = dt==null?1:BeatsMath.round(dt/scenario.getSimdtinseconds());
+            sim_dt = scenario.getSimdtinseconds();
+            dt_steps = dt==null?1:BeatsMath.round(dt/sim_dt);
 
             // links to consider
             link_list = new ArrayList<Link>();
@@ -147,6 +153,10 @@ public class PerformanceCalculator {
             else
                 for(Link link : route.ordered_links)
                     link_list.add(link);
+
+            // dimension variables
+            nE = agg_ensemble ? 1 : num_ensemble;
+            nL = agg_links ? 1 : link_list.size();
         }
 
         protected void reset(){
@@ -155,18 +165,14 @@ public class PerformanceCalculator {
         }
 
         protected void reset_value(){
-            int nE = agg_ensemble ? 1 : num_ensemble;
-            int nL = agg_links ? 1 : link_list.size();
             value = new double [nE][nL];
         }
 
-        protected void validate(Scenario scenario){
+        protected void validate(){
 
             if(!agg_vehicle_type && vt_index<0)
                 BeatsErrorLog.addError("Performance calculator: Please specify a vehicle type.");
 
-//            if(!BeatsMath.isintegermultipleof(dt,scenario.getSimdtinseconds()))
-//
         }
 
         protected void update(){
@@ -175,8 +181,6 @@ public class PerformanceCalculator {
             int ii,ee;
 
             // dimensions of the saved data
-            int nE = agg_ensemble ? 1 : num_ensemble;
-            int nL = agg_links ? 1 : link_list.size();
             double [][] X = new double[nE][nL];
 
             // gather information
@@ -188,16 +192,15 @@ public class PerformanceCalculator {
                     switch(pm){
                         case veh_time:
                             X[ee][ii] += agg_vehicle_type ? link.getTotalDensityInVeh(e) :
-                                                           link.getDensityInVeh(e,vt_index);
-                            break;
+                                                           link.getDensityInVeh(e,vt_index);                            break;
                         case veh_distance:
-                            X[ee][ii] += agg_vehicle_type ? link.getTotalOutflowInVeh(e) :
-                                                           link.getOutflowInVeh(e,vt_index);
+                            X[ee][ii] += ( agg_vehicle_type ? link.getTotalOutflowInVeh(e) :
+                                                           link.getOutflowInVeh(e,vt_index) ) *
+                                            link.getLengthInMeters();
                             break;
                         case delay:
                             X[ee][ii] += agg_vehicle_type ? link.computeTotalDelayInVeh(e) :
-                                                           link.computeDelayInVeh(e, vt_index);
-                            break;
+                                                           link.computeDelayInVeh(e,vt_index);                            break;
                     }
                 }
             }
@@ -218,7 +221,7 @@ public class PerformanceCalculator {
             for(ii=0;ii<nL;ii++)
                 for(ee=0;ee<nE;ee++)
                     value[ee][ii] += X[ee][ii];
-            //num_sample++;
+
         }
 
         protected void open_output_file() {
@@ -247,6 +250,18 @@ public class PerformanceCalculator {
 
         protected void write_output(double time){
             int ii,ee;
+
+            // if veh_time or delay, multiply by dt
+            switch(pm){
+                case veh_time:
+                case delay:
+                    for(ee=0;ee<value.length;ee++)
+                        for(ii=0;ii<value[ee].length;ii++)
+                            value[ee][ii] *= sim_dt;
+                    break;
+            }
+
+            // write to file
             for(ee=0;ee<value.length;ee++){
                 String str = String.format("%f\t%d",time,ee);
                 for(ii=0;ii<value[ee].length;ii++)
@@ -260,7 +275,9 @@ public class PerformanceCalculator {
                     System.out.println("Unable to write");
                 }
             }
-            reset();
+
+            // reset values
+            reset_value();
         }
 
     }
