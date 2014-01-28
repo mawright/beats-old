@@ -65,6 +65,12 @@ public final class Clock {
     // sampling
     /////////////////////////////////////////////////////////////////////
 
+    protected boolean is_time_to_sample_rel(int dt_steps){
+        if(rel_step<=1)
+            return true;
+        return rel_step % dt_steps == 0;
+    }
+
     protected boolean is_time_to_sample_abs(int dt_steps,int step_initial_abs){
         if(rel_step<=1)
             return true;

@@ -211,6 +211,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// validate controllers
 		S.controllerset.validate();
 
+        // validate performance calculator
+        if(S.perf_calc!=null)
+            S.perf_calc.validate();
+
 	}
 	
 	/** Prepare scenario for simulation:

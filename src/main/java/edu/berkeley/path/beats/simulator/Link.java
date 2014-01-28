@@ -658,9 +658,16 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-    public double computeDelayInVeh(int ensemble,int vehicletype){
-        double n = getDensityInVeh(ensemble, vehicletype);
-        double f = getOutflowInVeh(ensemble, vehicletype);
+    public double computeTotalDelayInVeh(int ensemble){
+        double n = getTotalDensityInVeh(ensemble);
+        double f = getTotalOutflowInVeh(ensemble);
+        double vf = getNormalizedVf(ensemble);
+        return Math.max(0d,vf*n-f);
+    }
+
+    public double computeDelayInVeh(int ensemble,int vt_index){
+        double n = getDensityInVeh(ensemble,vt_index);
+        double f = getOutflowInVeh(ensemble,vt_index);
         double vf = getNormalizedVf(ensemble);
         return Math.max(0d,vf*n-f);
     }

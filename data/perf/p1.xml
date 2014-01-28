@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<OutputRequest>
+<OutputRequest scenario_id="33">
 
 	<simulation_output
-		scenario_id="0"
+		dt="50"
 		performance="delay"
-		agg_time="true"
-		agg_links="true"
-		agg_ensemble="true"
+		agg_time="false"
+		agg_links="false"
+		agg_ensemble="false"
 		agg_vehicle_type="true"
-		vehicle_type_id="0"
 		route_id="1"
 	/>
 	
+	<!--
 	<simulation_output
-		scenario_id="0"
-		performance="delay"
+		dt="5"
+		performance="veh_time"
 		agg_time="true"
 		agg_links="true"
 		agg_ensemble="true"
@@ -22,5 +22,6 @@
 		vehicle_type_id="0"
 		route_id="1"
 	/>
+	-->
   
 </OutputRequest>

@@ -77,7 +77,6 @@ public final class Runner {
 								 runargs.getNumReps(),
 								 1 );
 
-
 			// run the scenario
 			scenario.run();
 			

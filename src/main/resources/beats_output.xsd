@@ -8,13 +8,12 @@
 			<xs:sequence>
 				<xs:element ref="simulation_output" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
+		<xs:attribute name="scenario_id" type="xs:long" use="required"/>
 		</xs:complexType>
 	</xs:element>
 
 	<xs:element name="simulation_output">
 		<xs:complexType>
-			<xs:attribute name="scenario_id" type="xs:long" use="required"/>
-
 			<xs:attribute name="performance" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
@@ -22,6 +21,8 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
+
+			<xs:attribute name="dt" 				type="xs:double" use="optional" />
 			<xs:attribute name="agg_time" 			type="xs:boolean" use="optional"  default="false"/>
 			<xs:attribute name="agg_links" 			type="xs:boolean" use="optional"  default="false"/>
 			<xs:attribute name="agg_ensemble" 		type="xs:boolean" use="optional"  default="false"/>
