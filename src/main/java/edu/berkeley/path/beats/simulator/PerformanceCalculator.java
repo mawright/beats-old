@@ -3,6 +3,7 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.jaxb.OutputRequest;
 import edu.berkeley.path.beats.jaxb.SimulationOutput;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class PerformanceCalculator {
                     pm_cumulative.add(
                             new CumulativeMeasure(
                                     myScenario,
+                                    sim_out.getFile(),
                                     sim_out.getDt(),
                                     sim_out.isAggTime(),
                                     sim_out.isAggLinks(),
@@ -76,14 +78,16 @@ public class PerformanceCalculator {
             cm.update();
 
             // write output
-            if(!cm.agg_time && myScenario.getClock().getRelativeTimeStep()%cm.dt_steps==0){
-
+            if(!cm.agg_time && myScenario.getClock().getRelativeTimeStep()%cm.dt_steps==0)
                 cm.write_output(myScenario.getClock().getT());
+        }
+    }
 
-
-            }
-
-
+    protected void close_output(){
+        for(CumulativeMeasure cm : pm_cumulative){
+            if(cm.agg_time)
+                cm.write_output(myScenario.getClock().getT());
+            cm.close_output_file();
         }
     }
 
@@ -93,7 +97,10 @@ public class PerformanceCalculator {
 
     protected class CumulativeMeasure{
 
-        private int dt_steps;
+        protected int dt_steps;
+
+        protected String filename;
+        protected Writer filewriter;
 
         // value.get(k)[e][l][v] is pm for time k, link l, vehicle type v,ensemble e.
         protected double [][] value;
@@ -113,7 +120,8 @@ public class PerformanceCalculator {
         // list of links to include
         protected List<Link> link_list;
 
-        public CumulativeMeasure(Scenario scenario,Double dt,boolean agg_time,boolean agg_links,boolean agg_ensemble,boolean agg_vehicle_type,Route route,int vehicle_type_index,PerformanceMeasure pm){
+        public CumulativeMeasure(Scenario scenario,String fname,Double dt,boolean agg_time,boolean agg_links,boolean agg_ensemble,boolean agg_vehicle_type,Route route,int vehicle_type_index,PerformanceMeasure pm){
+
 
             this.agg_time = agg_time;
             this.agg_links = agg_links;
@@ -122,6 +130,11 @@ public class PerformanceCalculator {
             this.pm = pm;
             this.num_ensemble = scenario.getNumEnsemble();
             this.vt_index = vehicle_type_index;
+
+            // file
+            if(fname.contains("."))
+                fname = fname.split("\\.")[0];
+            filename = fname+".txt";
 
             // dt
             dt_steps = dt==null?1:BeatsMath.round(dt/scenario.getSimdtinseconds());
@@ -137,6 +150,11 @@ public class PerformanceCalculator {
         }
 
         protected void reset(){
+            open_output_file();
+            reset_value();
+        }
+
+        protected void reset_value(){
             int nE = agg_ensemble ? 1 : num_ensemble;
             int nL = agg_links ? 1 : link_list.size();
             value = new double [nE][nL];
@@ -203,6 +221,30 @@ public class PerformanceCalculator {
             //num_sample++;
         }
 
+        protected void open_output_file() {
+            if(filewriter!=null)
+                return;
+            try{
+                filewriter = new FileWriter(new File(filename));
+            }
+            catch(IOException e){
+                // DO SOMETHING?
+                filewriter = null;
+            }
+        }
+
+        protected void close_output_file(){
+            try{
+                filewriter.close();
+            }
+            catch(IOException e){
+                // DO SOMETHING?
+            }
+            finally{
+                filewriter = null;
+            }
+        }
+
         protected void write_output(double time){
             int ii,ee;
             for(ee=0;ee<value.length;ee++){
@@ -210,11 +252,16 @@ public class PerformanceCalculator {
                 for(ii=0;ii<value[ee].length;ii++)
                     str += String.format("\t%f",value[ee][ii]);
                 str += "\n";
-                System.out.print(str);
+                try{
+                    filewriter.write(str);
+                }
+                catch(IOException e)
+                {
+                    System.out.println("Unable to write");
+                }
             }
             reset();
         }
-
 
     }
 

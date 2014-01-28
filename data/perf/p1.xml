@@ -2,6 +2,7 @@
 <OutputRequest scenario_id="33">
 
 	<simulation_output
+		file="C:\\Users\\gomes\\code\\L0\\beats\\data\\perf\\out.txt"
 		dt="50"
 		performance="delay"
 		agg_time="false"

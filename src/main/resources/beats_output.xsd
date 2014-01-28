@@ -22,6 +22,7 @@
 				</xs:simpleType>
 			</xs:attribute>
 
+			<xs:attribute name="file"				type="xs:string" use="required" />
 			<xs:attribute name="dt" 				type="xs:double" use="optional" />
 			<xs:attribute name="agg_time" 			type="xs:boolean" use="optional"  default="false"/>
 			<xs:attribute name="agg_links" 			type="xs:boolean" use="optional"  default="false"/>

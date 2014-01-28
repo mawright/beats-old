@@ -451,7 +451,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				while( advanceNSteps_internal(1,runParam.writefiles,outputwriter,runParam.t_start_output) ){
 				}
 			} finally {
-				if (null != outputwriter) outputwriter.close();
+				if (null != outputwriter)
+                    outputwriter.close();
+                if(perf_calc!=null)
+                    perf_calc.close_output();
 			}
 		}
         scenario_locked = false;		
@@ -1071,7 +1074,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         clock = null;
 
 	}
-	
+
 	private boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
 		
 		// advance n steps
