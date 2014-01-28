@@ -1,5 +1,6 @@
 /lib/
 /src/main/generated-java/
+/data/output/
 sirius.jar
 beats.jar
 *.lck

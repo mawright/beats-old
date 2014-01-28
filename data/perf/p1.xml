@@ -2,6 +2,14 @@
 <OutputRequest scenario_id="33">
 
 	<simulation_output
+		file="data\\output\\pm_speed.txt"
+		dt="300"
+		performance="speed_contour"
+		route_id="1"
+	/>
+	
+	<!--
+	<simulation_output
 		file="data\\output\\pm_delay.txt"
 		dt="50"
 		performance="delay"
@@ -19,5 +27,6 @@
 		agg_links="true"
 		agg_vehicle_type="true"
 	/>
+	-->
   
 </OutputRequest>

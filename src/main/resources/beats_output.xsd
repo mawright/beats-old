@@ -17,7 +17,7 @@
 			<xs:attribute name="performance" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:pattern value="veh_time|veh_distance|delay"/>
+						<xs:pattern value="veh_time|veh_distance|delay|speed_contour"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>

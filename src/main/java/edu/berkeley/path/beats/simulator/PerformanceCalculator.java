@@ -36,6 +36,7 @@ public class PerformanceCalculator {
                 case delay:
                 case veh_distance:
                 case veh_time:
+                case speed_contour:
                     pm_cumulative.add(
                             new CumulativeMeasure(
                                     myScenario,
@@ -50,7 +51,6 @@ public class PerformanceCalculator {
                                     cpm));
                     break;
                 case travel_time:
-                case speed_contour:
                     break;
             }
         }
@@ -98,6 +98,7 @@ public class PerformanceCalculator {
     protected class CumulativeMeasure{
 
         protected int dt_steps;
+        protected int num_sample;
         protected double sim_dt;
 
         protected String filename;
@@ -124,17 +125,25 @@ public class PerformanceCalculator {
 
         // list of links to include
         protected List<Link> link_list;
+        protected boolean isroute;
 
-        public CumulativeMeasure(Scenario scenario,String fname,Double dt,boolean agg_time,boolean agg_links,boolean agg_ensemble,boolean agg_vehicle_type,Route route,int vehicle_type_index,PerformanceMeasure pm){
+        public CumulativeMeasure(Scenario scenario,String fname,Double out_dt,boolean agg_t,boolean agg_l,boolean agg_e,boolean agg_vt,Route route,int vehicle_type_index,PerformanceMeasure pmname){
 
+            agg_time = agg_t;
+            agg_links = agg_l;
+            agg_ensemble = agg_e;
+            agg_vehicle_type = agg_vt;
+            pm = pmname;
+            num_ensemble = scenario.getNumEnsemble();
+            vt_index = vehicle_type_index;
 
-            this.agg_time = agg_time;
-            this.agg_links = agg_links;
-            this.agg_ensemble = agg_ensemble;
-            this.agg_vehicle_type = agg_vehicle_type;
-            this.pm = pm;
-            this.num_ensemble = scenario.getNumEnsemble();
-            this.vt_index = vehicle_type_index;
+            // special for speed contour
+            if(pm.compareTo(PerformanceMeasure.speed_contour)==0){
+                agg_time = false;
+                agg_links = false;
+                agg_ensemble = false;
+                agg_vehicle_type = true;
+            }
 
             // file
             if(fname.contains("."))
@@ -143,16 +152,17 @@ public class PerformanceCalculator {
 
             // dt
             sim_dt = scenario.getSimdtinseconds();
-            dt_steps = dt==null?1:BeatsMath.round(dt/sim_dt);
+            dt_steps = out_dt==null?1:BeatsMath.round(out_dt/sim_dt);
 
             // links to consider
             link_list = new ArrayList<Link>();
-            if(route==null)
-                for(edu.berkeley.path.beats.jaxb.Link link : scenario.getNetworkSet().getNetwork().get(0).getLinkList().getLink())
-                    link_list.add((Link)link);
-            else
+            isroute = route!=null;
+            if(isroute)
                 for(Link link : route.ordered_links)
                     link_list.add(link);
+            else
+                for(edu.berkeley.path.beats.jaxb.Link link : scenario.getNetworkSet().getNetwork().get(0).getLinkList().getLink())
+                    link_list.add((Link)link);
 
             // dimension variables
             nE = agg_ensemble ? 1 : num_ensemble;
@@ -166,12 +176,17 @@ public class PerformanceCalculator {
 
         protected void reset_value(){
             value = new double [nE][nL];
+            num_sample = 0;
         }
 
         protected void validate(){
 
             if(!agg_vehicle_type && vt_index<0)
                 BeatsErrorLog.addError("Performance calculator: Please specify a vehicle type.");
+
+            // speed contours require a route
+            if(pm.compareTo(PerformanceMeasure.speed_contour)==0 && !isroute)
+                BeatsErrorLog.addError("Performance calculator: Please specify a route for the speed contour.");
 
         }
 
@@ -200,7 +215,11 @@ public class PerformanceCalculator {
                             break;
                         case delay:
                             X[ee][ii] += agg_vehicle_type ? link.computeTotalDelayInVeh(e) :
-                                                           link.computeDelayInVeh(e,vt_index);                            break;
+                                                           link.computeDelayInVeh(e,vt_index);
+                            break;
+                        case speed_contour:
+                            X[ee][ii] = link.computeSpeedInMPS(e);
+                            break;
                     }
                 }
             }
@@ -221,6 +240,7 @@ public class PerformanceCalculator {
             for(ii=0;ii<nL;ii++)
                 for(ee=0;ee<nE;ee++)
                     value[ee][ii] += X[ee][ii];
+            num_sample++;
 
         }
 
@@ -252,6 +272,7 @@ public class PerformanceCalculator {
             int ii,ee;
 
             // if veh_time or delay, multiply by dt
+            // if speed contour, divide by number of samples
             switch(pm){
                 case veh_time:
                 case delay:
@@ -259,6 +280,12 @@ public class PerformanceCalculator {
                         for(ii=0;ii<value[ee].length;ii++)
                             value[ee][ii] *= sim_dt;
                     break;
+                case speed_contour:
+                    for(ee=0;ee<value.length;ee++)
+                        for(ii=0;ii<value[ee].length;ii++)
+                            value[ee][ii] /= num_sample;
+                    break;
+
             }
 
             // write to file
