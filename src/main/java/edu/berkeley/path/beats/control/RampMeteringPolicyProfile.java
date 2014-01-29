@@ -1,4 +1,4 @@
-package edu.berkeley.path.beats.control.predictive;
+package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.simulator.Link;
 

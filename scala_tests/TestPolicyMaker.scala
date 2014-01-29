@@ -6,6 +6,8 @@ import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet
 import java.lang.Double
 import scala.collection.JavaConversions
 import scala.collection.JavaConversions._
+import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker
+import edu.berkeley.path.beats.control.{RampMeteringPolicySet, RampMeteringPolicyProfile, RampMeteringPolicyMaker, RampMeteringControlSet}
 
 /**
  * Created with IntelliJ IDEA.

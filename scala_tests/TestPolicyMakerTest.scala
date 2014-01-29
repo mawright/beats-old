@@ -4,10 +4,11 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FunSuite
 import scala.collection.JavaConversions._
 import edu.berkeley.path.beats.simulator._
-import edu.berkeley.path.beats.control.predictive.{AdjointRampMeteringPolicyMaker, RampMeteringControl, RampMeteringControlSet}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.apache.log4j.Logger
+import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker
+import edu.berkeley.path.beats.control.{RampMeteringControlSet, RampMeteringControl}
 
 /**
  * Created with IntelliJ IDEA.

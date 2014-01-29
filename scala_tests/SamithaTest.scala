@@ -9,6 +9,8 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.apache.log4j.Logger
 import edu.berkeley.path.ramp_metering.AdjointRampMetering
+import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker
+import edu.berkeley.path.beats.control.{RampMeteringControlSet, RampMeteringControl}
 
 /**
  * Created with IntelliJ IDEA.

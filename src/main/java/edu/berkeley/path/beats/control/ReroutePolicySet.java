@@ -1,4 +1,4 @@
-package edu.berkeley.path.beats.control.predictive_reroute;
+package edu.berkeley.path.beats.control;
 
 import java.util.LinkedList;
 import java.util.List;
