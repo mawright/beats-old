@@ -538,7 +538,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		try{
 			return density[ensemble][vehicletype];
 		} catch(Exception e){
-			return 0d;
+			return Double.NaN;
 		}
 	}
 
@@ -552,7 +552,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 				return BeatsMath.sum(density[ensemble]);
 			return 0d;
 		} catch(Exception e){
-			return 0d;
+			return Double.NaN;
 		}
 	}
 
@@ -567,7 +567,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
         try{
             return outflow[ensemble][vehicletype];
         } catch(Exception e){
-            return 0d;
+            return Double.NaN;
         }
     }
 
@@ -595,7 +595,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		try{
 			return BeatsMath.sum(outflow[ensemble]);
 		} catch(Exception e){
-			return 0d;
+			return Double.NaN;
 		}
 	}
 
@@ -603,7 +603,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
         try{
             return inflow[ensemble][vehicletype];
         } catch(Exception e){
-            return 0d;
+            return Double.NaN;
         }
     }
 
@@ -631,7 +631,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		try{
 			return BeatsMath.sum(inflow[ensemble]);
 		} catch(Exception e){
-			return 0d;
+			return Double.NaN;
 		}
 	}
 

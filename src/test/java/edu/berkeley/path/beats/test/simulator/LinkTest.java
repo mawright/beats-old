@@ -107,10 +107,9 @@ public class LinkTest {
 		assertEquals(x,exp,1e-4);
 		
 		// edge cases
-		assertEquals(link.getDensityInVeh(-1,0),0d,1e-4);
-		assertEquals(link.getDensityInVeh(100,0),0d,1e-4);
-		assertEquals(link.getDensityInVeh(0,-1),0d,1e-4);
-		assertEquals(link.getDensityInVeh(0,100),0d,1e-4);
+		assertTrue(Double.isNaN(link.getDensityInVeh(-1,0)));
+        assertTrue(Double.isNaN(link.getDensityInVeh(100,0)));
+        assertTrue(Double.isNaN(link.getDensityInVeh(0,-1)));
 	}
 	
 	@Test
@@ -122,8 +121,8 @@ public class LinkTest {
 		assertEquals(x,exp,1e-4);
 
 		// edge cases
-		assertEquals(link.getTotalDensityInVeh(-1),0d,1e-4);
-		assertEquals(link.getTotalDensityInVeh(100),0d,1e-4);
+		assertTrue(Double.isNaN(link.getTotalDensityInVeh(-1)));
+        assertTrue(Double.isNaN(link.getTotalDensityInVeh(100)));
 	}
 
 	@Test
@@ -135,8 +134,8 @@ public class LinkTest {
 		assertEquals(x,exp,1e-4);
 		
 		// edge cases
-		assertEquals(link.getTotalDensityInVPMeter(-1),0d,1e-4);
-		assertEquals(link.getTotalDensityInVPMeter(100),0d,1e-4);
+		assertTrue(Double.isNaN(link.getTotalDensityInVPMeter(-1)));
+        assertTrue(Double.isNaN(link.getTotalDensityInVPMeter(100)));
 	}
 	
 	@Test
@@ -161,9 +160,8 @@ public class LinkTest {
 		assertEquals(x,exp,1e-4);
 
 		// edge cases
-		assertEquals(link.getTotalOutflowInVeh(-1),0d,1e-4);
-		assertEquals(link.getTotalOutflowInVeh(100),0d,1e-4);
-
+		assertTrue(Double.isNaN(link.getTotalOutflowInVeh(-1)));
+        assertTrue(Double.isNaN(link.getTotalOutflowInVeh(100)));
 	}
 
 	@Test
@@ -187,8 +185,8 @@ public class LinkTest {
 		assertEquals(x,exp,1e-4);
 
 		// edge cases
-		assertEquals(link.getTotalInlowInVeh(-1),0d,1e-4);
-		assertEquals(link.getTotalInlowInVeh(100),0d,1e-4);
+		assertTrue(Double.isNaN(link.getTotalInlowInVeh(-1)));
+        assertTrue(Double.isNaN(link.getTotalInlowInVeh(100)));
 	}
 
 	@Test
