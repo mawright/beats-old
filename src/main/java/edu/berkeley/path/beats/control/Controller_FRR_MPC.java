@@ -1,6 +1,6 @@
 package edu.berkeley.path.beats.control;
 
-//import edu.berkeley.path.beats.control.adjoint_glue.ScenarioConverter;
+import edu.berkeley.path.beats.control.adjoint_glue.ScenarioConverter;
 import edu.berkeley.path.beats.jaxb.ScenarioElement;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
@@ -60,9 +60,9 @@ public class Controller_FRR_MPC extends Controller {
 			}
 
 			switch(myPMType){
-//				case adjoint:
-//					policy_maker = new ScenarioConverter();
-//					break;
+				case adjoint:
+					policy_maker = new ScenarioConverter();
+					break;
 				case NULL:
 					break;
 			}
