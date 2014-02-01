@@ -26,6 +26,9 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.jaxb.Splitratio;
+
+import java.util.List;
 import java.util.StringTokenizer;
 
 // 3D matrix class used for representing time-invariant split ratio matrices.
@@ -275,6 +278,30 @@ final class Double3DMatrix {
     		for(j=0;j<nOut;j++)
     			for(k=0;k<nVTypes;k++)
     				data[i][j][k] = in.data[i][j][k];	  
+    }
+
+    public void override_splits(Node node,List<Splitratio> srs){
+
+        for(Splitratio sr : srs){
+            int in_index = node.getInputLinkIndex(sr.getLinkIn());
+            int out_index = node.getOutputLinkIndex(sr.getLinkOut());
+            int vt_index = node.getMyNetwork().getMyScenario().getVehicleTypeIndexForId(sr.getVehicleTypeId());
+
+            if(in_index<0 || out_index<0 || vt_index<0)
+                continue;
+
+            Double val;
+            try{
+                val = Double.parseDouble(sr.getContent());
+            } catch( NumberFormatException e){
+                val = Double.NaN;
+            }
+            if(val.isNaN())
+                continue;
+
+            data[in_index][out_index][vt_index] = val;
+        }
+
     }
     
 	/////////////////////////////////////////////////////////////////////

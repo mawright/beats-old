@@ -164,17 +164,4 @@ public class Controller_IRM_Alinea extends Controller {
 				
 	}
 
-	/////////////////////////////////////////////////////////////////////
-	// register / deregister
-	/////////////////////////////////////////////////////////////////////
-
-//	@Override
-//	protected boolean register() {
-//		return registerFlowController(onramplink,0);
-//	}
-//	
-//	protected boolean deregister() {
-//		return deregisterFlowController(onramplink);
-//	}
-
 }

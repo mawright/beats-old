@@ -42,7 +42,6 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 	private boolean isdone; 
 	private int step_initial_abs;
 
-	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
@@ -104,9 +103,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
     }
 
 	protected void reset() {
-
         isdone = false;
-
 		currentSplitRatio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
 	}
 

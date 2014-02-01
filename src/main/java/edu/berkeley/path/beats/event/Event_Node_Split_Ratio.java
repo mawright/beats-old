@@ -35,7 +35,7 @@ public class Event_Node_Split_Ratio extends Event {
 
 	protected boolean resetToNominal;			// if true, go back to nominal before applying changes
 	protected Node myNode;
-	protected java.util.List<SplitRatio> splitratios;
+//	protected java.util.List<SplitRatio> splitratios;
 	
 	/////////////////////////////////////////////////////////////////////
 	// Construction

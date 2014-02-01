@@ -5,6 +5,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
     protected Controller myController;
     public enum Implementation {beats,aimsun};
     protected ActuatorImplementation implementor;
+    protected Actuator.Type myType;
 
 	public static enum Type	{ ramp_meter,
 							  signalized_intersection,
@@ -21,6 +22,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	public Actuator (Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA,ActuatorImplementation act_implementor){
 
         this.implementor = act_implementor;
+        this.myType = Actuator.Type.valueOf(jaxbA.getActuatorType().getName());
 
         // copy jaxb data
         setId(jaxbA.getId());
@@ -33,7 +35,21 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset / deploy
 	/////////////////////////////////////////////////////////////////////
-	
+
+    protected boolean register(){
+        switch(myType){
+            case ramp_meter:
+                return ((Link)implementor.target).register_flow_controller();
+            case vsl:
+                return ((Link)implementor.target).register_speed_controller();
+            case signalized_intersection:
+                return false;
+            case cms:
+                return ((Node)implementor.target).register_split_controller();
+        }
+        return false;
+    }
+
 	protected void populate(Object jaxbobject,Scenario myScenario) {
 		return;
 	}

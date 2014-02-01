@@ -51,6 +51,8 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	private DemandProfile myDemandProfile;  		// demand profiles
 	
 	// Actuation
+    protected boolean has_flow_controller;
+    protected boolean has_speed_controller;
 	private double external_max_flow;
 	private double external_max_speed;
 	
@@ -105,6 +107,9 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		// lanes and length
 		_lanes = getLanes();
 		_length = getLength();
+
+        has_flow_controller = false;
+        has_speed_controller = false;
 				
 	}
 
@@ -377,47 +382,34 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	// controller registration .........................................
 
+    public boolean register_flow_controller(){
+        if(has_flow_controller)
+            return false;
+        has_flow_controller = true;
+        return true;
+    }
+
+    public boolean register_speed_controller(){
+        if(has_speed_controller)
+            return false;
+        has_speed_controller = true;
+        return true;
+    }
+
     public void set_external_max_flow_in_veh(double value_in_veh){
-        external_max_flow = value_in_veh;
+        if(has_flow_controller)
+            external_max_flow = value_in_veh;
     }
 
 	public void set_external_max_flow_in_vph(double value_in_vph){
-		external_max_flow = value_in_vph*getMyNetwork().getMyScenario().getSimdtinseconds()/3600d;
+        if(has_flow_controller)
+            external_max_flow = value_in_vph*getMyNetwork().getMyScenario().getSimdtinseconds()/3600d;
 	}
 	
 	public void set_external_max_speed(double value){
-		external_max_speed = value;
+        if(has_speed_controller)
+		    external_max_speed = value;
 	}
-
-//	protected boolean registerFlowController(Controller c,int index){
-//		if(myFlowController!=null)
-//			return false;
-//		myFlowController = c;
-//		control_maxflow_index = index;
-//		return true;
-//	}
-
-//	protected boolean registerSpeedController(Controller c,int index){
-//		if(mySpeedController!=null)
-//			return false;
-//		mySpeedController = c;
-//		control_maxspeed_index = index;
-//		return true;
-//	}
-
-//	protected boolean deregisterFlowController(Controller c){
-//		if(myFlowController!=c)
-//			return false;
-//		myFlowController = null;			
-//		return true;
-//	}
-
-//	protected boolean deregisterSpeedController(Controller c){
-//		if(mySpeedController!=c)
-//			return false;
-//		mySpeedController = null;			
-//		return true;
-//	}
 	
 	// initial condition ..................................................
 	protected void copy_state_to_initial_state(){

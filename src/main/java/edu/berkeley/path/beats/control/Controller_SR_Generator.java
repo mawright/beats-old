@@ -185,8 +185,6 @@ public class Controller_SR_Generator extends Controller {
                                               beta);
             }
         }
-
-
     }
 
 

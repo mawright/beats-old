@@ -391,11 +391,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //	    if(!registersuccess){
 //	    	throw new BeatsException("Signal registration failure");
 //	    }
-//
-//	    if(getControllerset()!=null)
-//	    	if(!getControllerset().register()){
-//	    		throw new BeatsException("Controller registration failure");
-//		    }
+
+	    if(getControllerset()!=null)
+	    	if(!getControllerset().register()){
+	    		throw new BeatsException("Controller registration failure");
+		    }
 
 	    // print messages and clear before validation
 		if (BeatsErrorLog.hasmessage()) {

@@ -70,9 +70,9 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 
 	@Override
 	public void deploy_cms_split(List<Splitratio> splits) {
-		for(Splitratio sr : splits){
-            System.out.println(sr.getLinkIn()+"\t"+sr.getLinkOut()+"\t"+sr.getContent());
-        }
+		if(target==null)
+            return;
+        ((Node)target).set_controller_split(splits);
 	}
 
 	@Override

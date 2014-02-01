@@ -400,11 +400,7 @@ public class Controller_CRM_HERO extends Controller {
 	/////////////////////////////////////////////////////////////////////
 	// register / deregister
 	/////////////////////////////////////////////////////////////////////
-	
-//	@Override
-//	protected boolean register() {
-//		return registerFlowController(onrampLink,0);
-//	}
+
  
 	@Override
 	protected boolean deregister() {

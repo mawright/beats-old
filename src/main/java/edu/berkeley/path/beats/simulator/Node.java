@@ -26,7 +26,10 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.jaxb.Splitratio;
 import edu.berkeley.path.beats.simulator.Node_FlowSolver.SupplyDemand;
+
+import java.util.List;
 
 /** Node class.
 *
@@ -49,8 +52,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	protected Link [] input_link;
 
 	// split ratio from profile
-	protected SplitRatioProfile mySplitRatioProfile;
-	protected boolean hasSRprofile;
+	protected SplitRatioProfile my_profile;
+	protected boolean has_profile;
 
 	// node behavior
 	protected Node_SplitRatioSolver node_sr_solver;
@@ -58,10 +61,12 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	
 	// does change ........................................
 
-	// split ratio from event
-	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
-	
-	// split ratio from profile or event
+    // split ratio from controller
+    protected boolean has_controller;
+    protected boolean has_controller_split;
+    protected List<Splitratio> controller_splits;
+
+	// selected split ratio
 	private Double3DMatrix splitratio_selected;
 	
 	/////////////////////////////////////////////////////////////////////
@@ -101,7 +106,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		
 		isTerminal = nOut==0 || nIn==0;
         istrivialsplit = nOut<=1;
-        hasSRprofile = false;
+        has_profile = false;
 
     	if(isTerminal)
     		return;
@@ -111,8 +116,6 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		splitratio_selected = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
 		normalizeSplitRatioMatrix(splitratio_selected);
 
-		hasactivesplitevent = false;
-		
 		// create node flow solver
 		switch(getMyNetwork().getMyScenario().getNodeFlowSolver()){
 			case proportional:
@@ -181,13 +184,17 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         }
         
         // Select a split ratio from profile, event, or controller
-		if(!istrivialsplit){
-			if(hasSRprofile && !hasactivesplitevent) // && !controlleron
-				splitratio_selected = mySplitRatioProfile.getCurrentSplitRatio();
-		}
-		else
-			splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
-		
+        if(istrivialsplit)
+            splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
+        else{
+            if(has_profile)
+                splitratio_selected = my_profile.getCurrentSplitRatio();
+            if(has_controller_split)
+                splitratio_selected.override_splits(this,controller_splits);
+//            if(has_event_split)
+//                splitratio_selected.override_splits(event_splits);
+        }
+
         // compute applied split ratio matrix
         Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected,demand_supply);
         
@@ -216,61 +223,64 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// split ratio profile ..............................................
 
 	protected void setMySplitRatioProfile(SplitRatioProfile mySplitRatioProfile) {
-		this.mySplitRatioProfile = mySplitRatioProfile;
+		this.my_profile = mySplitRatioProfile;
 		if(!istrivialsplit){
-			this.hasSRprofile = true;
+			this.has_profile = true;
 		}
 	}
 
     public double getSplitRatioProfileValue(int i,int j,int k){
-        return this.mySplitRatioProfile.getCurrentSplitRatio().get(i,j,k);
+        return this.my_profile.getCurrentSplitRatio().get(i,j,k);
     }
 
 	// controllers ......................................................
 
-//	protected void setControllerOn(boolean controlleron) {
-//		if(hascontroller){
-//			this.controlleron = controlleron;
-//			if(!controlleron)
-//				resetSplitRatio();
-//		}
-//	}
-//
-//	protected boolean registerController(){
-//		if(hascontroller)		// used to detect multiple controllers
-//			return false;
-//		else{
-//			hascontroller = true;
-//			controlleron = true;
-//			return true;
-//		}
-//	}
+	protected void set_controller_split(List<Splitratio> cs){
+        if(!has_controller)
+            return;
+        controller_splits = cs;
+        has_controller_split = true;
+    }
+
+    protected void deactivate_split_control(){
+        if(!has_controller)
+            return;
+        controller_splits = null;
+        has_controller_split = false;
+    }
+
+	protected boolean register_split_controller(){
+		if(has_controller)		// used to detect multiple controllers
+			return false;
+		else{
+			has_controller = true;
+			return true;
+		}
+	}
 	
 	// events ..........................................................
 
 	// used by Event.setNodeEventSplitRatio
-	protected void applyEventSplitRatio(Double3DMatrix x) {		
-		splitratio_selected.copydata(x);
-		normalizeSplitRatioMatrix(splitratio_selected);
-		hasactivesplitevent = true;
-	}
+//	protected void applyEventSplitRatio(Double3DMatrix x) {
+//		splitratio_selected.copydata(x);
+//		normalizeSplitRatioMatrix(splitratio_selected);
+//		hasactivesplitevent = true;
+//	}
 
 	// used by Event.revertNodeEventSplitRatio
-	protected void removeEventSplitRatio() {
-//		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
-//		normalizeSplitRatioMatrix(splitratio);
-		hasactivesplitevent = false;
-	}
+//	protected void removeEventSplitRatio() {
+//		hasactivesplitevent = false;
+//	}
 	
 	// used by Event.revertNodeEventSplitRatio
-	protected boolean isHasActiveSplitEvent() {
-		return hasactivesplitevent;
-	}
+//	protected boolean isHasActiveSplitEvent() {
+//		return hasactivesplitevent;
+//	}
 
 	// used by Event.setNodeEventSplitRatio
-    protected Double3DMatrix getSplitratio() {
-		return splitratio_selected;
-	}
+//    protected Double3DMatrix getSplitratio() {
+//		return splitratio_selected;
+//	}
     
 	/////////////////////////////////////////////////////////////////////
 	// operations on split ratio matrices
@@ -427,7 +437,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
 
     public SplitRatioProfile getSplitRatioProfile(){
-        return mySplitRatioProfile;
+        return my_profile;
     }
 
     public boolean istrivialsplit() {

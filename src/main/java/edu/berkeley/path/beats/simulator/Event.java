@@ -230,25 +230,25 @@ public class Event implements Comparable {
     	link.revertFundamentalDiagramEvent();
     }    
 
-	protected void setNodeEventSplitRatio(Node node, java.util.List<SplitRatio> splitratios) {
-		if(node==null)
-			return;
-		Double3DMatrix X = new Double3DMatrix(node.getnIn(),node.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
-		X.copydata(node.getSplitratio());
-		for (SplitRatio sr : splitratios)
-			X.set(sr.getInputIndex(), sr.getOutputIndex(), sr.getVehicleTypeIndex(), sr.getValue());
-		if(!node.validateSplitRatioMatrix(X))
-			return;
-		node.applyEventSplitRatio(X);
-	}
+//	protected void setNodeEventSplitRatio(Node node, java.util.List<SplitRatio> splitratios) {
+//		if(node==null)
+//			return;
+//		Double3DMatrix X = new Double3DMatrix(node.getnIn(),node.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
+//		X.copydata(node.getSplitratio());
+//		for (SplitRatio sr : splitratios)
+//			X.set(sr.getInputIndex(), sr.getOutputIndex(), sr.getVehicleTypeIndex(), sr.getValue());
+//		if(!node.validateSplitRatioMatrix(X))
+//			return;
+//		node.applyEventSplitRatio(X);
+//	}
 
-	protected void revertNodeEventSplitRatio(Node node) {
-		if(node==null)
-			return;
-		if(node.isHasActiveSplitEvent()){
-			node.removeEventSplitRatio();
-		}
-	}
+//	protected void revertNodeEventSplitRatio(Node node) {
+//		if(node==null)
+//			return;
+//		if(node.isHasActiveSplitEvent()){
+//			node.removeEventSplitRatio();
+//		}
+//	}
 	
     protected void setDemandProfileEventKnob(edu.berkeley.path.beats.jaxb.DemandProfile profile,double knob){
 		if(profile==null)
@@ -266,31 +266,31 @@ public class Event implements Comparable {
 	// internal class
 	/////////////////////////////////////////////////////////////////////	
 
-	protected static class SplitRatio {
-		private int input_index;
-		private int output_index;
-		private int vehicle_type_index;
-		private double value;
-
-		public SplitRatio(int input_index, int output_index, int vehicle_type_index, double value) {
-			this.input_index = input_index;
-			this.output_index = output_index;
-			this.vehicle_type_index = vehicle_type_index;
-			this.value = value;
-		}
-
-		public int getInputIndex() {
-			return input_index;
-		}
-		public int getOutputIndex() {
-			return output_index;
-		}
-		public int getVehicleTypeIndex() {
-			return vehicle_type_index;
-		}
-		public double getValue() {
-			return value;
-		}
-	}
+//	protected static class SplitRatio {
+//		private int input_index;
+//		private int output_index;
+//		private int vehicle_type_index;
+//		private double value;
+//
+//		public SplitRatio(int input_index, int output_index, int vehicle_type_index, double value) {
+//			this.input_index = input_index;
+//			this.output_index = output_index;
+//			this.vehicle_type_index = vehicle_type_index;
+//			this.value = value;
+//		}
+//
+//		public int getInputIndex() {
+//			return input_index;
+//		}
+//		public int getOutputIndex() {
+//			return output_index;
+//		}
+//		public int getVehicleTypeIndex() {
+//			return vehicle_type_index;
+//		}
+//		public double getValue() {
+//			return value;
+//		}
+//	}
 
 }
