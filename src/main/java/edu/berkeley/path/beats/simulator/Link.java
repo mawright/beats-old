@@ -282,11 +282,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	protected double[] getOutflowDemand(int ensemble) {
+	public double[] getOutflowDemand(int ensemble) {
 		return outflowDemand[ensemble];
 	}
 
-	protected double getSpaceSupply(int ensemble) {
+	public double getSpaceSupply(int ensemble) {
 		return spaceSupply[ensemble];
 	}
 
@@ -465,6 +465,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		String name = getType();
 		return name==null ? null : name.compareToIgnoreCase("On-Ramp")==0;
 	}
+
+    public boolean isOfframp(){
+        String name = getType();
+        return name==null ? null : name.compareToIgnoreCase("Off-Ramp")==0;
+    }
 
 	public boolean isFreeway(){
 		String name = getType();

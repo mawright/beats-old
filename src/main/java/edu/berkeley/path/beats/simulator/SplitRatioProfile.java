@@ -89,7 +89,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 			vt_index = myScenario.getVehicleTypeIndexForId(sr.getVehicleTypeId());
 			if(in_index<0 || out_index<0 || vt_index<0)
 				continue; 
-			profile[in_index][out_index][vt_index] = new BeatsTimeProfile(sr.getContent());
+			profile[in_index][out_index][vt_index] = new BeatsTimeProfile(sr.getContent(),false);
 			if(!profile[in_index][out_index][vt_index].isEmpty())
 				laststep = Math.max(laststep,profile[in_index][out_index][vt_index].getNumTime());
 		}

@@ -103,7 +103,11 @@ final public class ObjectFactory {
             case SIG_MaxPressure:
                 C = new Controller_SIG_CycleMP(myScenario, jaxbC, myType);
                 break;
-				
+
+            case SR_Generator:
+                C = new Controller_SR_Generator(myScenario, jaxbC);
+				break;
+
 			default:
 				C = null;
 				break;

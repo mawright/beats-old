@@ -311,8 +311,6 @@
 				</xs:complexType>
 			</xs:element> 
   
-  
-  
   <!-- common .................................................................. -->
   
 	<!-- used by event, controller -->
@@ -338,7 +336,6 @@
 		</xs:complexType>
 	</xs:element>
 	
-				
   <!-- settings .................................................................. -->
 
 	<xs:element name="settings">
@@ -832,21 +829,21 @@
 
 		<xs:element name="controller">
 			<xs:complexType>
-        <xs:sequence>
-          <xs:element ref="parameters" minOccurs="0" />
-          <xs:element ref="display_position" minOccurs="0" />
-		  <xs:element ref="target_actuators" minOccurs="0" />
-		  <xs:element ref="feedback_sensors" minOccurs="0" />
-          <xs:element ref="queue_controller" minOccurs="0" />
-          <xs:element ref="ActivationIntervals" minOccurs="0" />
-          <xs:element ref="table" minOccurs="0" maxOccurs="unbounded" />
-        </xs:sequence>
+				<xs:sequence>
+					<xs:element ref="parameters" minOccurs="0" />
+					<xs:element ref="display_position" minOccurs="0" />
+					<xs:element ref="target_actuators" minOccurs="0" />
+					<xs:element ref="feedback_sensors" minOccurs="0" />
+					<xs:element ref="queue_controller" minOccurs="0" />
+					<xs:element ref="ActivationIntervals" minOccurs="0" />
+					<xs:element ref="table" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
 				<xs:attribute name="name" type="xs:string" use="optional" />
 				<xs:attribute name="type" use="required">
 					<xs:simpleType>
-						<xs:restriction base="xs:string">
-							<xs:pattern value="IRM_ALINEA|IRM_TOD|IRM_TOS|CRM_SWARM|CRM_HERO|CRM_MPC|FRR_MPC|VSL_TOD|SIG_Pretimed|SIG_Actuated|SIG_MaxPressure"/>
-						</xs:restriction>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="IRM_ALINEA|IRM_TOD|IRM_TOS|CRM_SWARM|CRM_HERO|CRM_MPC|FRR_MPC|VSL_TOD|SIG_Pretimed|SIG_Actuated|SIG_MaxPressure|SR_Generator"/>
+					</xs:restriction>
 					</xs:simpleType>
 				</xs:attribute>
 				<xs:attribute name="id" type="xs:long" use="required" />
@@ -1089,7 +1086,6 @@
 		</xs:complexType>
 	</xs:element>
 			
-
 	 <!-- ActuatorSet ...................................................  -->
    			  
 	<xs:element name="ActuatorSet">
@@ -1138,8 +1134,6 @@
 					<xs:attribute name="description" type="xs:string" use="optional"/>
 				</xs:complexType>
 			</xs:element>
-	 			
-			
-			
+	
 </xs:schema>
 

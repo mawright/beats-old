@@ -71,39 +71,66 @@ final public class BeatsFormatter {
 		return str;
 	}
 
-	public static double [] readCSVstring(String str,String delim) {
+    public static double [] readCSVstring_nonnegative(String str, String delim) {
 
-		double [] data = null;
-		
-      	if ((str.isEmpty()) || (str.equals("\n")) || (str.equals("\r\n"))){
-			return data;
-    	}
-    	
-    	str.replaceAll("\\s","");
-    	
-    	// populate data
-		StringTokenizer slicesX = new StringTokenizer(str,delim);
-		int i=0;
-		boolean allnan = true;
-		data = new double[slicesX.countTokens()];
-		while (slicesX.hasMoreTokens()) {			
-			try {
-				Double value = Double.parseDouble(slicesX.nextToken());
-				if(value>=0){
-					data[i] = value;
-					allnan = false;
-				}
-				else
-					data[i] = Double.NaN;
-			} catch (NumberFormatException e) {
-				data[i] = Double.NaN;
-			}
-			i++;
-		}
-		if(allnan)
-			data = null;
-		return data;
-	}
+        double [] data = null;
+
+        if ((str.isEmpty()) || (str.equals("\n")) || (str.equals("\r\n"))){
+            return data;
+        }
+
+        str.replaceAll("\\s","");
+
+        // populate data
+        StringTokenizer slicesX = new StringTokenizer(str,delim);
+        int i=0;
+        boolean allnan = true;
+        data = new double[slicesX.countTokens()];
+        while (slicesX.hasMoreTokens()) {
+            try {
+                Double value = Double.parseDouble(slicesX.nextToken());
+                if(value>=0){
+                    data[i] = value;
+                    allnan = false;
+                }
+                else
+                    data[i] = Double.NaN;
+            } catch (NumberFormatException e) {
+                data[i] = Double.NaN;
+            }
+            i++;
+        }
+        if(allnan)
+            data = null;
+        return data;
+    }
+
+
+    public static double [] readCSVstring(String str, String delim) {
+
+        double [] data = null;
+
+        if ((str.isEmpty()) || (str.equals("\n")) || (str.equals("\r\n"))){
+            return data;
+        }
+
+        str.replaceAll("\\s","");
+
+        // populate data
+        StringTokenizer slicesX = new StringTokenizer(str,delim);
+        int i=0;
+        data = new double[slicesX.countTokens()];
+        while (slicesX.hasMoreTokens()) {
+            try {
+                Double value = Double.parseDouble(slicesX.nextToken());
+                data[i] = value;
+            } catch (NumberFormatException e) {
+                data[i] = Double.NaN;
+            }
+            i++;
+        }
+        return data;
+    }
 	
 	public static ArrayList<ArrayList<Double>> readCSV(String filename,String delim) {
 		if(filename==null)

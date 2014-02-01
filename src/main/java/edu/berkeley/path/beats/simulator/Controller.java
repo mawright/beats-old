@@ -65,7 +65,8 @@ public class Controller {
         CRM_MPC,
         FRR_MPC,
         SIG_Pretimed,
-        SIG_MaxPressure }
+        SIG_MaxPressure,
+        SR_Generator }
 
     public static enum ActuatorType {
 		ramp_meter,
@@ -98,9 +99,6 @@ public class Controller {
 			this.ison = false;
 			this.activationTimes=new ArrayList<ActivationTimes>();
 			this.dtinseconds = jaxbC.getDt();		// assume given in seconds
-
-            // keep jaxb info
-
 
 			// Copy tables
 			tables = new java.util.HashMap<String, Table>();

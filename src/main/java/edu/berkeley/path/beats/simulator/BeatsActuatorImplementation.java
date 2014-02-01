@@ -2,6 +2,9 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.actuator.ActuatorSignalStageSplits;
 import edu.berkeley.path.beats.actuator.StageSplit;
+import edu.berkeley.path.beats.jaxb.Splitratio;
+
+import java.util.List;
 
 public class BeatsActuatorImplementation extends ActuatorImplementation {
 
@@ -66,8 +69,10 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 	}
 
 	@Override
-	public void deploy_cms_split() {
-		// TODO Auto-generated method stub		
+	public void deploy_cms_split(List<Splitratio> splits) {
+		for(Splitratio sr : splits){
+            System.out.println(sr.getLinkIn()+"\t"+sr.getLinkOut()+"\t"+sr.getContent());
+        }
 	}
 
 	@Override

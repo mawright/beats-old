@@ -92,7 +92,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			if(vehicle_type_index[i]<0)
 				continue;
 			if(d.getContent()!=null){
-				demand_nominal[i] = new BeatsTimeProfile(d.getContent());
+				demand_nominal[i] = new BeatsTimeProfile(d.getContent(),false);
 				demand_nominal[i].multiplyscalar(myScenario.getSimdtinseconds());
 			}
 		}

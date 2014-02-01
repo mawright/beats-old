@@ -14,14 +14,17 @@ public class BeatsTimeProfile {
             data[i] = val;
     }
 
-    public BeatsTimeProfile(String str) {    	
-    	data = BeatsFormatter.readCSVstring(str,",");
+    public BeatsTimeProfile(String str,boolean allownegative) {
+        if(allownegative)
+    	    data = BeatsFormatter.readCSVstring(str, ",");
+        else
+            data = BeatsFormatter.readCSVstring_nonnegative(str, ",");
     }    
 
     // initialize a 1D vector from comma separated string of positive numbers
     // negative numbers get replaced with nan.
     public BeatsTimeProfile(String str,String delim) {
-    	data = BeatsFormatter.readCSVstring(str,delim);
+    	data = BeatsFormatter.readCSVstring_nonnegative(str, delim);
     }
     
 	/////////////////////////////////////////////////////////////////////

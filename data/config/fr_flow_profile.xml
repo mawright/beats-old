@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--  use this with the sr_generator controller in _smalltest_srgenerator -->
+
+<DemandSet id="-1" project_id="-1">
+	<demandProfile dt="300" id="-1" link_id_org="-7">
+		<demand vehicle_type_id="0">-100,-200,-300</demand>
+	</demandProfile>
+</DemandSet>

@@ -65,13 +65,13 @@ public final class Clock {
     // sampling
     /////////////////////////////////////////////////////////////////////
 
-    protected boolean is_time_to_sample_rel(int dt_steps){
+    public boolean is_time_to_sample_rel(int dt_steps){
         if(rel_step<=1)
             return true;
         return rel_step % dt_steps == 0;
     }
 
-    protected boolean is_time_to_sample_abs(int dt_steps,int step_initial_abs){
+    public boolean is_time_to_sample_abs(int dt_steps,int step_initial_abs){
         if(rel_step<=1)
             return true;
         int abs_step = rel_step + step_o;
@@ -80,7 +80,7 @@ public final class Clock {
         return (abs_step-step_initial_abs) % dt_steps == 0;
     }
 
-    protected int sample_index_abs(int dt_steps,int step_initial_abs){
+    public int sample_index_abs(int dt_steps,int step_initial_abs){
         return dt_steps>0 ? BeatsMath.floor((rel_step+step_o-step_initial_abs)/((float)dt_steps)) : 0;
     }
 
