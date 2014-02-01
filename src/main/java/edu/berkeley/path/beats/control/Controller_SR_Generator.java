@@ -250,6 +250,8 @@ public class Controller_SR_Generator extends Controller {
                 }
             }
 
+            current_value = Math.abs(current_value);
+
             return current_value;
         }
 
