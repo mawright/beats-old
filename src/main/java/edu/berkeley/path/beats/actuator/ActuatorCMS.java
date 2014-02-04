@@ -56,11 +56,6 @@ public class ActuatorCMS extends Actuator {
         splits = new ArrayList<Splitratio>();
     }
 
-//    @Override
-//    protected void validate() {
-//
-//    }
-
     @Override
     protected void reset() throws BeatsException {
         splits = new ArrayList<Splitratio>();

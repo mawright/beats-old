@@ -95,13 +95,13 @@ public class Controller_SR_Generator extends Controller {
         if(demand_set==null)
             return;
 
+        demand_set.populate(myScenario);
+
         node_data = new ArrayList<NodeData>();
         for(Actuator act:actuators){
             ScenarioElement se = (ScenarioElement) act.getScenarioElement();
-
             if(se.getMyType().compareTo(ScenarioElement.Type.node)!=0)
                 continue;
-
             node_data.add(new NodeData(demand_set,(Node) se.getReference()));
         }
     }
@@ -137,32 +137,22 @@ public class Controller_SR_Generator extends Controller {
 
         for(int i=0;i<node_data.size();i++){
             NodeData nd = node_data.get(i);
-            double fr_flow = nd.get_fr_flow_at_time(myScenario.getClock().getStartTime());
+            double [] fr_flow = nd.get_fr_flow_at_time(myScenario.getClock().getStartTime());
+            double fr_flow_total = BeatsMath.sum(fr_flow);
             double ml_up_demand = BeatsMath.sum(nd.link_fw_up.get(0).getOutflowDemand(0));
             double ml_dn_supply = 0d;
             for(Link link : nd.link_fr)
                 ml_dn_supply += link.getSpaceSupply(0);
-            double ml_up_flow = Math.min( ml_up_demand , ml_dn_supply + fr_flow );
+            double ml_up_flow = Math.min( ml_up_demand , ml_dn_supply + fr_flow_total );
+            for(int j=0;j<nd.link_fr.size();j++){
+                double beta = Math.min( fr_flow[j] / ml_up_flow , 1d );
+                for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType())
+                    ((ActuatorCMS)actuators.get(i)).set_split( nd.link_fw_up.get(0).getId() ,
+                                                               nd.link_fr.get(j).getId(),
+                                                               vt.getId(),
+                                                               beta);
 
-//            double beta;
-//            for(Link link : nd.link_fr){
-//
-//            }
-//
-//
-//
-//            double beta = Math.min( fr_flow / ml_up_flow , 1d );
-//
-//
-//
-//
-//
-//            for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType()){
-//                ((ActuatorCMS)actuators.get(i)).set_split( nd.link_fw_up.get(0).getId() ,
-//                                              nd.link_fr.getId(),
-//                                              vt.getId(),
-//                                              beta);
-//            }
+            }
         }
     }
 
@@ -170,7 +160,6 @@ public class Controller_SR_Generator extends Controller {
 
         int step_initial_abs;
         boolean isdone;
-        double current_value;
 
         private List<BeatsTimeProfile> fr_flow;	// [veh] demand profile per vehicle type
 
@@ -199,8 +188,13 @@ public class Controller_SR_Generator extends Controller {
             List<Double> start_time = new ArrayList<Double>();
             for(Link link : link_fr){
                 DemandProfile dp = demand_set.get_demand_profile_for_link_id(link.getId());
-                fr_flow.add(new BeatsTimeProfile(dp.getDemand().get(0).getContent(),true));
-                start_time.add(Double.isInfinite(dp.getStartTime()) ? 0d : dp.getStartTime());
+                if(dp==null)
+                    fr_flow.add(new BeatsTimeProfile("0",true));
+                else{
+                    fr_flow.add(new BeatsTimeProfile(dp.getDemand().get(0).getContent(),true));
+                    start_time.add(Double.isInfinite(dp.getStartTime()) ? 0d : dp.getStartTime());
+                }
+
             }
 
             // check all starttimes are the same
@@ -211,43 +205,48 @@ public class Controller_SR_Generator extends Controller {
                     if(d!=first)
                         all_same = false;
             }
+            else
+                start_time.add(0d);
             if(!all_same)
                 start_time = null;
             else{
                 step_initial_abs = BeatsMath.round(start_time.get(0)/myScenario.getSimdtinseconds());
                 isdone = false;
-                current_value = 0d;
             }
 
         }
 
         protected double [] get_fr_flow_at_time(double time_in_seconds){
 
-            if( !isdone && myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
+            double [] val = new double [link_fr.size()];
 
-                // REMOVE THESE
-                int n = fr_flow.getNumTime()-1;
-                int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
+            for(int i=0;i<link_fr.size();i++){
 
-                // demand is zero before step_initial_abs
-                if(myScenario.getClock().getAbsoluteTimeStep()< step_initial_abs)
-                    current_value = 0d;
+                BeatsTimeProfile profile = fr_flow.get(i);
 
-                // sample the profile
-                if(step<n){
-                    current_value = fr_flow.get(myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs));
+                if( !isdone && myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
+
+                    // REMOVE THESE
+                    int n = profile.getNumTime()-1;
+                    int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
+
+                    // demand is zero before step_initial_abs
+                    if(myScenario.getClock().getAbsoluteTimeStep()< step_initial_abs)
+                        val[i] = 0d;
+
+                    // sample the profile
+                    if(step<n)
+                        val[i] = profile.get(step);
+
+                    // last sample
+                    if(step>=n && !isdone){
+                        isdone = true;
+                        val[i] = profile.get(n);
+                    }
                 }
-
-                // last sample
-                if(step>=n && !isdone){
-                    isdone = true;
-                    current_value = fr_flow.get(n);
-                }
+                val[i] = Math.abs(val[i]);
             }
-
-            current_value = Math.abs(current_value);
-
-            return current_value;
+            return val;
         }
 
 

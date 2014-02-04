@@ -38,7 +38,7 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate(Scenario myScenario) {
+	public void populate(Scenario myScenario) {
 		
 		this.myScenario = myScenario;
 

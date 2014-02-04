@@ -47,7 +47,6 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 				}		    	
 			}
 		}
-	
 	}
 
 	protected void validate() {
