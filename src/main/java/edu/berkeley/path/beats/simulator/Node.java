@@ -178,9 +178,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         Node_FlowSolver.SupplyDemand demand_supply = new SupplyDemand(numEnsemble,nIn,nOut,numVehicleTypes);
         for(e=0;e<numEnsemble;e++){        
     		for(i=0;i<nIn;i++)
-    			demand_supply.setDemand(e,i, input_link[i].getOutflowDemand(e) );
+    			demand_supply.setDemand(e,i, input_link[i].get_out_demand_in_veh(e) );
     		for(j=0;j<nOut;j++)
-    			demand_supply.setSupply(e,j,output_link[j].getSpaceSupply(e));
+    			demand_supply.setSupply(e,j,output_link[j].get_space_supply_in_veh(e));
         }
         
         // Select a split ratio from profile, event, or controller

@@ -21,8 +21,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +30,7 @@ import java.util.List;
  */
 public class Controller_SR_Generator extends Controller {
 
+    protected BufferedWriter writer = null;
     protected List<NodeData> node_data;
 
     /////////////////////////////////////////////////////////////////////
@@ -104,6 +104,17 @@ public class Controller_SR_Generator extends Controller {
                 continue;
             node_data.add(new NodeData(demand_set,(Node) se.getReference()));
         }
+
+
+        // output file
+        String out_file_name = param.get("out_file");
+        try {
+            writer = new BufferedWriter(new FileWriter(out_file_name));
+        } catch (Exception e) {
+            System.err.print(e);
+            writer=null;
+        }
+
     }
 
     @Override
@@ -118,12 +129,15 @@ public class Controller_SR_Generator extends Controller {
 
         for(NodeData nd : node_data){
             if(nd.link_fw_dn.size()!=1)
-                BeatsErrorLog.addError("In Controller_SR_Generator, ,ust have exactly one downstream mainline link.");
+                BeatsErrorLog.addError("In Controller_SR_Generator, must have exactly one downstream mainline link.");
             if(nd.link_fw_up.size()!=1)
-                BeatsErrorLog.addError("In Controller_SR_Generator, ,ust have exactly one upstream mainline link.");
+                BeatsErrorLog.addError("In Controller_SR_Generator, must have exactly one upstream mainline link.");
             if(nd.link_fr.size()<1)
-                BeatsErrorLog.addError("In Controller_SR_Generator, ,ust have at least one offramp link.");
+                BeatsErrorLog.addError("In Controller_SR_Generator, must have at least one offramp link.");
         }
+
+        if(writer==null)
+            BeatsErrorLog.addError("In Controller_SR_Generator, could not create output file.");
 
     }
 
@@ -135,39 +149,57 @@ public class Controller_SR_Generator extends Controller {
     @Override
     protected void update() throws BeatsException {
 
+        double dt_in_hr = myScenario.getSimdtinseconds()/3600d;
+
         for(int i=0;i<node_data.size();i++){
             NodeData nd = node_data.get(i);
-            double [] fr_flow = nd.get_fr_flow_at_time(myScenario.getClock().getStartTime());
-            double fr_flow_total = BeatsMath.sum(fr_flow);
-            double ml_up_demand = BeatsMath.sum(nd.link_fw_up.get(0).getOutflowDemand(0));
-            double ml_dn_supply = 0d;
+            double [] fr_flow_vph = nd.get_fr_flow_in_vph();
+            double tot_fr_flow_vph = BeatsMath.sum(fr_flow_vph);
+            double ml_up_demand_vph = BeatsMath.sum(nd.link_fw_up.get(0).get_out_demand_in_veh(0))/dt_in_hr;
+            double ml_dn_supply_vph = 0d;
             for(Link link : nd.link_fr)
-                ml_dn_supply += link.getSpaceSupply(0);
-            double ml_up_flow = Math.min( ml_up_demand , ml_dn_supply + fr_flow_total );
+                ml_dn_supply_vph += link.get_space_supply_in_veh(0);
+            ml_dn_supply_vph /= dt_in_hr;
+            double ml_up_flow_vph = Math.min( ml_up_demand_vph , ml_dn_supply_vph + tot_fr_flow_vph );
             for(int j=0;j<nd.link_fr.size();j++){
-                double beta = Math.min( fr_flow[j] / ml_up_flow , 1d );
+                double beta = Math.min( fr_flow_vph[j] / ml_up_flow_vph , 1d );{
                 for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType())
-                    ((ActuatorCMS)actuators.get(i)).set_split( nd.link_fw_up.get(0).getId() ,
-                                                               nd.link_fr.get(j).getId(),
-                                                               vt.getId(),
-                                                               beta);
-
+                    ((ActuatorCMS)actuators.get(i)).set_split( nd.fw_dn_id(0),nd.fr_id(j),vt.getId(),beta);
+                    try{
+                        writer.write(String.format("%.1f\t%d\t%d\t%d\t%f\n",myScenario.getCurrentTimeInSeconds(),nd.getId(),nd.fw_up_id(0),nd.fr_id(j),beta));
+                    }
+                    catch(IOException e){
+                        System.err.print(e);
+                    }
+                }
             }
+        }
+    }
+
+    @Override
+    protected void close_output() {
+        if(writer==null)
+            return;
+        try{
+            writer.close();
+        } catch (IOException e){
+            System.err.print(e);
         }
     }
 
     class NodeData {
 
-        int step_initial_abs;
-        boolean isdone;
-
-        private List<BeatsTimeProfile> fr_flow;	// [veh] demand profile per vehicle type
-
+        protected long id;
+        protected int step_initial_abs;
+        protected boolean isdone;
+        protected List<BeatsTimeProfile> fr_flow;	// [veh] demand profile per vehicle type
         protected List<Link> link_fw_up;
         protected List<Link> link_fw_dn;
         protected List<Link> link_fr;
 
         public NodeData(DemandSet demand_set,Node myNode){
+
+            this.id = myNode.getId();
 
             link_fw_up = new ArrayList<Link>();
             for(Link link : myNode.getInput_link())
@@ -216,7 +248,7 @@ public class Controller_SR_Generator extends Controller {
 
         }
 
-        protected double [] get_fr_flow_at_time(double time_in_seconds){
+        protected double [] get_fr_flow_in_vph(){
 
             double [] val = new double [link_fr.size()];
 
@@ -249,6 +281,18 @@ public class Controller_SR_Generator extends Controller {
             return val;
         }
 
+        protected long getId(){
+            return id;
+        }
+        protected long fw_up_id(int index){
+            return link_fw_up.get(index).getId();
+        }
+        protected long fw_dn_id(int index){
+            return link_fw_dn.get(index).getId();
+        }
+        protected long fr_id(int index){
+            return link_fr.get(index).getId();
+        }
 
     }
 

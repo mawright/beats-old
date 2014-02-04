@@ -455,6 +455,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                     outputwriter.close();
                 if(perf_calc!=null)
                     perf_calc.close_output();
+                if(controllerset!=null)
+                    this.controllerset.close_output();
 			}
 		}
         scenario_locked = false;		

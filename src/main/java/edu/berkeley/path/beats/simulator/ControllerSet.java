@@ -154,7 +154,12 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 		processActivations(myScenario.getClock().getStartTime());  	
 		
 	}
-	
+
+    protected void close_output(){
+        for(Controller c : controllers)
+            c.close_output();
+    }
+
 	// Process all events upto time t, starting from the activationindex
 	protected void processActivations(double t){
 		

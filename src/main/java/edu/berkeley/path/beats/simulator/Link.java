@@ -287,11 +287,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	public double[] getOutflowDemand(int ensemble) {
+	public double[] get_out_demand_in_veh(int ensemble) {
 		return outflowDemand[ensemble];
 	}
 
-	public double getSpaceSupply(int ensemble) {
+	public double get_space_supply_in_veh(int ensemble) {
 		return spaceSupply[ensemble];
 	}
 
