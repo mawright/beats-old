@@ -41,11 +41,9 @@ public class Controller_SR_Generator extends Controller {
         super(myScenario,c,Algorithm.SR_Generator);
     }
 
-
     /////////////////////////////////////////////////////////////////////
     // populate / validate / reset  / update
     /////////////////////////////////////////////////////////////////////
-
 
     @Override
     protected void populate(Object jaxbobject) {
@@ -83,19 +81,19 @@ public class Controller_SR_Generator extends Controller {
             configfilename += ".xml";
 
         // read and return ...........................................................
-        DemandSet demand_set = null; //new Scenario();
+        DemandSet demand_set = null;
         try {
             ObjectFactory.setObjectFactory(u, new JaxbObjectFactory());
             demand_set = (DemandSet) u.unmarshal( new FileInputStream(configfilename) );
         } catch( JAXBException je ) {
             System.err.print("JAXB threw an exception when loading the configuration file");
+            System.err.println(je);
         } catch (FileNotFoundException e) {
             System.err.print("Configuration file not found");
         }
 
         if(demand_set==null)
             return;
-
 
         node_data = new ArrayList<NodeData>();
         for(Actuator act:actuators){
@@ -104,30 +102,7 @@ public class Controller_SR_Generator extends Controller {
             if(se.getMyType().compareTo(ScenarioElement.Type.node)!=0)
                 continue;
 
-            Node myNode = (Node) se.getReference();
-            if(myNode.getnIn()!=1 || myNode.getnOut()!=2)
-                continue;
-            Link o0 = myNode.getOutput_link()[0];
-            Link o1 = myNode.getOutput_link()[1];
-            Link o_fw=null;
-            Link o_fr=null;
-            if(o0.isFreeway() && o1.isOfframp()){
-                o_fw = o0;
-                o_fr = o1;
-            } else if ( o1.isFreeway() && o0.isOfframp() ){
-                o_fw = o1;
-                o_fr = o0;
-            }
-
-            // find the demand profile for this link
-            DemandProfile mydp = null;
-            for(DemandProfile dp : demand_set.getDemandProfile())
-                if(dp.getLinkIdOrg()==o_fr.getId()){
-                    mydp = dp;
-                    break;
-                }
-
-            node_data.add(new NodeData(mydp,myNode.getInput_link()[0],o_fw,o_fr));
+            node_data.add(new NodeData(demand_set,(Node) se.getReference()));
         }
     }
 
@@ -136,28 +111,18 @@ public class Controller_SR_Generator extends Controller {
 
         // check node data
         for(Actuator act:actuators){
-
             ScenarioElement se = (ScenarioElement) act.getScenarioElement();
-
             if(se.getMyType().compareTo(ScenarioElement.Type.node)!=0)
                 BeatsErrorLog.addError("In Controller_SR_Generator, all actuators must be on nodes.");
-
-            Node myNode = (Node) se.getReference();
-
-            if(myNode.getnIn()!=1)
-                BeatsErrorLog.addError("In Controller_SR_Generator, actuated node must have nIn=1.");
-
-            if(myNode.getnOut()!=2)
-                BeatsErrorLog.addError("In Controller_SR_Generator, actuated node must have nOut=2.");
         }
 
         for(NodeData nd : node_data){
-            if(nd.link_ml_up==null)
-                BeatsErrorLog.addError("In Controller_SR_Generator, bad upstream link.");
-            if(nd.link_ml_dn==null)
-                BeatsErrorLog.addError("In Controller_SR_Generator, bad downstream link.");
-            if(nd.link_fr==null)
-                BeatsErrorLog.addError("In Controller_SR_Generator, bad offramp link.");
+            if(nd.link_fw_dn.size()!=1)
+                BeatsErrorLog.addError("In Controller_SR_Generator, ,ust have exactly one downstream mainline link.");
+            if(nd.link_fw_up.size()!=1)
+                BeatsErrorLog.addError("In Controller_SR_Generator, ,ust have exactly one upstream mainline link.");
+            if(nd.link_fr.size()<1)
+                BeatsErrorLog.addError("In Controller_SR_Generator, ,ust have at least one offramp link.");
         }
 
     }
@@ -173,20 +138,33 @@ public class Controller_SR_Generator extends Controller {
         for(int i=0;i<node_data.size();i++){
             NodeData nd = node_data.get(i);
             double fr_flow = nd.get_fr_flow_at_time(myScenario.getClock().getStartTime());
-            double ml_up_demand = BeatsMath.sum(nd.link_ml_up.getOutflowDemand(0));
-            double ml_dn_supply = nd.link_ml_dn.getSpaceSupply(0);
+            double ml_up_demand = BeatsMath.sum(nd.link_fw_up.get(0).getOutflowDemand(0));
+            double ml_dn_supply = 0d;
+            for(Link link : nd.link_fr)
+                ml_dn_supply += link.getSpaceSupply(0);
             double ml_up_flow = Math.min( ml_up_demand , ml_dn_supply + fr_flow );
-            double beta = Math.min( fr_flow / ml_up_flow , 1d );
 
-            for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType()){
-                ((ActuatorCMS)actuators.get(i)).set_split( nd.link_ml_up.getId() ,
-                                              nd.link_fr.getId(),
-                                              vt.getId(),
-                                              beta);
-            }
+//            double beta;
+//            for(Link link : nd.link_fr){
+//
+//            }
+//
+//
+//
+//            double beta = Math.min( fr_flow / ml_up_flow , 1d );
+//
+//
+//
+//
+//
+//            for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType()){
+//                ((ActuatorCMS)actuators.get(i)).set_split( nd.link_fw_up.get(0).getId() ,
+//                                              nd.link_fr.getId(),
+//                                              vt.getId(),
+//                                              beta);
+//            }
         }
     }
-
 
     class NodeData {
 
@@ -194,37 +172,56 @@ public class Controller_SR_Generator extends Controller {
         boolean isdone;
         double current_value;
 
-        private BeatsTimeProfile fr_flow;	// [veh] demand profile per vehicle type
+        private List<BeatsTimeProfile> fr_flow;	// [veh] demand profile per vehicle type
 
-        protected DemandProfile profile;
-        protected Link link_ml_up;
-        protected Link link_ml_dn;
-        protected Link link_fr;
+        protected List<Link> link_fw_up;
+        protected List<Link> link_fw_dn;
+        protected List<Link> link_fr;
 
-        public NodeData(DemandProfile dp,Link link_ml_up,Link link_ml_dn,Link link_fr){
+        public NodeData(DemandSet demand_set,Node myNode){
 
-            if(dp==null)
-                return;
+            link_fw_up = new ArrayList<Link>();
+            for(Link link : myNode.getInput_link())
+                if(link.isFreeway())
+                    link_fw_up.add(link);
 
-            // limit case to single vehicle type
-            if(dp.getDemand().size()!=1)
-                System.err.print("Offramp demand profiles only allowed in no-commodity flow case.");
+            link_fw_dn = new ArrayList<Link>();
+            link_fr = new ArrayList<Link>();
+            for(Link link : myNode.getOutput_link()){
+                if(link.isFreeway())
+                    link_fw_dn.add(link);
+                if(link.isOfframp())
+                    link_fr.add(link);
+            }
 
-            this.fr_flow = new BeatsTimeProfile(dp.getDemand().get(0).getContent(),true);
-            this.link_ml_up = link_ml_up;
-            this.link_ml_dn = link_ml_dn;
-            this.link_fr = link_fr;
+            // find the demand profile for the offramps
+            fr_flow = new ArrayList<BeatsTimeProfile>();
+            List<Double> start_time = new ArrayList<Double>();
+            for(Link link : link_fr){
+                DemandProfile dp = demand_set.get_demand_profile_for_link_id(link.getId());
+                fr_flow.add(new BeatsTimeProfile(dp.getDemand().get(0).getContent(),true));
+                start_time.add(Double.isInfinite(dp.getStartTime()) ? 0d : dp.getStartTime());
+            }
 
-
-            // step_initial
-            double start_time = Double.isInfinite(dp.getStartTime()) ? 0d : dp.getStartTime();
-            step_initial_abs = BeatsMath.round(start_time/myScenario.getSimdtinseconds());
-            isdone = false;
-            current_value = 0d;
+            // check all starttimes are the same
+            boolean all_same = true;
+            if(!start_time.isEmpty()){
+                double first = start_time.get(0);
+                for(Double d : start_time)
+                    if(d!=first)
+                        all_same = false;
+            }
+            if(!all_same)
+                start_time = null;
+            else{
+                step_initial_abs = BeatsMath.round(start_time.get(0)/myScenario.getSimdtinseconds());
+                isdone = false;
+                current_value = 0d;
+            }
 
         }
 
-        protected double get_fr_flow_at_time(double time_in_seconds){
+        protected double [] get_fr_flow_at_time(double time_in_seconds){
 
             if( !isdone && myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
 

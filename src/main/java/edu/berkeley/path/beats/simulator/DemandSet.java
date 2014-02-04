@@ -83,7 +83,10 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 	/////////////////////////////////////////////////////////////////////
 	// public interface
 	/////////////////////////////////////////////////////////////////////
-	
+
+    public DemandProfile get_demand_profile_for_link_id(Long id){
+        return link_id_to_demandprofile.get(id);
+    }
 //	public double[] getFutureTotalDemandInVeh_NoNoise(long link_id,double dt_in_seconds,int num_steps) throws BeatsException{
 //
 //		if(!BeatsMath.isintegermultipleof(dt_in_seconds,myScenario.getSimdtinseconds()))
