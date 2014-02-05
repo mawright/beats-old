@@ -100,15 +100,9 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 
 
         // update nodes: compute flows on links .........
-		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode()){
-
-
-            if(this.myScenario.getClock().getT()==17745 && node.getId()==-136)
-                System.out.println(node.getId());
-
+		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
 			((Node) node).update();
-        }
-        
+
         // update links: compute densities .............
         for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
         	((Link)link).update();

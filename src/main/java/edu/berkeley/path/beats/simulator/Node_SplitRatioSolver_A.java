@@ -29,7 +29,6 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
     	int numEnsemble = myNode.myNetwork.getMyScenario().getNumEnsemble();
     	int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
     	Double3DMatrix splitratio_new = new Double3DMatrix(splitratio_selected.getData());
-    	double [] sr_new = new double[myNode.nOut];
     	double remainingSplit;
     	double num;
     	
@@ -64,8 +63,10 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
     	for(e=0;e<numEnsemble;e++){
 	    	for(i=0;i<nIn;i++){
 		        for(k=0;k<numVehicleTypes;k++){
-		            
-		        	// number of outputs with unknown split ratio
+
+                    double [] sr_new = new double[myNode.nOut];
+
+                    // number of outputs with unknown split ratio
 		        	numunknown = 0;
 		        	for(j=0;j<nOut;j++)
 		        		if(Double.isNaN(splitratio_selected.get(i,j,k)))
@@ -93,7 +94,7 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 		            
 		        	// distribute remaining split until there is none left or 
 		        	// all dsratios are equalized
-		            while(remainingSplit>0){
+		            while(BeatsMath.greaterthan(remainingSplit,0d)){
 		                
 		            	// find most and least "congested" destinations
 		            	dsmax = Double.NEGATIVE_INFINITY;
@@ -120,19 +121,24 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 		            			sendtoeach.add(num);		            			
 		            			sumsendtoeach += num;
 		            		}
-	
+
 	                    // total that can be sent
 		            	double sendtotal = Math.min(demand_supply.getDemand(e,i,k)*remainingSplit , sumsendtoeach );
 	                    
 	                    // scale down sendtoeach
 	                    // store split ratio
 	                    for(int z=0;z<minind_to_nOut.size();z++){
-	                    	double send = sendtoeach.get(z)*sendtotal/sumsendtoeach;  
-	                    	double addsplit = send/demand_supply.getDemand(e,i,k);
-	                    	int ind_nOut = minind_to_nOut.get(z);
-	                    	int ind_unknown = minind_to_unknown.get(z);
-	                    	sr_new[ind_nOut] += addsplit;
-	                    	remainingSplit -= addsplit;
+	                    	double send = sendtoeach.get(z)*sendtotal/sumsendtoeach;
+                            double addsplit;
+                            if(BeatsMath.equals(send,0d) || BeatsMath.equals(demand_supply.getDemand(e,i,k),0d))
+                                addsplit = 1d;
+                            else
+                                addsplit = send/demand_supply.getDemand(e,i,k);
+                            int ind_nOut = minind_to_nOut.get(z);
+                            int ind_unknown = minind_to_unknown.get(z);
+                            double newsplit = Math.min(sr_new[ind_nOut]+addsplit,1d);
+	                    	sr_new[ind_nOut] = newsplit;
+	                    	remainingSplit = sr_new[ind_nOut] - newsplit;
 		                    outDemandKnown[e][ind_nOut] += send;
 		                    unknown_dsratio.set( ind_unknown , outDemandKnown[e][ind_nOut]/demand_supply.getSupply(e,ind_nOut) );
 	                    }	                    
@@ -140,7 +146,7 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 		            }
 		            
 		            // distribute remaining splits proportionally to supplies
-		            if(remainingSplit>0){
+		            if(BeatsMath.greaterthan(remainingSplit,0d)){
 		            	/*
 		            	double totalcapacity = 0f;
 		            	double splitforeach;
@@ -160,6 +166,10 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 	                    for(Integer jj : unknownind){
 	                    	splitforeach = remainingSplit*demand_supply.getSupply(e,jj)/totalsupply;
 	                    	sr_new[jj] += splitforeach;
+
+                            if(Double.isNaN(sr_new[jj]))
+                                System.out.println("asdf");
+
 	                    	outDemandKnown[e][jj] += demand_supply.getDemand(e,i,k)*splitforeach;
 	                    }
 	                    remainingSplit = 0;

@@ -1078,7 +1078,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	private boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
-		
+
 		// advance n steps
 		for(int k=0;k<n;k++){
 
@@ -1090,8 +1090,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         	
         	// update scenario
         	update();
-
-
 
             if(started_writing && clock.getRelativeTimeStep()%outputwriter.outSteps == 0 )
 	        	recordstate(writefiles,outputwriter,true);
