@@ -63,9 +63,9 @@ public final class Runner {
 
 
             // performance output
-            String perf_config_file = "data//perf//p1.xml";
-            PerformanceCalculator perf_calc = ObjectFactory.createPerformanceCalculator(perf_config_file);
-            scenario.set_performance_calculator(perf_calc);
+//            String perf_config_file = "data//perf//p1.xml";
+//            PerformanceCalculator perf_calc = ObjectFactory.createPerformanceCalculator(perf_config_file);
+//            scenario.set_performance_calculator(perf_calc);
 
 			// initialize
 			scenario.initialize( runargs.getDt(),
