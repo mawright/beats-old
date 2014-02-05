@@ -47,7 +47,7 @@ public class Data1D {
 			StringTokenizer st = new StringTokenizer(str, delim);
 			data = new BigDecimal[st.countTokens()];
 			for (int i = 0; st.hasMoreTokens(); ++i)
-				data[i] = new BigDecimal(st.nextToken());
+				data[i] = new BigDecimal(st.nextToken().trim());
 		}
 	}
 

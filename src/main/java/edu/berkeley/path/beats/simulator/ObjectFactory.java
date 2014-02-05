@@ -291,7 +291,7 @@ final public class ObjectFactory {
         } catch( JAXBException je ) {
         	throw new BeatsException("JAXB threw an exception when loading the configuration file", je);
         } catch (FileNotFoundException e) {
-        	throw new BeatsException("Configuration file not found", e);
+        	throw new BeatsException("Configuration file not found. " + configfilename, e);
 		}
         
         if(S==null){

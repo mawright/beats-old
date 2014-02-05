@@ -149,6 +149,7 @@ public class Controller_SR_Generator extends Controller {
     @Override
     protected void update() throws BeatsException {
 
+        double beta;
         double dt_in_hr = myScenario.getSimdtinseconds()/3600d;
 
         for(int i=0;i<node_data.size();i++){
@@ -162,11 +163,18 @@ public class Controller_SR_Generator extends Controller {
             ml_dn_supply_vph /= dt_in_hr;
             double ml_up_flow_vph = Math.min( ml_up_demand_vph , ml_dn_supply_vph + tot_fr_flow_vph );
             for(int j=0;j<nd.link_fr.size();j++){
-                double beta = Math.min( fr_flow_vph[j] / ml_up_flow_vph , 1d );{
-                for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType())
-                    ((ActuatorCMS)actuators.get(i)).set_split( nd.fw_dn_id(0),nd.fr_id(j),vt.getId(),beta);
+
+                if(BeatsMath.equals(fr_flow_vph[j],0d))
+                    beta = 0d;
+                else if(BeatsMath.equals(ml_up_flow_vph,0d))
+                    beta = 1d;
+                else
+                    beta = Math.min( fr_flow_vph[j] / ml_up_flow_vph , 1d );
+
+                for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType()){
+                    ((ActuatorCMS)actuators.get(i)).set_split( nd.fw_dn_id(0) , nd.fr_id(j) , vt.getId() , beta );
                     try{
-                        writer.write(String.format("%.1f\t%d\t%d\t%d\t%f\n",myScenario.getCurrentTimeInSeconds(),nd.getId(),nd.fw_up_id(0),nd.fr_id(j),beta));
+                        writer.write(String.format("%.1f\t%d\t%d\t%d\t%d\t%f\t%f\t%f\n",myScenario.getCurrentTimeInSeconds(),nd.getId(),nd.fw_up_id(0),nd.fr_id(j),vt.getId(),fr_flow_vph[j],ml_up_flow_vph,beta));
                     }
                     catch(IOException e){
                         System.err.print(e);
@@ -226,7 +234,6 @@ public class Controller_SR_Generator extends Controller {
                     fr_flow.add(new BeatsTimeProfile(dp.getDemand().get(0).getContent(),true));
                     start_time.add(Double.isInfinite(dp.getStartTime()) ? 0d : dp.getStartTime());
                 }
-
             }
 
             // check all starttimes are the same

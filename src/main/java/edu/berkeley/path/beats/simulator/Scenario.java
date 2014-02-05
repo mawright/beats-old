@@ -1082,7 +1082,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// advance n steps
 		for(int k=0;k<n;k++){
 
-			// export initial condition
+            // export initial condition
 	        if(!started_writing && BeatsMath.equals(clock.getT(),outStart) ){
 	        	recordstate(writefiles,outputwriter,false);
 	        	started_writing = true;
@@ -1090,6 +1090,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         	
         	// update scenario
         	update();
+
+
 
             if(started_writing && clock.getRelativeTimeStep()%outputwriter.outSteps == 0 )
 	        	recordstate(writefiles,outputwriter,true);
