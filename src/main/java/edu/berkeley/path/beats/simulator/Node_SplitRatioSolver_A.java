@@ -1,10 +1,12 @@
 package edu.berkeley.path.beats.simulator;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 
-	protected double [][] outDemandKnown;	// [ensemble][nOut]
+    protected double [][] outDemandKnown;	// [ensemble][nOut]
 	protected double [][] dsratio;			// [ensemble][nOut]
 
 	public Node_SplitRatioSolver_A(Node myNode) {
@@ -181,7 +183,7 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 		        }
 	    	}
     	}
-    	
+
     	return splitratio_new;
 
 	}

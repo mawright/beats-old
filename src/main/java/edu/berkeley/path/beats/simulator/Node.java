@@ -29,6 +29,9 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.jaxb.Splitratio;
 import edu.berkeley.path.beats.simulator.Node_FlowSolver.SupplyDemand;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 /** Node class.
@@ -36,7 +39,9 @@ import java.util.List;
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
 public class Node extends edu.berkeley.path.beats.jaxb.Node {
-		   
+
+    public BufferedWriter greedy_policy_logger = null;
+
 	// does not change ....................................
 	protected Network myNetwork;
 
@@ -81,7 +86,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     
 	protected void populate(Network myNetwork) {
     	// Note: It is assumed that this comes *before* SplitRatioProfile.populate
-		
+
 		this.myNetwork = myNetwork;
 		
 		nOut = 0;
@@ -110,6 +115,13 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
     	if(isTerminal)
     		return;
+
+        if(!istrivialsplit)
+            try{
+                greedy_policy_logger = new BufferedWriter(new FileWriter("C:\\Users\\gomes\\Dropbox\\680_Data\\config\\680N\\sr_"+getId()+".txt"));
+            } catch (IOException e){
+                return;
+            }
 
 		// initialize the split ratio matrix
 		// NOTE: SHOULD THIS GO IN RESET?
@@ -197,7 +209,32 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
         // compute applied split ratio matrix
         Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected,demand_supply);
-        
+
+        /////////////////////////////////////////////////
+        // write to logger
+        if(!istrivialsplit && !isTerminal){
+            Scenario myScenario = getMyNetwork().getMyScenario();
+            int k;
+            for(i=0;i<getnIn();i++)
+                for(j=0;j<getnOut();j++)
+                    for(k=0;k<myScenario.getNumVehicleTypes();k++){
+                        try{
+                            greedy_policy_logger.write(
+                                String.format("%.1f\t%d\t%d\t%d\t%f\n",
+                                        myScenario.getCurrentTimeInSeconds(),
+                                        getInput_link()[i].getId(),
+                                        getOutput_link()[j].getId(),
+                                        myScenario.getVehicleTypeIdForIndex(k),
+                                        splitratio_applied.get(i,j,k)));
+                        } catch(IOException ioe){
+                            System.out.println(ioe.getMessage());
+                        }
+                    }
+        }
+
+        /////////////////////////////////////////////////
+
+
         // compute node flows ..........................................
         Node_FlowSolver.IOFlow IOflow = node_flow_solver.computeLinkFlows(splitratio_applied,demand_supply);
         

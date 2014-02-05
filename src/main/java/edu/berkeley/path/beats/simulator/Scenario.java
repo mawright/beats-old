@@ -26,8 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,8 +54,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public static enum ModeType { on_init_dens,left_of_init_dens,right_of_init_dens}
 	public static enum NodeFlowSolver { proportional , symmetric }
 	public static enum NodeSRSolver { A , B , C }
-	
-	private static Logger logger = Logger.getLogger(Scenario.class);
+    private static Logger logger = Logger.getLogger(Scenario.class);
 	private Cumulatives cumulatives;
     private PerformanceCalculator perf_calc;
 	private Clock clock;
@@ -442,21 +440,31 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				outputwriter = OutputWriterFactory.getWriter(this, owr_props, runParam.dt_output,runParam.outsteps);
 				outputwriter.open(i);
 			}
-			
-			try{
+
+            try{
 				// reset the simulation
 				reset();
 				
 				// advance to end of simulation
-				while( advanceNSteps_internal(1,runParam.writefiles,outputwriter,runParam.t_start_output) ){
-				}
-			} finally {
+				while( advanceNSteps_internal(1,runParam.writefiles,outputwriter,runParam.t_start_output) ){}
+
+			}
+
+            finally {
 				if (null != outputwriter)
                     outputwriter.close();
                 if(perf_calc!=null)
                     perf_calc.close_output();
                 if(controllerset!=null)
-                    this.controllerset.close_output();
+                    controllerset.close_output();
+                for(edu.berkeley.path.beats.jaxb.Node jnode : this.getNetworkSet().getNetwork().get(0).getNodeList().getNode()){
+                    Node node = (Node) jnode;
+                    if(node.greedy_policy_logger!=null)
+                        try{ node.greedy_policy_logger.close(); }
+                        catch(IOException e){
+                            throw new BeatsException(e.getMessage());
+                        }
+                }
 			}
 		}
         scenario_locked = false;		
@@ -1078,6 +1086,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	private boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
+
+        System.out.println(this.getCurrentTimeInSeconds());
 
 		// advance n steps
 		for(int k=0;k<n;k++){
