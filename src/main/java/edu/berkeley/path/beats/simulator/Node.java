@@ -200,7 +200,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
             splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
         else{
             if(has_profile)
-                splitratio_selected = my_profile.getCurrentSplitRatio();
+                splitratio_selected = new Double3DMatrix(my_profile.getCurrentSplitRatio());
             if(has_controller_split)
                 splitratio_selected.override_splits(this,controller_splits);
 //            if(has_event_split)

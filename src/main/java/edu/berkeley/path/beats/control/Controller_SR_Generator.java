@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class Controller_SR_Generator extends Controller {
 
-    protected BufferedWriter writer = null;
+//    protected BufferedWriter writer = null;
     protected List<NodeData> node_data;
 
     /////////////////////////////////////////////////////////////////////
@@ -107,13 +107,13 @@ public class Controller_SR_Generator extends Controller {
 
 
         // output file
-        String out_file_name = param.get("out_file");
-        try {
-            writer = new BufferedWriter(new FileWriter(out_file_name));
-        } catch (Exception e) {
-            System.err.print(e);
-            writer=null;
-        }
+//        String out_file_name = param.get("out_file");
+//        try {
+//            writer = new BufferedWriter(new FileWriter(out_file_name));
+//        } catch (Exception e) {
+//            System.err.print(e);
+//            writer=null;
+//        }
 
     }
 
@@ -127,17 +127,17 @@ public class Controller_SR_Generator extends Controller {
                 BeatsErrorLog.addError("In Controller_SR_Generator, all actuators must be on nodes.");
         }
 
-        for(NodeData nd : node_data){
-            if(nd.link_fw_dn.size()!=1)
-                BeatsErrorLog.addError("In Controller_SR_Generator, must have exactly one downstream mainline link.");
-            if(nd.link_fw_up.size()!=1)
-                BeatsErrorLog.addError("In Controller_SR_Generator, must have exactly one upstream mainline link.");
-            if(nd.link_fr.size()<1)
-                BeatsErrorLog.addError("In Controller_SR_Generator, must have at least one offramp link.");
-        }
+//        for(NodeData nd : node_data){
+//            if(nd.link_fw_dn.size()!=1)
+//                BeatsErrorLog.addError("In Controller_SR_Generator, must have exactly one downstream mainline link.");
+//            if(nd.link_fw_up.size()!=1)
+//                BeatsErrorLog.addError("In Controller_SR_Generator, must have exactly one upstream mainline link.");
+//            if(nd.link_fr.size()<1)
+//                BeatsErrorLog.addError("In Controller_SR_Generator, must have at least one offramp link.");
+//        }
 
-        if(writer==null)
-            BeatsErrorLog.addError("In Controller_SR_Generator, could not create output file.");
+//        if(writer==null)
+//            BeatsErrorLog.addError("In Controller_SR_Generator, could not create output file.");
 
     }
 
@@ -149,35 +149,61 @@ public class Controller_SR_Generator extends Controller {
     @Override
     protected void update() throws BeatsException {
 
-        double beta;
         double dt_in_hr = myScenario.getSimdtinseconds()/3600d;
 
-        for(int i=0;i<node_data.size();i++){
-            NodeData nd = node_data.get(i);
-            double [] fr_flow_vph = nd.get_fr_flow_in_vph();
-            double tot_fr_flow_vph = BeatsMath.sum(fr_flow_vph);
-            double ml_up_demand_vph = BeatsMath.sum(nd.link_fw_up.get(0).get_out_demand_in_veh(0))/dt_in_hr;
-            double ml_dn_supply_vph = 0d;
-            for(Link link : nd.link_fr)
-                ml_dn_supply_vph += link.get_space_supply_in_veh(0);
-            ml_dn_supply_vph /= dt_in_hr;
-            double ml_up_flow_vph = Math.min( ml_up_demand_vph , ml_dn_supply_vph + tot_fr_flow_vph );
-            for(int j=0;j<nd.link_fr.size();j++){
+        for(int n=0;n<node_data.size();n++){
+            NodeData nd = node_data.get(n);
 
-                if(BeatsMath.equals(fr_flow_vph[j],0d))
-                    beta = 0d;
-                else if(BeatsMath.equals(ml_up_flow_vph,0d))
-                    beta = 1d;
-                else
-                    beta = Math.min( fr_flow_vph[j] / ml_up_flow_vph , 1d );
+            // update node informatio
+            nd.update_info();
 
-                for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType()){
-                    ((ActuatorCMS)actuators.get(i)).set_split( nd.fw_dn_id(0) , nd.fr_id(j) , vt.getId() , beta );
-                    try{
-                        writer.write(String.format("%.1f\t%d\t%d\t%d\t%d\t%f\t%f\t%f\n",myScenario.getCurrentTimeInSeconds(),nd.getId(),nd.fw_up_id(0),nd.fr_id(j),vt.getId(),fr_flow_vph[j],ml_up_flow_vph,beta));
+            // OR->FR => beta = 0;
+            for(int i=0;i<nd.ind_or.size();i++){
+                for(int j=0;j<nd.ind_fr.size();j++){
+                    for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType()){
+                        ((ActuatorCMS)actuators.get(n)).set_split(
+                                nd.link_or.get(i).getId(),
+                                nd.link_fr.get(j).getId(),
+                                vt.getId(),
+                                0d);
                     }
-                    catch(IOException e){
-                        System.err.print(e);
+                }
+            }
+
+            // !OR->FR, compute beta
+            double beta = nd.offramp_flow_demand_ratio;
+            for(int j=0;j<nd.non_offramp_xi.length;j++)
+                beta = Math.max(beta,nd.non_offramp_xi[j]);
+            beta = Math.min(beta,1d);
+
+
+            System.out.println(myScenario.getCurrentTimeInSeconds() + "\t" + nd.getId() + "\t" + beta);
+
+            for(int i=0;i<nd.ind_not_or.size();i++){
+                for(int j=0;j<nd.ind_fr.size();j++){
+                    for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType()){
+                        ((ActuatorCMS)actuators.get(n)).set_split(
+                                nd.link_not_or.get(i).getId() ,
+                                nd.link_fr.get(j).getId() ,
+                                vt.getId() ,
+                                beta );
+                    }
+                }
+            }
+
+            // !OR->!FR, adjust
+            for(int i=0;i<nd.ind_not_or.size();i++){
+                int ii = nd.ind_not_or.get(i);
+                for(int j=0;j<nd.ind_not_fr.size();j++){
+                    int jj = nd.ind_not_fr.get(j);
+                    for(int k=0;k<myScenario.getNumVehicleTypes();k++){
+                        double alpha = nd.get_sr(ii,jj,k);
+                        double r = (1d-beta)/nd.non_onramp_splits[i][k];
+                        ((ActuatorCMS)actuators.get(n)).set_split(
+                                nd.link_not_or.get(i).getId() ,
+                                nd.link_not_fr.get(j).getId() ,
+                                myScenario.getVehicleTypeIdForIndex(k) ,
+                                r*alpha );
                     }
                 }
             }
@@ -186,41 +212,80 @@ public class Controller_SR_Generator extends Controller {
 
     @Override
     protected void close_output() {
-        if(writer==null)
-            return;
-        try{
-            writer.close();
-        } catch (IOException e){
-            System.err.print(e);
-        }
+//        if(writer==null)
+//            return;
+//        try{
+//            writer.close();
+//        } catch (IOException e){
+//            System.err.print(e);
+//        }
     }
 
     class NodeData {
+
+        Node myNode;
 
         protected long id;
         protected int step_initial_abs;
         protected boolean isdone;
         protected List<BeatsTimeProfile> fr_flow;	// [veh] demand profile per vehicle type
-        protected List<Link> link_fw_up;
-        protected List<Link> link_fw_dn;
+
+        protected List<Link> link_or;
+        protected List<Link> link_not_or;
         protected List<Link> link_fr;
+        protected List<Link> link_not_fr;
+
+        protected List<Integer> ind_or;
+        protected List<Integer> ind_not_or;
+        protected List<Integer> ind_fr;
+        protected List<Integer> ind_not_fr;
+
+
+
+        double total_non_onramp_demand;
+        double [] known_non_offramp_demand;
+        double [][] non_onramp_splits;
+        double [] non_offramp_phi;
+        double offramp_flow_demand_ratio;
+        double [] non_offramp_xi;
+        double [] fr_flow_veh;
 
         public NodeData(DemandSet demand_set,Node myNode){
 
             this.id = myNode.getId();
+            this.myNode = myNode;
 
-            link_fw_up = new ArrayList<Link>();
-            for(Link link : myNode.getInput_link())
-                if(link.isFreeway())
-                    link_fw_up.add(link);
+            //  link references
+            link_or = new ArrayList<Link>();
+            link_not_or = new ArrayList<Link>();
+            ind_or = new ArrayList<Integer>();
+            ind_not_or = new ArrayList<Integer>();
+            for(int i=0;i<myNode.getnIn();i++){
+                Link link = myNode.getInput_link()[i];
+                if(link.isOnramp()){
+                    link_or.add(link);
+                    ind_or.add(i);
+                }
+                else{
+                    link_not_or.add(link);
+                    ind_not_or.add(i);
+                }
+            }
 
-            link_fw_dn = new ArrayList<Link>();
             link_fr = new ArrayList<Link>();
-            for(Link link : myNode.getOutput_link()){
-                if(link.isFreeway())
-                    link_fw_dn.add(link);
-                if(link.isOfframp())
+            link_not_fr = new ArrayList<Link>();
+            ind_fr = new ArrayList<Integer>();
+            ind_not_fr = new ArrayList<Integer>();
+            for(int j=0;j<myNode.getnOut();j++){
+                Link link = myNode.getOutput_link()[j];
+                if(link.isOfframp()){
                     link_fr.add(link);
+                    ind_fr.add(j);
+                }
+                else{
+                    link_not_fr.add(link);
+                    ind_not_fr.add(j);
+                }
             }
 
             // find the demand profile for the offramps
@@ -253,6 +318,95 @@ public class Controller_SR_Generator extends Controller {
                 isdone = false;
             }
 
+        }
+
+        public void update_info(){
+
+            int i,j,k;
+            double dt_in_hr = myScenario.getSimdtinseconds()/3600d;
+
+            // total_non_onramp_demand [veh]
+            total_non_onramp_demand = 0d;
+            for(Link link : link_not_or)
+                total_non_onramp_demand += BeatsMath.sum(link.get_out_demand_in_veh(0));
+
+            // known_non_offramp_demand [veh]
+            known_non_offramp_demand = new double[link_not_fr.size()];
+            for(j=0;j<ind_not_fr.size();j++){
+                known_non_offramp_demand[j] = 0d;
+                int jj = ind_not_fr.get(j);
+                for(i=0;i<ind_or.size();i++){
+                    int ii = ind_or.get(i);
+                    double [] Si = link_or.get(i).get_out_demand_in_veh(0);
+                    for(k=0;k<myScenario.getNumVehicleTypes();k++)
+                        known_non_offramp_demand[j] += Si[k]*get_sr(ii,jj,k);
+                }
+            }
+
+            // non_onramp_splits
+            non_onramp_splits = new double[link_not_or.size()][myScenario.getNumVehicleTypes()];
+            for(i=0;i<ind_not_or.size();i++){
+                int ii = ind_not_or.get(i);
+                for(j=0;j<ind_not_fr.size();j++){
+                    int jj = ind_not_fr.get(j);
+                    for(k=0;k<myScenario.getNumVehicleTypes();k++)
+                        non_onramp_splits[i][k] += get_sr(ii,jj,k);
+                }
+            }
+
+            for(i=0;i<ind_not_or.size();i++)
+                for(k=0;k<myScenario.getNumVehicleTypes();k++)
+                    if(BeatsMath.equals(non_onramp_splits[i][k],0d))
+                        System.out.println(myScenario.getCurrentTimeInSeconds());
+
+
+            // non_offramp_phi
+            non_offramp_phi = new double[link_not_fr.size()];
+            for(j=0;j<ind_not_fr.size();j++){
+                int jj = ind_not_fr.get(j);
+                for(i=0;i<ind_not_or.size();i++){
+                    int ii = ind_not_or.get(i);
+                    double [] Si = link_not_or.get(i).get_out_demand_in_veh(0);
+                    for(k=0;k<myScenario.getNumVehicleTypes();k++){
+                        double alpha = get_sr(ii,jj,k);
+                        non_offramp_phi[j] += alpha*Si[k]/non_onramp_splits[i][k];
+                    }
+                }
+            }
+
+            // fr_flow_veh
+            fr_flow_veh = get_fr_flow_in_vph();
+            for(j=0;j<fr_flow_veh.length;j++)
+                fr_flow_veh[j] *= dt_in_hr;
+
+            double tot_fr_flow_veh = BeatsMath.sum(fr_flow_veh);
+
+            // offramp_flow_demand_ratio
+            if(BeatsMath.equals(tot_fr_flow_veh,0d))
+                offramp_flow_demand_ratio = 0d;
+            else if(BeatsMath.greaterthan(tot_fr_flow_veh,total_non_onramp_demand))
+                offramp_flow_demand_ratio = 1d;
+            else
+                offramp_flow_demand_ratio = tot_fr_flow_veh / total_non_onramp_demand;
+
+            // non_offramp_xi
+            non_offramp_xi = new double[link_not_fr.size()];
+            for(j=0;j<ind_not_fr.size();j++){
+                double num = offramp_flow_demand_ratio*(known_non_offramp_demand[j] + non_offramp_phi[j]);
+                double Rj = link_not_fr.get(j).get_space_supply_in_veh(0);
+                double den = Rj + offramp_flow_demand_ratio * non_offramp_phi[j];
+                if(BeatsMath.equals(num,0d))
+                    non_offramp_xi[j] = 0d;
+                else if(BeatsMath.greaterthan(num,den))
+                    non_offramp_xi[j] = 1d;
+                else
+                    non_offramp_xi[j] = num / den;
+            }
+
+        }
+
+        public double get_sr(int ii,int jj,int kk){
+            return myNode.getSplitRatioProfileValue(ii,jj,kk);
         }
 
         protected double [] get_fr_flow_in_vph(){
@@ -291,15 +445,18 @@ public class Controller_SR_Generator extends Controller {
         protected long getId(){
             return id;
         }
-        protected long fw_up_id(int index){
-            return link_fw_up.get(index).getId();
-        }
-        protected long fw_dn_id(int index){
-            return link_fw_dn.get(index).getId();
-        }
-        protected long fr_id(int index){
-            return link_fr.get(index).getId();
-        }
+
+//        protected long fw_up_id(int index){
+//            return link_fw_up.get(index).getId();
+//        }
+//
+//        protected long fw_dn_id(int index){
+//            return link_fw_dn.get(index).getId();
+//        }
+//
+//        protected long fr_id(int index){
+//            return link_fr.get(index).getId();
+//        }
 
     }
 

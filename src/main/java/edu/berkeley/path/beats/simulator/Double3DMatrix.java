@@ -44,7 +44,16 @@ final class Double3DMatrix {
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
-    
+
+    public Double3DMatrix(Double3DMatrix that){
+        this.nIn = that.nIn;
+        this.nOut = that.nOut;
+        this.nVTypes = that.nVTypes;
+        this.isempty = that.isempty;
+        this.data = that.cloneData();
+    }
+
+
     public Double3DMatrix(int nIn,int nOut,int nVTypes,double val) {
     	this.nIn = nIn;
     	this.nOut = nOut;
