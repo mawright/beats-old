@@ -295,6 +295,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
 //				((Signal)signal).update();
 
+
+
+        ////////////////////////////////
+        for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
+            ((Network) network).update_1();
+        }
+
+        ////////////////////////////////
         // update controllers
     	if(global_control_on)
     		controllerset.update();
@@ -306,8 +314,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     	eventset.update();
     	
         // update the network state......................
-		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
-			((Network) network).update();
+		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
+			((Network) network).update_2();
+        }
 
 		cumulatives.update();
 
@@ -1087,8 +1096,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	private boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
 
-        System.out.println(this.getCurrentTimeInSeconds());
-
 		// advance n steps
 		for(int k=0;k<n;k++){
 
@@ -1101,8 +1108,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         	// update scenario
         	update();
 
-            if(started_writing && clock.getRelativeTimeStep()%outputwriter.outSteps == 0 )
-	        	recordstate(writefiles,outputwriter,true);
+            if(started_writing && clock.getRelativeTimeStep()%outputwriter.outSteps == 0 ){
+                System.out.println(this.getCurrentTimeInSeconds());
+                recordstate(writefiles,outputwriter,true);
+            }
             
         	if(clock.expired())
         		return false;

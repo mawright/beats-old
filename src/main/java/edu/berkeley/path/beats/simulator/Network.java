@@ -87,16 +87,22 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 
 	}
 
-	protected void update() throws BeatsException {
+    protected void update_1() throws BeatsException {
+
+        if(isempty)
+            return;
+
+        // compute link demand and supply ...............
+        for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
+            ((Link)link).updateOutflowDemand();
+            ((Link)link).updateSpaceSupply();
+        }
+    }
+
+	protected void update_2() throws BeatsException {
 
 		if(isempty)
 			return;
-		
-        // compute link demand and supply ...............
-        for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
-        	((Link)link).updateOutflowDemand();
-        	((Link)link).updateSpaceSupply();
-        }
 
 
         // update nodes: compute flows on links .........

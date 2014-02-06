@@ -32,6 +32,7 @@ public class Controller_SR_Generator extends Controller {
 
 //    protected BufferedWriter writer = null;
     protected List<NodeData> node_data;
+    double dt_in_hr;
 
     /////////////////////////////////////////////////////////////////////
     // Construction
@@ -105,7 +106,7 @@ public class Controller_SR_Generator extends Controller {
             node_data.add(new NodeData(demand_set,(Node) se.getReference()));
         }
 
-
+        dt_in_hr = myScenario.getSimdtinseconds()/3600d;
         // output file
 //        String out_file_name = param.get("out_file");
 //        try {
@@ -149,8 +150,6 @@ public class Controller_SR_Generator extends Controller {
     @Override
     protected void update() throws BeatsException {
 
-        double dt_in_hr = myScenario.getSimdtinseconds()/3600d;
-
         for(int n=0;n<node_data.size();n++){
             NodeData nd = node_data.get(n);
 
@@ -175,9 +174,6 @@ public class Controller_SR_Generator extends Controller {
             for(int j=0;j<nd.non_offramp_xi.length;j++)
                 beta = Math.max(beta,nd.non_offramp_xi[j]);
             beta = Math.min(beta,1d);
-
-
-            System.out.println(myScenario.getCurrentTimeInSeconds() + "\t" + nd.getId() + "\t" + beta);
 
             for(int i=0;i<nd.ind_not_or.size();i++){
                 for(int j=0;j<nd.ind_fr.size();j++){
@@ -239,8 +235,6 @@ public class Controller_SR_Generator extends Controller {
         protected List<Integer> ind_not_or;
         protected List<Integer> ind_fr;
         protected List<Integer> ind_not_fr;
-
-
 
         double total_non_onramp_demand;
         double [] known_non_offramp_demand;
@@ -323,7 +317,6 @@ public class Controller_SR_Generator extends Controller {
         public void update_info(){
 
             int i,j,k;
-            double dt_in_hr = myScenario.getSimdtinseconds()/3600d;
 
             // total_non_onramp_demand [veh]
             total_non_onramp_demand = 0d;
@@ -354,12 +347,6 @@ public class Controller_SR_Generator extends Controller {
                 }
             }
 
-            for(i=0;i<ind_not_or.size();i++)
-                for(k=0;k<myScenario.getNumVehicleTypes();k++)
-                    if(BeatsMath.equals(non_onramp_splits[i][k],0d))
-                        System.out.println(myScenario.getCurrentTimeInSeconds());
-
-
             // non_offramp_phi
             non_offramp_phi = new double[link_not_fr.size()];
             for(j=0;j<ind_not_fr.size();j++){
@@ -375,10 +362,7 @@ public class Controller_SR_Generator extends Controller {
             }
 
             // fr_flow_veh
-            fr_flow_veh = get_fr_flow_in_vph();
-            for(j=0;j<fr_flow_veh.length;j++)
-                fr_flow_veh[j] *= dt_in_hr;
-
+            fr_flow_veh = get_fr_flow_in_veh();
             double tot_fr_flow_veh = BeatsMath.sum(fr_flow_veh);
 
             // offramp_flow_demand_ratio
@@ -409,19 +393,20 @@ public class Controller_SR_Generator extends Controller {
             return myNode.getSplitRatioProfileValue(ii,jj,kk);
         }
 
-        protected double [] get_fr_flow_in_vph(){
+        protected double [] get_fr_flow_in_veh(){
 
             double [] val = new double [link_fr.size()];
+            int prof_sample_steps = 60;         ///// HACK!!!!
 
-            for(int i=0;i<link_fr.size();i++){
+            if( !isdone && myScenario.getClock().is_time_to_sample_abs(prof_sample_steps, step_initial_abs)){
 
-                BeatsTimeProfile profile = fr_flow.get(i);
+                for(int i=0;i<link_fr.size();i++){
 
-                if( !isdone && myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
+                    BeatsTimeProfile profile = fr_flow.get(i);
 
                     // REMOVE THESE
                     int n = profile.getNumTime()-1;
-                    int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
+                    int step = myScenario.getClock().sample_index_abs(prof_sample_steps,step_initial_abs);
 
                     // demand is zero before step_initial_abs
                     if(myScenario.getClock().getAbsoluteTimeStep()< step_initial_abs)
@@ -436,27 +421,19 @@ public class Controller_SR_Generator extends Controller {
                         isdone = true;
                         val[i] = profile.get(n);
                     }
+                    val[i] = Math.abs(val[i]);
+                    val[i] *= dt_in_hr;
+
                 }
-                val[i] = Math.abs(val[i]);
+                return val;
             }
-            return val;
+            else
+                return this.fr_flow_veh;
         }
 
         protected long getId(){
             return id;
         }
-
-//        protected long fw_up_id(int index){
-//            return link_fw_up.get(index).getId();
-//        }
-//
-//        protected long fw_dn_id(int index){
-//            return link_fw_dn.get(index).getId();
-//        }
-//
-//        protected long fr_id(int index){
-//            return link_fr.get(index).getId();
-//        }
 
     }
 
