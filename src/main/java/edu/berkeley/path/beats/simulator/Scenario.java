@@ -50,11 +50,15 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 @SuppressWarnings("restriction")
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
+    public static enum RunMode { normal , fw_fr_split_output };
 	public static enum UncertaintyType { uniform, gaussian }
 	public static enum ModeType { on_init_dens,left_of_init_dens,right_of_init_dens}
 	public static enum NodeFlowSolver { proportional , symmetric }
 	public static enum NodeSRSolver { A , B , C }
+
     private static Logger logger = Logger.getLogger(Scenario.class);
+
+    private RunMode run_mode = RunMode.normal;
 	private Cumulatives cumulatives;
     private PerformanceCalculator perf_calc;
 	private Clock clock;
@@ -295,14 +299,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
 //				((Signal)signal).update();
 
+        // update supplu/demand prior to controllers if run_mode==fw_fr_split_output
+        if(run_mode==RunMode.fw_fr_split_output)
+            for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
+                ((Network) network).update_supply_demand();
 
-
-        ////////////////////////////////
-        for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
-            ((Network) network).update_1();
-        }
-
-        ////////////////////////////////
         // update controllers
     	if(global_control_on)
     		controllerset.update();
@@ -315,7 +316,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     	
         // update the network state......................
 		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
-			((Network) network).update_2();
+            if(run_mode==RunMode.normal)
+                    ((Network) network).update_supply_demand();
+            ((Network) network).update_flow_density();
         }
 
 		cumulatives.update();

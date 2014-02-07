@@ -87,7 +87,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 
 	}
 
-    protected void update_1() throws BeatsException {
+    protected void update_supply_demand() throws BeatsException {
 
         if(isempty)
             return;
@@ -99,11 +99,10 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
         }
     }
 
-	protected void update_2() throws BeatsException {
+	protected void update_flow_density() throws BeatsException {
 
 		if(isempty)
 			return;
-
 
         // update nodes: compute flows on links .........
 		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
