@@ -9,23 +9,22 @@ import java.util.Properties;
  */
 public class BeatsProperties extends Properties {
 
-    public BeatsProperties(String prop_file_name){
+    String scenario_name;
+    String performance_config;
+    Double sim_dt;
+    String output_prefix;
+    String output_format;
+    Double start_time;
+    Double duration;
+    Double output_dt;
+    Integer num_reps;
+    String uncertainty_model;
+    String split_ratio_model;
+    String node_flow_model;
+    String run_mode;
+    Integer ensemble_size;
 
-        // REQUIRED
-        this.setProperty("SCENARIO","");
-        this.setProperty("SIM_DT","");
-        this.setProperty("OUTPUT_PREFIX","");
-
-        // Defaults
-        this.setProperty("OUTPUT_FORMAT","text");
-        this.setProperty("START_TIME","0");
-        this.setProperty("DURATION","86540");
-        this.setProperty("OUTPUT_DT","300");
-        this.setProperty("NUM_REPS","1");
-        this.setProperty("UNCERTAINTY_MODEL","gaussian");
-        this.setProperty("NODE_FLOW_SOLVER","proportional");
-        this.setProperty("NODE_SPLIT_RATIO_SOLVER","A");
-        this.setProperty("RUN_MODE","normal");
+    public BeatsProperties(String prop_file_name) throws BeatsException {
 
         // load properties file
         try{
@@ -35,8 +34,51 @@ public class BeatsProperties extends Properties {
             System.err.print(e);
         }
 
-        if(((String)get("SCENARIO")).isEmpty())
-            System.out.println("NEED SCENARIO");
+        // read properties
+        scenario_name = getProperty("SCENARIO","");
+        sim_dt = getProperty("SIM_DT")==null ? Double.NaN : Double.parseDouble(getProperty("SIM_DT"));
+        output_prefix = getProperty("OUTPUT_PREFIX","");
+        output_format = getProperty("OUTPUT_FORMAT", "text");
+        start_time = Double.parseDouble(getProperty("START_TIME","0"));
+        duration = Double.parseDouble(getProperty("DURATION","86400"));
+        output_dt = Double.parseDouble(getProperty("OUTPUT_DT","300"));
+        num_reps = Integer.parseInt(getProperty("NUM_REPS","1"));
+        uncertainty_model = getProperty("UNCERTAINTY_MODEL", "gaussian");
+        split_ratio_model = getProperty("NODE_SPLIT_RATIO_SOLVER","A");
+        node_flow_model = getProperty("NODE_FLOW_SOLVER","proportional");
+        run_mode = getProperty("RUN_MODE","normal");
+        ensemble_size = Integer.parseInt(getProperty("ENSEMBLE_SIZE","1"));
+        performance_config = getProperty("PERFORMANCE","");
+
+        // validate
+        if(scenario_name.isEmpty())
+            throw new BeatsException("Scenario name not provided in properties file.");
+        if(Double.isNaN(sim_dt))
+            throw new BeatsException("Simulation dt not provided in properties file.");
+        if(output_prefix.isEmpty())
+            throw new BeatsException("Output prefix not provided in properties file.");
+
+    }
+
+
+    @Override
+    public synchronized String toString() {
+        String str;
+        str = "SCENARIO = " + scenario_name +"\n";
+        str += "SIM_DT = " + sim_dt +"\n";
+        str += "OUTPUT_PREFIX = " +output_prefix + "\n";
+        str += "OUTPUT_FORMAT = " +output_format + "\n";
+        str += "START_TIME = " + start_time+ "\n";
+        str += "DURATION = " + duration+ "\n";
+        str += "OUTPUT_DT = " + output_dt+ "\n";
+        str += "NUM_REPS = " + num_reps+ "\n";
+        str += "UNCERTAINTY_MODEL = " + uncertainty_model + "\n";
+        str += "NODE_FLOW_SOLVER = " + node_flow_model + "\n";
+        str += "NODE_SPLIT_RATIO_SOLVER = " + split_ratio_model + "\n";
+        str += "RUN_MODE = " + run_mode + "\n";
+        str += "ENSEMBLE_SIZE = " + ensemble_size + "\n";
+        str += "PERFORMANCE = " + performance_config;
+        return str;
     }
 
 }

@@ -26,20 +26,6 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.jaxb.OutputRequest;
-import org.apache.log4j.Logger;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
-//import org.apache.torque.NoRowsException;
-//import org.apache.torque.TooManyRowsException;
-//import org.apache.torque.TorqueException;
-//
-//import edu.berkeley.path.beats.om.DefSimSettings;
-//import edu.berkeley.path.beats.om.DefSimSettingsPeer;
-//import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
-
 /** XXX. 
  * YYY
  *
@@ -47,50 +33,55 @@ import java.util.Properties;
  */
 public final class Runner {
 
-	//private static Logger logger = Logger.getLogger(Runner.class);
-
 	public static void main(String[] args) {
 
 		long time = System.currentTimeMillis();
 
-		try {
+        if(args.length<1){
+            System.out.print(Runner.get_usage());
+            System.exit(1);
+        }
 
-            //Reading properties file in Java example
-            BeatsProperties props = new BeatsProperties("C:\\Users\\gomes\\Desktop\\beats_config.properties");
+        BeatsProperties props = null;
 
+        // read properties file
+        try {
+            props = new BeatsProperties(args[0]);
+        } catch (BeatsException e){
+            System.err.println(e);
+            System.exit(1);
+        }
 
-			// process input parameters
-			RunnerArguments runargs = null; //parseInput(args);
-			if (null == runargs)
-				return;
+        try {
 
 			// load configuration file
-			Scenario scenario = ObjectFactory.createAndLoadScenario(runargs.configfilename,runargs.uncertaintymodel,runargs.nodeflowsolver,runargs.nodesrsolver);
+            Scenario scenario = ObjectFactory.createAndLoadScenario(
+                                props.scenario_name ,
+                                props.uncertainty_model ,
+                                props.node_flow_model ,
+                                props.split_ratio_model );
 
-			if (null == scenario)
+			if (scenario==null)
 				throw new BeatsException("Scenario did not load");
 
-
             // performance output
-//            String perf_config_file = "data//perf//p1.xml";
-//            PerformanceCalculator perf_calc = ObjectFactory.createPerformanceCalculator(perf_config_file);
-//            scenario.set_performance_calculator(perf_calc);
+            if(!props.performance_config.isEmpty())
+                scenario.set_performance_calculator(
+                        ObjectFactory.createPerformanceCalculator(props.performance_config) );
 
 			// initialize
-			scenario.initialize( runargs.simdt,
-								 runargs.startTime,
-								 runargs.startTime+runargs.duration,
-								 runargs.outputDt,
-								 runargs.output_format,
-								 runargs.outputfileprefix,
-								 runargs.numReps,
-								 1 );
+            scenario.initialize( props.sim_dt ,
+                                 props.start_time ,
+                                 props.start_time + props.duration ,
+                                 props.output_dt ,
+                                 props.output_format,
+                                 props.output_prefix,
+                                 props.num_reps,
+                                 props.ensemble_size );
 
 			// run the scenario
 			scenario.run();
-			
-			System.out.println("done in " + (System.currentTimeMillis()-time));
-			
+
 		}
         catch (BeatsException exc) {
 			exc.printStackTrace();
@@ -100,54 +91,9 @@ public final class Runner {
 				BeatsErrorLog.print();
 				BeatsErrorLog.clearErrorMessage();
 			}
+            System.out.println("done in " + (System.currentTimeMillis()-time));
 		}
 	}
-
-//	private static RunnerArguments parseInput(String[] args){
-//
-//		if(args.length<2){
-//			String str;
-//			str = "Usage:" + "\n";
-//			str += "-----\n" + "\n";
-//			str += "args[0]: Configuration file name. (required)\n";
-//			str += "args[1]: Time step [seconds]. (required)\n";
-//			str += "args[2]: Output file name.\n";
-//			str += "         Default: 'outputs'\n";
-//			str += "args[3]: Output file format.\n";
-//			str += "         Default: 'xml'.\n";
-//			str += "args[4]: Start time [seconds after midnight]." + "\n";
-//			str += "         Default: Minimum start time of all demand profiles." + "\n";
-//			str += "args[5]: Duration [seconds]." + "\n";
-//			str += "         Default: 86,400 seconds." + "\n";
-//			str += "args[6]: Output sampling time [seconds]." + "\n";
-//			str += "         Default: 300 seconds." + "\n";
-//			str += "args[7]: Number of simulations." + "\n";
-//			str += "         Default: 1." + "\n";
-//			str += "args[8]: noise model <gaussian,uniform>." + "\n";
-//			str += "         Default: uniform." + "\n";
-//			str += "args[9]: node flow solver <proportional,symmetric>." + "\n";
-//			str += "         Default: proportional." + "\n";
-//
-//			str += "         Default: A." + "\n";
-//			str += "\nSimulation modes:" + "\n";
-//			str += "----------------\n" + "\n";
-//			str += "Normal mode: Simulation runs in normal mode when the start time equals " +
-//					"the time stamp of the initial density profile. In this mode, the initial density state" +
-//					" is taken from the initial density profile, and the simulated state is written to the output file.\n" + "\n";
-//			str += "Warmup mode: Warmup is executed whenever the start time (st) does not equal the time stamp " +
-//					"of the initial density profile (tsidp). The purpose of a warmup simulation is to compute the state of the scenario " +
-//					"at st. If st<tsidp, then the warmup run will start with zero density at the earliest times stamp of all " +
-//					"demand profiles and run to st. If st>tsidn, then the warmup will start at tsidn with the given initial " +
-//					"density profile and run to st. The simulation state is not written in warmup mode. The output is a configuration " +
-//					"file with the state at st contained in the initial density profile." + "\n";
-//			BeatsErrorLog.addError(str);
-//			return null;
-//		}
-//
-//		RunnerArguments simsettings = new RunnerArguments(RunnerArguments.defaults());
-//		simsettings.parseArgs(args, 0);
-//		return simsettings;
-//	}
 
 //	public static void run_db(String [] args) throws BeatsException, edu.berkeley.path.beats.Runner.InvalidUsageException {
 //		logger.info("Parsing arguments");
@@ -204,5 +150,25 @@ public final class Runner {
 //		edu.berkeley.path.beats.db.Service.shutdown();
 //		logger.info("Done");
 //	}
+
+    public static String get_usage(){
+        String str =
+        "Arguments:\n" +
+        "\targs[0]: Name of the properties file.\n" +
+        "Properties:\n" +
+        "\tSCENARIO : Name of the scenario configuration file. (required)\n" +
+        "\tSIM_DT : Simulation time step in seconds. (required) \n" +
+        "\tOUTPUT_PREFIX : Prefix for the output file. (required)\n" +
+        "\tOUTPUT_FORMAT : Format of the output files <text,xml>. (default=text) \n" +
+        "\tSTART_TIME : Simulation start time in seconds after midnight. (default=0) \n" +
+        "\tDURATION : Duration of the simulation in seconds. (default=86400)\n" +
+        "\tOUTPUT_DT : Output sampling time in seconds. (default=300) \n" +
+        "\tNUM_REPS : Number of repetitions. (default=1)\n" +
+        "\tUNCERTAINTY_MODEL : Uncertainty model <gaussian,uniform>. (default=gaussian)\n" +
+        "\tNODE_FLOW_SOLVER : Node model <proportional,symmetric>. (default=proportional)\n" +
+        "\tNODE_SPLIT_RATIO_SOLVER : Algorithm for unknown splits <A,B,C>. (default=A) \n" +
+        "\tRUN_MODE : run mode <normal,fw_fr_split_output>. (default=normal)\n";
+        return str;
+    }
 
 }
