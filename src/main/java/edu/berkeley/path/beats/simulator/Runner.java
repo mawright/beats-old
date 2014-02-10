@@ -26,9 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-/** XXX. 
- * YYY
- *
+/**
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 public final class Runner {
@@ -86,6 +84,7 @@ public final class Runner {
         catch (BeatsException exc) {
 			exc.printStackTrace();
 		}
+
         finally {
 			if (BeatsErrorLog.hasmessage()) {
 				BeatsErrorLog.print();
@@ -94,6 +93,28 @@ public final class Runner {
             System.out.println("done in " + (System.currentTimeMillis()-time));
 		}
 	}
+
+
+    public static String get_usage(){
+        String str =
+        "Arguments:\n" +
+        "\targs[0]: Name of the properties file.\n" +
+        "Properties:\n" +
+        "\tSCENARIO : Name of the scenario configuration file. (required)\n" +
+        "\tSIM_DT : Simulation time step in seconds. (required) \n" +
+        "\tOUTPUT_PREFIX : Prefix for the output file. (required)\n" +
+        "\tOUTPUT_FORMAT : Format of the output files <text,xml>. (default=text) \n" +
+        "\tSTART_TIME : Simulation start time in seconds after midnight. (default=0) \n" +
+        "\tDURATION : Duration of the simulation in seconds. (default=86400)\n" +
+        "\tOUTPUT_DT : Output sampling time in seconds. (default=300) \n" +
+        "\tNUM_REPS : Number of repetitions. (default=1)\n" +
+        "\tUNCERTAINTY_MODEL : Uncertainty model <gaussian,uniform>. (default=gaussian)\n" +
+        "\tNODE_FLOW_SOLVER : Node model <proportional,symmetric>. (default=proportional)\n" +
+        "\tNODE_SPLIT_RATIO_SOLVER : Algorithm for unknown splits <A,B,C>. (default=A) \n" +
+        "\tRUN_MODE : run mode <normal,fw_fr_split_output>. (default=normal)\n" +
+        "\tPERFORMANCE : Configuration file for performance output.\n";
+        return str;
+    }
 
 //	public static void run_db(String [] args) throws BeatsException, edu.berkeley.path.beats.Runner.InvalidUsageException {
 //		logger.info("Parsing arguments");
@@ -140,8 +161,8 @@ public final class Runner {
 //
 //		logger.info("Simulation");
 //		scenario.run(runargs.getDt(),
-//				runargs.getStartTime(), 
-//				runargs.getEndTime(), 
+//				runargs.getStartTime(),
+//				runargs.getEndTime(),
 //				runargs.getOutputDt(),
 //				"db",
 //				runargs.getOutputfileprefix(),
@@ -150,25 +171,5 @@ public final class Runner {
 //		edu.berkeley.path.beats.db.Service.shutdown();
 //		logger.info("Done");
 //	}
-
-    public static String get_usage(){
-        String str =
-        "Arguments:\n" +
-        "\targs[0]: Name of the properties file.\n" +
-        "Properties:\n" +
-        "\tSCENARIO : Name of the scenario configuration file. (required)\n" +
-        "\tSIM_DT : Simulation time step in seconds. (required) \n" +
-        "\tOUTPUT_PREFIX : Prefix for the output file. (required)\n" +
-        "\tOUTPUT_FORMAT : Format of the output files <text,xml>. (default=text) \n" +
-        "\tSTART_TIME : Simulation start time in seconds after midnight. (default=0) \n" +
-        "\tDURATION : Duration of the simulation in seconds. (default=86400)\n" +
-        "\tOUTPUT_DT : Output sampling time in seconds. (default=300) \n" +
-        "\tNUM_REPS : Number of repetitions. (default=1)\n" +
-        "\tUNCERTAINTY_MODEL : Uncertainty model <gaussian,uniform>. (default=gaussian)\n" +
-        "\tNODE_FLOW_SOLVER : Node model <proportional,symmetric>. (default=proportional)\n" +
-        "\tNODE_SPLIT_RATIO_SOLVER : Algorithm for unknown splits <A,B,C>. (default=A) \n" +
-        "\tRUN_MODE : run mode <normal,fw_fr_split_output>. (default=normal)\n";
-        return str;
-    }
 
 }
