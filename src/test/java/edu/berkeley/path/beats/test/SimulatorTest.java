@@ -112,7 +112,6 @@ public class SimulatorTest {
 			double startTime = 0d;
 			double duration = 3600d;
 			double outDt = 30d;
-			int numReps = 1;
 
 			// load configuration file
 			System.out.println("\tLoading");

@@ -53,19 +53,10 @@ public final class Runner {
         try {
 
 			// load configuration file
-            Scenario scenario = ObjectFactory.createAndLoadScenario(
-                                props.scenario_name ,
-                                props.uncertainty_model ,
-                                props.node_flow_model ,
-                                props.split_ratio_model );
+            Scenario scenario = ObjectFactory.createAndLoadScenario(props.scenario_name);
 
 			if (scenario==null)
 				throw new BeatsException("Scenario did not load");
-
-            // performance output
-            if(!props.performance_config.isEmpty())
-                scenario.set_performance_calculator(
-                        ObjectFactory.createPerformanceCalculator(props.performance_config) );
 
 			// initialize
             scenario.initialize( props.sim_dt ,
@@ -75,7 +66,12 @@ public final class Runner {
                                  props.output_format,
                                  props.output_prefix,
                                  props.num_reps,
-                                 props.ensemble_size );
+                                 props.ensemble_size ,
+                                 props.uncertainty_model ,
+                                 props.node_flow_model ,
+                                 props.split_ratio_model ,
+                                 props.performance_config ,
+                                 props.run_mode );
 
 			// run the scenario
 			scenario.run();
