@@ -469,14 +469,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                     perf_calc.close_output();
                 if(controllerset!=null)
                     controllerset.close_output();
-//                for(edu.berkeley.path.beats.jaxb.Node jnode : this.getNetworkSet().getNetwork().get(0).getNodeList().getNode()){
-//                    Node node = (Node) jnode;
-//                    if(node.greedy_policy_logger!=null)
-//                        try{ node.greedy_policy_logger.close(); }
-//                        catch(IOException e){
-//                            throw new BeatsException(e.getMessage());
-//                        }
-//                }
+                for(edu.berkeley.path.beats.jaxb.Node jnode : this.getNetworkSet().getNetwork().get(0).getNodeList().getNode()){
+                    Node node = (Node) jnode;
+                    if(node.greedy_policy_logger!=null)
+                        try{ node.greedy_policy_logger.close(); }
+                        catch(IOException e){
+                            throw new BeatsException(e.getMessage());
+                        }
+                }
 			}
 		}
         scenario_locked = false;		
