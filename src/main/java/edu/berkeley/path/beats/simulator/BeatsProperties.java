@@ -9,20 +9,21 @@ import java.util.Properties;
  */
 public class BeatsProperties extends Properties {
 
-    String scenario_name;
-    String performance_config;
-    Double sim_dt;
-    String output_prefix;
-    String output_format;
-    Double start_time;
-    Double duration;
-    Double output_dt;
-    Integer num_reps;
-    String uncertainty_model;
-    String split_ratio_model;
-    String node_flow_model;
-    String run_mode;
-    Integer ensemble_size;
+    public String scenario_name;
+    public String performance_config;
+    public String output_prefix;
+    public String output_format;
+    public String uncertainty_model;
+    public String split_ratio_model;
+    public String node_flow_model;
+    public String run_mode;
+    public String split_logger_prefix;
+    public Double sim_dt;
+    public Double start_time;
+    public Double duration;
+    public Double output_dt;
+    public Integer num_reps;
+    public Integer ensemble_size;
 
     public BeatsProperties(String prop_file_name) throws BeatsException {
 
@@ -49,6 +50,7 @@ public class BeatsProperties extends Properties {
         run_mode = getProperty("RUN_MODE","normal");
         ensemble_size = Integer.parseInt(getProperty("ENSEMBLE_SIZE","1"));
         performance_config = getProperty("PERFORMANCE","");
+        split_logger_prefix = getProperty("SPLIT_LOGGER_PREFIX","");
 
         // validate
         if(scenario_name.isEmpty())
@@ -77,7 +79,8 @@ public class BeatsProperties extends Properties {
         str += "NODE_SPLIT_RATIO_SOLVER = " + split_ratio_model + "\n";
         str += "RUN_MODE = " + run_mode + "\n";
         str += "ENSEMBLE_SIZE = " + ensemble_size + "\n";
-        str += "PERFORMANCE = " + performance_config;
+        str += "PERFORMANCE = " + performance_config + "\n";
+        str += "SPLIT_LOGGER_PREFIX = " + split_logger_prefix;
         return str;
     }
 

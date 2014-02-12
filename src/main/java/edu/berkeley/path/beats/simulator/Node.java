@@ -116,9 +116,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     	if(isTerminal)
     		return;
 
-        if(!istrivialsplit)
+        if(!istrivialsplit & !myNetwork.getMyScenario().split_logger_prefix.isEmpty())
             try{
-                greedy_policy_logger = new BufferedWriter(new FileWriter("C:\\Users\\gomes\\code\\L0\\L0-planning\\config\\680N-no217\\sr_"+getId()+".txt"));
+                greedy_policy_logger = new BufferedWriter(new FileWriter(myNetwork.getMyScenario().split_logger_prefix+getId()+".txt"));
             } catch (IOException e){
                 return;
             }
@@ -212,7 +212,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
         /////////////////////////////////////////////////
         // write to logger
-        if(!istrivialsplit && !isTerminal){
+        if(greedy_policy_logger!=null){
             Scenario myScenario = getMyNetwork().getMyScenario();
             int k;
             for(i=0;i<getnIn();i++)

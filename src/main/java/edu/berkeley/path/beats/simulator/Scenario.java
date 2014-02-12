@@ -59,6 +59,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     private static Logger logger = Logger.getLogger(Scenario.class);
 
     private RunMode run_mode;
+    protected String split_logger_prefix;
 	private Cumulatives cumulatives;
     private PerformanceCalculator perf_calc;
 	private Clock clock;
@@ -339,27 +340,37 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble,
                 "gaussian",
                 "proportional",
-                "A","","normal");
+                "A",
+                "",
+                "normal",
+                "");
 	}
 
     public void initialize(double timestep,double starttime,double endtime,int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver) throws BeatsException {
-        initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble,uncertaintymodel,nodeflowsolver,nodesrsolver,"","normal");
+        initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble,uncertaintymodel,nodeflowsolver,nodesrsolver,
+                "",
+                "normal",
+                "");
     }
 
     public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble) throws BeatsException {
         initialize(timestep,starttime,endtime,outdt,outtype,outprefix,numReps,numEnsemble,
                 "gaussian",
                 "proportional",
-                "A","","normal");
+                "A",
+                "",
+                "normal",
+                "");
     }
 
-    public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver,String performance_config, String run_mode) throws BeatsException {
+    public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver,String performance_config, String run_mode,String split_logger_prefix) throws BeatsException {
 
         // set stuff
         setUncertaintyModel(uncertaintymodel);
         setNodeFlowSolver(nodeflowsolver);
         setNodeSRSolver(nodesrsolver);
         setRunMode(run_mode);
+        setSplitLoggerPrefix(split_logger_prefix);
 
         // create performance calculator
         if(!performance_config.isEmpty())
@@ -552,6 +563,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     protected void setRunMode(String run_mode){
         this.run_mode = RunMode.valueOf(run_mode);
+    }
+
+    protected void setSplitLoggerPrefix(String split_logger_prefix){
+        this.split_logger_prefix = split_logger_prefix;
     }
 	
 	protected void setGlobal_control_on(boolean global_control_on) {
@@ -1139,11 +1154,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         	// update scenario
         	update();
 
-            if(started_writing && clock.getRelativeTimeStep()%outputwriter.outSteps == 0 ){
-                System.out.println(this.getCurrentTimeInSeconds());
+            if(started_writing && clock.getRelativeTimeStep()%outputwriter.outSteps == 0 )
                 recordstate(writefiles,outputwriter,true);
-            }
-            
+
         	if(clock.expired())
         		return false;
 		}
