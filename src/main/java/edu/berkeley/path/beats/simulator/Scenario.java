@@ -58,7 +58,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     private static Logger logger = Logger.getLogger(Scenario.class);
 
-    private RunMode run_mode = RunMode.normal;
+    private RunMode run_mode;
 	private Cumulatives cumulatives;
     private PerformanceCalculator perf_calc;
 	private Clock clock;
@@ -336,10 +336,34 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 
 	public void initialize(double timestep,double starttime,double endtime,int numEnsemble) throws BeatsException {
-		initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble);
+		initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble,
+                "gaussian",
+                "proportional",
+                "A","","normal");
 	}
 
-	public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble) throws BeatsException {
+    public void initialize(double timestep,double starttime,double endtime,int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver) throws BeatsException {
+        initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble,uncertaintymodel,nodeflowsolver,nodesrsolver,"","normal");
+    }
+
+    public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble) throws BeatsException {
+        initialize(timestep,starttime,endtime,outdt,outtype,outprefix,numReps,numEnsemble,
+                "gaussian",
+                "proportional",
+                "A","","normal");
+    }
+
+    public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver,String performance_config, String run_mode) throws BeatsException {
+
+        // set stuff
+        setUncertaintyModel(uncertaintymodel);
+        setNodeFlowSolver(nodeflowsolver);
+        setNodeSRSolver(nodesrsolver);
+        setRunMode(run_mode);
+
+        // create performance calculator
+        if(!performance_config.isEmpty())
+            set_performance_calculator(ObjectFactory.createPerformanceCalculator(performance_config));
 
 		// create run parameters object
 		boolean writeoutput = true;
@@ -525,6 +549,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	protected void setNodeSRSolver(String nodesrsolver) {
 		this.nodesrsolver = NodeSRSolver.valueOf(nodesrsolver);
 	}
+
+    protected void setRunMode(String run_mode){
+        this.run_mode = RunMode.valueOf(run_mode);
+    }
 	
 	protected void setGlobal_control_on(boolean global_control_on) {
 		this.global_control_on = global_control_on;
