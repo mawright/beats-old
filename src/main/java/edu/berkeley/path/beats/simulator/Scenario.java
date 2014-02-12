@@ -66,7 +66,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private boolean global_control_on;	// global control switch
 	private double global_demand_knob;	// scale factor for all demands
 	private edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
-	private EventSet eventset = new EventSet();	// holds time sorted list of events	
+	private EventSet eventset = new EventSet();	// holds time sorted list of events
 	private SensorSet sensorset = new SensorSet();
 	private ActuatorSet actuatorset = new ActuatorSet();
 	private boolean started_writing;
@@ -79,10 +79,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private UncertaintyType uncertaintyModel;
 	private double std_dev_flow = 0.0d;	// [veh]
 	private boolean has_flow_unceratinty;
-	
+
 	// data
 	private boolean sensor_data_loaded = false;
-	
+
 	// run parameters
 	private RunParameters runParam;
 	private boolean initialized = true;
@@ -93,7 +93,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 
 	protected void populate() throws BeatsException {
-		
+
 	    // initialize scenario attributes ..............................................
 		this.global_control_on = true;
 		this.global_demand_knob = 1d;
@@ -110,7 +110,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// sensors
 		sensorset.populate(this);
-		
+
 		// signals
 		if(signalSet!=null)
 			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
@@ -118,11 +118,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         // actuators
         actuatorset.populate(this);
-		
+
 		// split ratio profile set (must follow network)
 		if(splitRatioSet!=null)
 			((SplitRatioSet) splitRatioSet).populate(this);
-		
+
 		// boundary capacities (must follow network)
 		if(downstreamBoundaryCapacitySet!=null)
 			for( edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile() )
@@ -130,13 +130,13 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		if(demandSet!=null)
 			((DemandSet) demandSet).populate(this);
-		
-		// fundamental diagram profiles 
+
+		// fundamental diagram profiles
 		if(fundamentalDiagramSet!=null)
 			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : fundamentalDiagramSet.getFundamentalDiagramProfile())
 				((FundamentalDiagramProfile) fd).populate(this);
-		
-		// initial density profile 
+
+		// initial density profile
 		if(initialDensitySet!=null)
 			((InitialDensitySet) initialDensitySet).populate(this);
 
@@ -148,7 +148,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         // populate controllers
 		controllerset.populate(this);
 
-		// populate events 
+		// populate events
 		eventset.populate(this);
 
 		cumulatives = new Cumulatives(this);
@@ -161,7 +161,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		if(S.getSimdtinseconds()<=0)
 			BeatsErrorLog.addError("Non-positive simulation step size (" + S.getSimdtinseconds() +").");
-		
+
 		// should have a network
 		if(S.networkSet==null || S.networkSet.getNetwork().isEmpty())
 			BeatsErrorLog.addError("Scenario does not contain a network.");
@@ -176,22 +176,22 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// validate actuators
 		S.actuatorset.validate();
-		
+
 		// signal list
 		if(S.signalSet!=null)
 			for (edu.berkeley.path.beats.jaxb.Signal signal : S.signalSet.getSignal())
 				((Signal) signal).validate();
-		
+
 		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
 		// validate initial density profile
 //		if(getInitialDensityProfile()!=null)
 //			((_InitialDensityProfile) getInitialDensityProfile()).validate();
 
-		// validate capacity profiles	
+		// validate capacity profiles
 		if(S.downstreamBoundaryCapacitySet!=null)
 			for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : S.downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
 				((CapacityProfile)capacityProfile).validate();
-		
+
 		// validate demand profiles
 		if(S.demandSet!=null)
 			((DemandSet)S.demandSet).validate();
@@ -199,7 +199,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// validate split ratio profiles
 		if(S.splitRatioSet!=null)
 			((SplitRatioSet)S.splitRatioSet).validate();
-		
+
 		// validate fundamental diagram profiles
 		if(S.fundamentalDiagramSet!=null)
 			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : S.fundamentalDiagramSet.getFundamentalDiagramProfile())
@@ -218,7 +218,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             S.perf_calc.validate();
 
 	}
-	
+
 	/** Prepare scenario for simulation:
 	 * set the state of the scenario to the initial condition
 	 * sample profiles
@@ -226,30 +226,30 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return success		A boolean indicating whether the scenario was successfuly reset.
 	 */
 	public void reset() throws BeatsException {
-		
+
 		started_writing = false;
 		global_control_on = true;
 	    global_demand_knob = 1d;
-		
+
 		// reset the clock
 		clock.reset();
-		
+
 		// reset network
 		if(networkSet!=null)
 			for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
 				((Network)network).reset();
-		
+
 		// sensor list
 		sensorset.reset();
 
 		// reset actuators
 		actuatorset.reset();
-		
+
 		// signal list
 		if(signalSet!=null)
 			for (edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
 				((Signal) signal).reset();
-						
+
 		// reset demand profiles
 		if(demandSet!=null)
 			((DemandSet)demandSet).reset();
@@ -258,7 +258,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(fundamentalDiagramSet!=null)
 			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : fundamentalDiagramSet.getFundamentalDiagramProfile())
 				((FundamentalDiagramProfile)fd).reset();
-		
+
 		// reset controllers
 		controllerset.reset();
 
@@ -269,12 +269,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         if(perf_calc!=null)
             perf_calc.reset();
-		
-	}	
 
-	private void update() throws BeatsException {	
+	}
 
-        // sample profiles .............................	
+	private void update() throws BeatsException {
+
+        // sample profiles .............................
     	if(downstreamBoundaryCapacitySet!=null)
         	for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
         		((CapacityProfile) capacityProfile).update();
@@ -283,18 +283,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     		((DemandSet)demandSet).update();
 
     	if(splitRatioSet!=null)
-    		((SplitRatioSet) splitRatioSet).update();        		
+    		((SplitRatioSet) splitRatioSet).update();
 
     	if(fundamentalDiagramSet!=null)
         	for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdProfile : fundamentalDiagramSet.getFundamentalDiagramProfile())
         		((FundamentalDiagramProfile) fdProfile).update();
-    	
+
         // update sensor readings .......................
     	sensorset.update();
-		
+
         // update signals ...............................
 		// NOTE: ensembles have not been implemented for signals. They do not apply
-		// to pretimed control, but would make a differnece for feedback control. 
+		// to pretimed control, but would make a differnece for feedback control.
 //		if(signalSet!=null)
 //			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
 //				((Signal)signal).update();
@@ -307,13 +307,13 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         // update controllers
     	if(global_control_on)
     		controllerset.update();
-    	
+
     	// deploy actuators
     	actuatorset.deploy(getCurrentTimeInSeconds());
-    	
+
     	// update events
     	eventset.update();
-    	
+
         // update the network state......................
 		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
             if(run_mode==RunMode.normal)
@@ -325,7 +325,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         if(perf_calc!=null)
             perf_calc.update();
-		
+
 		// advance the clock
     	clock.advance();
 
@@ -334,16 +334,16 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 	// initialization
 	/////////////////////////////////////////////////////////////////////
-	
+
 	public void initialize(double timestep,double starttime,double endtime,int numEnsemble) throws BeatsException {
 		initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble);
 	}
-			
+
 	public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble) throws BeatsException {
-		
+
 		// create run parameters object
-		boolean writeoutput = true;		
-		runParam = new RunParameters( timestep, 
+		boolean writeoutput = true;
+		runParam = new RunParameters( timestep,
 									  starttime,
 									  endtime,
 									  outdt,
@@ -352,27 +352,27 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 									  outprefix,
 									  numReps,
 									  numEnsemble );
-		
+
 		// validate the run parameters
 		runParam.validate();
-		
+
 		// lock the scenario
-		scenario_locked = true;	
-		
+		scenario_locked = true;
+
 		// populate and validate the scenario
 		populate_validate();
-		
+
 		// compute the initial state by running the simulator to the start time
 		assign_initial_state();
-		
+
 		// create the clock
-		clock = new Clock(runParam.t_start_output,runParam.t_end_output,runParam.dt_sim);		
+		clock = new Clock(runParam.t_start_output,runParam.t_end_output,runParam.dt_sim);
 
 		// it's initialized
         initialized = true;
 
 	}
-	
+
 	/**
 	 * Processes a scenario loaded by JAXB.
 	 * Converts units to SI, populates the scenario,
@@ -382,7 +382,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @throws BeatsException
 	 */
 	protected void populate_validate() throws BeatsException {
-		
+
 		if (null == getSettings() || null == getSettings().getUnits())
 			logger.warn("Scenario units not specified. Assuming SI");
 		else if (!"SI".equalsIgnoreCase(getSettings().getUnits())) {
@@ -415,19 +415,19 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// validate scenario ......................................
 	    Scenario.validate(this);
-	    	    
+
 		if(BeatsErrorLog.haserror()){
 			BeatsErrorLog.print();
 			throw new ScenarioValidationError();
 		}
-		
+
 		if(BeatsErrorLog.haswarning()) {
 			BeatsErrorLog.print();
 			BeatsErrorLog.clearErrorMessage();
 		}
 
 	}
-	
+
 	/////////////////////////////////////////////////////////////////////
 	// start-to-end run
 	/////////////////////////////////////////////////////////////////////
@@ -436,17 +436,17 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		logger.info("Simulation period: [" + runParam.t_start_output + ":" + runParam.dt_sim + ":" + runParam.t_end_output + "]");
 		logger.info("Output period: [" + runParam.t_start_output + ":" + runParam.dt_output + ":" + runParam.t_end_output + "]");
-		
+
 		// output writer properties
 		Properties owr_props = new Properties();
-		if (null != runParam.outprefix) 
+		if (null != runParam.outprefix)
 			owr_props.setProperty("prefix", runParam.outprefix);
-		if (null != runParam.outtype) 
+		if (null != runParam.outtype)
 			owr_props.setProperty("type",runParam.outtype);
-		
+
 		// loop through simulation runs ............................
 		for(int i=0;i<runParam.numReps;i++){
-			
+
 			OutputWriterBase outputwriter = null;
 			if (runParam.writefiles){
 				outputwriter = OutputWriterFactory.getWriter(this, owr_props, runParam.dt_output,runParam.outsteps);
@@ -456,7 +456,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             try{
 				// reset the simulation
 				reset();
-				
+
 				// advance to end of simulation
 				while( advanceNSteps_internal(1,runParam.writefiles,outputwriter,runParam.t_start_output) ){}
 
@@ -479,8 +479,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 }
 			}
 		}
-        scenario_locked = false;		
-		
+        scenario_locked = false;
+
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -488,21 +488,21 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 
 	/** Advance the simulation <i>nsec</i> seconds.
-	 * 
+	 *
 	 * <p> Move the simulation forward <i>nsec</i> seconds and stops.
 	 * Returns <code>true</code> if the operation completes succesfully. Returns <code>false</code>
 	 * if the end of the simulation is reached.
 	 * @param nsec Number of seconds to advance.
-	 * @throws BeatsException 
+	 * @throws BeatsException
 	 */
-	public boolean advanceNSeconds(double nsec) throws BeatsException{	
-		
+	public boolean advanceNSeconds(double nsec) throws BeatsException{
+
 		if(!scenario_locked)
 			throw new BeatsException("Run not initialized. Use initialize_run() first.");
-		
+
 		if(!BeatsMath.isintegermultipleof(nsec,runParam.dt_sim))
 			throw new BeatsException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + runParam.dt_sim + ").");
-		int nsteps = BeatsMath.round(nsec/runParam.dt_sim);				
+		int nsteps = BeatsMath.round(nsec/runParam.dt_sim);
 		return advanceNSteps_internal(nsteps,false,null,-1d);
 	}
 

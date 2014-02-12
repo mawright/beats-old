@@ -215,43 +215,8 @@ final public class ObjectFactory {
 	/////////////////////////////////////////////////////////////////////
 	// Scenario 
 	/////////////////////////////////////////////////////////////////////
-	
-	// TEMPORARY WHILE NODE MODE IS UNRESOLVED
-	public static Scenario createAndLoadScenario(String configfilename) throws BeatsException {
-		return createAndLoadScenario(configfilename,"uniform","proportional","A");
-	}
-	
-	/** Loads and validates scenarios from XML. 
-	 * <p>
-	 * This method does the following,
-	 * <ol>
-	 * <li> Unmarshalls the configuration file to populate JAXB objects, </li>
-	 * <li> Determines the simulation mode (see below),</li>
-	 * <li> Registers controllers with their targets (calls to InterfaceController.register()), </li>
-	 * <li> Validates the scenario and all its components (calls to validate() on all scenario components). </li>
-	 * </ol>
-	 * <p>
-	 * The simulation mode can be <i>normal</i>, <i>warmup from initial condition</i>, or <i> warmup from zero density</i>, 
-	 * depending on the values of <code>timestart</code>, <code>timeend</code>, and the time stamp on the initial density profile (time_ic). In the <i>normal</i> mode,
-	 * the simulator initializes the network with densities provided in the initial density profile, and produces as output the evolution of the density
-	 * state from <code>timestart</code> to <code>timeend</code>. The warmup modes are executed whenever <code>timestart</code> does not match the timestamp of the initial density profile. 
-	 * In these modes the objective is to generate a configuration file with an initial density profile corresponding to <code>timestart</code>. If <code>timestart</code>&gt time_ic, 
-	 * the network is initialized with the given initial density profile and run from time_ic to <code>timestart</code>. If <code>timestart</code>&lt time_ic, the simulation is
-	 * is initialized with zero density and run from the earliest timestamp of all demand profiles (timestart_demand) to <code>timestart</code>, assuming timestart_demand&lt<code>timestart</code>.
-	 * If <code>timestart</code>&lt time_ic and timestart_demand&gt<code>timestart</code>, an error is produced.
-	 * <p>
-	 * <table border="1">
-	 * <tr> <th>Simulation mode</th>   <th>Condition</th> 			 		 		<th>Initial condition</th>			<th>Start time</th> 			<th>End time</th> 				<th>Output</th>	</tr>
-	 * <tr> <td>normal</td>			   <td><code>timestart</code>==time_ic</td>	 	<td>initial density profile</td>	<td><code>timestart</code></td>	<td><i>timeend</i></td>			<td>state</td>	</tr>
-	 * <tr> <td> warmup from ic	</td>  <td><code>timestart</code>&gt time_ic</td>	<td>initial density profile</td>	<td>time_ic</td>				<td><code>timestart</code></td>	<td>configuration file</td>	</tr>
-	 * <tr> <td> warmup from zero</td> <td><code>timestart</code>&lt time_ic</td>  	<td>zero density</td>				<td>timestart_demand</td>		<td><code>timestart</code></td>	<td>configuration file</td>	</tr>
-	 * </table> 
-	 * 
-	 * @param configfilename		The name of the XML configuration file.
-	 * @return scenario				Scenario object.
-	 * @throws BeatsException
-	 */
-	public static Scenario createAndLoadScenario(String configfilename,String uncertaintymodel,String nodeflowsolver,String nodesrsolver) throws BeatsException {
+
+    public static Scenario createAndLoadScenario(String configfilename) throws BeatsException {
 
 		JAXBContext context;
 		Unmarshaller u;
@@ -299,13 +264,10 @@ final public class ObjectFactory {
 		}
 
 		// check the scenario schema version
-		edu.berkeley.path.beats.util.ScenarioUtil.checkSchemaVersion(S);
+		//edu.berkeley.path.beats.util.ScenarioUtil.checkSchemaVersion(S);
 
         // copy in input parameters ..................................................
-		S.setUncertaintyModel(uncertaintymodel);
         S.setConfigfilename(configfilename);
-        S.setNodeFlowSolver(nodeflowsolver);
-        S.setNodeSRSolver(nodesrsolver);
 
 		return S;
 	}
