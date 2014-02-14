@@ -60,6 +60,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     private RunMode run_mode;
     protected String split_logger_prefix;
+    protected Double split_logger_dt;
 	private Cumulatives cumulatives;
     private PerformanceCalculator perf_calc;
 	private Clock clock;
@@ -343,14 +344,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 "A",
                 "",
                 "normal",
-                "");
+                "",Double.NaN);
 	}
 
     public void initialize(double timestep,double starttime,double endtime,int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver) throws BeatsException {
         initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble,uncertaintymodel,nodeflowsolver,nodesrsolver,
                 "",
                 "normal",
-                "");
+                "",Double.NaN);
     }
 
     public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble) throws BeatsException {
@@ -360,10 +361,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 "A",
                 "",
                 "normal",
-                "");
+                "",Double.NaN);
     }
 
-    public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver,String performance_config, String run_mode,String split_logger_prefix) throws BeatsException {
+    public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix,
+                           int numReps, int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver,
+                           String performance_config, String run_mode,String split_logger_prefix,Double split_logger_dt) throws BeatsException {
 
         // set stuff
         setUncertaintyModel(uncertaintymodel);
@@ -371,6 +374,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         setNodeSRSolver(nodesrsolver);
         setRunMode(run_mode);
         setSplitLoggerPrefix(split_logger_prefix);
+        setSplitLoggerDt(split_logger_dt);
 
         // create performance calculator
         if(!performance_config.isEmpty())
@@ -506,8 +510,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                     controllerset.close_output();
                 for(edu.berkeley.path.beats.jaxb.Node jnode : this.getNetworkSet().getNetwork().get(0).getNodeList().getNode()){
                     Node node = (Node) jnode;
-                    if(node.greedy_policy_logger!=null)
-                        try{ node.greedy_policy_logger.close(); }
+                    if(node.split_ratio_logger !=null)
+                        try{ node.split_ratio_logger.close(); }
                         catch(IOException e){
                             throw new BeatsException(e.getMessage());
                         }
@@ -567,6 +571,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     protected void setSplitLoggerPrefix(String split_logger_prefix){
         this.split_logger_prefix = split_logger_prefix;
+    }
+
+    protected void setSplitLoggerDt(Double split_logger_dt){
+        this.split_logger_dt = split_logger_dt;
     }
 	
 	protected void setGlobal_control_on(boolean global_control_on) {
@@ -1141,6 +1149,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	private boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
+
+        if(BeatsMath.isintegermultipleof(clock.getTElapsed(),1800d))
+            System.out.println(clock.getT());
 
 		// advance n steps
 		for(int k=0;k<n;k++){

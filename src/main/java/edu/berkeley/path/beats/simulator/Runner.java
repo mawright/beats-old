@@ -72,7 +72,8 @@ public final class Runner {
                                  props.split_ratio_model ,
                                  props.performance_config ,
                                  props.run_mode,
-                                 props.split_logger_prefix);
+                                 props.split_logger_prefix,
+                                 props.split_logger_dt);
 
 			// run the scenario
 			scenario.run();
