@@ -16,7 +16,7 @@ velocity.log
 *.pptx
 
 *~
-target
+/target
 .cache
 *.jar
 .project
