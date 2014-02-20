@@ -26,11 +26,9 @@
 
 package edu.berkeley.path.beats;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.log4j.Logger;
@@ -47,17 +45,13 @@ import org.apache.log4j.Logger;
 //import edu.berkeley.path.beats.processor.AggregateData;
 //import edu.berkeley.path.beats.processor.PdfReport;
 //import edu.berkeley.path.beats.processor.PerformanceData;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.ScenarioValidationError;
-import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
-import edu.berkeley.path.beats.util.scenario.ScenarioSaver;
 
 /**
  * Implements "Beats: Concept of Operations"
  */
-public class Runner {
+public class RunnerCOP {
 
-	private static Logger logger = Logger.getLogger(Runner.class);
+	private static Logger logger = Logger.getLogger(RunnerCOP.class);
 
 	/**
 	 * @param args command-line arguments
@@ -156,7 +150,7 @@ public class Runner {
 //
 //				Long id = ScenarioSaver.save(scenario);
 //				logger.info("Scenario imported, ID=" + id);
-//			} else if (cmd.equals("update") || cmd.equals("u")) {
+//			} else if (cmd.equals("update") || md.equals("u")) {
 //				throw new NotImplementedException(cmd);
 //			} else if (cmd.equals("export") || cmd.equals("e")) {
 //				Options clOptions = new Options();
@@ -180,10 +174,10 @@ public class Runner {
 //				edu.berkeley.path.beats.calibrator.FDCalibrator.main(arguments);
 //			}
 //			else if (cmd.equals("simulate_db") || cmd.equals("sd")) {
-//				edu.berkeley.path.beats.simulator.Runner.run_db(arguments);
+//				edu.berkeley.path.beats.simulator.RunnerCOP.run_db(arguments);
 //			} 
 //			else if (cmd.equals("simulate") || cmd.equals("s")) {
-//				edu.berkeley.path.beats.simulator.Runner.main(arguments);
+//				edu.berkeley.path.beats.simulator.RunnerCOP.main(arguments);
 //			} else if (cmd.equals("simulate_process") || cmd.equals("sp")) {
 //				throw new NotImplementedException(cmd);
 //			} else if (cmd.equals("list_scenarios") || cmd.equals("ls")) {

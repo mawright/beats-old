@@ -5,13 +5,14 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.util.SchemaUtil;
 
 abstract class ScenarioLoaderBase implements ScenarioLoaderIF {
 
 	@Override
 	public edu.berkeley.path.beats.simulator.Scenario load() throws BeatsException {
 //		edu.berkeley.path.beats.simulator.Scenario scenario = (edu.berkeley.path.beats.simulator.Scenario) loadRaw();
-//		edu.berkeley.path.beats.util.ScenarioUtil.checkSchemaVersion(scenario);
+//		edu.berkeley.path.beats.util.SchemaUtil.checkSchemaVersion(scenario);
 //		return edu.berkeley.path.beats.simulator.ObjectFactory.populate_validate(scenario);
 		return null;
 	}
@@ -26,7 +27,7 @@ abstract class ScenarioLoaderBase implements ScenarioLoaderIF {
 
 	protected static Unmarshaller getUnmarshaller() throws JAXBException, BeatsException {
 		Unmarshaller unmarshaller = getJAXBContext().createUnmarshaller();
-		unmarshaller.setSchema(edu.berkeley.path.beats.util.ScenarioUtil.getSchema());
+		unmarshaller.setSchema(SchemaUtil.getSchema());
 		edu.berkeley.path.beats.simulator.ObjectFactory.setObjectFactory(unmarshaller, getJAXBObjectFactory());
 		return unmarshaller;
 	}
