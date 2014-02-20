@@ -24,6 +24,7 @@ public class BeatsProperties extends Properties {
     public Double output_dt;
     public Integer num_reps;
     public Integer ensemble_size;
+    public Double split_logger_dt;
 
     public BeatsProperties(String prop_file_name) throws BeatsException {
 
@@ -40,17 +41,18 @@ public class BeatsProperties extends Properties {
         sim_dt = getProperty("SIM_DT")==null ? Double.NaN : Double.parseDouble(getProperty("SIM_DT"));
         output_prefix = getProperty("OUTPUT_PREFIX","");
         output_format = getProperty("OUTPUT_FORMAT", "text");
-        start_time = Double.parseDouble(getProperty("START_TIME","0"));
+        start_time = Double.parseDouble(getProperty("START_TIME", "0"));
         duration = Double.parseDouble(getProperty("DURATION","86400"));
         output_dt = Double.parseDouble(getProperty("OUTPUT_DT","300"));
-        num_reps = Integer.parseInt(getProperty("NUM_REPS","1"));
+        num_reps = Integer.parseInt(getProperty("NUM_REPS", "1"));
         uncertainty_model = getProperty("UNCERTAINTY_MODEL", "gaussian");
         split_ratio_model = getProperty("NODE_SPLIT_RATIO_SOLVER","A");
         node_flow_model = getProperty("NODE_FLOW_SOLVER","proportional");
         run_mode = getProperty("RUN_MODE","normal");
-        ensemble_size = Integer.parseInt(getProperty("ENSEMBLE_SIZE","1"));
-        performance_config = getProperty("PERFORMANCE","");
+        ensemble_size = Integer.parseInt(getProperty("ENSEMBLE_SIZE", "1"));
+        performance_config = getProperty("PERFORMANCE", "");
         split_logger_prefix = getProperty("SPLIT_LOGGER_PREFIX","");
+        split_logger_dt = getProperty("SPLIT_LOGGER_DT")==null ? sim_dt : Double.parseDouble(getProperty("SPLIT_LOGGER_DT","0"));
 
         // validate
         if(scenario_name.isEmpty())
@@ -80,7 +82,8 @@ public class BeatsProperties extends Properties {
         str += "RUN_MODE = " + run_mode + "\n";
         str += "ENSEMBLE_SIZE = " + ensemble_size + "\n";
         str += "PERFORMANCE = " + performance_config + "\n";
-        str += "SPLIT_LOGGER_PREFIX = " + split_logger_prefix;
+        str += "SPLIT_LOGGER_PREFIX = " + split_logger_prefix + "\n";
+        str += "SPLIT_LOGGER_DT = " + split_logger_dt;
         return str;
     }
 

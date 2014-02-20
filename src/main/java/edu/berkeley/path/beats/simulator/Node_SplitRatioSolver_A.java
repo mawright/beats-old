@@ -1,7 +1,5 @@
 package edu.berkeley.path.beats.simulator;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.util.ArrayList;
 
 public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
