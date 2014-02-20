@@ -45,7 +45,7 @@ public final class Runner {
 
             // simulate
 			if (cmd.equals("-s")){
-				Runner.run_simulation(args);
+				Runner.run_simulation(arguments);
 			}
 
             // version
