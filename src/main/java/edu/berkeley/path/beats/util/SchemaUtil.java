@@ -1,7 +1,5 @@
 package edu.berkeley.path.beats.util;
 
-import java.util.Properties;
-
 import javax.xml.XMLConstants;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -13,13 +11,12 @@ import javax.xml.validation.SchemaFactory;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
 
 
 @SuppressWarnings("restriction")
-public class ScenarioUtil {
+public class SchemaUtil {
 
-	private static Logger logger = Logger.getLogger(ScenarioUtil.class);
+	private static Logger logger = Logger.getLogger(SchemaUtil.class);
 
 	/**
 	 * Loads an XML schema as a resource
@@ -30,7 +27,7 @@ public class ScenarioUtil {
 	private static javax.xml.validation.Schema getSchema(String resourceName) throws BeatsException {
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		try {
-			return factory.newSchema(ScenarioUtil.class.getClassLoader().getResource(resourceName));
+			return factory.newSchema(SchemaUtil.class.getClassLoader().getResource(resourceName));
 		} catch (org.xml.sax.SAXException exc) {
 			throw new BeatsException("Failed to load a schema '" + resourceName + "'", exc);
 		}
@@ -57,7 +54,7 @@ public class ScenarioUtil {
 	private static String getSchemaVersion(String resourceName) throws BeatsException {
 		XMLStreamReader xmlsr;
 		try {
-			xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(ScenarioUtil.class.getClassLoader().getResourceAsStream(resourceName));
+			xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(SchemaUtil.class.getClassLoader().getResourceAsStream(resourceName));
 		} catch (XMLStreamException exc) {
 			throw new BeatsException(exc);
 		} catch (FactoryConfigurationError exc) {
@@ -121,15 +118,15 @@ public class ScenarioUtil {
 			logger.warn("Scenario schema version " + scenario.getSchemaVersion() + " is incorrect. Should be: " + schema_version);
 	}
 
-	/**
-	 * Restores a scenario from the database
-	 * @param id the scenario id
-	 * @return the restored scenario
-	 * @throws BeatsException
-	 */
-	public static edu.berkeley.path.beats.simulator.Scenario getScenario(long id) throws BeatsException {
-		return ScenarioLoader.load(id);
-	}
+//	/**
+//	 * Restores a scenario from the database
+//	 * @param id the scenario id
+//	 * @return the restored scenario
+//	 * @throws BeatsException
+//	 */
+//	public static edu.berkeley.path.beats.simulator.Scenario getScenario(long id) throws BeatsException {
+//		return ScenarioLoader.load(id);
+//	}
 
 //	/**
 //	 * runs a scenario simulation

@@ -264,7 +264,7 @@ final public class ObjectFactory {
 		}
 
 		// check the scenario schema version
-		//edu.berkeley.path.beats.util.ScenarioUtil.checkSchemaVersion(S);
+		//edu.berkeley.path.beats.util.SchemaUtil.checkSchemaVersion(S);
 
         // copy in input parameters ..................................................
         S.setConfigfilename(configfilename);

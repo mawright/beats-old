@@ -45,6 +45,7 @@ import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Signal;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.util.SchemaUtil;
 
 @SuppressWarnings("restriction")
 public final class OutputWriterXML extends OutputWriterBase {
@@ -72,7 +73,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 
 		try {
 			marshaller = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class).createMarshaller();
-			marshaller.setSchema(edu.berkeley.path.beats.util.ScenarioUtil.getOutputSchema());
+			marshaller.setSchema(SchemaUtil.getOutputSchema());
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 		} catch (JAXBException exc) {
 			throw new BeatsException(exc);

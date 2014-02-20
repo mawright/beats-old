@@ -28,8 +28,11 @@ package edu.berkeley.path.beats;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Properties;
 
+import edu.berkeley.path.beats.util.SchemaUtil;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.simulator.BeatsException;
@@ -39,10 +42,31 @@ import edu.berkeley.path.beats.simulator.BeatsException;
  */
 @SuppressWarnings("restriction")
 public class Version {
+
 	String schemaVersion;
 	String engineVersion;
 
 	private Version() {}
+
+    public String getGitHash(){
+        InputStream inputStream = Runner.class.getResourceAsStream("/buildNumber.properties");
+        Properties properties = new Properties();
+        try {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read properties file", e);
+        }
+        finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    // Ignore
+                }
+            }
+        }
+        return properties.getProperty("git-sha-1");
+    }
 
 	/**
 	 * @return the schemaVersion
@@ -86,7 +110,7 @@ public class Version {
 
 		// schema version
 		try {
-			version.setSchemaVersion(edu.berkeley.path.beats.util.ScenarioUtil.getSchemaVersion());
+			version.setSchemaVersion(SchemaUtil.getSchemaVersion());
 		} catch (BeatsException exc) {
 			logger.error("Failed to retrieve schema version", exc);
 		}
@@ -110,6 +134,8 @@ public class Version {
 	public String toString() {
 		final String linesep = System.getProperty("line.separator");
 		StringBuilder sb = new StringBuilder();
+        sb.append("git: ").append(getGitHash());
+        sb.append(linesep);
 		sb.append("schema: ").append(getSchemaVersion());
 		sb.append(linesep);
 		sb.append("engine: ").append(getEngineVersion());

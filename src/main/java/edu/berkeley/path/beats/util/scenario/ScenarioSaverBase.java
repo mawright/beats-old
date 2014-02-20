@@ -3,6 +3,7 @@ package edu.berkeley.path.beats.util.scenario;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import edu.berkeley.path.beats.util.SchemaUtil;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.simulator.BeatsException;
@@ -11,7 +12,7 @@ abstract class ScenarioSaverBase implements ScenarioSaverIF {
 
 	protected Marshaller getMarshaller() throws JAXBException, BeatsException {
 		Marshaller marshaller = ScenarioLoaderBase.getJAXBContext().createMarshaller();
-		marshaller.setSchema(edu.berkeley.path.beats.util.ScenarioUtil.getSchema());
+		marshaller.setSchema(SchemaUtil.getSchema());
 		return marshaller;
 	}
 
@@ -24,7 +25,7 @@ abstract class ScenarioSaverBase implements ScenarioSaverIF {
 	 */
 	protected static void ensureSchemaVersion(edu.berkeley.path.beats.jaxb.Scenario scenario) throws BeatsException {
 		if (null == scenario.getSchemaVersion()) {
-			String schemaVersion = edu.berkeley.path.beats.util.ScenarioUtil.getSchemaVersion();
+			String schemaVersion = SchemaUtil.getSchemaVersion();
 			logger.debug("Schema version was not set. Assuming current version: " + schemaVersion);
 			scenario.setSchemaVersion(schemaVersion);
 		}
