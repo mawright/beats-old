@@ -1,7 +1,7 @@
 package edu.berkeley.path.beats.control;
 
 
-import edu.berkeley.path.beats.actuator.Signal;
+import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.actuator.Stage;
 import edu.berkeley.path.beats.jaxb.Column;
 import edu.berkeley.path.beats.simulator.*;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Controller_SIG extends Controller {
 
-    protected Signal mySignal;
+    protected ActuatorSignal mySignal;
     protected double cycle_time;
     protected Stage[] stages;
 
@@ -50,8 +50,8 @@ public class Controller_SIG extends Controller {
             stages = new Stage[numStages];
             for(int i=0;i<numStages;i++){
                 List<Column> c = myTable.getRow().get(i).getColumn();
-                Signal.NEMA movA = Signal.NEMA.valueOf(c.get(0).getContent());
-                Signal.NEMA movB = Signal.NEMA.valueOf(c.get(1).getContent());
+                ActuatorSignal.NEMA movA = ActuatorSignal.NEMA.valueOf(c.get(0).getContent());
+                ActuatorSignal.NEMA movB = ActuatorSignal.NEMA.valueOf(c.get(1).getContent());
                 stages[i] = new Stage(mySignal,movA,movB);
             }
         }

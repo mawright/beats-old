@@ -31,11 +31,11 @@ import edu.berkeley.path.beats.simulator.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/** Signal class.
+/** ActuatorSignal class.
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
-public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
+public final class ActuatorSignal extends Actuator {
 
     public static enum CommandType {hold,forceoff};
     public static enum BulbColor {GREEN,YELLOW,RED,DARK};
@@ -57,16 +57,17 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate(Scenario myScenario) {
-		
+	protected void populate(Object jaxbobject,Scenario myScenario) {
+
+        edu.berkeley.path.beats.jaxb.Signal jaxbSignal = (edu.berkeley.path.beats.jaxb.Signal)jaxbobject;
 		this.myScenario = myScenario;
-		this.myNode = myScenario.getNodeWithId(getNodeId());
+		this.myNode = myScenario.getNodeWithId(jaxbSignal.getNodeId());
 		
 		if(myNode==null)
 			return;
 		
 		int i;
-		int totalphases = getPhase().size();
+		int totalphases = jaxbSignal.getPhase().size();
 		
 		if(totalphases==0)
 			return;
@@ -77,8 +78,8 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		boolean [] isvalid = new boolean[totalphases];
 		int numlinks;
 		int numvalid = 0;
-		for(i=0;i<getPhase().size();i++){
-			edu.berkeley.path.beats.jaxb.Phase p = getPhase().get(i);
+		for(i=0;i<jaxbSignal.getPhase().size();i++){
+			edu.berkeley.path.beats.jaxb.Phase p = jaxbSignal.getPhase().get(i);
 			isvalid[i] = true;
 			isvalid[i] &= p.isPermissive() || p.isProtected();
 			if (null == p.getLinkReferences())
@@ -92,11 +93,11 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		phase = new SignalPhase[numvalid];
 		nema2phase = new HashMap<NEMA,SignalPhase>(numvalid);
 		int c = 0;
-		for(i=0;i<getPhase().size();i++){
+		for(i=0;i<jaxbSignal.getPhase().size();i++){
 			if(!isvalid[i])
 				continue;
 			phase[c] = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
-			phase[c].populateFromJaxb(myScenario,getPhase().get(i));
+			phase[c].populateFromJaxb(myScenario,jaxbSignal.getPhase().get(i));
 			nema2phase.put(phase[c].getNEMA(),phase[c]);
 			c++;
 		}
@@ -121,12 +122,12 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	protected void validate() {
 		
 		if(myNode==null){
-			BeatsErrorLog.addWarning("Unknow node id=" + getNodeId() + " in signal id=" + getId());
+			BeatsErrorLog.addWarning("Unknow node id in signal id=" + getId());
 			return; // this signal will be ignored
 		}
 		
 		if(phase==null)
-			BeatsErrorLog.addError("Signal id=" + getId() + " contains no valid phases.");
+			BeatsErrorLog.addError("ActuatorSignal id=" + getId() + " contains no valid phases.");
 
 		if(phase!=null)	
 			for(SignalPhase p : phase)
@@ -239,9 +240,9 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 
 		// Remove serviced commands 
 		for(SignalPhase pA: phase){
-			if(pA.getBulbColor().compareTo(Signal.BulbColor.GREEN)==0)
+			if(pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.GREEN)==0)
 				pA.setHold_requested(false);
-			if(pA.getBulbColor().compareTo(Signal.BulbColor.YELLOW)==0 || pA.getBulbColor().compareTo(Signal.BulbColor.RED)==0 )
+			if(pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.YELLOW)==0 || pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.RED)==0 )
 				pA.setForceoff_requested(false);
 		}
 	
@@ -257,11 +258,11 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 				case GREEN:
 				case YELLOW:
 					if(p.isIsthrough() && o.isPermissive())
-						o.setPhaseColor(Signal.BulbColor.YELLOW);
+						o.setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
 					break;
 				case RED:
 					if(!o.isProtected())
-						o.setPhaseColor(Signal.BulbColor.RED);
+						o.setPhaseColor(ActuatorSignal.BulbColor.RED);
 					break;
 			case DARK:
 				break;
@@ -308,7 +309,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
         return myNode;
     }
 
-	public SignalPhase getPhaseByNEMA(Signal.NEMA nema){
+	public SignalPhase getPhaseByNEMA(ActuatorSignal.NEMA nema){
 		if(nema==null)
 			return null;
 		return nema2phase.get(nema);
@@ -318,8 +319,8 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		return myScenario;
 	}
 
-	public void requestCommand(ArrayList<Signal.Command> command){
-		for(Signal.Command c : command){
+	public void requestCommand(ArrayList<ActuatorSignal.Command> command){
+		for(ActuatorSignal.Command c : command){
 			SignalPhase p = nema2phase.get(c.nema);
 			if(p==null)
 				continue;
@@ -343,27 +344,27 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	// static NEMA methods
 	/////////////////////////////////////////////////////////////////////
 	
-	public static Signal.NEMA String2NEMA(String str){
+	public static ActuatorSignal.NEMA String2NEMA(String str){
 		if(str==null)
-			return Signal.NEMA.NULL;
+			return ActuatorSignal.NEMA.NULL;
 		if(str.isEmpty())
-			return Signal.NEMA.NULL;
+			return ActuatorSignal.NEMA.NULL;
 		if(!str.startsWith("_"))
 			str = "_"+str;
-		Signal.NEMA nema;
+		ActuatorSignal.NEMA nema;
 		try{
-			nema = Signal.NEMA.valueOf(str);
+			nema = ActuatorSignal.NEMA.valueOf(str);
 		}
 		catch(IllegalArgumentException  e){
-			nema = Signal.NEMA.NULL;
+			nema = ActuatorSignal.NEMA.NULL;
 		}
 		return nema;
 	}
 	
 	public static boolean isCompatible(SignalPhase pA,SignalPhase pB)
 	{
-		Signal.NEMA nemaA = pA.getNEMA();
-		Signal.NEMA nemaB = pB.getNEMA();
+		ActuatorSignal.NEMA nemaA = pA.getNEMA();
+		ActuatorSignal.NEMA nemaB = pB.getNEMA();
 		
 		if(nemaA.compareTo(nemaB)==0)
 			return true;
@@ -415,13 +416,13 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static class Command implements Comparable {
-		public Signal.CommandType type;
-		public Signal.NEMA nema;
+		public ActuatorSignal.CommandType type;
+		public ActuatorSignal.NEMA nema;
 		public double time;
 		public double yellowtime;
 		public double redcleartime;
 
-		public Command(Signal.CommandType type,Signal.NEMA phase,double time){
+		public Command(ActuatorSignal.CommandType type,ActuatorSignal.NEMA phase,double time){
 			this.type = type;
 			this.nema = phase;
 			this.time = time;
@@ -429,7 +430,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 			this.redcleartime = -1f;
 		}
 		
-		public Command(Signal.CommandType type,Signal.NEMA phase,double time,double yellowtime,double redcleartime){
+		public Command(ActuatorSignal.CommandType type,ActuatorSignal.NEMA phase,double time,double yellowtime,double redcleartime){
 			this.type = type;
 			this.nema = phase;
 			this.time = time;
@@ -454,8 +455,8 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 				return compare;
 
 			// second ordering by phase
-			Signal.NEMA thistphase = this.nema;
-			Signal.NEMA thattphase = that.nema;
+			ActuatorSignal.NEMA thistphase = this.nema;
+			ActuatorSignal.NEMA thattphase = that.nema;
 			compare = thistphase.compareTo(thattphase);
 			if(compare!=0)
 				return compare;

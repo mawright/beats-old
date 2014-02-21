@@ -8,7 +8,7 @@ import java.util.List;
 public class ActuatorSignalStageSplits extends Actuator {
 
     public List<Link> inlinks;
-    private Signal mySignal;
+    private ActuatorSignal mySignal;
     private StageSplit [] stage_splits;
 
     /////////////////////////////////////////////////////////////////////

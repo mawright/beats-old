@@ -8,7 +8,7 @@ import java.util.List;
 public abstract class ActuatorImplementation {
 
     protected Actuator myActuator;
-    protected Object target;      // Link or Signal or Node
+    protected Object target;      // Link or ActuatorSignal or Node
 
     public void setActuator(Actuator myActuator){
         this.myActuator = myActuator;

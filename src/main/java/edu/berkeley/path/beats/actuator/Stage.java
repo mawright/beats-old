@@ -1,8 +1,5 @@
 package edu.berkeley.path.beats.actuator;
 
-import edu.berkeley.path.beats.actuator.Signal;
-import edu.berkeley.path.beats.actuator.SignalPhase;
-
 /**
  * Created with IntelliJ IDEA.
  * User: gomes
@@ -12,13 +9,13 @@ import edu.berkeley.path.beats.actuator.SignalPhase;
  */
 public class Stage {
 
-    public Signal.NEMA movA;
-    public Signal.NEMA movB;
+    public ActuatorSignal.NEMA movA;
+    public ActuatorSignal.NEMA movB;
 
     public SignalPhase phaseA;
     public SignalPhase phaseB;
 
-    public Stage(Signal mySignal,Signal.NEMA movA,Signal.NEMA movB){
+    public Stage(ActuatorSignal mySignal,ActuatorSignal.NEMA movA,ActuatorSignal.NEMA movB){
         this.movA = movA;
         this.movB = movB;
         this.phaseA = mySignal.getPhaseByNEMA(movA);

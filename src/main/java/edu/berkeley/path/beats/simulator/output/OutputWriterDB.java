@@ -222,9 +222,9 @@ public class OutputWriterDB extends OutputWriterBase {
 //					throw new BeatsException(exc);
 //				}
 //			}
-//			List<edu.berkeley.path.beats.jaxb.Signal> sigl = ((Network) network).getListOfSignals();
+//			List<edu.berkeley.path.beats.jaxb.ActuatorSignal> sigl = ((Network) network).getListOfSignals();
 //			if (null != sigl) {
-//				for (edu.berkeley.path.beats.jaxb.Signal signal : sigl)
+//				for (edu.berkeley.path.beats.jaxb.ActuatorSignal signal : sigl)
 //					try {
 //						fill_signal_data(network, signal);
 //					} catch (Exception exc) {
@@ -348,9 +348,9 @@ public class OutputWriterDB extends OutputWriterBase {
 //		}
 //	}
 //
-//	private void fill_signal_data(edu.berkeley.path.beats.jaxb.Network network, edu.berkeley.path.beats.jaxb.Signal signal) throws Exception {
-//		List<Signal.PhaseData> phdata = getCompletedPhases(signal).getPhaseList();
-//		for (Signal.PhaseData ph : phdata) {
+//	private void fill_signal_data(edu.berkeley.path.beats.jaxb.Network network, edu.berkeley.path.beats.jaxb.ActuatorSignal signal) throws Exception {
+//		List<ActuatorSignal.PhaseData> phdata = getCompletedPhases(signal).getPhaseList();
+//		for (ActuatorSignal.PhaseData ph : phdata) {
 //			SignalData db_sd = new SignalData();
 //			db_sd.setNetworkId(network.getId());
 //			db_sd.setSignalId(signal.getId());

@@ -28,8 +28,8 @@ package edu.berkeley.path.beats.control;
 
 import java.util.ArrayList;
 
+import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.actuator.Signal;
 
 public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 	
@@ -40,7 +40,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 	protected boolean [] havesignaltarget;	// true if this intersection is in the target list
 	protected double _cyclelength;	
 
-	ArrayList<Signal.Command> commandlist = new ArrayList<Signal.Command>();
+	ArrayList<ActuatorSignal.Command> commandlist = new ArrayList<ActuatorSignal.Command>();
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset  / update
@@ -63,7 +63,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 //
 //				// check whether the signal is in the target list
 //				Controller_SIG_Pretimed.Intersection intersection = plan.getIntersection().get(i);
-//				Signal mySignal = myScenario.getSignalWithNodeId(intersection.getNodeId());
+//				ActuatorSignal mySignal = myScenario.getSignalWithNodeId(intersection.getNodeId());
 //				if(mySignal==null)
 //					continue;
 //				boolean haveit = false;

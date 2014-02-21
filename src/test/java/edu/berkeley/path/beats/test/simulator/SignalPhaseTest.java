@@ -9,7 +9,7 @@ import org.junit.Test;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.actuator.Signal.NEMA;
+import edu.berkeley.path.beats.actuator.ActuatorSignal.NEMA;
 import edu.berkeley.path.beats.actuator.SignalPhase;
 
 @Ignore("redo signals")

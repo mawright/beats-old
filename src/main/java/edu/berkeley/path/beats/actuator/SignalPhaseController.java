@@ -21,9 +21,9 @@ import java.util.HashMap;
 public class SignalPhaseController extends Controller {
 
     private HashMap<Link,Integer> target2index;
-    private HashMap<Signal.NEMA,Integer[]> nema2indices;
+    private HashMap<ActuatorSignal.NEMA,Integer[]> nema2indices;
 
-    public SignalPhaseController(Signal mySignal){
+    public SignalPhaseController(ActuatorSignal mySignal){
 
 //			super();
 //
@@ -37,7 +37,7 @@ public class SignalPhaseController extends Controller {
 //					target2index.put(mySignal.phase[i].getTargetlinks()[j],index++);
 //
 //			// populate nema2indices
-//			nema2indices = new HashMap<Signal.NEMA,Integer[]>();
+//			nema2indices = new HashMap<ActuatorSignal.NEMA,Integer[]>();
 //			for(i=0;i<mySignal.phase.length;i++){
 //				Integer [] indices = new Integer[mySignal.phase[i].getTargetlinks().length];
 //				for(j=0;j<mySignal.phase[i].getTargetlinks().length;j++)
@@ -70,7 +70,7 @@ public class SignalPhaseController extends Controller {
 //			return true;
 //		}
 
-    protected void setPhaseColor(Signal.NEMA nema,Signal.BulbColor color){
+    protected void setPhaseColor(ActuatorSignal.NEMA nema,ActuatorSignal.BulbColor color){
 
 //			Integer [] indices = nema2indices.get(nema);
 //			if(indices==null)

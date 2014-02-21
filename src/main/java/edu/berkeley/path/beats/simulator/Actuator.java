@@ -82,10 +82,10 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 //        return jaxbA.getScenarioElement().getId();
 //    }
 
-//    public Signal getSignal(){
+//    public ActuatorSignal getSignal(){
 //        ScenarioElement se = (ScenarioElement) getScenarioElement();
 //        if(se.getType().compareTo("signal")==0)
-//            return (Signal) se.getReference();
+//            return (ActuatorSignal) se.getReference();
 //        else
 //            return null;
 //    }

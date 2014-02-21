@@ -26,7 +26,7 @@
 
 package edu.berkeley.path.beats.actuator;
 
-import edu.berkeley.path.beats.actuator.Signal.NEMA;
+import edu.berkeley.path.beats.actuator.ActuatorSignal.NEMA;
 import edu.berkeley.path.beats.simulator.*;
 
 /** XXX. 
@@ -37,7 +37,7 @@ import edu.berkeley.path.beats.simulator.*;
 final public class SignalPhase {
 	
 	// references ....................................................
-	private Signal mySignal;
+	private ActuatorSignal mySignal;
 	private Link[] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
 	
 	// properties ....................................................
@@ -50,7 +50,7 @@ final public class SignalPhase {
 	// dual ring structure
 	private int myRingGroup		= -1;
 	private SignalPhase opposingPhase;
-	private Signal.NEMA myNEMA   = Signal.NEMA.NULL;
+	private ActuatorSignal.NEMA myNEMA   = ActuatorSignal.NEMA.NULL;
 	
 	// Basic timing parameters
 	private double mingreen 			= 0.0;
@@ -63,7 +63,7 @@ final public class SignalPhase {
 	private Clock bulbtimer;
 
 	// State
-	private Signal.BulbColor bulbcolor;
+	private ActuatorSignal.BulbColor bulbcolor;
 	
 	//private int [] myControlIndex;
 
@@ -93,7 +93,7 @@ final public class SignalPhase {
 	// construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public SignalPhase(Node myNode,Signal mySignal,double dt){
+	public SignalPhase(Node myNode,ActuatorSignal mySignal,double dt){
 		this.mySignal = mySignal;
 		this.bulbtimer = new Clock(0d,Double.POSITIVE_INFINITY,dt);		
 	}
@@ -112,9 +112,9 @@ final public class SignalPhase {
 		}
 		
 		if(jaxbPhase.getNema()!=null)
-			myNEMA = Signal.String2NEMA(jaxbPhase.getNema().toString());
+			myNEMA = ActuatorSignal.String2NEMA(jaxbPhase.getNema().toString());
 		else
-			myNEMA = Signal.NEMA.NULL;
+			myNEMA = ActuatorSignal.NEMA.NULL;
 		
 		if(!Double.isNaN(jaxbPhase.getMinGreenTime()))
 			this.mingreen = jaxbPhase.getMinGreenTime();
@@ -200,7 +200,7 @@ final public class SignalPhase {
 		permithold			= true;
 		permitopposinghold  = false;
 
-		setPhaseColor(Signal.BulbColor.RED);
+		setPhaseColor(ActuatorSignal.BulbColor.RED);
 		bulbtimer.reset();
 		
 	}
@@ -218,7 +218,7 @@ final public class SignalPhase {
 					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
 		
 		// myNEMA is valid
-		if(myNEMA.compareTo(Signal.NEMA.NULL)==0)
+		if(myNEMA.compareTo(ActuatorSignal.NEMA.NULL)==0)
 			BeatsErrorLog.addError("Invalid NEMA code in phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
 		
 		// numbers are positive
@@ -271,7 +271,7 @@ final public class SignalPhase {
 			if(permissive)
 				return;
 			else{
-				setPhaseColor(Signal.BulbColor.RED);
+				setPhaseColor(ActuatorSignal.BulbColor.RED);
 				return;
 			}
 		}
@@ -287,13 +287,13 @@ final public class SignalPhase {
 			// .............................................................................................
 			case GREEN:
 	
-				setPhaseColor(Signal.BulbColor.GREEN);
+				setPhaseColor(ActuatorSignal.BulbColor.GREEN);
 				
 //				permitopposinghold = false;
 					
 				// Force off 
 				if( forceoff_approved ){ 
-					setPhaseColor(Signal.BulbColor.YELLOW);
+					setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
 					mySignal.getCompletedPhases().add(mySignal.new PhaseData(myNEMA, mySignal.getMyScenario().getClock().getT() - bulbtimer.getT(), bulbtimer.getT()));
 					bulbtimer.reset();
 					//FlushAllStationCallsAndConflicts();
@@ -307,7 +307,7 @@ final public class SignalPhase {
 			// .............................................................................................
 			case YELLOW:
 				
-				setPhaseColor(Signal.BulbColor.YELLOW);
+				setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
 				
 				// set permitopposinghold one step ahead of time so that other phases update correctly next time.
 //				permitopposinghold = false;
@@ -318,7 +318,7 @@ final public class SignalPhase {
 
 				// yellow time over, go immediately to red if redcleartime==0
 				if( BeatsMath.greaterorequalthan(bulbt,actualyellowtime) ){
-					setPhaseColor(Signal.BulbColor.RED);
+					setPhaseColor(ActuatorSignal.BulbColor.RED);
 					bulbtimer.reset();
 					done = redcleartime>0;
 				}
@@ -329,7 +329,7 @@ final public class SignalPhase {
 			// .............................................................................................
 			case RED:
 	
-				setPhaseColor(Signal.BulbColor.RED);
+				setPhaseColor(ActuatorSignal.BulbColor.RED);
 	
 				//if( BeatsMath.greaterorequalthan(bulbt,redcleartime-myNode.getMyNetwork().getTP()*3600f  && !goG )
 //				if( BeatsMath.greaterorequalthan(bulbt,redcleartime-bulbtimer.dt) && !hold_approved )
@@ -339,7 +339,7 @@ final public class SignalPhase {
 	
 				// if hold, set to green, go to green, etc.
 				if( hold_approved ){ 
-					setPhaseColor(Signal.BulbColor.GREEN);
+					setPhaseColor(ActuatorSignal.BulbColor.GREEN);
 					bulbtimer.reset();
 	
 					// Unregister calls (for reading conflicting calls)
@@ -360,7 +360,7 @@ final public class SignalPhase {
 		}
 	}
 	
-	protected void setPhaseColor(Signal.BulbColor color){
+	protected void setPhaseColor(ActuatorSignal.BulbColor color){
 		mySignal.getMyPhaseController().setPhaseColor(myNEMA,color);
 		bulbcolor = color;
 	}
@@ -449,7 +449,7 @@ final public class SignalPhase {
 		return mingreen;
 	}
 
-	public Signal.NEMA getNEMA() {
+	public ActuatorSignal.NEMA getNEMA() {
 		return myNEMA;
 	}
 	
@@ -461,7 +461,7 @@ final public class SignalPhase {
 		return actualredcleartime;
 	}
 
-	public Signal.BulbColor getBulbColor() {
+	public ActuatorSignal.BulbColor getBulbColor() {
 		return bulbcolor;
 	}
 		

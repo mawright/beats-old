@@ -37,6 +37,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.jaxb.*;
 import org.apache.log4j.Logger;
 
@@ -116,7 +117,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// signals
 		if(signalSet!=null)
 			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
-				((edu.berkeley.path.beats.actuator.Signal) signal).populate(this);
+				((ActuatorSignal) signal).populate(this);
 
         // actuators
         actuatorset.populate(this);
@@ -182,7 +183,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// signal list
 		if(S.signalSet!=null)
 			for (edu.berkeley.path.beats.jaxb.Signal signal : S.signalSet.getSignal())
-				((edu.berkeley.path.beats.actuator.Signal) signal).validate();
+				((ActuatorSignal) signal).validate();
 
 		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
 		// validate initial density profile
@@ -250,7 +251,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// signal list
 		if(signalSet!=null)
 			for (edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
-				((edu.berkeley.path.beats.actuator.Signal) signal).reset();
+				((ActuatorSignal) signal).reset();
 
 		// reset demand profiles
 		if(demandSet!=null)
@@ -298,8 +299,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// NOTE: ensembles have not been implemented for signals. They do not apply
 		// to pretimed control, but would make a differnece for feedback control.
 //		if(signalSet!=null)
-//			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
-//				((Signal)signal).update();
+//			for(edu.berkeley.path.beats.jaxb.ActuatorSignal signal : signalSet.getSignal())
+//				((ActuatorSignal)signal).update();
 
         // update supplu/demand prior to controllers if run_mode==fw_fr_split_output
         if(run_mode==RunMode.fw_fr_split_output)
@@ -435,10 +436,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	    // register signals with their targets ..................................
 //	    boolean registersuccess = true;
 //		if(getSignalSet()!=null)
-//	    	for(edu.berkeley.path.beats.jaxb.Signal signal: getSignalSet().getSignal())
-//	    		registersuccess &= ((Signal)signal).register();
+//	    	for(edu.berkeley.path.beats.jaxb.ActuatorSignal signal: getSignalSet().getSignal())
+//	    		registersuccess &= ((ActuatorSignal)signal).register();
 //	    if(!registersuccess){
-//	    	throw new BeatsException("Signal registration failure");
+//	    	throw new BeatsException("ActuatorSignal registration failure");
 //	    }
 
 	    if(getControllerset()!=null)
@@ -899,14 +900,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	/** Get signal with given id.
 	 * @param id String id of the signal.
-	 * @return Signal object.
+	 * @return ActuatorSignal object.
 	 */
-	public edu.berkeley.path.beats.actuator.Signal getSignalWithId(long id) {
+	public ActuatorSignal getSignalWithId(long id) {
 		if(getSignalSet()==null)
 			return null;
 		for(edu.berkeley.path.beats.jaxb.Signal signal : getSignalSet().getSignal()){
 			if(signal.getId()==id)
-				return (edu.berkeley.path.beats.actuator.Signal) signal;
+				return (ActuatorSignal) signal;
 		}
 		return null;
 	}
@@ -916,12 +917,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param node_id String id of the node. 
 	 * @return Reference to the signal if it exists, <code>null</code> otherwise
 	 */
-	public edu.berkeley.path.beats.actuator.Signal getSignalWithNodeId(long node_id) {
+	public ActuatorSignal getSignalWithNodeId(long node_id) {
 		if(getSignalSet()==null)
 			return null;
 		for(edu.berkeley.path.beats.jaxb.Signal signal : getSignalSet().getSignal()){
 			if(signal.getNodeId()==node_id)
-				return (edu.berkeley.path.beats.actuator.Signal)signal;
+				return (ActuatorSignal)signal;
 		}
 		return null;
 	}
@@ -1314,7 +1315,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 							logger.warn("Duplicate signal: id=" + signal.getId());
 						phases.put(signal.getId(), new SignalPhases(signal));
 					}
-				logger.info("Signal phases have been requested");
+				logger.info("ActuatorSignal phases have been requested");
 			}
 		}
 
@@ -1346,29 +1347,29 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 
 		public SignalPhases get(edu.berkeley.path.beats.jaxb.Signal signal) throws BeatsException {
-			if (null == phases) throw new BeatsException("Signal phases were not requested");
+			if (null == phases) throw new BeatsException("ActuatorSignal phases were not requested");
 			return phases.get(signal.getId());
 		}
 	}
 
 	/**
-	 * Signal phase storage
+	 * ActuatorSignal phase storage
 	 */
 	public static class SignalPhases {
 		private edu.berkeley.path.beats.jaxb.Signal signal;
-		private List<edu.berkeley.path.beats.actuator.Signal.PhaseData> phases;
+		private List<ActuatorSignal.PhaseData> phases;
 
 		SignalPhases(edu.berkeley.path.beats.jaxb.Signal signal) {
 			this.signal = signal;
-			phases = new java.util.ArrayList<edu.berkeley.path.beats.actuator.Signal.PhaseData>();
+			phases = new java.util.ArrayList<ActuatorSignal.PhaseData>();
 		}
 
-		public List<edu.berkeley.path.beats.actuator.Signal.PhaseData> getPhaseList() {
+		public List<ActuatorSignal.PhaseData> getPhaseList() {
 			return phases;
 		}
 
 		void update() {
-			phases.addAll(((edu.berkeley.path.beats.actuator.Signal) signal).getCompletedPhases());
+			phases.addAll(((ActuatorSignal) signal).getCompletedPhases());
 		}
 
 		void reset() {

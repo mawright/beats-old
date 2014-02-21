@@ -26,6 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.actuator.ActuatorSignal;
+
 public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.ObjectFactory {
 
     @Override
@@ -95,7 +97,7 @@ public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.Object
 	
 	@Override
 	public edu.berkeley.path.beats.jaxb.Signal createSignal() {
-		return new edu.berkeley.path.beats.actuator.Signal();
+		return new ActuatorSignal();
 	}
 
 	@Override

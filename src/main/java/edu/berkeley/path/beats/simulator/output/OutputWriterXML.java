@@ -42,7 +42,7 @@ import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.actuator.Signal;
+import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.util.SchemaUtil;
@@ -203,8 +203,8 @@ public final class OutputWriterXML extends OutputWriterBase {
 					for (edu.berkeley.path.beats.jaxb.Signal signal : sigl) {
 						xmlsw.writeStartElement("sig");
 						xmlsw.writeAttribute("id", Long.toString(signal.getId()));
-						List<Signal.PhaseData> phdata = getCompletedPhases(signal).getPhaseList();
-						for (Signal.PhaseData ph : phdata) {
+						List<ActuatorSignal.PhaseData> phdata = getCompletedPhases(signal).getPhaseList();
+						for (ActuatorSignal.PhaseData ph : phdata) {
 							xmlsw.writeStartElement("ph");
 							xmlsw.writeAttribute("i", String.format("%d", ph.nema.ordinal()));
 							xmlsw.writeAttribute("b", String.format(SEC_FORMAT, ph.starttime));

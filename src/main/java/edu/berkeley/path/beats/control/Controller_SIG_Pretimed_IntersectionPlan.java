@@ -29,20 +29,20 @@ package edu.berkeley.path.beats.control;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.actuator.SignalPhase;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.actuator.Signal;
-import edu.berkeley.path.beats.actuator.Signal.Command;
-import edu.berkeley.path.beats.actuator.Signal.NEMA;
+import edu.berkeley.path.beats.actuator.ActuatorSignal.Command;
+import edu.berkeley.path.beats.actuator.ActuatorSignal.NEMA;
 
 public class Controller_SIG_Pretimed_IntersectionPlan {
 
 	// references 
 	//private _Node myNode;
 	private Controller_SIG_Pretimed_Plan myPlan;
-	protected Signal mySignal;
+	protected ActuatorSignal mySignal;
 	
 	//SignalManager mySigMan;
 	//int myIntersectionID;
@@ -54,15 +54,15 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	//private float cyclelength;
 	
 	// list of holds and force-off points 
-	protected ArrayList<Signal.Command> command = new ArrayList<Signal.Command>();
+	protected ArrayList<ActuatorSignal.Command> command = new ArrayList<ActuatorSignal.Command>();
 	int nextcommand;
 	double lastcommandtime;
 		
 	private int numstages;
 	private double [] greentime;
 	private double[] stagelength;
-	private Signal.NEMA [] movA;
-	private Signal.NEMA [] movB;
+	private ActuatorSignal.NEMA [] movA;
+	private ActuatorSignal.NEMA [] movB;
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -90,8 +90,8 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 			return;		
 		
 		greentime = new double[numstages];
-		movA = new Signal.NEMA[numstages];
-		movB = new Signal.NEMA[numstages];
+		movA = new ActuatorSignal.NEMA[numstages];
+		movB = new ActuatorSignal.NEMA[numstages];
 	
 		for(int i=0;i<numstages;i++){
 			Controller_SIG_Pretimed.Stage stage = intersection.getStage().get(i);
@@ -100,8 +100,8 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 			else
 				greentime[i] = Double.NaN;
 
-			movA[i] = Signal.String2NEMA(stage.getMovA());
-			movB[i] = Signal.String2NEMA(stage.getMovB());
+			movA[i] = ActuatorSignal.String2NEMA(stage.getMovA());
+			movB[i] = ActuatorSignal.String2NEMA(stage.getMovB());
 		}
 		
 		mySignal = myScenario.getSignalWithNodeId(intersection.getNodeId());
@@ -176,12 +176,12 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 				// force off this stage
 				if(movA[k].compareTo(NEMA.NULL)!=0){
 					pA = mySignal.getPhaseByNEMA(movA[k]);					
-					command.add(new Command(Signal.CommandType.forceoff,movA[k],etime,pA.getActualyellowtime(),pA.getActualredcleartime()));
+					command.add(new Command(ActuatorSignal.CommandType.forceoff,movA[k],etime,pA.getActualyellowtime(),pA.getActualredcleartime()));
 				}
 				
 				// hold next stage
 				if(movA[nextstage].compareTo(NEMA.NULL)!=0)
-					command.add(new Command(Signal.CommandType.hold,movA[nextstage],stime));
+					command.add(new Command(ActuatorSignal.CommandType.hold,movA[nextstage],stime));
 				
 			}
 			
@@ -189,16 +189,16 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 			if(movB[k].compareTo(movB[nextstage])!=0){ 
 				if(movB[k].compareTo(NEMA.NULL)!=0){
 					pB = mySignal.getPhaseByNEMA(movB[k]);		
-					command.add(new Command(Signal.CommandType.forceoff,movB[k],etime,pB.getActualyellowtime(),pB.getActualredcleartime()));
+					command.add(new Command(ActuatorSignal.CommandType.forceoff,movB[k],etime,pB.getActualyellowtime(),pB.getActualredcleartime()));
 				}
 				if(movB[nextstage].compareTo(NEMA.NULL)!=0)
-					command.add(new Command(Signal.CommandType.hold,movB[nextstage],stime));
+					command.add(new Command(ActuatorSignal.CommandType.hold,movB[nextstage],stime));
 			}
 			
 		}
 		
 		// Correction: offset is with respect to end of first stage, instead of beginning
-		for(Signal.Command c : command){
+		for(ActuatorSignal.Command c : command){
 			c.time -= greentime[0];
 			if(c.time<0)
 				c.time += myPlan._cyclelength;
@@ -215,7 +215,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		
 		// at least two stages
 		if(numstages<=1)
-			BeatsErrorLog.addError("Signal id=" + mySignal.getId() + " has less than two stages.");
+			BeatsErrorLog.addError("ActuatorSignal id=" + mySignal.getId() + " has less than two stages.");
 		
 		// check offset
 		if(offset<0 || offset>=myPlan._cyclelength)
@@ -274,7 +274,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		
 	}
 	
-	protected void getCommandForTime(double itime,ArrayList<Signal.Command> commandlist){
+	protected void getCommandForTime(double itime,ArrayList<ActuatorSignal.Command> commandlist){
 		
 		double reltime = itime - offset;		
 		if(reltime<0)

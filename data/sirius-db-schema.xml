@@ -1675,7 +1675,7 @@
 
 
 
-	<!-- Signal Data -->
+	<!-- ActuatorSignal Data -->
 
 	<table name="signal_data">
 		<column name="network_id" primaryKey="true" domain="ID"/>
@@ -1709,7 +1709,7 @@
 
 
 
-	<!-- Signal Performance -->
+	<!-- ActuatorSignal Performance -->
 
 	<table name="signal_phase_performance">
 		<column name="network_id" primaryKey="true" domain="ID"/>
