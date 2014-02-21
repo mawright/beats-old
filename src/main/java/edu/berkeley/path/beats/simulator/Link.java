@@ -32,53 +32,54 @@ import java.math.BigDecimal;
  * 
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public final class Link extends edu.berkeley.path.beats.jaxb.Link {
+public abstract class Link extends edu.berkeley.path.beats.jaxb.Link {
 	
 	// does not change ....................................
-	private Network myNetwork;
-	private Node begin_node;
-	private Node end_node;
+	protected Network myNetwork;
+    protected Node begin_node;
+    protected Node end_node;
 
 	// link geometry
-	private double _lanes;							// [-]
+    protected double _lanes;							// [-]
+    protected boolean is_queue_link;                    // true if this is a queue-type link
 	
 	// source/sink indicators
-	private boolean issource; 						// [boolean]
-	private boolean issink;     					// [boolean]
-	
-	private FundamentalDiagramProfile myFDprofile;	// fundamental diagram profile (used to rescale future FDs upon lane change event)
-	private CapacityProfile myCapacityProfile; 		// capacity profile
-	private DemandProfile myDemandProfile;  		// demand profiles
+    protected boolean issource; 						// [boolean]
+    protected boolean issink;     					    // [boolean]
+
+    protected FundamentalDiagramProfile myFDprofile;	// fundamental diagram profile (used to rescale future FDs upon lane change event)
+    protected CapacityProfile myCapacityProfile; 		// capacity profile
+    protected DemandProfile myDemandProfile;  		    // demand profiles
 	
 	// Actuation
     protected boolean has_flow_controller;
     protected boolean has_speed_controller;
-	private double external_max_flow;
-	private double external_max_speed;
+    protected double external_max_flow;
+    protected double external_max_speed;
 	
 	// does change ........................................
 	
 	// link geometry
-	private double _length;							// [meters]
+    protected double _length;							// [meters]
 
 	// FDs
-	private FundamentalDiagram [] FDfromProfile;	// profile fundamental diagram
-	private FundamentalDiagram FDfromEvent;			// event fundamental diagram
+    protected FundamentalDiagram [] FDfromProfile;	    // profile fundamental diagram
+    protected FundamentalDiagram FDfromEvent;			// event fundamental diagram
 	
 	// Events
-	private boolean activeFDevent;					// true if an FD event is active on this link,
+    protected boolean activeFDevent;					// true if an FD event is active on this link,
 		
 	// input to node model
-	private double [] spaceSupply;        			// [veh]	numEnsemble
-	private double [][] outflowDemand;   			// [veh] 	numEnsemble x numVehTypes
+    protected double [] spaceSupply;        			// [veh]	numEnsemble
+    protected double [][] outflowDemand;   			    // [veh] 	numEnsemble x numVehTypes
 	
 	// in/out flows (from node model or demand profiles)
-	private double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
-	private double [][] outflow;    				// [veh]	numEnsemble x numVehTypes
+    protected double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
+    protected double [][] outflow;    				    // [veh]	numEnsemble x numVehTypes
 	
 	// link state
-	private double [][] density;    				// [veh]	numEnsemble x numVehTypes
-	private double   [] initial_density;			// [veh]  	numVehTypes
+    protected double [][] density;    				    // [veh]	numEnsemble x numVehTypes
+    protected double   [] initial_density;			    // [veh]  	numVehTypes
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -172,7 +173,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 		FDfromEvent = null;
 		activeFDevent = false;
-		
 	}
 
 	protected void update() {
@@ -406,11 +406,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
             external_max_flow = value_in_vph*getMyNetwork().getMyScenario().getSimdtinseconds()/3600d;
 	}
 	
-	public void set_external_max_speed(double value){
+    public void set_external_max_speed(double value){
         if(has_speed_controller)
-		    external_max_speed = value;
-	}
-	
+            external_max_speed = value;
+    }
+
 	// initial condition ..................................................
 	protected void copy_state_to_initial_state(){
 		initial_density = density[0].clone();
@@ -869,7 +869,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
 
-        /////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
 	// private
 	/////////////////////////////////////////////////////////////////////
 
