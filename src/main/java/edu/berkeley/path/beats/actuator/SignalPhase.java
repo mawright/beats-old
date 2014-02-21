@@ -24,9 +24,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.actuator;
 
-import edu.berkeley.path.beats.simulator.Signal.NEMA;
+import edu.berkeley.path.beats.actuator.Signal.NEMA;
+import edu.berkeley.path.beats.simulator.*;
 
 /** XXX. 
  * YYY
@@ -36,9 +37,8 @@ import edu.berkeley.path.beats.simulator.Signal.NEMA;
 final public class SignalPhase {
 	
 	// references ....................................................
-	private Node myNode;
 	private Signal mySignal;
-	private Link [] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
+	private Link[] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
 	
 	// properties ....................................................
 	private boolean protectd	= false;
@@ -94,7 +94,6 @@ final public class SignalPhase {
 	/////////////////////////////////////////////////////////////////////
 	
 	public SignalPhase(Node myNode,Signal mySignal,double dt){
-		this.myNode = myNode;
 		this.mySignal = mySignal;
 		this.bulbtimer = new Clock(0d,Double.POSITIVE_INFINITY,dt);		
 	}

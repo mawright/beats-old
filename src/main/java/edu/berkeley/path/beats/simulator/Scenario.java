@@ -116,7 +116,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// signals
 		if(signalSet!=null)
 			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
-				((Signal) signal).populate(this);
+				((edu.berkeley.path.beats.actuator.Signal) signal).populate(this);
 
         // actuators
         actuatorset.populate(this);
@@ -182,7 +182,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// signal list
 		if(S.signalSet!=null)
 			for (edu.berkeley.path.beats.jaxb.Signal signal : S.signalSet.getSignal())
-				((Signal) signal).validate();
+				((edu.berkeley.path.beats.actuator.Signal) signal).validate();
 
 		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
 		// validate initial density profile
@@ -250,7 +250,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// signal list
 		if(signalSet!=null)
 			for (edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
-				((Signal) signal).reset();
+				((edu.berkeley.path.beats.actuator.Signal) signal).reset();
 
 		// reset demand profiles
 		if(demandSet!=null)
@@ -901,12 +901,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param id String id of the signal.
 	 * @return Signal object.
 	 */
-	public Signal getSignalWithId(long id) {
+	public edu.berkeley.path.beats.actuator.Signal getSignalWithId(long id) {
 		if(getSignalSet()==null)
 			return null;
 		for(edu.berkeley.path.beats.jaxb.Signal signal : getSignalSet().getSignal()){
 			if(signal.getId()==id)
-				return (Signal) signal;
+				return (edu.berkeley.path.beats.actuator.Signal) signal;
 		}
 		return null;
 	}
@@ -916,12 +916,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param node_id String id of the node. 
 	 * @return Reference to the signal if it exists, <code>null</code> otherwise
 	 */
-	public Signal getSignalWithNodeId(long node_id) {
+	public edu.berkeley.path.beats.actuator.Signal getSignalWithNodeId(long node_id) {
 		if(getSignalSet()==null)
 			return null;
 		for(edu.berkeley.path.beats.jaxb.Signal signal : getSignalSet().getSignal()){
 			if(signal.getNodeId()==node_id)
-				return (Signal)signal;
+				return (edu.berkeley.path.beats.actuator.Signal)signal;
 		}
 		return null;
 	}
@@ -1356,19 +1356,19 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public static class SignalPhases {
 		private edu.berkeley.path.beats.jaxb.Signal signal;
-		private List<Signal.PhaseData> phases;
+		private List<edu.berkeley.path.beats.actuator.Signal.PhaseData> phases;
 
 		SignalPhases(edu.berkeley.path.beats.jaxb.Signal signal) {
 			this.signal = signal;
-			phases = new java.util.ArrayList<Signal.PhaseData>();
+			phases = new java.util.ArrayList<edu.berkeley.path.beats.actuator.Signal.PhaseData>();
 		}
 
-		public List<Signal.PhaseData> getPhaseList() {
+		public List<edu.berkeley.path.beats.actuator.Signal.PhaseData> getPhaseList() {
 			return phases;
 		}
 
 		void update() {
-			phases.addAll(((Signal) signal).getCompletedPhases());
+			phases.addAll(((edu.berkeley.path.beats.actuator.Signal) signal).getCompletedPhases());
 		}
 
 		void reset() {

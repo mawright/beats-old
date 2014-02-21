@@ -1,8 +1,9 @@
 package edu.berkeley.path.beats.control;
 
 
+import edu.berkeley.path.beats.actuator.Signal;
+import edu.berkeley.path.beats.actuator.Stage;
 import edu.berkeley.path.beats.jaxb.Column;
-import edu.berkeley.path.beats.jaxb.Row;
 import edu.berkeley.path.beats.simulator.*;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public class Controller_SIG extends Controller {
 
     protected Signal mySignal;
     protected double cycle_time;
-    protected Stage [] stages;
+    protected Stage[] stages;
 
     /////////////////////////////////////////////////////////////////////
     // Construction

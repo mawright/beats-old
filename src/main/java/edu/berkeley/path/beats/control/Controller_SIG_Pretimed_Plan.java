@@ -28,11 +28,8 @@ package edu.berkeley.path.beats.control;
 
 import java.util.ArrayList;
 
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.ScenarioElement;
-import edu.berkeley.path.beats.simulator.Signal;
+import edu.berkeley.path.beats.actuator.Signal;
 
 public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 	

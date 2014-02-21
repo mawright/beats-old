@@ -29,13 +29,13 @@ package edu.berkeley.path.beats.control;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import edu.berkeley.path.beats.simulator.SignalPhase;
+import edu.berkeley.path.beats.actuator.SignalPhase;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.Signal;
-import edu.berkeley.path.beats.simulator.Signal.Command;
-import edu.berkeley.path.beats.simulator.Signal.NEMA;
+import edu.berkeley.path.beats.actuator.Signal;
+import edu.berkeley.path.beats.actuator.Signal.Command;
+import edu.berkeley.path.beats.actuator.Signal.NEMA;
 
 public class Controller_SIG_Pretimed_IntersectionPlan {
 

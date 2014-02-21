@@ -51,12 +51,12 @@ public final class Clock {
     // reset / advance
     /////////////////////////////////////////////////////////////////////
 
-    protected void reset(){
+    public void reset(){
         rel_step = 0;
 		t = to;
 	}
 
-    protected void advance(){
+    public void advance(){
         rel_step++;
         t = to + rel_step*dt;
     }

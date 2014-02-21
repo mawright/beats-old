@@ -1,7 +1,5 @@
 package edu.berkeley.path.beats.actuator;
 
-import edu.berkeley.path.beats.simulator.Stage;
-
 /**
  * Created with IntelliJ IDEA.
  * User: gomes

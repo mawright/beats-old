@@ -26,11 +26,6 @@
 
 package edu.berkeley.path.beats.simulator.output;
 
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.List;
-
-import org.apache.log4j.Logger;
 //import org.apache.torque.NoRowsException;
 //import org.apache.torque.TooManyRowsException;
 //import org.apache.torque.TorqueException;
@@ -38,14 +33,9 @@ import org.apache.log4j.Logger;
 
 //import edu.berkeley.path.beats.db.BaseTypes;
 //import edu.berkeley.path.beats.om.*;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.LinkCumulativeData;
-import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.Signal;
-import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.simulator.BeatsMath;
+        import edu.berkeley.path.beats.simulator.BeatsException;
 
 //import com.workingdogs.village.DataSetException;
 

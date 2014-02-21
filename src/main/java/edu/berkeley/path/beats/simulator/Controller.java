@@ -233,7 +233,7 @@ public class Controller {
 	 * @return <code>true</code> if the controller successfully registered with all of its targets; 
 	 * <code>false</code> otherwise.
 	 */
-	protected boolean register() {
+	public boolean register() {
         for(Actuator act : actuators)
             if(!act.register())
                 return false;

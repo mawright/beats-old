@@ -24,7 +24,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.actuator;
+
+import edu.berkeley.path.beats.simulator.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,42 +36,22 @@ import java.util.HashMap;
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
 public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
-	
+
+    public static enum CommandType {hold,forceoff};
+    public static enum BulbColor {GREEN,YELLOW,RED,DARK};
+    public static enum NEMA {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
+
 	private HashMap<NEMA,SignalPhase> nema2phase;
 	private Scenario myScenario;
 	private Node myNode;
-	private PhaseController myPhaseController;	// used to control capacity on individual links
-	private SignalPhase [] phase;	
+	private SignalPhaseController myPhaseController;	// used to control capacity on individual links
+	private SignalPhase [] phase;
 	
 	// local copy of the command, subject to checks
 	private boolean [] hold_approved;
 	private boolean [] forceoff_approved;
 	
 	private ArrayList<PhaseData> completedPhases = new ArrayList<PhaseData>(); // used for output
-
-	/** Commands that may be issued by a controller to each signal phase.  */
-	public static enum CommandType {
-		/** Activate this phase **/		hold,
-		/** Deactivate this phase **/ 	forceoff };
-	
-	/** Phase indications. */	
-	protected static enum BulbColor {
-		/** Green light **/		GREEN,
-		/** Yellow light **/	YELLOW,
-		/** Red light **/		RED,
-		/** Bulb off **/		DARK };
-		
-	/** NEMA phase codes */
-	public static enum NEMA {
-		/** null **/	NULL,
-		/** EB left **/		_1,
-		/** WB through **/	_2,
-		/** SB left **/		_3,
-		/** NB through **/	_4,
-		/** WB left **/		_5,
-		/** EB through **/	_6,
-		/** NB left **/		_7,
-		/** SB through **/	_8};
 				
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -123,11 +105,10 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		forceoff_approved = new boolean[phase.length];
 		
 		// create myPhaseController. This is used to implement flow control on target links
-		myPhaseController = new PhaseController(this);
+		myPhaseController = new SignalPhaseController(this);
 		
 		// nema2phase
 
-		
 	}
 
 	protected void reset() {
@@ -249,7 +230,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 
 		// No transition if green time < mingreen
 		for(i=0;i<phase.length;i++)
-			if( phase[i].getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phase[i].getBulbtimer().getT(),phase[i].getMingreen()) )
+			if( phase[i].getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phase[i].getBulbtimer().getT(), phase[i].getMingreen()) )
 				forceoff_approved[i] = false;
 		
 		// Update all phases
@@ -311,7 +292,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		return null;
 	}
 	
-	protected PhaseController getMyPhaseController() {
+	protected SignalPhaseController getMyPhaseController() {
 		return myPhaseController;
 	}
 
@@ -529,93 +510,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		}
 	}
 	
-	// Each signal communicates with links via a PhaseController.
-	// Phase controller does two things: a) it registers the signal control,
-	// and b) it implements the phase indication. 
-	/** XXX. 
-	 * YYY
-	 *
-	 * @author Gabriel Gomes (gomes@path.berkeley.edu)
-	 */
-	protected class PhaseController extends Controller {
 
-		private HashMap<Link,Integer> target2index;
-		private HashMap<Signal.NEMA,Integer[]> nema2indices;
-		
-		public PhaseController(Signal mySignal){
-			
-//			super();
-//			
-//			int i,j;
-//			
-//			// populate target2index
-//			int index = 0;
-//			target2index = new HashMap<Link,Integer>();
-//			for(i=0;i<mySignal.phase.length;i++)
-//				for(j=0;j<mySignal.phase[i].getTargetlinks().length;j++)
-//					target2index.put(mySignal.phase[i].getTargetlinks()[j],index++);
-//			
-//			// populate nema2indices
-//			nema2indices = new HashMap<Signal.NEMA,Integer[]>();
-//			for(i=0;i<mySignal.phase.length;i++){
-//				Integer [] indices = new Integer[mySignal.phase[i].getTargetlinks().length];
-//				for(j=0;j<mySignal.phase[i].getTargetlinks().length;j++)
-//					indices[j] = target2index.get(mySignal.phase[i].getTargetlinks()[j]);
-//				nema2indices.put(mySignal.phase[i].getNEMA(),indices);
-//			}
-//			
-//			control_maxflow = new double[target2index.size()];
-		}
-		
-		@Override 
-		public void populate(Object jaxbobject) {}
-		
-		@Override 
-		public void update() throws BeatsException {}
-
-//		@Override
-//		public boolean register() {
-//	        for(Link link : target2index.keySet())
-//	        	if (null != link && !link.registerFlowController(this,target2index.get(link)))
-//	        		return false;
-//			return true;
-//		}
-		
-//		@Override
-//		public boolean deregister() {
-//	        for(Link link : target2index.keySet())
-//	        	if(!link.deregisterFlowController(this))
-//	        		return false;
-//			return true;
-//		}
-		
-		protected void setPhaseColor(Signal.NEMA nema,Signal.BulbColor color){
-			
-//			Integer [] indices = nema2indices.get(nema);
-//			if(indices==null)
-//				return;
-//			
-//			double maxflow;
-//			switch(color){
-//				case GREEN:
-//				case YELLOW:
-//					maxflow = Double.POSITIVE_INFINITY;
-//					break;
-//				case RED:
-//				case DARK:
-//					maxflow = 0d;
-//					break;
-//				default:
-//					maxflow = 0d;
-//					break;			
-//			}
-//			
-//			for(Integer index:indices)
-//				this.setControl_maxflow(index, maxflow);
-
-		}
-		
-	}
 
 }
 

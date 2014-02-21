@@ -11,10 +11,10 @@ import org.junit.Test;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.Signal;
-import edu.berkeley.path.beats.simulator.Signal.Command;
-import edu.berkeley.path.beats.simulator.Signal.NEMA;
-import edu.berkeley.path.beats.simulator.SignalPhase;
+import edu.berkeley.path.beats.actuator.Signal;
+import edu.berkeley.path.beats.actuator.Signal.Command;
+import edu.berkeley.path.beats.actuator.Signal.NEMA;
+import edu.berkeley.path.beats.actuator.SignalPhase;
 
 @Ignore("redo signals")
 public class SignalTest {

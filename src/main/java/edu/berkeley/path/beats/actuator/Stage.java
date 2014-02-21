@@ -1,4 +1,7 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.actuator;
+
+import edu.berkeley.path.beats.actuator.Signal;
+import edu.berkeley.path.beats.actuator.SignalPhase;
 
 /**
  * Created with IntelliJ IDEA.
