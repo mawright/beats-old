@@ -62,7 +62,10 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	protected void reset() throws BeatsException {
 		return;
 	}
-	
+
+    protected void update() throws BeatsException {
+    }
+
 	protected void deploy(double current_time_in_seconds){
     };
 

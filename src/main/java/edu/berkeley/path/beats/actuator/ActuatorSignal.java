@@ -52,11 +52,23 @@ public final class ActuatorSignal extends Actuator {
 	private boolean [] forceoff_approved;
 	
 	private ArrayList<PhaseData> completedPhases = new ArrayList<PhaseData>(); // used for output
-				
+
+    /////////////////////////////////////////////////////////////////////
+    // actuation command
+    /////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
-	
+
+    @Override
 	protected void populate(Object jaxbobject,Scenario myScenario) {
 
         edu.berkeley.path.beats.jaxb.Signal jaxbSignal = (edu.berkeley.path.beats.jaxb.Signal)jaxbobject;
@@ -112,13 +124,15 @@ public final class ActuatorSignal extends Actuator {
 
 	}
 
+    @Override
 	protected void reset() {
 		if(myNode==null)
 			return;
 		for(SignalPhase p : phase)
 			p.reset();
 	}
-	
+
+    @Override
 	protected void validate() {
 		
 		if(myNode==null){
@@ -273,7 +287,12 @@ public final class ActuatorSignal extends Actuator {
 		
 	}
 
-	/////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
+    // deploy
+    /////////////////////////////////////////////////////////////////////
+
+
+    /////////////////////////////////////////////////////////////////////
 	// protected
 	/////////////////////////////////////////////////////////////////////
 	
@@ -361,8 +380,7 @@ public final class ActuatorSignal extends Actuator {
 		return nema;
 	}
 	
-	public static boolean isCompatible(SignalPhase pA,SignalPhase pB)
-	{
+	public static boolean isCompatible(SignalPhase pA,SignalPhase pB){
 		ActuatorSignal.NEMA nemaA = pA.getNEMA();
 		ActuatorSignal.NEMA nemaB = pB.getNEMA();
 		
@@ -409,11 +427,6 @@ public final class ActuatorSignal extends Actuator {
 	// internal class
 	/////////////////////////////////////////////////////////////////////
 
-	/** XXX. 
-	 * YYY
-	 *
-	 * @author Gabriel Gomes (gomes@path.berkeley.edu)
-	 */
 	@SuppressWarnings("rawtypes")
 	public static class Command implements Comparable {
 		public ActuatorSignal.CommandType type;
@@ -494,12 +507,7 @@ public final class ActuatorSignal extends Actuator {
 		}
 		
 	}
-	
-	/** XXX. 
-	 * YYY
-	 *
-	 * @author Gabriel Gomes (gomes@path.berkeley.edu)
-	 */
+
 	public class PhaseData{
 		public NEMA nema;
 		public double starttime;
@@ -510,8 +518,6 @@ public final class ActuatorSignal extends Actuator {
 			this.greentime = greentime;
 		}
 	}
-	
-
 
 }
 

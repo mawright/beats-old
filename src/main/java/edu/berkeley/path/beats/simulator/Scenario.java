@@ -311,7 +311,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     	if(global_control_on)
     		controllerset.update();
 
-    	// deploy actuators
+    	// update and deploy actuators
+        actuatorset.update();
     	actuatorset.deploy(getCurrentTimeInSeconds());
 
     	// update events
