@@ -115,9 +115,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		sensorset.populate(this);
 
 		// signals
-		if(signalSet!=null)
-			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
-				((ActuatorSignal) signal).populate(this);
+//		if(signalSet!=null)
+//			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
+//				((ActuatorSignal) signal).populate(this);
 
         // actuators
         actuatorset.populate(this);
@@ -180,10 +180,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// validate actuators
 		S.actuatorset.validate();
 
-		// signal list
-		if(S.signalSet!=null)
-			for (edu.berkeley.path.beats.jaxb.Signal signal : S.signalSet.getSignal())
-				((ActuatorSignal) signal).validate();
+//		// signal list
+//		if(S.signalSet!=null)
+//			for (edu.berkeley.path.beats.jaxb.Signal signal : S.signalSet.getSignal())
+//				((ActuatorSignal) signal).validate();
 
 		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
 		// validate initial density profile
@@ -248,10 +248,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// reset actuators
 		actuatorset.reset();
 
-		// signal list
-		if(signalSet!=null)
-			for (edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
-				((ActuatorSignal) signal).reset();
+//		// signal list
+//		if(signalSet!=null)
+//			for (edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
+//				((ActuatorSignal) signal).reset();
 
 		// reset demand profiles
 		if(demandSet!=null)
@@ -898,35 +898,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		return null;
 	}
-	
-	/** Get signal with given id.
-	 * @param id String id of the signal.
-	 * @return ActuatorSignal object.
-	 */
-	public ActuatorSignal getSignalWithId(long id) {
-		if(getSignalSet()==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Signal signal : getSignalSet().getSignal()){
-			if(signal.getId()==id)
-				return (ActuatorSignal) signal;
-		}
-		return null;
-	}
-	
-	/** Get a reference to a signal by the id of its node.
-	 * 
-	 * @param node_id String id of the node. 
-	 * @return Reference to the signal if it exists, <code>null</code> otherwise
-	 */
-	public ActuatorSignal getSignalWithNodeId(long node_id) {
-		if(getSignalSet()==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Signal signal : getSignalSet().getSignal()){
-			if(signal.getNodeId()==node_id)
-				return (ActuatorSignal)signal;
-		}
-		return null;
-	}
 		
 	/** Get a reference to a controller by its id.
 	 * @param id Id of the controller.
@@ -1283,7 +1254,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		java.util.Map<Long, LinkCumulativeData> links = null;
 
 		/** signal id -> completed phases */
-		java.util.Map<Long, SignalPhases> phases = null;
+//		java.util.Map<Long, SignalPhases> phases = null;
 
 		private static Logger logger = Logger.getLogger(Cumulatives.class);
 
@@ -1307,28 +1278,28 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			}
 		}
 
-		public void storeSignalPhases() {
-			if (null == phases) {
-				phases = new HashMap<Long, SignalPhases>();
-				if (null != scenario.getSignalSet())
-					for (edu.berkeley.path.beats.jaxb.Signal signal : scenario.getSignalSet().getSignal()) {
-						if (phases.containsKey(signal.getId()))
-							logger.warn("Duplicate signal: id=" + signal.getId());
-						phases.put(signal.getId(), new SignalPhases(signal));
-					}
-				logger.info("ActuatorSignal phases have been requested");
-			}
-		}
+//		public void storeSignalPhases() {
+//			if (null == phases) {
+//				phases = new HashMap<Long, SignalPhases>();
+//				if (null != scenario.getSignalSet())
+//					for (edu.berkeley.path.beats.jaxb.Signal signal : scenario.getSignalSet().getSignal()) {
+//						if (phases.containsKey(signal.getId()))
+//							logger.warn("Duplicate signal: id=" + signal.getId());
+//						phases.put(signal.getId(), new SignalPhases(signal));
+//					}
+//				logger.info("ActuatorSignal phases have been requested");
+//			}
+//		}
 
 		public void reset() {
 			if (null != links) {
 				Iterator<LinkCumulativeData> iter = links.values().iterator();
 				while (iter.hasNext()) iter.next().reset();
 			}
-			if (null != phases) {
-				Iterator<SignalPhases> iter = phases.values().iterator();
-				while (iter.hasNext()) iter.next().reset();
-			}
+//			if (null != phases) {
+//				Iterator<SignalPhases> iter = phases.values().iterator();
+//				while (iter.hasNext()) iter.next().reset();
+//			}
 		}
 
 		public void update() throws BeatsException {
@@ -1336,10 +1307,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				java.util.Iterator<LinkCumulativeData> iter = links.values().iterator();
 				while (iter.hasNext()) iter.next().update();
 			}
-			if (null != phases) {
-				Iterator<SignalPhases> iter = phases.values().iterator();
-				while (iter.hasNext()) iter.next().update();
-			}
+//			if (null != phases) {
+//				Iterator<SignalPhases> iter = phases.values().iterator();
+//				while (iter.hasNext()) iter.next().update();
+//			}
 		}
 
 		public LinkCumulativeData get(edu.berkeley.path.beats.jaxb.Link link) throws BeatsException {
@@ -1347,36 +1318,36 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			return links.get(link.getId());
 		}
 
-		public SignalPhases get(edu.berkeley.path.beats.jaxb.Signal signal) throws BeatsException {
-			if (null == phases) throw new BeatsException("ActuatorSignal phases were not requested");
-			return phases.get(signal.getId());
-		}
+//		public SignalPhases get(edu.berkeley.path.beats.jaxb.Signal signal) throws BeatsException {
+//			if (null == phases) throw new BeatsException("ActuatorSignal phases were not requested");
+//			return phases.get(signal.getId());
+//		}
 	}
 
-	/**
-	 * ActuatorSignal phase storage
-	 */
-	public static class SignalPhases {
-		private edu.berkeley.path.beats.jaxb.Signal signal;
-		private List<ActuatorSignal.PhaseData> phases;
-
-		SignalPhases(edu.berkeley.path.beats.jaxb.Signal signal) {
-			this.signal = signal;
-			phases = new java.util.ArrayList<ActuatorSignal.PhaseData>();
-		}
-
-		public List<ActuatorSignal.PhaseData> getPhaseList() {
-			return phases;
-		}
-
-		void update() {
-			phases.addAll(((ActuatorSignal) signal).getCompletedPhases());
-		}
-
-		void reset() {
-			phases.clear();
-		}
-	}
+//	/**
+//	 * ActuatorSignal phase storage
+//	 */
+//	public static class SignalPhases {
+//		private edu.berkeley.path.beats.actuator.ActuatorSignal signal;
+//		private List<ActuatorSignal.PhaseData> phases;
+//
+//		SignalPhases(edu.berkeley.path.beats.jaxb.Signal signal) {
+//			this.signal = signal;
+//			phases = new java.util.ArrayList<ActuatorSignal.PhaseData>();
+//		}
+//
+//		public List<ActuatorSignal.PhaseData> getPhaseList() {
+//			return phases;
+//		}
+//
+//		void update() {
+//			phases.addAll(signal.getCompletedPhases());
+//		}
+//
+//		void reset() {
+//			phases.clear();
+//		}
+//	}
 
 	public void setUncertaintyModel(String uncertaintyModel) {
 		this.uncertaintyModel = Scenario.UncertaintyType.valueOf(uncertaintyModel);

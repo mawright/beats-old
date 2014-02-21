@@ -54,6 +54,18 @@ public final class ActuatorSignal extends Actuator {
 	private ArrayList<PhaseData> completedPhases = new ArrayList<PhaseData>(); // used for output
 
     /////////////////////////////////////////////////////////////////////
+    // construction
+    /////////////////////////////////////////////////////////////////////
+
+    public ActuatorSignal(edu.berkeley.path.beats.jaxb.Signal jaxbS,ActuatorImplementation act_implementor){
+
+        super(act_implementor,Type.signal);
+
+        // set id for this acuator
+        setId(jaxbS.getId());
+    }
+
+    /////////////////////////////////////////////////////////////////////
     // actuation command
     /////////////////////////////////////////////////////////////////////
 
@@ -149,6 +161,7 @@ public final class ActuatorSignal extends Actuator {
 		
 	}
 
+    @Override
 	protected void update() {
 
 		if(myNode==null)

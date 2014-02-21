@@ -184,10 +184,6 @@ final public class ObjectFactory {
 				A = new ActuatorRampMeter(myScenario,jaxbA,imp);
 				break;
 
-			case signalized_intersection:
-				A = new ActuatorSignalStageSplits(myScenario,jaxbA,imp);
-				break;
-
 			case vsl:
 				//A = new ActuatorVSL(myScenario, jaxbA);
 				break;
@@ -204,6 +200,16 @@ final public class ObjectFactory {
 		A.populate(jaxbA,myScenario);
 		return A;
 	}
+
+    protected static Actuator createActuatorSignalFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Signal jaxbS) {
+        if(myScenario==null)
+            return null;
+        ActuatorImplementation imp = new BeatsActuatorImplementation(jaxbS,myScenario);
+        Actuator A = new ActuatorSignal(jaxbS,imp);
+        imp.setActuator(A);
+        A.populate(jaxbS,myScenario);
+        return A;
+    }
 
 	protected static ScenarioElement createScenarioElementFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.ScenarioElement jaxbS){
 		if(myScenario==null)

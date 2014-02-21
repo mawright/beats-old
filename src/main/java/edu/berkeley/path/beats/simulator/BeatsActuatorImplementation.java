@@ -18,14 +18,16 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
             case vsl:
                 target = scenario.getLinkWithId(se.getId());
                 break;
-            case signalized_intersection:
-                target = scenario.getSignalWithId(se.getId());
-                break;
             case cms:
                 target = scenario.getNodeWithId(se.getId());
                 break;
         }
 	}
+
+    public BeatsActuatorImplementation(edu.berkeley.path.beats.jaxb.Signal parent,Object context){
+        Scenario scenario = (Scenario) context;
+        target = scenario.getNodeWithId(parent.getNodeId());
+    }
 	
 	@Override
 	public void deploy_metering_rate_in_veh(Double metering_rate_in_veh) {

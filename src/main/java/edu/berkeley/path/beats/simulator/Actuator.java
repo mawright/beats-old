@@ -7,10 +7,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
     protected ActuatorImplementation implementor;
     protected Actuator.Type myType;
 
-	public static enum Type	{ ramp_meter,
-							  signalized_intersection,
-							  vsl,
-							  cms };
+	public static enum Type	{ ramp_meter,signal,vsl,cms };
 
 	/////////////////////////////////////////////////////////////////////
 	// construction
@@ -26,11 +23,16 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 
         // copy jaxb data
         setId(jaxbA.getId());
-        setScenarioElement(new ScenarioElement(myScenario,jaxbA.getScenarioElement()));
+        //setScenarioElement(new ScenarioElement(myScenario,jaxbA.getScenarioElement()));
         setParameters(jaxbA.getParameters());
-        setActuatorType(jaxbA.getActuatorType());
+        //setActuatorType(jaxbA.getActuatorType());
         setTable(jaxbA.getTable());
 	}
+
+    public Actuator (ActuatorImplementation act_implementor,Actuator.Type myType){
+        this.implementor = act_implementor;
+        this.myType = myType;
+    }
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset / deploy
@@ -42,7 +44,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
                 return ((Link)implementor.target).register_flow_controller();
             case vsl:
                 return ((Link)implementor.target).register_speed_controller();
-            case signalized_intersection:
+            case signal:
                 return false;
             case cms:
                 return ((Node)implementor.target).register_split_controller();
@@ -63,34 +65,10 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 		return;
 	}
 
-    protected void update() throws BeatsException {
+    protected void update() {
     }
 
 	protected void deploy(double current_time_in_seconds){
     };
-
-//    public long getId() {
-//        return jaxbA.getId();
-//    }
-
-//    public ActuatorImplementation get_implementor(){
-//        return implementor;
-//    }
-
-//    public String getScenarioElementType() {
-//        return jaxbA.getScenarioElement().getType();
-//    }
-//
-//    public long getScenarioElementId() {
-//        return jaxbA.getScenarioElement().getId();
-//    }
-
-//    public ActuatorSignal getSignal(){
-//        ScenarioElement se = (ScenarioElement) getScenarioElement();
-//        if(se.getType().compareTo("signal")==0)
-//            return (ActuatorSignal) se.getReference();
-//        else
-//            return null;
-//    }
 
 }
