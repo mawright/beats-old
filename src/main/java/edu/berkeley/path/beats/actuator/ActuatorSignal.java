@@ -42,16 +42,16 @@ public final class ActuatorSignal extends Actuator {
     public static enum NEMA {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
 
 	private HashMap<NEMA,SignalPhase> nema2phase;
-	private Scenario myScenario;
+	//private Scenario myScenario;
 	private Node myNode;
-	private SignalPhaseController myPhaseController;	// used to control capacity on individual links
+//	private SignalPhaseController myPhaseController;	// used to control capacity on individual links
 	private SignalPhase [] phase;
 	
 	// local copy of the command, subject to checks
 	private boolean [] hold_approved;
 	private boolean [] forceoff_approved;
 	
-	private ArrayList<PhaseData> completedPhases = new ArrayList<PhaseData>(); // used for output
+//	private ArrayList<PhaseData> completedPhases = new ArrayList<PhaseData>(); // used for output
 
     /////////////////////////////////////////////////////////////////////
     // construction
@@ -69,22 +69,35 @@ public final class ActuatorSignal extends Actuator {
     // actuation command
     /////////////////////////////////////////////////////////////////////
 
+    public void set_command(ArrayList<ActuatorSignal.Command> command){
+        for(ActuatorSignal.Command c : command){
+            SignalPhase p = nema2phase.get(c.nema);
+            if(p==null)
+                continue;
 
+            switch(c.type){
+                case forceoff:
+                    p.setForceoff_requested(true);
+                    p.setActualyellowtime( c.yellowtime>=0 ? c.yellowtime : p.getYellowtime() );
+                    p.setActualredcleartime( c.redcleartime>=0 ? c.redcleartime : p.getRedcleartime() );
+                    break;
 
-
-
-
-
+                case hold:
+                    p.setHold_requested(true);
+                    break;
+            }
+        }
+    }
 
 	/////////////////////////////////////////////////////////////////////
-	// populate / reset / validate / update
+	// populate / reset / validate / deploy
 	/////////////////////////////////////////////////////////////////////
 
     @Override
 	protected void populate(Object jaxbobject,Scenario myScenario) {
 
         edu.berkeley.path.beats.jaxb.Signal jaxbSignal = (edu.berkeley.path.beats.jaxb.Signal)jaxbobject;
-		this.myScenario = myScenario;
+		//this.myScenario = myScenario;
 		this.myNode = myScenario.getNodeWithId(jaxbSignal.getNodeId());
 		
 		if(myNode==null)
@@ -130,7 +143,7 @@ public final class ActuatorSignal extends Actuator {
 		forceoff_approved = new boolean[phase.length];
 		
 		// create myPhaseController. This is used to implement flow control on target links
-		myPhaseController = new SignalPhaseController(this);
+//		myPhaseController = new SignalPhaseController(this);
 		
 		// nema2phase
 
@@ -162,7 +175,7 @@ public final class ActuatorSignal extends Actuator {
 	}
 
     @Override
-	protected void update() {
+	protected void deploy(double current_time_in_seconds) {
 
 		if(myNode==null)
 			return;
@@ -261,9 +274,9 @@ public final class ActuatorSignal extends Actuator {
 			if( phase[i].getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phase[i].getBulbtimer().getT(), phase[i].getMingreen()) )
 				forceoff_approved[i] = false;
 		
-		// Update all phases
+		// Deploy all phases
 		for(i=0;i<phase.length;i++)
-			phase[i].update(hold_approved[i],forceoff_approved[i]);
+			phase[i].deploy(hold_approved[i],forceoff_approved[i]);
 
 		// Remove serviced commands 
 		for(SignalPhase pA: phase){
@@ -301,20 +314,15 @@ public final class ActuatorSignal extends Actuator {
 	}
 
     /////////////////////////////////////////////////////////////////////
-    // deploy
-    /////////////////////////////////////////////////////////////////////
-
-
-    /////////////////////////////////////////////////////////////////////
 	// protected
 	/////////////////////////////////////////////////////////////////////
 	
-	protected boolean register(){
-		if(myNode==null)
-			return true;
-		else
-			return myPhaseController.register();
-	}
+//	protected boolean register(){
+//		if(myNode==null)
+//			return true;
+//		else
+//			return myPhaseController.register();
+//	}
 
 	protected SignalPhase getPhaseForNEMA(NEMA nema){
 		for(SignalPhase p:phase){
@@ -325,13 +333,13 @@ public final class ActuatorSignal extends Actuator {
 		return null;
 	}
 	
-	protected SignalPhaseController getMyPhaseController() {
-		return myPhaseController;
-	}
+//	protected SignalPhaseController getMyPhaseController() {
+//		return myPhaseController;
+//	}
 
-	protected java.util.List<PhaseData> getCompletedPhases() {
-		return completedPhases;
-	}
+//	protected java.util.List<PhaseData> getCompletedPhases() {
+//		return completedPhases;
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// public methods
@@ -347,31 +355,10 @@ public final class ActuatorSignal extends Actuator {
 		return nema2phase.get(nema);
 	}
 
-	public Scenario getMyScenario() {
-		return myScenario;
-	}
+//	public Scenario getMyScenario() {
+//		return myScenario;
+//	}
 
-	public void requestCommand(ArrayList<ActuatorSignal.Command> command){
-		for(ActuatorSignal.Command c : command){
-			SignalPhase p = nema2phase.get(c.nema);
-			if(p==null)
-				continue;
-			
-			switch(c.type){
-			case forceoff:
-				p.setForceoff_requested(true);
-				p.setActualyellowtime( c.yellowtime>=0 ? c.yellowtime : p.getYellowtime() ); 	
-				p.setActualredcleartime( c.redcleartime>=0 ? c.redcleartime : p.getRedcleartime() ); 
-				break;
-
-			case hold:
-				p.setHold_requested(true);
-				break;
-				
-			}
-		}
-	}
-		
 	/////////////////////////////////////////////////////////////////////
 	// static NEMA methods
 	/////////////////////////////////////////////////////////////////////

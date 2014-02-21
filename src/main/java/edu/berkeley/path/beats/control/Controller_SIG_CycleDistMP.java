@@ -38,42 +38,42 @@ public class Controller_SIG_CycleDistMP extends Controller_SIG {
     // assign values to your controller-specific variables
 	@Override
 	protected void populate(Object jaxbobject) {
-		super.populate(jaxbobject);
-        myNode = myScenario.getNodeWithId(mySignal.getNodeId());
-        inputLinks = myNode.getInput_link();
-    	outputLinks = myNode.getOutput_link();
-    	nInputs = inputLinks.length;
-		nOutputs = outputLinks.length;
-        
-      //construct control matrices and get min greens
-        nStages = stages.length;
-        controlMat = new int [nStages][nInputs]; // initializes to filled with 0
-        minGreens = new double [nStages];
-        for(int s=0; s<nStages; s++){
-        	minGreens[s] = Math.min(stages[s].phaseA.getMingreen(), stages[s].phaseB.getMingreen());
-        	for (Link a: stages[s].phaseA.getTargetlinks()){
-        		for (int i=0;i<nInputs;i++){
-        			if (inputLinks[i].getId()==a.getId()){
-        				controlMat[s][i]=1;
-        				break;
-        			}
-        		}
-        	}
-        	for (Link b: stages[s].phaseB.getTargetlinks()){
-        		for (int i=0;i<nInputs;i++){
-        			if (inputLinks[i].getId()==b.getId()){
-        				controlMat[s][i]=1;
-        				break;
-        			}
-        		}
-        	}
-        }
-        
-        //get sat flow information from links
-		satFlows = new int[nInputs];
-		for(int i=0;i<nInputs;i++){
-            satFlows[i] = (int) inputLinks[i].getCapacityInVeh(0);
-        }
+//		super.populate(jaxbobject);
+//        myNode = myScenario.getNodeWithId(mySignal.getNodeId());
+//        inputLinks = myNode.getInput_link();
+//    	outputLinks = myNode.getOutput_link();
+//    	nInputs = inputLinks.length;
+//		nOutputs = outputLinks.length;
+//
+//      //construct control matrices and get min greens
+//        nStages = stages.length;
+//        controlMat = new int [nStages][nInputs]; // initializes to filled with 0
+//        minGreens = new double [nStages];
+//        for(int s=0; s<nStages; s++){
+//        	minGreens[s] = Math.min(stages[s].phaseA.getMingreen(), stages[s].phaseB.getMingreen());
+//        	for (Link a: stages[s].phaseA.getTargetlinks()){
+//        		for (int i=0;i<nInputs;i++){
+//        			if (inputLinks[i].getId()==a.getId()){
+//        				controlMat[s][i]=1;
+//        				break;
+//        			}
+//        		}
+//        	}
+//        	for (Link b: stages[s].phaseB.getTargetlinks()){
+//        		for (int i=0;i<nInputs;i++){
+//        			if (inputLinks[i].getId()==b.getId()){
+//        				controlMat[s][i]=1;
+//        				break;
+//        			}
+//        		}
+//        	}
+//        }
+//
+//        //get sat flow information from links
+//		satFlows = new int[nInputs];
+//		for(int i=0;i<nInputs;i++){
+//            satFlows[i] = (int) inputLinks[i].getCapacityInVeh(0);
+//        }
 	}
 
 	// validate the controller parameters.

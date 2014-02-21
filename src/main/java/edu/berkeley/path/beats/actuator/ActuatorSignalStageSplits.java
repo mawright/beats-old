@@ -35,12 +35,12 @@ public class ActuatorSignalStageSplits extends Actuator {
 	// populate / validate / reset / deploy
 	/////////////////////////////////////////////////////////////////////
 
-	@Override
-	protected void populate(Object jaxbobject,Scenario myScenario) {
-        mySignal = myScenario.getSignalWithId(getScenarioElement().getId());
-        inlinks = Arrays.asList(mySignal.getMyNode().getInput_link());
-		return;
-	}
+//	@Override
+//	protected void populate(Object jaxbobject,Scenario myScenario) {
+//        mySignal = myScenario.getSignalWithId(getScenarioElement().getId());
+//        inlinks = Arrays.asList(mySignal.getMyNode().getInput_link());
+//		return;
+//	}
 
 //	@Override
 //	protected void validate() {

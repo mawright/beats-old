@@ -55,7 +55,7 @@ public class SignalTest {
 		NEMA nema = ActuatorSignal.NEMA._2;
 		SignalPhase phase = signal.getPhaseByNEMA(nema);
 		command.add( new Command(ActuatorSignal.CommandType.forceoff,nema,10f,20f,30f) );
-		signal.requestCommand(command);
+		signal.set_command(command);
 		assertEquals(phase.getActualredcleartime(),30,1e-4);
 		assertEquals(phase.getActualyellowtime(),20,1e-4);
 	}

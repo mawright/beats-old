@@ -142,7 +142,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 			intersplan[i].getCommandForTime(itime,commandlist);
 			
 			// send command to the signal
-			intersplan[i].mySignal.requestCommand(commandlist);
+			intersplan[i].mySignal.set_command(commandlist);
 
 //			if( !coordmode ){
 //				for(j=0;j<intplan.holdpoint.length;j++)

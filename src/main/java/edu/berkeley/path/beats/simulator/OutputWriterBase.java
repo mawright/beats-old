@@ -26,7 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.simulator.Scenario.SignalPhases;
+//import edu.berkeley.path.beats.simulator.Scenario.SignalPhases;
 
 public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	
@@ -76,24 +76,24 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter{
 		scenario.getCumulatives().storeLinks();
 	}
 	
-	/**
-	 * Initializes a signal phase storage,
-	 * if that has not yet been done.
-	 * Calling this method multiple times is safe
-	 */
-	protected void requestSignalPhases() {
-		scenario.getCumulatives().storeSignalPhases();
-	}
+//	/**
+//	 * Initializes a signal phase storage,
+//	 * if that has not yet been done.
+//	 * Calling this method multiple times is safe
+//	 */
+//	protected void requestSignalPhases() {
+//		scenario.getCumulatives().storeSignalPhases();
+//	}
 	
-	/**
-	 * Retrieves completed phases for the given signal
-	 * @param signal
-	 * @return completed signal phases
-	 * @throws BeatsException if the signal phase storage has not been initialized
-	 */
-	protected SignalPhases getCompletedPhases(edu.berkeley.path.beats.jaxb.Signal signal) throws BeatsException {
-		return scenario.getCumulatives().get(signal);
-	}
+//	/**
+//	 * Retrieves completed phases for the given signal
+//	 * @param signal
+//	 * @return completed signal phases
+//	 * @throws BeatsException if the signal phase storage has not been initialized
+//	 */
+//	protected SignalPhases getCompletedPhases(edu.berkeley.path.beats.jaxb.Signal signal) throws BeatsException {
+//		return scenario.getCumulatives().get(signal);
+//	}
 	
 	/**
 	 * Retrieves link cumulative data for the given link

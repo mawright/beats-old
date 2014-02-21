@@ -32,7 +32,7 @@ import java.math.BigDecimal;
  * 
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public abstract class Link extends edu.berkeley.path.beats.jaxb.Link {
+public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	
 	// does not change ....................................
 	protected Network myNetwork;

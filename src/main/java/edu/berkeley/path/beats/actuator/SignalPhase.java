@@ -29,9 +29,7 @@ package edu.berkeley.path.beats.actuator;
 import edu.berkeley.path.beats.actuator.ActuatorSignal.NEMA;
 import edu.berkeley.path.beats.simulator.*;
 
-/** XXX. 
- * YYY
- *
+/**
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 final public class SignalPhase {
@@ -97,6 +95,18 @@ final public class SignalPhase {
 		this.mySignal = mySignal;
 		this.bulbtimer = new Clock(0d,Double.POSITIVE_INFINITY,dt);		
 	}
+
+    /////////////////////////////////////////////////////////////////////
+    // actuation command
+    /////////////////////////////////////////////////////////////////////
+
+    protected void setForceoff_requested(boolean forceoff_requested) {
+        this.forceoff_requested = forceoff_requested;
+    }
+
+    protected void setHold_requested(boolean hold_requested) {
+        this.hold_requested = hold_requested;
+    }
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / rese / validate
@@ -261,9 +271,9 @@ final public class SignalPhase {
 		
 	}
 
-	protected void update(boolean hold_approved,boolean forceoff_approved)
-	{
-		mySignal.getCompletedPhases().clear();
+	protected void deploy(boolean hold_approved,boolean forceoff_approved){
+
+//		mySignal.getCompletedPhases().clear();
 
 		double bulbt = bulbtimer.getT();
 
@@ -294,7 +304,7 @@ final public class SignalPhase {
 				// Force off 
 				if( forceoff_approved ){ 
 					setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
-					mySignal.getCompletedPhases().add(mySignal.new PhaseData(myNEMA, mySignal.getMyScenario().getClock().getT() - bulbtimer.getT(), bulbtimer.getT()));
+//					mySignal.getCompletedPhases().add(mySignal.new PhaseData(myNEMA, mySignal.getMyScenario().getClock().getT() - bulbtimer.getT(), bulbtimer.getT()));
 					bulbtimer.reset();
 					//FlushAllStationCallsAndConflicts();
 					done = actualyellowtime>0;
@@ -361,7 +371,7 @@ final public class SignalPhase {
 	}
 	
 	protected void setPhaseColor(ActuatorSignal.BulbColor color){
-		mySignal.getMyPhaseController().setPhaseColor(myNEMA,color);
+        mySignal.getImplementor().deploy_bulb_color(myNEMA, color);
 		bulbcolor = color;
 	}
 
@@ -381,14 +391,6 @@ final public class SignalPhase {
 		this.actualyellowtime = actualyellowtime;
 	}
 
-	protected void setForceoff_requested(boolean forceoff_requested) {
-		this.forceoff_requested = forceoff_requested;
-	}
-	
-	protected void setHold_requested(boolean hold_requested) {
-		this.hold_requested = hold_requested;
-	}
-	
 	protected void setPermithold(boolean permithold) {
 		this.permithold = permithold;
 	}

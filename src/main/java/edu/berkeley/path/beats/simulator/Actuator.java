@@ -65,10 +65,11 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 		return;
 	}
 
-    protected void update() {
-    }
-
 	protected void deploy(double current_time_in_seconds){
     };
+
+    public ActuatorImplementation getImplementor(){
+        return implementor;
+    }
 
 }

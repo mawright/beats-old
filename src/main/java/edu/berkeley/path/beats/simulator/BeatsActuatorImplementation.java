@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.actuator.ActuatorSignalStageSplits;
 import edu.berkeley.path.beats.actuator.StageSplit;
 import edu.berkeley.path.beats.jaxb.Splitratio;
@@ -82,14 +83,29 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 		// TODO Auto-generated method stub
 	}
 
-
-    private class LinkSplit {
-        public Link link;
-        double split;
-        public LinkSplit(Link link){
-            this.link = link;
-            this.split = 0d;
-        }
+    @Override
+    public void deploy_bulb_color(ActuatorSignal.NEMA nema,ActuatorSignal.BulbColor color){
+//        Integer [] indices = nema2indices.get(nema);
+//        if(indices==null)
+//            return;
+//
+//        double maxflow;
+//        switch(color){
+//            case GREEN:
+//            case YELLOW:
+//                maxflow = Double.POSITIVE_INFINITY;
+//                break;
+//            case RED:
+//            case DARK:
+//                maxflow = 0d;
+//                break;
+//            default:
+//                maxflow = 0d;
+//                break;
+//        }
+//
+//        for(Integer index:indices)
+//            this.setControl_maxflow(index, maxflow);
 
     }
 

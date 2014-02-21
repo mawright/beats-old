@@ -25,36 +25,36 @@ public class Controller_SIG extends Controller {
     @Override
     protected void populate(Object jaxbobject) {
 
-        // read cycle time
-        cycle_time = jaxbController.getParameters()!=null ?
-                        ((Parameters) jaxbController.getParameters()).readParameter("cycle_time",Double.NaN) :
-                        Double.NaN;
-
-        // read target actuator
-
-        // hack: assume actuator id = signal id
-        long act_id = jaxbController.getTargetActuators().getTargetActuator().get(0).getId();
-        mySignal = myScenario.getSignalWithId(act_id);
-
-        // read stages
-        edu.berkeley.path.beats.jaxb.Table myTable = null;
-        if(jaxbController.getTable()!=null)
-            for (edu.berkeley.path.beats.jaxb.Table t : jaxbController.getTable())
-                if (t.getName().compareToIgnoreCase("Intersection Stage Sequence") == 0) {
-                    myTable = t;
-                    break;
-                }
-
-        if(myTable!=null){
-            int numStages = myTable.getRow().size();
-            stages = new Stage[numStages];
-            for(int i=0;i<numStages;i++){
-                List<Column> c = myTable.getRow().get(i).getColumn();
-                ActuatorSignal.NEMA movA = ActuatorSignal.NEMA.valueOf(c.get(0).getContent());
-                ActuatorSignal.NEMA movB = ActuatorSignal.NEMA.valueOf(c.get(1).getContent());
-                stages[i] = new Stage(mySignal,movA,movB);
-            }
-        }
+//        // read cycle time
+//        cycle_time = jaxbController.getParameters()!=null ?
+//                        ((Parameters) jaxbController.getParameters()).readParameter("cycle_time",Double.NaN) :
+//                        Double.NaN;
+//
+//        // read target actuator
+//
+//        // hack: assume actuator id = signal id
+//        long act_id = jaxbController.getTargetActuators().getTargetActuator().get(0).getId();
+//        mySignal = myScenario.getSignalWithId(act_id);
+//
+//        // read stages
+//        edu.berkeley.path.beats.jaxb.Table myTable = null;
+//        if(jaxbController.getTable()!=null)
+//            for (edu.berkeley.path.beats.jaxb.Table t : jaxbController.getTable())
+//                if (t.getName().compareToIgnoreCase("Intersection Stage Sequence") == 0) {
+//                    myTable = t;
+//                    break;
+//                }
+//
+//        if(myTable!=null){
+//            int numStages = myTable.getRow().size();
+//            stages = new Stage[numStages];
+//            for(int i=0;i<numStages;i++){
+//                List<Column> c = myTable.getRow().get(i).getColumn();
+//                ActuatorSignal.NEMA movA = ActuatorSignal.NEMA.valueOf(c.get(0).getContent());
+//                ActuatorSignal.NEMA movB = ActuatorSignal.NEMA.valueOf(c.get(1).getContent());
+//                stages[i] = new Stage(mySignal,movA,movB);
+//            }
+//        }
 
     }
 
