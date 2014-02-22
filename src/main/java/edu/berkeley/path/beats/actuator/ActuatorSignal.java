@@ -45,7 +45,7 @@ public final class ActuatorSignal extends Actuator {
 	//private Scenario myScenario;
 	private Node myNode;
 //	private SignalPhaseController myPhaseController;	// used to control capacity on individual links
-	private SignalPhase [] phase;
+	private SignalPhase [] phases;
 	
 	// local copy of the command, subject to checks
 	private boolean [] hold_approved;
@@ -127,20 +127,20 @@ public final class ActuatorSignal extends Actuator {
 			numvalid += isvalid[i] ? 1 : 0;
 		}
 		
-		phase = new SignalPhase[numvalid];
+		phases = new SignalPhase[numvalid];
 		nema2phase = new HashMap<NEMA,SignalPhase>(numvalid);
 		int c = 0;
 		for(i=0;i<jaxbSignal.getPhase().size();i++){
 			if(!isvalid[i])
 				continue;
-			phase[c] = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
-			phase[c].populateFromJaxb(myScenario,jaxbSignal.getPhase().get(i));
-			nema2phase.put(phase[c].getNEMA(),phase[c]);
+			phases[c] = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
+			phases[c].populateFromJaxb(myScenario,jaxbSignal.getPhase().get(i));
+			nema2phase.put(phases[c].getNEMA(),phases[c]);
 			c++;
 		}
 		
-		hold_approved = new boolean[phase.length];
-		forceoff_approved = new boolean[phase.length];
+		hold_approved = new boolean[phases.length];
+		forceoff_approved = new boolean[phases.length];
 		
 		// create myPhaseController. This is used to implement flow control on target links
 //		myPhaseController = new SignalPhaseController(this);
@@ -153,7 +153,7 @@ public final class ActuatorSignal extends Actuator {
 	protected void reset() {
 		if(myNode==null)
 			return;
-		for(SignalPhase p : phase){
+		for(SignalPhase p : phases){
 			p.reset();
         }
 	}
@@ -166,11 +166,11 @@ public final class ActuatorSignal extends Actuator {
 			return; // this signal will be ignored
 		}
 		
-		if(phase==null)
+		if(phases==null)
 			BeatsErrorLog.addError("ActuatorSignal id=" + getId() + " contains no valid phases.");
 
-		if(phase!=null)	
-			for(SignalPhase p : phase)
+		if(phases!=null)	
+			for(SignalPhase p : phases)
 				p.validate();
 		
 	}
@@ -180,137 +180,113 @@ public final class ActuatorSignal extends Actuator {
 
 		if(myNode==null)
 			return;
-		
-		int i;
-		
+
 		// 0) Advance all phase timers ...........................................
-		for(SignalPhase p:phase)
-			p.getBulbtimer().advance();
-		
-		// 1) Update detector stations ............................................
-		/*
-		for(i=0;i<8;i++)
-			phase.get(i).UpdateDetectorStations();
-		*/
-		
-		// 2) Read phase calls .....................................................
-/*
-		// Update stopline calls
-		for(i=0;i<8;i++){
-			if( phase.get(i).Recall() ){
-				hasstoplinecall[i] = true;
-				continue;
-			}
-			if( phase.get(i).StoplineStation()!=null && phase.get(i).StoplineStation().GotCall() )
-				hasstoplinecall[i] = true;
-			else
-				hasstoplinecall[i] = false;
-		}
+		for(SignalPhase phase : phases)
+            phase.getBulbtimer().advance();
 
-		// Update approach calls
-		for(i=0;i<8;i++){
-			if( phase.get(i).ApproachStation()!=null && phase.get(i).ApproachStation().GotCall() )
-				hasapproachcall[i] = true;
-			else
-				hasapproachcall[i] = false;
-		}
+		// Update detector stations ............................................
+//		for(SignalPhase phase : phases)
+//			phase.UpdateDetectorStations();
 
-		// Update conflicting calls
-		boolean[] currentconflictcall = new boolean[8];
-		for(i=0;i<8;i++)
-			currentconflictcall[i] = CheckForConflictingCall(i);
-		for(i=0;i<8;i++){
-			if(  !hasconflictingcall[i] && currentconflictcall[i] )
-				conflictingcalltime[i] = (float)(myNode.getMyNetwork().getSimTime()*3600f);
-			hasconflictingcall[i] = currentconflictcall[i];
-		}	
-*/	
+//		// Update stopline calls
+//		for(SignalPhase phase : phases)
+//		    phase.hasstoplinecall = phase.Recall() ? true : phase.StoplineStation()!=null && phase.StoplineStation().GotCall();
+//
+//		// Update approach calls
+//		for(SignalPhase phase : phases)
+//			phase.hasapproachcall = phase.ApproachStation()!=null && phase.ApproachStation().GotCall();
+//
+//		// Update conflicting calls
+//        for(SignalPhase phase : phases)
+//            phase.currentconflictcall = CheckForConflictingCall(i);
+//        for(SignalPhase phase : phases){
+//			if( !phase.hasconflictingcall && phase.currentconflictcall )
+//                phase.conflictingcalltime = (float)(myNode.getMyNetwork().getSimTime()*3600f);
+//            phase.hasconflictingcall = phase.currentconflictcall;
+//        }
 
-		for(SignalPhase pA:phase)
-			pA.updatePermitOpposingHold();
+		for(SignalPhase phase:phases)
+			phase.updatePermitOpposingHold();
 		
 		// 3) Update permitted holds ............................................
-		for(SignalPhase pA:phase){
-			pA.setPermithold(true);
-			for(SignalPhase pB:phase)
-				if(!isCompatible(pA,pB) && !pB.isPermitopposinghold() )
-					pA.setPermithold(false);
+		for(SignalPhase phaseA:phases){
+            phaseA.setPermithold(true);
+			for(SignalPhase phaseB:phases)
+				if(!isCompatible(phaseA,phaseB) && !phaseB.isPermitopposinghold() )
+                    phaseA.setPermithold(false);
 		}
 		
 		// 4) Update signal commands ...................................................
 		
 		// Throw away conflicting hold pairs 
 		// (This is purposely drastic to create an error)
-		for(SignalPhase pA:phase)
-			if(pA.isHold_requested())
-				for(SignalPhase pB:phase)
-					if( pB.isHold_requested() && !isCompatible(pA,pB) ){
-						pA.setHold_requested(false);
-						pB.setHold_requested(false);
+		for(SignalPhase phaseA:phases)
+			if(phaseA.isHold_requested())
+				for(SignalPhase phaseB:phases)
+					if( phaseB.isHold_requested() && !isCompatible(phaseA,phaseB) ){
+                        phaseA.setHold_requested(false);
+                        phaseB.setHold_requested(false);
 					}
 
-
 		// Deal with simultaneous hold and forceoff (RHODES needs this)
-		for(SignalPhase pA:phase)
-			if( pA.isHold_requested() && pA.isForceoff_requested() )
-				pA.setForceoff_requested(false);
+		for(SignalPhase phase:phases)
+			if( phase.isHold_requested() && phase.isForceoff_requested() )
+                phase.setForceoff_requested(false);
 
 		// Make local relaying copy
-		for(i=0;i<phase.length;i++){
-			hold_approved[i]     = phase[i].isHold_requested();
-			forceoff_approved[i] = phase[i].isForceoff_requested();
+        for(int i=0;i<phases.length;i++){
+            SignalPhase phase = phases[i];
+            hold_approved[i] = phase.isHold_requested();
+            forceoff_approved[i] = phase.isForceoff_requested();
 		}
 
 		// No transition if no permission
-		for(i=0;i<phase.length;i++)
-			if( !phase[i].isPermithold() )
+        for(int i=0;i<phases.length;i++)
+			if( !phases[i].isPermithold() )
 				hold_approved[i] = false;
 
 		// No transition if green time < mingreen
-		for(i=0;i<phase.length;i++)
-			if( phase[i].getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phase[i].getBulbtimer().getT(), phase[i].getMingreen()) )
+        for(int i=0;i<phases.length;i++)
+            if( phases[i].getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phases[i].getBulbtimer().getT(), phases[i].getMingreen()) )
 				forceoff_approved[i] = false;
-		
-		// collect updated bulb iindications
-        ActuatorSignal.BulbColor [] new_bulb_colors = new ActuatorSignal.BulbColor[phase.length];
-		for(i=0;i<phase.length;i++)
-            new_bulb_colors[i]=phase[i].get_new_bulb_color(hold_approved[i],forceoff_approved[i]);
 
-        // deploy
-        mySignal.getImplementor().deploy_bulb_color(myNEMA, new_bulb_colors);
-        bulbcolor = color;
+		// collect updated bulb indications
+        ActuatorSignal.BulbColor [] new_bulb_colors = new ActuatorSignal.BulbColor[phases.length];
+		for(int i=0;i<phases.length;i++){
 
-        // update signal state
-        for(i=0;i<phase.length;i++)
+            SignalPhase phase = phases[i];
+            new_bulb_colors[i] = phase.get_new_bulb_color(hold_approved[i],forceoff_approved[i]);
+
+            // set phase color if changed
             if(new_bulb_colors[i]!=null)
-                phase[i].bulbcolor = new_bulb_color[i];
+                phases[i].bulbcolor = new_bulb_colors[i];
+        }
 
-
-            // Remove serviced commands
-		for(SignalPhase pA: phase){
-			if(pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.GREEN)==0)
-				pA.setHold_requested(false);
-			if(pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.YELLOW)==0 || pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.RED)==0 )
-				pA.setForceoff_requested(false);
+        // Remove serviced commands
+		for(SignalPhase phase: phases){
+			if(phase.isGreen())
+                phase.setHold_requested(false);
+			if(phase.isYellow() || phase.isRed() )
+                phase.setForceoff_requested(false);
 		}
 	
 		// Set permissive opposing left turn to yellow
 		// opposing is yellow if I am green or yellow, and I am through, and opposing is permissive
 		// opposing is red if I am red and it is not protected
-		for(i=0;i<phase.length;i++){
-			SignalPhase p = phase[i];
-			SignalPhase o = phase[i].getOpposingPhase();
-			if(o==null)
+		for(SignalPhase phase : phases){
+			SignalPhase ophase = phase.getOpposingPhase();
+			if(ophase==null)
 				continue;
-			switch(p.getBulbColor()){
+			switch(phase.getBulbColor()){
 				case GREEN:
 				case YELLOW:
-					if(p.isIsthrough() && o.isPermissive())
-						o.setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
+					if(phase.isIsthrough() && ophase.isPermissive())
+                        ophase.setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
 					break;
 				case RED:
-					if(!o.isProtected())
-						o.setPhaseColor(ActuatorSignal.BulbColor.RED);
+					if(!ophase.isProtected())
+						ophase.setPhaseColor(ActuatorSignal.BulbColor.RED);
 					break;
 			case DARK:
 				break;
@@ -318,7 +294,10 @@ public final class ActuatorSignal extends Actuator {
 				break;
 			}
 		}
-		
+
+        // deploy to dynamics
+        implementor().deploy_bulb_color(myNEMA, new_bulb_colors);
+
 	}
 
     /////////////////////////////////////////////////////////////////////
@@ -333,7 +312,7 @@ public final class ActuatorSignal extends Actuator {
 //	}
 
 	protected SignalPhase getPhaseForNEMA(NEMA nema){
-		for(SignalPhase p:phase){
+		for(SignalPhase p:phases){
 			if(p!=null)
 				if(p.getNEMA().compareTo(nema)==0)
 					return p;
@@ -353,19 +332,11 @@ public final class ActuatorSignal extends Actuator {
 	// public methods
 	/////////////////////////////////////////////////////////////////////
 
-    public Node getMyNode(){
-        return myNode;
-    }
-
 	public SignalPhase getPhaseByNEMA(ActuatorSignal.NEMA nema){
 		if(nema==null)
 			return null;
 		return nema2phase.get(nema);
 	}
-
-//	public Scenario getMyScenario() {
-//		return myScenario;
-//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// static NEMA methods

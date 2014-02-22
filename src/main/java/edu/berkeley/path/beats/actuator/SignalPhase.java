@@ -37,32 +37,32 @@ final public class SignalPhase {
 	// references ....................................................
 	protected ActuatorSignal mySignal;
     protected Link[] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
-	
+
 	// properties ....................................................
-    protected boolean protectd	= false;
-    protected boolean isthrough	= false;
+    protected boolean protectd	    = false;
+    protected boolean isthrough	    = false;
     protected boolean recall		= false;
     protected boolean permissive	= false;
-    protected boolean lag 		= false;
+    protected boolean lag 		    = false;
 
 	// dual ring structure
-    protected int myRingGroup		= -1;
+    protected int myRingGroup = -1;
     protected SignalPhase opposingPhase;
-    protected ActuatorSignal.NEMA myNEMA   = ActuatorSignal.NEMA.NULL;
-	
+    protected ActuatorSignal.NEMA myNEMA = ActuatorSignal.NEMA.NULL;
+
 	// Basic timing parameters
-    protected double mingreen 			= 0.0;
-    protected double yellowtime 			= 0.0;
-    protected double redcleartime 		= 0.0;
-    protected double actualyellowtime 	= 0.0;
-    protected double actualredcleartime 	= 0.0;
+    protected double mingreen;
+    protected double yellowtime;
+    protected double redcleartime;
+    protected double actualyellowtime;
+    protected double actualredcleartime;
 
 	// timers
     protected Clock bulbtimer;
 
 	// State
     protected ActuatorSignal.BulbColor bulbcolor;
-	
+
 	//private int [] myControlIndex;
 
 	// Detectors
@@ -70,30 +70,29 @@ final public class SignalPhase {
 	//private DetectorStation StoplineStation = null;
 	//private Vector<Integer> ApproachStationIds;
 	//private Vector<Integer> StoplineStationIds;
-	
+
 	// Detector memory
     protected boolean hasstoplinecall		= false;
     protected boolean hasapproachcall		= false;
     protected boolean hasconflictingcall	= false;
+    protected boolean currentconflictcall   = false;
     protected float conflictingcalltime	= 0f;
-
-	// Controller memory
-    protected boolean hold_requested 		= false;
-    protected boolean forceoff_requested	= false;
 
 	// Safety
     protected boolean permitopposinghold 	= true;
     protected boolean permithold			= true;
 
-    protected int numapproachloops = 0;
-	
+    // Controller command
+    protected boolean hold_requested 		= false;
+    protected boolean forceoff_requested	= false;
+
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
-	
+
 	public SignalPhase(Node myNode,ActuatorSignal mySignal,double dt){
 		this.mySignal = mySignal;
-		this.bulbtimer = new Clock(0d,Double.POSITIVE_INFINITY,dt);		
+		this.bulbtimer = new Clock(0d,Double.POSITIVE_INFINITY,dt);
 	}
 
     /////////////////////////////////////////////////////////////////////
@@ -111,26 +110,26 @@ final public class SignalPhase {
 	/////////////////////////////////////////////////////////////////////
 	// populate / rese / validate
 	/////////////////////////////////////////////////////////////////////
-	
+
 	protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Phase jaxbPhase){
-	
+
 		int numlinks = jaxbPhase.getLinkReferences().getLinkReference().size();
 		this.targetlinks = new Link[numlinks];
 		for(int i=0;i<numlinks;i++){
 			edu.berkeley.path.beats.jaxb.LinkReference linkref = jaxbPhase.getLinkReferences().getLinkReference().get(i);
 			targetlinks[i] = myScenario.getLinkWithId(linkref.getId());
 		}
-		
+
 		if(jaxbPhase.getNema()!=null)
 			myNEMA = ActuatorSignal.String2NEMA(jaxbPhase.getNema().toString());
 		else
 			myNEMA = ActuatorSignal.NEMA.NULL;
-		
+
 		if(!Double.isNaN(jaxbPhase.getMinGreenTime()))
 			this.mingreen = jaxbPhase.getMinGreenTime();
 		else
 			this.mingreen = Defaults.mingreen;
-		
+
 		if(!Double.isNaN(jaxbPhase.getRedClearTime()))
 			this.redcleartime = jaxbPhase.getRedClearTime();
 		else
@@ -145,11 +144,11 @@ final public class SignalPhase {
 		this.permissive = jaxbPhase.isPermissive();
 		this.protectd = jaxbPhase.isProtected();
 		this.recall = jaxbPhase.isRecall();
-		
+
 		// actual yellow and red clear times
 		this.actualyellowtime   = yellowtime;
 		this.actualredcleartime = redcleartime;
-		
+
 		// dual ring structure: opposingPhase, isthrough, myRingGroup
 		switch(myNEMA){
 		case _1:
@@ -196,9 +195,9 @@ final public class SignalPhase {
 			break;
 		default:
 			break;
-		}		
+		}
 	}
-	
+
 	protected void reset() {
 		hasstoplinecall		= false;
 		hasapproachcall		= false;
@@ -217,17 +216,17 @@ final public class SignalPhase {
 		// check that there are links attached
 		if(targetlinks==null || targetlinks.length==0)
 			BeatsErrorLog.addError("No valid target link for phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
-		
+
 		// target links are valid
 		if(targetlinks!=null)
 			for(int i=0;i<targetlinks.length;i++)
 				if(targetlinks[i]==null)
 					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
-		
+
 		// myNEMA is valid
 		if(myNEMA.compareTo(ActuatorSignal.NEMA.NULL)==0)
 			BeatsErrorLog.addError("Invalid NEMA code in phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
-		
+
 		// numbers are positive
 		if( mingreen<0 )
 			BeatsErrorLog.addError("Negative mingreen=" + mingreen + " in signal id=" + mySignal.getId());
@@ -238,13 +237,13 @@ final public class SignalPhase {
 		if( redcleartime<0 )
 			BeatsErrorLog.addError("Negative redcleartime=" + redcleartime + " in signal id=" + mySignal.getId());
 	}
-	
+
 	/////////////////////////////////////////////////////////////////////
 	// protected
 	/////////////////////////////////////////////////////////////////////
-		
+
 	protected void updatePermitOpposingHold(){
-	
+
 		switch(bulbcolor){
 
 		case GREEN:
@@ -255,7 +254,7 @@ final public class SignalPhase {
 			// iff near end yellow time and there is no red clear time
 			permitopposinghold =  BeatsMath.greaterorequalthan(bulbtimer.getT(),actualyellowtime-bulbtimer.getDt()) && redcleartime==0 ;
 			break;
-		case RED:	
+		case RED:
 			// iff near end of red clear time and not starting again.
 			permitopposinghold =  BeatsMath.greaterorequalthan(bulbtimer.getT(),redcleartime-bulbtimer.getDt()) && !hold_requested;
 			break;
@@ -263,9 +262,7 @@ final public class SignalPhase {
 			break;
 		default:
 			break;
-		}	
-
-		
+		}
 	}
 
 	protected ActuatorSignal.BulbColor get_new_bulb_color(boolean hold_approved,boolean forceoff_approved){
@@ -275,21 +272,21 @@ final public class SignalPhase {
 
 		if(!protectd)
             return permissive ? null : ActuatorSignal.BulbColor.RED;
-		
-		// execute this state machine until "done". May be more than once if 
+
+		// execute this state machine until "done". May be more than once if
 		// some state has zero holding time (eg yellowtime=0)
 		boolean done=false;
-		
+
 		while(!done){
-			
+
 			switch(bulbcolor){
-	
+
 			// .............................................................................................
 			case GREEN:
 
 //				permitopposinghold = false;
-					
-				// Force off 
+
+				// Force off
 				if( forceoff_approved ){
                     next_color = ActuatorSignal.BulbColor.YELLOW;
 //					mySignal.getCompletedPhases().add(mySignal.new PhaseData(myNEMA, mySignal.getMyScenario().getClock().getT() - bulbtimer.getT(), bulbtimer.getT()));
@@ -301,7 +298,7 @@ final public class SignalPhase {
 					done = true;
 
 				break;
-	
+
 			// .............................................................................................
 			case YELLOW:
 
@@ -320,7 +317,7 @@ final public class SignalPhase {
 				else
 					done = true;
 				break;
-	
+
 			// .............................................................................................
 			case RED:
 
@@ -329,41 +326,41 @@ final public class SignalPhase {
 //					permitopposinghold = true;
 //				else
 //					permitopposinghold = false;
-	
+
 				// if hold, set to green, go to green, etc.
 				if( hold_approved ){
                     next_color = ActuatorSignal.BulbColor.GREEN;
 					bulbtimer.reset();
-	
+
 					// Unregister calls (for reading conflicting calls)
 					//FlushAllStationCallsAndConflicts(); // GCG ?????
-					
+
 					done = !forceoff_approved;
 				}
 				else
 					done = true;
-	
+
 				break;
 			case DARK:
 				break;
 			default:
 				break;
 			}
-			
+
 		}
         return next_color;
 	}
 
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
-	/////////////////////////////////////////////////////////////////////		
-	
+	/////////////////////////////////////////////////////////////////////
+
 	public void setActualredcleartime(double actualredcleartime) {
 		if(BeatsMath.lessthan(actualredcleartime,0d))
 			return;
 		this.actualredcleartime = actualredcleartime;
 	}
-	
+
 	public void setActualyellowtime(double actualyellowtime) {
 		if(BeatsMath.lessthan(actualyellowtime,0d))
 			return;
@@ -384,12 +381,24 @@ final public class SignalPhase {
 
 	/////////////////////////////////////////////////////////////////////
 	// public interface
-	/////////////////////////////////////////////////////////////////////		
+	/////////////////////////////////////////////////////////////////////
 
-	public boolean isProtected() {
+    public boolean isGreen(){
+        return bulbcolor.compareTo(ActuatorSignal.BulbColor.GREEN)==0;
+    }
+
+    public boolean isYellow(){
+        return bulbcolor.compareTo(ActuatorSignal.BulbColor.YELLOW)==0;
+    }
+
+    public boolean isRed(){
+        return bulbcolor.compareTo(ActuatorSignal.BulbColor.RED)==0;
+    }
+
+    public boolean isProtected() {
 		return protectd;
 	}
-	
+
 	public boolean isPermitopposinghold() {
 		return permitopposinghold;
 	}
@@ -433,7 +442,7 @@ final public class SignalPhase {
 	public ActuatorSignal.NEMA getNEMA() {
 		return myNEMA;
 	}
-	
+
 	public double getActualyellowtime() {
 		return actualyellowtime;
 	}
@@ -445,5 +454,5 @@ final public class SignalPhase {
 	public ActuatorSignal.BulbColor getBulbColor() {
 		return bulbcolor;
 	}
-		
+
 }
