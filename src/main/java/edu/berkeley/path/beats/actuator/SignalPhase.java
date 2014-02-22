@@ -35,33 +35,33 @@ import edu.berkeley.path.beats.simulator.*;
 final public class SignalPhase {
 	
 	// references ....................................................
-	private ActuatorSignal mySignal;
-	private Link[] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
+	protected ActuatorSignal mySignal;
+    protected Link[] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
 	
 	// properties ....................................................
-	private boolean protectd	= false;
-	private boolean isthrough	= false;
-	private boolean recall		= false;
-	private boolean permissive	= false;
-	private boolean lag 		= false;
+    protected boolean protectd	= false;
+    protected boolean isthrough	= false;
+    protected boolean recall		= false;
+    protected boolean permissive	= false;
+    protected boolean lag 		= false;
 
 	// dual ring structure
-	private int myRingGroup		= -1;
-	private SignalPhase opposingPhase;
-	private ActuatorSignal.NEMA myNEMA   = ActuatorSignal.NEMA.NULL;
+    protected int myRingGroup		= -1;
+    protected SignalPhase opposingPhase;
+    protected ActuatorSignal.NEMA myNEMA   = ActuatorSignal.NEMA.NULL;
 	
 	// Basic timing parameters
-	private double mingreen 			= 0.0;
-	private double yellowtime 			= 0.0;
-	private double redcleartime 		= 0.0;
-	private double actualyellowtime 	= 0.0;
-	private double actualredcleartime 	= 0.0;
+    protected double mingreen 			= 0.0;
+    protected double yellowtime 			= 0.0;
+    protected double redcleartime 		= 0.0;
+    protected double actualyellowtime 	= 0.0;
+    protected double actualredcleartime 	= 0.0;
 
 	// timers
-	private Clock bulbtimer;
+    protected Clock bulbtimer;
 
 	// State
-	private ActuatorSignal.BulbColor bulbcolor;
+    protected ActuatorSignal.BulbColor bulbcolor;
 	
 	//private int [] myControlIndex;
 
@@ -72,20 +72,20 @@ final public class SignalPhase {
 	//private Vector<Integer> StoplineStationIds;
 	
 	// Detector memory
-	private boolean hasstoplinecall		= false;
-	private boolean hasapproachcall		= false;
-	private boolean hasconflictingcall	= false;
-	private float conflictingcalltime	= 0f;
+    protected boolean hasstoplinecall		= false;
+    protected boolean hasapproachcall		= false;
+    protected boolean hasconflictingcall	= false;
+    protected float conflictingcalltime	= 0f;
 
 	// Controller memory
-	private boolean hold_requested 		= false;
-	private boolean forceoff_requested	= false;
+    protected boolean hold_requested 		= false;
+    protected boolean forceoff_requested	= false;
 
 	// Safety
-	private boolean permitopposinghold 	= true;
-	private boolean permithold			= true;
+    protected boolean permitopposinghold 	= true;
+    protected boolean permithold			= true;
 
-	private int numapproachloops = 0;	
+    protected int numapproachloops = 0;
 	
 	/////////////////////////////////////////////////////////////////////
 	// construction
@@ -200,7 +200,6 @@ final public class SignalPhase {
 	}
 	
 	protected void reset() {
-
 		hasstoplinecall		= false;
 		hasapproachcall		= false;
 		hasconflictingcall	= false;
@@ -209,10 +208,8 @@ final public class SignalPhase {
 		forceoff_requested	= false;
 		permithold			= true;
 		permitopposinghold  = false;
-
-		setPhaseColor(ActuatorSignal.BulbColor.RED);
+        bulbcolor = ActuatorSignal.BulbColor.RED;
 		bulbtimer.reset();
-		
 	}
 
 	protected void validate() {
@@ -271,20 +268,13 @@ final public class SignalPhase {
 		
 	}
 
-	protected void deploy(boolean hold_approved,boolean forceoff_approved){
+	protected ActuatorSignal.BulbColor get_new_bulb_color(boolean hold_approved,boolean forceoff_approved){
 
-//		mySignal.getCompletedPhases().clear();
-
+        ActuatorSignal.BulbColor next_color = null;
 		double bulbt = bulbtimer.getT();
 
-		if(!protectd){
-			if(permissive)
-				return;
-			else{
-				setPhaseColor(ActuatorSignal.BulbColor.RED);
-				return;
-			}
-		}
+		if(!protectd)
+            return permissive ? null : ActuatorSignal.BulbColor.RED;
 		
 		// execute this state machine until "done". May be more than once if 
 		// some state has zero holding time (eg yellowtime=0)
@@ -296,14 +286,12 @@ final public class SignalPhase {
 	
 			// .............................................................................................
 			case GREEN:
-	
-				setPhaseColor(ActuatorSignal.BulbColor.GREEN);
-				
+
 //				permitopposinghold = false;
 					
 				// Force off 
-				if( forceoff_approved ){ 
-					setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
+				if( forceoff_approved ){
+                    next_color = ActuatorSignal.BulbColor.YELLOW;
 //					mySignal.getCompletedPhases().add(mySignal.new PhaseData(myNEMA, mySignal.getMyScenario().getClock().getT() - bulbtimer.getT(), bulbtimer.getT()));
 					bulbtimer.reset();
 					//FlushAllStationCallsAndConflicts();
@@ -316,19 +304,16 @@ final public class SignalPhase {
 	
 			// .............................................................................................
 			case YELLOW:
-				
-				setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
-				
+
 				// set permitopposinghold one step ahead of time so that other phases update correctly next time.
 //				permitopposinghold = false;
-				
-				
+
 //				if( BeatsMath.greaterorequalthan(bulbt,actualyellowtime-bulbtimer.dt) && redcleartime==0)
 //					permitopposinghold = true;
 
 				// yellow time over, go immediately to red if redcleartime==0
 				if( BeatsMath.greaterorequalthan(bulbt,actualyellowtime) ){
-					setPhaseColor(ActuatorSignal.BulbColor.RED);
+                    next_color = ActuatorSignal.BulbColor.RED;
 					bulbtimer.reset();
 					done = redcleartime>0;
 				}
@@ -338,9 +323,7 @@ final public class SignalPhase {
 	
 			// .............................................................................................
 			case RED:
-	
-				setPhaseColor(ActuatorSignal.BulbColor.RED);
-	
+
 				//if( BeatsMath.greaterorequalthan(bulbt,redcleartime-myNode.getMyNetwork().getTP()*3600f  && !goG )
 //				if( BeatsMath.greaterorequalthan(bulbt,redcleartime-bulbtimer.dt) && !hold_approved )
 //					permitopposinghold = true;
@@ -348,8 +331,8 @@ final public class SignalPhase {
 //					permitopposinghold = false;
 	
 				// if hold, set to green, go to green, etc.
-				if( hold_approved ){ 
-					setPhaseColor(ActuatorSignal.BulbColor.GREEN);
+				if( hold_approved ){
+                    next_color = ActuatorSignal.BulbColor.GREEN;
 					bulbtimer.reset();
 	
 					// Unregister calls (for reading conflicting calls)
@@ -368,11 +351,7 @@ final public class SignalPhase {
 			}
 			
 		}
-	}
-	
-	protected void setPhaseColor(ActuatorSignal.BulbColor color){
-        mySignal.getImplementor().deploy_bulb_color(myNEMA, color);
-		bulbcolor = color;
+        return next_color;
 	}
 
 	/////////////////////////////////////////////////////////////////////

@@ -34,8 +34,6 @@ import edu.berkeley.path.beats.actuator.SignalPhase;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.actuator.ActuatorSignal.Command;
-import edu.berkeley.path.beats.actuator.ActuatorSignal.NEMA;
 
 public class Controller_SIG_Pretimed_IntersectionPlan {
 

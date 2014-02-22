@@ -153,8 +153,9 @@ public final class ActuatorSignal extends Actuator {
 	protected void reset() {
 		if(myNode==null)
 			return;
-		for(SignalPhase p : phase)
+		for(SignalPhase p : phase){
 			p.reset();
+        }
 	}
 
     @Override
@@ -240,23 +241,19 @@ public final class ActuatorSignal extends Actuator {
 		
 		// Throw away conflicting hold pairs 
 		// (This is purposely drastic to create an error)
-		for(SignalPhase pA:phase){
-			if(pA.isHold_requested()){
-				for(SignalPhase pB:phase){
+		for(SignalPhase pA:phase)
+			if(pA.isHold_requested())
+				for(SignalPhase pB:phase)
 					if( pB.isHold_requested() && !isCompatible(pA,pB) ){
 						pA.setHold_requested(false);
 						pB.setHold_requested(false);
 					}
-				}
-			}
-		}
+
 
 		// Deal with simultaneous hold and forceoff (RHODES needs this)
-		for(SignalPhase pA:phase){
-			if( pA.isHold_requested() && pA.isForceoff_requested() ){
+		for(SignalPhase pA:phase)
+			if( pA.isHold_requested() && pA.isForceoff_requested() )
 				pA.setForceoff_requested(false);
-			}
-		}
 
 		// Make local relaying copy
 		for(i=0;i<phase.length;i++){
@@ -274,11 +271,22 @@ public final class ActuatorSignal extends Actuator {
 			if( phase[i].getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phase[i].getBulbtimer().getT(), phase[i].getMingreen()) )
 				forceoff_approved[i] = false;
 		
-		// Deploy all phases
+		// collect updated bulb iindications
+        ActuatorSignal.BulbColor [] new_bulb_colors = new ActuatorSignal.BulbColor[phase.length];
 		for(i=0;i<phase.length;i++)
-			phase[i].deploy(hold_approved[i],forceoff_approved[i]);
+            new_bulb_colors[i]=phase[i].get_new_bulb_color(hold_approved[i],forceoff_approved[i]);
 
-		// Remove serviced commands 
+        // deploy
+        mySignal.getImplementor().deploy_bulb_color(myNEMA, new_bulb_colors);
+        bulbcolor = color;
+
+        // update signal state
+        for(i=0;i<phase.length;i++)
+            if(new_bulb_colors[i]!=null)
+                phase[i].bulbcolor = new_bulb_color[i];
+
+
+            // Remove serviced commands
 		for(SignalPhase pA: phase){
 			if(pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.GREEN)==0)
 				pA.setHold_requested(false);
