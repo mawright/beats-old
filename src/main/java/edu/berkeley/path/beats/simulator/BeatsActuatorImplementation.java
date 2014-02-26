@@ -2,9 +2,14 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.actuator.ActuatorSignalStageSplits;
+import edu.berkeley.path.beats.actuator.SignalPhase;
 import edu.berkeley.path.beats.actuator.StageSplit;
+import edu.berkeley.path.beats.jaxb.LinkReference;
+import edu.berkeley.path.beats.jaxb.Phase;
 import edu.berkeley.path.beats.jaxb.Splitratio;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class BeatsActuatorImplementation extends ActuatorImplementation {
@@ -25,9 +30,18 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
         }
 	}
 
-    public BeatsActuatorImplementation(edu.berkeley.path.beats.jaxb.Signal parent,Object context){
+    public BeatsActuatorImplementation(edu.berkeley.path.beats.jaxb.Signal signal,Object context){
         Scenario scenario = (Scenario) context;
-        target = scenario.getNodeWithId(parent.getNodeId());
+        HashMap<ActuatorSignal.NEMA,List<Link>> targ = new HashMap<ActuatorSignal.NEMA,List<Link>>();
+        for(Phase phase : signal.getPhase()){
+            List linklist = new ArrayList<Link>();
+            if(phase.getLinkReferences()!=null && phase.getLinkReferences().getLinkReference()!=null)
+                for(LinkReference linkref : phase.getLinkReferences().getLinkReference())
+                    linklist.add(scenario.getLinkWithId(linkref.getId()));
+            if(!linklist.isEmpty())
+                targ.put( SignalPhase.int_to_nema(phase.getNema().intValue()) , linklist );
+        }
+        target = targ;
     }
 	
 	@Override
@@ -35,41 +49,41 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
         ((Link)target).set_external_max_flow_in_veh(metering_rate_in_veh);
 	}
 
-	@Override
-	public void deploy_stage_splits(StageSplit[] stage_splits) {
-
-        // normalize splits
-        double sum_splits = 0d;
-        for(StageSplit stage_split : stage_splits)
-            sum_splits += stage_split.split;
-        if(BeatsMath.greaterthan(sum_splits,0d))
-            for(StageSplit stage_split : stage_splits)
-                stage_split.split /= sum_splits;
-        else{
-            for(StageSplit stage_split : stage_splits)
-                stage_split.split = 0d;
-            stage_splits[0].split = 1d;
-        }
-
-        // map splits onto links
-        ActuatorSignalStageSplits myAct =(ActuatorSignalStageSplits) myActuator;
-        double [] link_splits = BeatsMath.zeros(myAct.inlinks.size());
-        for(StageSplit stage_split:stage_splits){
-            if(stage_split.stage.phaseA!=null)
-                for(Link link : stage_split.stage.phaseA.getTargetlinks())
-                    link_splits[myAct.inlinks.indexOf(link)] += stage_split.split;
-            if(stage_split.stage.phaseB!=null)
-                for(Link link : stage_split.stage.phaseB.getTargetlinks())
-                    link_splits[myAct.inlinks.indexOf(link)] += stage_split.split;
-        }
-
-        // send capacities to links
-        for(int i=0;i<myAct.inlinks.size();i++){
-            Link link = myAct.inlinks.get(i);
-            link.set_external_max_flow_in_vph(link.getCapacityInVPS(0)*3600d*link_splits[i]);
-        }
-
-	}
+//	@Override
+//	public void deploy_stage_splits(StageSplit[] stage_splits) {
+//
+//        // normalize splits
+//        double sum_splits = 0d;
+//        for(StageSplit stage_split : stage_splits)
+//            sum_splits += stage_split.split;
+//        if(BeatsMath.greaterthan(sum_splits,0d))
+//            for(StageSplit stage_split : stage_splits)
+//                stage_split.split /= sum_splits;
+//        else{
+//            for(StageSplit stage_split : stage_splits)
+//                stage_split.split = 0d;
+//            stage_splits[0].split = 1d;
+//        }
+//
+//        // map splits onto links
+//        ActuatorSignalStageSplits myAct =(ActuatorSignalStageSplits) myActuator;
+//        double [] link_splits = BeatsMath.zeros(myAct.inlinks.size());
+//        for(StageSplit stage_split:stage_splits){
+//            if(stage_split.stage.phaseA!=null)
+//                for(Link link : stage_split.stage.phaseA.getTargetlinks())
+//                    link_splits[myAct.inlinks.indexOf(link)] += stage_split.split;
+//            if(stage_split.stage.phaseB!=null)
+//                for(Link link : stage_split.stage.phaseB.getTargetlinks())
+//                    link_splits[myAct.inlinks.indexOf(link)] += stage_split.split;
+//        }
+//
+//        // send capacities to links
+//        for(int i=0;i<myAct.inlinks.size();i++){
+//            Link link = myAct.inlinks.get(i);
+//            link.set_external_max_flow_in_vph(link.getCapacityInVPS(0)*3600d*link_splits[i]);
+//        }
+//
+//	}
 
 	@Override
 	public void deploy_cms_split(List<Splitratio> splits) {

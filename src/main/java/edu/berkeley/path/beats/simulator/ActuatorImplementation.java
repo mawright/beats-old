@@ -9,8 +9,10 @@ import java.util.List;
 public abstract class ActuatorImplementation {
 
     protected Actuator myActuator;
-    protected Object target;      // Link or Node
+    protected Object target;      // Link or Node or HashMap<Link,phase>
 
+    public Object get_target(){ return target; };
+    
     public void setActuator(Actuator myActuator){
         this.myActuator = myActuator;
     }
