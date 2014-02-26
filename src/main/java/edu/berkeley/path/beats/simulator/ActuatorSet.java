@@ -52,6 +52,8 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
         if(myScenario.getSignalSet()!=null){
             for(Signal jaxba : myScenario.getSignalSet().getSignal()){
                 Actuator A = ObjectFactory.createActuatorSignalFromJaxb(myScenario,jaxba);
+                if(A!=null)
+                    actuators.add(A);
             }
 
         }

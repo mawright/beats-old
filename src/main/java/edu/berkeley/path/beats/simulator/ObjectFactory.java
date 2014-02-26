@@ -286,7 +286,6 @@ final public class ObjectFactory {
 		unmrsh.setProperty(propnam, factory);
 	}
 
-
     public static PerformanceCalculator createPerformanceCalculator(String configfilename) throws BeatsException {
 
         JAXBContext context;
@@ -336,7 +335,6 @@ final public class ObjectFactory {
 
         return perf_calc;
     }
-
 
     /////////////////////////////////////////////////////////////////////
 	// public: controller

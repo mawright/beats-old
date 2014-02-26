@@ -36,7 +36,7 @@ final public class SignalPhase {
 	
 	// references ....................................................
 	protected ActuatorSignal mySignal;
-    protected Link[] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
+//    protected Link[] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
 	
 	// properties ....................................................
     protected boolean protectd	= false;
@@ -85,7 +85,7 @@ final public class SignalPhase {
     protected boolean permitopposinghold 	= true;
     protected boolean permithold			= true;
 
-    protected int numapproachloops = 0;
+//    protected int numapproachloops = 0;
 	
 	/////////////////////////////////////////////////////////////////////
 	// construction
@@ -113,14 +113,7 @@ final public class SignalPhase {
 	/////////////////////////////////////////////////////////////////////
 	
 	protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Phase jaxbPhase){
-	
-		int numlinks = jaxbPhase.getLinkReferences().getLinkReference().size();
-		this.targetlinks = new Link[numlinks];
-		for(int i=0;i<numlinks;i++){
-			edu.berkeley.path.beats.jaxb.LinkReference linkref = jaxbPhase.getLinkReferences().getLinkReference().get(i);
-			targetlinks[i] = myScenario.getLinkWithId(linkref.getId());
-		}
-		
+
 		if(jaxbPhase.getNema()!=null)
 			myNEMA = ActuatorSignal.String2NEMA(jaxbPhase.getNema().toString());
 		else
@@ -214,15 +207,15 @@ final public class SignalPhase {
 
 	protected void validate() {
 
-		// check that there are links attached
-		if(targetlinks==null || targetlinks.length==0)
-			BeatsErrorLog.addError("No valid target link for phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
-		
-		// target links are valid
-		if(targetlinks!=null)
-			for(int i=0;i<targetlinks.length;i++)
-				if(targetlinks[i]==null)
-					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
+//		// check that there are links attached
+//		if(targetlinks==null || targetlinks.length==0)
+//			BeatsErrorLog.addError("No valid target link for phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
+//
+//		// target links are valid
+//		if(targetlinks!=null)
+//			for(int i=0;i<targetlinks.length;i++)
+//				if(targetlinks[i]==null)
+//					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
 		
 		// myNEMA is valid
 		if(myNEMA.compareTo(ActuatorSignal.NEMA.NULL)==0)
@@ -374,9 +367,9 @@ final public class SignalPhase {
 		this.permithold = permithold;
 	}
 
-	public Link[] getTargetlinks() {
-		return targetlinks;
-	}
+//	public Link[] getTargetlinks() {
+//		return targetlinks;
+//	}
 
 	protected Clock getBulbtimer() {
 		return bulbtimer;
@@ -445,5 +438,28 @@ final public class SignalPhase {
 	public ActuatorSignal.BulbColor getBulbColor() {
 		return bulbcolor;
 	}
-		
+
+    public static ActuatorSignal.NEMA int_to_nema(int x){
+        switch(x){
+            case 1:
+                return NEMA._1;
+            case 2:
+                return NEMA._2;
+            case 3:
+                return NEMA._3;
+            case 4:
+                return NEMA._4;
+            case 5:
+                return NEMA._5;
+            case 6:
+                return NEMA._6;
+            case 7:
+                return NEMA._7;
+            case 8:
+                return NEMA._8;
+            default:
+                return NEMA.NULL;
+        }
+    }
+
 }
