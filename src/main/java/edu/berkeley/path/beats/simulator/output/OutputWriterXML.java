@@ -80,7 +80,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 		}
 
 		requestLinkCumulatives();
-		requestSignalPhases();
+//		requestSignalPhases();
 	}
 
 	@Override
@@ -197,24 +197,24 @@ public final class OutputWriterXML extends OutputWriterBase {
 				}
 				xmlsw.writeEndElement(); // nl
 				// signal list
-				List<edu.berkeley.path.beats.jaxb.Signal> sigl = ((Network) network).getListOfSignals();
-				if (null != sigl && 0 < sigl.size()) {
-					xmlsw.writeStartElement("sigl");
-					for (edu.berkeley.path.beats.jaxb.Signal signal : sigl) {
-						xmlsw.writeStartElement("sig");
-						xmlsw.writeAttribute("id", Long.toString(signal.getId()));
-						List<ActuatorSignal.PhaseData> phdata = getCompletedPhases(signal).getPhaseList();
-						for (ActuatorSignal.PhaseData ph : phdata) {
-							xmlsw.writeStartElement("ph");
-							xmlsw.writeAttribute("i", String.format("%d", ph.nema.ordinal()));
-							xmlsw.writeAttribute("b", String.format(SEC_FORMAT, ph.starttime));
-							xmlsw.writeAttribute("g", String.format(SEC_FORMAT, ph.greentime));
-							xmlsw.writeEndElement(); // ph
-						}
-						xmlsw.writeEndElement(); // sig
-					}
-					xmlsw.writeEndElement(); // sigl
-				}
+//				List<edu.berkeley.path.beats.jaxb.Signal> sigl = ((Network) network).getListOfSignals();
+//				if (null != sigl && 0 < sigl.size()) {
+//					xmlsw.writeStartElement("sigl");
+//					for (edu.berkeley.path.beats.jaxb.Signal signal : sigl) {
+//						xmlsw.writeStartElement("sig");
+//						xmlsw.writeAttribute("id", Long.toString(signal.getId()));
+//						List<ActuatorSignal.PhaseData> phdata = getCompletedPhases(signal).getPhaseList();
+//						for (ActuatorSignal.PhaseData ph : phdata) {
+//							xmlsw.writeStartElement("ph");
+//							xmlsw.writeAttribute("i", String.format("%d", ph.nema.ordinal()));
+//							xmlsw.writeAttribute("b", String.format(SEC_FORMAT, ph.starttime));
+//							xmlsw.writeAttribute("g", String.format(SEC_FORMAT, ph.greentime));
+//							xmlsw.writeEndElement(); // ph
+//						}
+//						xmlsw.writeEndElement(); // sig
+//					}
+//					xmlsw.writeEndElement(); // sigl
+//				}
 				xmlsw.writeEndElement(); // net
 			}
 			xmlsw.writeEndElement(); // netl
