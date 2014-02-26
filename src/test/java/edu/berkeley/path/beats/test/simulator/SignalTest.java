@@ -25,18 +25,18 @@ public class SignalTest {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
-		if(scenario==null)
-			fail("scenario did not load");
-		
-		// initialize
-		double timestep = Defaults.getTimestepFor(config_file);
-		double starttime = 0;
-		double endtime = 300;
-		int numEnsemble = 1;
-		scenario.initialize(timestep,starttime,endtime,numEnsemble);
-
-		signal = (ActuatorSignal) scenario.getSignalWithId(-12);
+//		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+//		if(scenario==null)
+//			fail("scenario did not load");
+//
+//		// initialize
+//		double timestep = Defaults.getTimestepFor(config_file);
+//		double starttime = 0;
+//		double endtime = 300;
+//		int numEnsemble = 1;
+//		scenario.initialize(timestep,starttime,endtime,numEnsemble);
+//
+//		signal = (ActuatorSignal) scenario.getSignalWithId(-12);
 	}
 
 	@Test
