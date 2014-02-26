@@ -26,10 +26,10 @@
 
 package edu.berkeley.path.beats.actuator;
 
+import edu.berkeley.path.beats.jaxb.Phase;
 import edu.berkeley.path.beats.simulator.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /** ActuatorSignal class.
 *
@@ -42,10 +42,8 @@ public final class ActuatorSignal extends Actuator {
     public static enum NEMA {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
 
 	private HashMap<NEMA,SignalPhase> nema2phase;
-	//private Scenario myScenario;
 	private Node myNode;
-//	private SignalPhaseController myPhaseController;	// used to control capacity on individual links
-	private SignalPhase [] phase;
+	private ArrayList<SignalPhase> phases;
 	
 	// local copy of the command, subject to checks
 	private boolean [] hold_approved;
@@ -97,65 +95,38 @@ public final class ActuatorSignal extends Actuator {
 	protected void populate(Object jaxbobject,Scenario myScenario) {
 
         edu.berkeley.path.beats.jaxb.Signal jaxbSignal = (edu.berkeley.path.beats.jaxb.Signal)jaxbobject;
-		//this.myScenario = myScenario;
-		this.myNode = myScenario.getNodeWithId(jaxbSignal.getNodeId());
+
+		myNode = myScenario.getNodeWithId(jaxbSignal.getNodeId());
 		
 		if(myNode==null)
 			return;
-		
-		int i;
-		int totalphases = jaxbSignal.getPhase().size();
-		
-		if(totalphases==0)
-			return;
-		
-		// ignore phases without targets, or !permissive && !protected
-		// (instead of throwing validation error, because network editor 
-		// generates phases like this).
-		boolean [] isvalid = new boolean[totalphases];
-		int numlinks;
-		int numvalid = 0;
-		for(i=0;i<jaxbSignal.getPhase().size();i++){
-			edu.berkeley.path.beats.jaxb.Phase p = jaxbSignal.getPhase().get(i);
-			isvalid[i] = true;
-			isvalid[i] &= p.isPermissive() || p.isProtected();
-			if (null == p.getLinkReferences())
-				numlinks = 0;
-			else
-				numlinks = p.getLinkReferences().getLinkReference().size();
-			isvalid[i] &= numlinks>0;
-			numvalid += isvalid[i] ? 1 : 0;
-		}
-		
-		phase = new SignalPhase[numvalid];
-		nema2phase = new HashMap<NEMA,SignalPhase>(numvalid);
-		int c = 0;
-		for(i=0;i<jaxbSignal.getPhase().size();i++){
-			if(!isvalid[i])
-				continue;
-			phase[c] = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
-			phase[c].populateFromJaxb(myScenario,jaxbSignal.getPhase().get(i));
-			nema2phase.put(phase[c].getNEMA(),phase[c]);
-			c++;
-		}
-		
-		hold_approved = new boolean[phase.length];
-		forceoff_approved = new boolean[phase.length];
-		
-		// create myPhaseController. This is used to implement flow control on target links
-//		myPhaseController = new SignalPhaseController(this);
-		
-		// nema2phase
 
+        // make list of phases and map
+		phases = new ArrayList<SignalPhase>();
+		nema2phase = new HashMap<NEMA,SignalPhase>();
+        HashMap<ActuatorSignal.NEMA,List<Link>> nema_to_linklist = (HashMap<ActuatorSignal.NEMA,List<Link>>) implementor.get_target();
+        for(Phase jphase : jaxbSignal.getPhase() ){
+            ActuatorSignal.NEMA nema = SignalPhase.int_to_nema(jphase.getNema().intValue());
+            List<Link> link_list = nema_to_linklist.get( nema );
+            if(link_list!=null){
+                SignalPhase sp = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
+                sp.populateFromJaxb(myScenario,jphase);
+                phases.add(sp);
+                nema2phase.put(nema,sp);
+            }
+        }
+
+        // command vector
+		hold_approved = new boolean[phases.size()];
+		forceoff_approved = new boolean[phases.size()];
 	}
 
     @Override
 	protected void reset() {
 		if(myNode==null)
 			return;
-		for(SignalPhase p : phase){
+		for(SignalPhase p : phases)
 			p.reset();
-        }
 	}
 
     @Override
@@ -166,13 +137,12 @@ public final class ActuatorSignal extends Actuator {
 			return; // this signal will be ignored
 		}
 		
-		if(phase==null)
+		if(phases==null)
 			BeatsErrorLog.addError("ActuatorSignal id=" + getId() + " contains no valid phases.");
 
-		if(phase!=null)	
-			for(SignalPhase p : phase)
+		if(phases!=null)
+			for(SignalPhase p : phases)
 				p.validate();
-		
 	}
 
     @Override
@@ -180,28 +150,26 @@ public final class ActuatorSignal extends Actuator {
 
 		if(myNode==null)
 			return;
-		
-		int i;
-		
-		// 0) Advance all phase timers ...........................................
-		for(SignalPhase p:phase)
+
+		// 0) Advance all phases timers ...........................................
+		for(SignalPhase p: phases)
 			p.getBulbtimer().advance();
 		
 		// 1) Update detector stations ............................................
 		/*
 		for(i=0;i<8;i++)
-			phase.get(i).UpdateDetectorStations();
+			phases.get(i).UpdateDetectorStations();
 		*/
 		
-		// 2) Read phase calls .....................................................
+		// 2) Read phases calls .....................................................
 /*
 		// Update stopline calls
 		for(i=0;i<8;i++){
-			if( phase.get(i).Recall() ){
+			if( phases.get(i).Recall() ){
 				hasstoplinecall[i] = true;
 				continue;
 			}
-			if( phase.get(i).StoplineStation()!=null && phase.get(i).StoplineStation().GotCall() )
+			if( phases.get(i).StoplineStation()!=null && phases.get(i).StoplineStation().GotCall() )
 				hasstoplinecall[i] = true;
 			else
 				hasstoplinecall[i] = false;
@@ -209,7 +177,7 @@ public final class ActuatorSignal extends Actuator {
 
 		// Update approach calls
 		for(i=0;i<8;i++){
-			if( phase.get(i).ApproachStation()!=null && phase.get(i).ApproachStation().GotCall() )
+			if( phases.get(i).ApproachStation()!=null && phases.get(i).ApproachStation().GotCall() )
 				hasapproachcall[i] = true;
 			else
 				hasapproachcall[i] = false;
@@ -226,13 +194,13 @@ public final class ActuatorSignal extends Actuator {
 		}	
 */	
 
-		for(SignalPhase pA:phase)
+		for(SignalPhase pA: phases)
 			pA.updatePermitOpposingHold();
 		
 		// 3) Update permitted holds ............................................
-		for(SignalPhase pA:phase){
+		for(SignalPhase pA: phases){
 			pA.setPermithold(true);
-			for(SignalPhase pB:phase)
+			for(SignalPhase pB: phases)
 				if(!isCompatible(pA,pB) && !pB.isPermitopposinghold() )
 					pA.setPermithold(false);
 		}
@@ -241,9 +209,9 @@ public final class ActuatorSignal extends Actuator {
 		
 		// Throw away conflicting hold pairs 
 		// (This is purposely drastic to create an error)
-		for(SignalPhase pA:phase)
+		for(SignalPhase pA: phases)
 			if(pA.isHold_requested())
-				for(SignalPhase pB:phase)
+				for(SignalPhase pB: phases)
 					if( pB.isHold_requested() && !isCompatible(pA,pB) ){
 						pA.setHold_requested(false);
 						pB.setHold_requested(false);
@@ -251,73 +219,73 @@ public final class ActuatorSignal extends Actuator {
 
 
 		// Deal with simultaneous hold and forceoff (RHODES needs this)
-		for(SignalPhase pA:phase)
+		for(SignalPhase pA: phases)
 			if( pA.isHold_requested() && pA.isForceoff_requested() )
 				pA.setForceoff_requested(false);
 
-		// Make local relaying copy
-		for(i=0;i<phase.length;i++){
-			hold_approved[i]     = phase[i].isHold_requested();
-			forceoff_approved[i] = phase[i].isForceoff_requested();
-		}
+//		// Make local relaying copy
+//		for(i=0;i<phases.size();i++){
+//			hold_approved[i]     = phases[i].isHold_requested();
+//			forceoff_approved[i] = phases[i].isForceoff_requested();
+//		}
+//
+//		// No transition if no permission
+//		for(i=0;i<phases.size();i++)
+//			if( !phases[i].isPermithold() )
+//				hold_approved[i] = false;
+//
+//		// No transition if green time < mingreen
+//		for(i=0;i<phases.size();i++)
+//			if( phases[i].getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phases[i].getBulbtimer().getT(), phases[i].getMingreen()) )
+//				forceoff_approved[i] = false;
+//
+//		// collect updated bulb iindications
+//        ActuatorSignal.BulbColor [] new_bulb_colors = new ActuatorSignal.BulbColor[phases.size()];
+//		for(i=0;i<phases.size();i++)
+//            new_bulb_colors[i]=phases[i].get_new_bulb_color(hold_approved[i],forceoff_approved[i]);
 
-		// No transition if no permission
-		for(i=0;i<phase.length;i++)
-			if( !phase[i].isPermithold() )
-				hold_approved[i] = false;
-
-		// No transition if green time < mingreen
-		for(i=0;i<phase.length;i++)
-			if( phase[i].getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phase[i].getBulbtimer().getT(), phase[i].getMingreen()) )
-				forceoff_approved[i] = false;
-		
-		// collect updated bulb iindications
-        ActuatorSignal.BulbColor [] new_bulb_colors = new ActuatorSignal.BulbColor[phase.length];
-		for(i=0;i<phase.length;i++)
-            new_bulb_colors[i]=phase[i].get_new_bulb_color(hold_approved[i],forceoff_approved[i]);
-
-        // deploy
-        mySignal.getImplementor().deploy_bulb_color(myNEMA, new_bulb_colors);
-        bulbcolor = color;
-
-        // update signal state
-        for(i=0;i<phase.length;i++)
-            if(new_bulb_colors[i]!=null)
-                phase[i].bulbcolor = new_bulb_color[i];
+//        // deploy
+//        mySignal.getImplementor().deploy_bulb_color(myNEMA, new_bulb_colors);
+//        bulbcolor = color;
+//
+//        // update signal state
+//        for(i=0;i<phases.length;i++)
+//            if(new_bulb_colors[i]!=null)
+//                phases[i].bulbcolor = new_bulb_color[i];
 
 
             // Remove serviced commands
-		for(SignalPhase pA: phase){
+		for(SignalPhase pA: phases){
 			if(pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.GREEN)==0)
 				pA.setHold_requested(false);
 			if(pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.YELLOW)==0 || pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.RED)==0 )
 				pA.setForceoff_requested(false);
 		}
 	
-		// Set permissive opposing left turn to yellow
-		// opposing is yellow if I am green or yellow, and I am through, and opposing is permissive
-		// opposing is red if I am red and it is not protected
-		for(i=0;i<phase.length;i++){
-			SignalPhase p = phase[i];
-			SignalPhase o = phase[i].getOpposingPhase();
-			if(o==null)
-				continue;
-			switch(p.getBulbColor()){
-				case GREEN:
-				case YELLOW:
-					if(p.isIsthrough() && o.isPermissive())
-						o.setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
-					break;
-				case RED:
-					if(!o.isProtected())
-						o.setPhaseColor(ActuatorSignal.BulbColor.RED);
-					break;
-			case DARK:
-				break;
-			default:
-				break;
-			}
-		}
+//		// Set permissive opposing left turn to yellow
+//		// opposing is yellow if I am green or yellow, and I am through, and opposing is permissive
+//		// opposing is red if I am red and it is not protected
+//		for(i=0;i<phases.length;i++){
+//			SignalPhase p = phases[i];
+//			SignalPhase o = phases[i].getOpposingPhase();
+//			if(o==null)
+//				continue;
+//			switch(p.getBulbColor()){
+//				case GREEN:
+//				case YELLOW:
+//					if(p.isIsthrough() && o.isPermissive())
+//						o.setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
+//					break;
+//				case RED:
+//					if(!o.isProtected())
+//						o.setPhaseColor(ActuatorSignal.BulbColor.RED);
+//					break;
+//			case DARK:
+//				break;
+//			default:
+//				break;
+//			}
+//		}
 		
 	}
 
@@ -333,7 +301,7 @@ public final class ActuatorSignal extends Actuator {
 //	}
 
 	protected SignalPhase getPhaseForNEMA(NEMA nema){
-		for(SignalPhase p:phase){
+		for(SignalPhase p: phases){
 			if(p!=null)
 				if(p.getNEMA().compareTo(nema)==0)
 					return p;
@@ -475,7 +443,7 @@ public final class ActuatorSignal extends Actuator {
 			if(compare!=0)
 				return compare;
 
-			// second ordering by phase
+			// second ordering by phases
 			ActuatorSignal.NEMA thistphase = this.nema;
 			ActuatorSignal.NEMA thattphase = that.nema;
 			compare = thistphase.compareTo(thattphase);
