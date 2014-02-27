@@ -43,13 +43,9 @@ public final class ActuatorSignal extends Actuator {
 
 	private HashMap<NEMA,SignalPhase> nema2phase;
 	private Node myNode;
-<<<<<<< HEAD
 	private ArrayList<SignalPhase> phases;
-=======
-//	private SignalPhaseController myPhaseController;	// used to control capacity on individual links
-	private SignalPhase [] phases;
->>>>>>> calpath/arterial
-	
+
+
 	// local copy of the command, subject to checks
 	private boolean [] hold_approved;
 	private boolean [] forceoff_approved;
@@ -105,53 +101,6 @@ public final class ActuatorSignal extends Actuator {
 		
 		if(myNode==null)
 			return;
-<<<<<<< HEAD
-=======
-		
-		int i;
-		int totalphases = jaxbSignal.getPhase().size();
-		
-		if(totalphases==0)
-			return;
-		
-		// ignore phases without targets, or !permissive && !protected
-		// (instead of throwing validation error, because network editor 
-		// generates phases like this).
-		boolean [] isvalid = new boolean[totalphases];
-		int numlinks;
-		int numvalid = 0;
-		for(i=0;i<jaxbSignal.getPhase().size();i++){
-			edu.berkeley.path.beats.jaxb.Phase p = jaxbSignal.getPhase().get(i);
-			isvalid[i] = true;
-			isvalid[i] &= p.isPermissive() || p.isProtected();
-			if (null == p.getLinkReferences())
-				numlinks = 0;
-			else
-				numlinks = p.getLinkReferences().getLinkReference().size();
-			isvalid[i] &= numlinks>0;
-			numvalid += isvalid[i] ? 1 : 0;
-		}
-		
-		phases = new SignalPhase[numvalid];
-		nema2phase = new HashMap<NEMA,SignalPhase>(numvalid);
-		int c = 0;
-		for(i=0;i<jaxbSignal.getPhase().size();i++){
-			if(!isvalid[i])
-				continue;
-			phases[c] = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
-			phases[c].populateFromJaxb(myScenario,jaxbSignal.getPhase().get(i));
-			nema2phase.put(phases[c].getNEMA(),phases[c]);
-			c++;
-		}
-		
-		hold_approved = new boolean[phases.length];
-		forceoff_approved = new boolean[phases.length];
-		
-		// create myPhaseController. This is used to implement flow control on target links
-//		myPhaseController = new SignalPhaseController(this);
-		
-		// nema2phase
->>>>>>> calpath/arterial
 
         // make list of phases and map
 		phases = new ArrayList<SignalPhase>();
@@ -177,11 +126,7 @@ public final class ActuatorSignal extends Actuator {
 	protected void reset() {
 		if(myNode==null)
 			return;
-<<<<<<< HEAD
 		for(SignalPhase p : phases)
-=======
-		for(SignalPhase p : phases){
->>>>>>> calpath/arterial
 			p.reset();
 	}
 
@@ -195,12 +140,7 @@ public final class ActuatorSignal extends Actuator {
 		
 		if(phases==null)
 			BeatsErrorLog.addError("ActuatorSignal id=" + getId() + " contains no valid phases.");
-
-<<<<<<< HEAD
-		if(phases!=null)
-=======
-		if(phases!=null)	
->>>>>>> calpath/arterial
+        else
 			for(SignalPhase p : phases)
 				p.validate();
 	}
@@ -210,61 +150,6 @@ public final class ActuatorSignal extends Actuator {
 
 		if(myNode==null)
 			return;
-<<<<<<< HEAD
-
-		// 0) Advance all phases timers ...........................................
-		for(SignalPhase p: phases)
-			p.getBulbtimer().advance();
-		
-		// 1) Update detector stations ............................................
-		/*
-		for(i=0;i<8;i++)
-			phases.get(i).UpdateDetectorStations();
-		*/
-		
-		// 2) Read phases calls .....................................................
-/*
-		// Update stopline calls
-		for(i=0;i<8;i++){
-			if( phases.get(i).Recall() ){
-				hasstoplinecall[i] = true;
-				continue;
-			}
-			if( phases.get(i).StoplineStation()!=null && phases.get(i).StoplineStation().GotCall() )
-				hasstoplinecall[i] = true;
-			else
-				hasstoplinecall[i] = false;
-		}
-
-		// Update approach calls
-		for(i=0;i<8;i++){
-			if( phases.get(i).ApproachStation()!=null && phases.get(i).ApproachStation().GotCall() )
-				hasapproachcall[i] = true;
-			else
-				hasapproachcall[i] = false;
-		}
-
-		// Update conflicting calls
-		boolean[] currentconflictcall = new boolean[8];
-		for(i=0;i<8;i++)
-			currentconflictcall[i] = CheckForConflictingCall(i);
-		for(i=0;i<8;i++){
-			if(  !hasconflictingcall[i] && currentconflictcall[i] )
-				conflictingcalltime[i] = (float)(myNode.getMyNetwork().getSimTime()*3600f);
-			hasconflictingcall[i] = currentconflictcall[i];
-		}	
-*/	
-
-		for(SignalPhase pA: phases)
-			pA.updatePermitOpposingHold();
-		
-		// 3) Update permitted holds ............................................
-		for(SignalPhase pA: phases){
-			pA.setPermithold(true);
-			for(SignalPhase pB: phases)
-				if(!isCompatible(pA,pB) && !pB.isPermitopposinghold() )
-					pA.setPermithold(false);
-=======
 
 		// 0) Advance all phase timers ...........................................
 		for(SignalPhase phase : phases)
@@ -300,126 +185,77 @@ public final class ActuatorSignal extends Actuator {
 			for(SignalPhase phaseB:phases)
 				if(!isCompatible(phaseA,phaseB) && !phaseB.isPermitopposinghold() )
                     phaseA.setPermithold(false);
->>>>>>> calpath/arterial
 		}
 		
 		// 4) Update signal commands ...................................................
 		
 		// Throw away conflicting hold pairs 
 		// (This is purposely drastic to create an error)
-<<<<<<< HEAD
-		for(SignalPhase pA: phases)
-			if(pA.isHold_requested())
-				for(SignalPhase pB: phases)
-					if( pB.isHold_requested() && !isCompatible(pA,pB) ){
-						pA.setHold_requested(false);
-						pB.setHold_requested(false);
-=======
 		for(SignalPhase phaseA:phases)
 			if(phaseA.isHold_requested())
 				for(SignalPhase phaseB:phases)
 					if( phaseB.isHold_requested() && !isCompatible(phaseA,phaseB) ){
                         phaseA.setHold_requested(false);
                         phaseB.setHold_requested(false);
->>>>>>> calpath/arterial
 					}
 
 		// Deal with simultaneous hold and forceoff (RHODES needs this)
-<<<<<<< HEAD
-		for(SignalPhase pA: phases)
-			if( pA.isHold_requested() && pA.isForceoff_requested() )
-				pA.setForceoff_requested(false);
-
-//		// Make local relaying copy
-//		for(i=0;i<phases.size();i++){
-//			hold_approved[i]     = phases[i].isHold_requested();
-//			forceoff_approved[i] = phases[i].isForceoff_requested();
-//		}
-//
-//		// No transition if no permission
-//		for(i=0;i<phases.size();i++)
-//			if( !phases[i].isPermithold() )
-//				hold_approved[i] = false;
-//
-//		// No transition if green time < mingreen
-//		for(i=0;i<phases.size();i++)
-//			if( phases[i].getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phases[i].getBulbtimer().getT(), phases[i].getMingreen()) )
-//				forceoff_approved[i] = false;
-//
-//		// collect updated bulb iindications
-//        ActuatorSignal.BulbColor [] new_bulb_colors = new ActuatorSignal.BulbColor[phases.size()];
-//		for(i=0;i<phases.size();i++)
-//            new_bulb_colors[i]=phases[i].get_new_bulb_color(hold_approved[i],forceoff_approved[i]);
-
-//        // deploy
-//        mySignal.getImplementor().deploy_bulb_color(myNEMA, new_bulb_colors);
-//        bulbcolor = color;
-//
-//        // update signal state
-//        for(i=0;i<phases.length;i++)
-//            if(new_bulb_colors[i]!=null)
-//                phases[i].bulbcolor = new_bulb_color[i];
-=======
-		for(SignalPhase phase:phases)
+		for(SignalPhase phase: phases)
 			if( phase.isHold_requested() && phase.isForceoff_requested() )
                 phase.setForceoff_requested(false);
 
 		// Make local relaying copy
-        for(int i=0;i<phases.length;i++){
-            SignalPhase phase = phases[i];
+        for(int i=0;i<phases.size();i++){
+            SignalPhase phase = phases.get(i);
             hold_approved[i] = phase.isHold_requested();
             forceoff_approved[i] = phase.isForceoff_requested();
 		}
 
 		// No transition if no permission
-        for(int i=0;i<phases.length;i++)
-			if( !phases[i].isPermithold() )
+        for(int i=0;i<phases.size();i++)
+			if( !phases.get(i).isPermithold() )
 				hold_approved[i] = false;
 
 		// No transition if green time < mingreen
-        for(int i=0;i<phases.length;i++)
-            if( phases[i].getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phases[i].getBulbtimer().getT(), phases[i].getMingreen()) )
+        for(int i=0;i<phases.size();i++)
+            if( phases.get(i).getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phases.get(i).getBulbtimer().getT(), phases.get(i).getMingreen()) )
 				forceoff_approved[i] = false;
 
 		// collect updated bulb indications
-        ActuatorSignal.BulbColor [] new_bulb_colors = new ActuatorSignal.BulbColor[phases.length];
-		for(int i=0;i<phases.length;i++){
-
-            SignalPhase phase = phases[i];
+        ActuatorSignal.BulbColor [] new_bulb_colors = new ActuatorSignal.BulbColor[phases.size()];
+		for(int i=0;i<phases.size();i++){
+            SignalPhase phase = phases.get(i);
             new_bulb_colors[i] = phase.get_new_bulb_color(hold_approved[i],forceoff_approved[i]);
->>>>>>> calpath/arterial
 
             // set phase color if changed
             if(new_bulb_colors[i]!=null)
-                phases[i].bulbcolor = new_bulb_colors[i];
+                phases.get(i).bulbcolor = new_bulb_colors[i];
         }
 
-<<<<<<< HEAD
-            // Remove serviced commands
-		for(SignalPhase pA: phases){
-			if(pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.GREEN)==0)
-				pA.setHold_requested(false);
-			if(pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.YELLOW)==0 || pA.getBulbColor().compareTo(ActuatorSignal.BulbColor.RED)==0 )
-				pA.setForceoff_requested(false);
-		}
-	
+//        // Remove serviced commands
+//		for(SignalPhase phase: phases){
+//			if(phase.isGreen())
+//                phase.setHold_requested(false);
+//			if(phase.isYellow() || phase.isRed() )
+//                phase.setForceoff_requested(false);
+//		}
+//
 //		// Set permissive opposing left turn to yellow
 //		// opposing is yellow if I am green or yellow, and I am through, and opposing is permissive
 //		// opposing is red if I am red and it is not protected
-//		for(i=0;i<phases.length;i++){
-//			SignalPhase p = phases[i];
-//			SignalPhase o = phases[i].getOpposingPhase();
-//			if(o==null)
+//		for(SignalPhase phase : phases){
+//			SignalPhase ophase = phase.getOpposingPhase();
+//			if(ophase==null)
 //				continue;
-//			switch(p.getBulbColor()){
+//			switch(phase.getBulbColor()){
 //				case GREEN:
 //				case YELLOW:
-//					if(p.isIsthrough() && o.isPermissive())
-//						o.setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
+//					if(phase.isIsthrough() && ophase.isPermissive())
+//                        ophase.setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
 //					break;
 //				case RED:
-//					if(!o.isProtected())
-//						o.setPhaseColor(ActuatorSignal.BulbColor.RED);
+//					if(!ophase.isProtected())
+//						ophase.setPhaseColor(ActuatorSignal.BulbColor.RED);
 //					break;
 //			case DARK:
 //				break;
@@ -427,44 +263,10 @@ public final class ActuatorSignal extends Actuator {
 //				break;
 //			}
 //		}
-		
-=======
-        // Remove serviced commands
-		for(SignalPhase phase: phases){
-			if(phase.isGreen())
-                phase.setHold_requested(false);
-			if(phase.isYellow() || phase.isRed() )
-                phase.setForceoff_requested(false);
-		}
-	
-		// Set permissive opposing left turn to yellow
-		// opposing is yellow if I am green or yellow, and I am through, and opposing is permissive
-		// opposing is red if I am red and it is not protected
-		for(SignalPhase phase : phases){
-			SignalPhase ophase = phase.getOpposingPhase();
-			if(ophase==null)
-				continue;
-			switch(phase.getBulbColor()){
-				case GREEN:
-				case YELLOW:
-					if(phase.isIsthrough() && ophase.isPermissive())
-                        ophase.setPhaseColor(ActuatorSignal.BulbColor.YELLOW);
-					break;
-				case RED:
-					if(!ophase.isProtected())
-						ophase.setPhaseColor(ActuatorSignal.BulbColor.RED);
-					break;
-			case DARK:
-				break;
-			default:
-				break;
-			}
-		}
 
         // deploy to dynamics
         implementor().deploy_bulb_color(myNEMA, new_bulb_colors);
 
->>>>>>> calpath/arterial
 	}
 
     /////////////////////////////////////////////////////////////////////
@@ -479,11 +281,7 @@ public final class ActuatorSignal extends Actuator {
 //	}
 
 	protected SignalPhase getPhaseForNEMA(NEMA nema){
-<<<<<<< HEAD
-		for(SignalPhase p: phases){
-=======
 		for(SignalPhase p:phases){
->>>>>>> calpath/arterial
 			if(p!=null)
 				if(p.getNEMA().compareTo(nema)==0)
 					return p;
