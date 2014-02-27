@@ -7,9 +7,9 @@ import edu.berkeley.path.beats.actuator.ActuatorSignal;
  */
 public class Controller_SIG_Stage {
 
-    private double greentime;
-    private double[] stagelength;
-    private ActuatorSignal.NEMA [] movA;
-    private ActuatorSignal.NEMA [] movB;
+    private double green_time;
+    private double stage_length;
+    private ActuatorSignal.NEMA movA;
+    private ActuatorSignal.NEMA movB;
 
 }

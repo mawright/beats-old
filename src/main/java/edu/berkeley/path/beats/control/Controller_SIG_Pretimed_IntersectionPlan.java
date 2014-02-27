@@ -28,6 +28,7 @@ package edu.berkeley.path.beats.control;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.actuator.SignalPhase;
@@ -37,22 +38,19 @@ import edu.berkeley.path.beats.simulator.Scenario;
 
 public class Controller_SIG_Pretimed_IntersectionPlan {
 
+    // data
+    protected float offset;	// offset for the intersection
+    protected List<Controller_SIG_Stage> stages;
+
 	// references 
-	private Controller_SIG_Pretimed_Plan myPlan;
+    protected Controller_SIG_Pretimed_Plan myPlan;
 	protected ActuatorSignal mySignal;
-	
-	// input parameters
-	private float offset;	// offset for the intersection
-	
+
 	// list of holds and force-off points 
 	protected ArrayList<ActuatorSignal.Command> command = new ArrayList<ActuatorSignal.Command>();
-	int nextcommand;
-	double lastcommandtime;
-		
-	private double [] greentime;
-	private double[] stagelength;
-	private ActuatorSignal.NEMA [] movA;
-	private ActuatorSignal.NEMA [] movB;
+    protected int nextcommand;
+    protected double lastcommandtime;
+
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -239,7 +237,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		if(command.get(0).time!=0.0)
 			BeatsErrorLog.addError("Initial stages for pretimed plan of signal id=" + mySignal.getId() + " must have time stamp equal zero.");
 	}
-		
+
 	protected void reset(){
 		nextcommand = 0;
 	}
