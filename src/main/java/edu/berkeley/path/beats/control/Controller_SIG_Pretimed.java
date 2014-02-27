@@ -73,9 +73,6 @@ public class Controller_SIG_Pretimed extends Controller {
 	// populate / validate / reset  / update
 	/////////////////////////////////////////////////////////////////////
 
-	/** Implementation of {@link InterfaceComponent#populate}.
-	 * @param jaxbobject Object
-	 */
 	@Override
 	protected void populate(Object jaxbobject) {
 

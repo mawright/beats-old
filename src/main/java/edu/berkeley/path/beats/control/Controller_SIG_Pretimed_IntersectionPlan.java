@@ -38,25 +38,17 @@ import edu.berkeley.path.beats.simulator.Scenario;
 public class Controller_SIG_Pretimed_IntersectionPlan {
 
 	// references 
-	//private _Node myNode;
 	private Controller_SIG_Pretimed_Plan myPlan;
 	protected ActuatorSignal mySignal;
 	
-	//SignalManager mySigMan;
-	//int myIntersectionID;
-	
 	// input parameters
 	private float offset;	// offset for the intersection
-	
-	// stage information
-	//private float cyclelength;
 	
 	// list of holds and force-off points 
 	protected ArrayList<ActuatorSignal.Command> command = new ArrayList<ActuatorSignal.Command>();
 	int nextcommand;
 	double lastcommandtime;
 		
-	private int numstages;
 	private double [] greentime;
 	private double[] stagelength;
 	private ActuatorSignal.NEMA [] movA;
