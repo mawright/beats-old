@@ -100,9 +100,9 @@ final public class ObjectFactory {
 				C = new Controller_SIG_Pretimed(myScenario, jaxbC);
 				break;
 
-            case SIG_MaxPressure:
-                C = new Controller_SIG_CycleMP(myScenario, jaxbC, myType);
-                break;
+//            case SIG_MaxPressure:
+//                C = new Controller_SIG_CycleMP(myScenario, jaxbC, myType);
+//                break;
 
             case SR_Generator:
                 C = new Controller_SR_Generator(myScenario, jaxbC);

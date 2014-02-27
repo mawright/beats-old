@@ -1,30 +1,29 @@
 package edu.berkeley.path.beats.control;
 
+//import edu.berkeley.path.beats.actuator.ActuatorSignal;
+//import edu.berkeley.path.beats.actuator.Stage;
+//import edu.berkeley.path.beats.jaxb.Column;
+//import edu.berkeley.path.beats.simulator.*;
+//
+//import java.util.List;
 
-import edu.berkeley.path.beats.actuator.ActuatorSignal;
-import edu.berkeley.path.beats.actuator.Stage;
-import edu.berkeley.path.beats.jaxb.Column;
-import edu.berkeley.path.beats.simulator.*;
-
-import java.util.List;
-
-public class Controller_SIG extends Controller {
-
-    protected ActuatorSignal mySignal;
-    protected double cycle_time;
-    protected Stage[] stages;
-
-    /////////////////////////////////////////////////////////////////////
-    // Construction
-    /////////////////////////////////////////////////////////////////////
-
-    public Controller_SIG(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
-        super(myScenario,c,myType);
-    }
-
-    @Override
-    protected void populate(Object jaxbobject) {
-
+//public class Controller_SIG extends Controller {
+//
+//    protected ActuatorSignal mySignal;
+//    protected double cycle_time;
+//    protected Stage[] stages;
+//
+//    /////////////////////////////////////////////////////////////////////
+//    // Construction
+//    /////////////////////////////////////////////////////////////////////
+//
+//    public Controller_SIG(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
+//        super(myScenario,c,myType);
+//    }
+//
+//    @Override
+//    protected void populate(Object jaxbobject) {
+//
 //        // read cycle time
 //        cycle_time = jaxbController.getParameters()!=null ?
 //                        ((Parameters) jaxbController.getParameters()).readParameter("cycle_time",Double.NaN) :
@@ -55,25 +54,22 @@ public class Controller_SIG extends Controller {
 //                stages[i] = new Stage(mySignal,movA,movB);
 //            }
 //        }
-
-    }
-
-   @Override
-    protected void validate() {
-        super.validate();
-    }
-
-    @Override
-    protected void reset() {
-        super.reset();
-    }
-
-    @Override
-    protected void update() throws BeatsException {
-        super.update();
-    }
-
-
-
-
-}
+//
+//    }
+//
+//   @Override
+//    protected void validate() {
+//        super.validate();
+//    }
+//
+//    @Override
+//    protected void reset() {
+//        super.reset();
+//    }
+//
+//    @Override
+//    protected void update() throws BeatsException {
+//        super.update();
+//    }
+//
+//}

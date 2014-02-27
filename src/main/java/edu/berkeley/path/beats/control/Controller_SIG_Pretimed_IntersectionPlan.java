@@ -201,41 +201,41 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	
 	protected void validate(double controldt){
 		
-		// at least two stages
-		if(numstages<=1)
-			BeatsErrorLog.addError("ActuatorSignal id=" + mySignal.getId() + " has less than two stages.");
-		
-		// check offset
-		if(offset<0 || offset>=myPlan._cyclelength)
-			BeatsErrorLog.addError("Offset for signal id=" + mySignal.getId() + " is not between zero and the cycle length.");
-		
-		//  greentime, movA, movB
-		for(int k=0;k<numstages;k++){
-			if(Double.isNaN(greentime[k]) || greentime[k]<=0)
-				BeatsErrorLog.addError("Invalid green time in stage for signal id=" + mySignal.getId());
-			if(movA[k]==null && movB[k]==null)
-				BeatsErrorLog.addError("Invalid phase in stage for signal id=" + mySignal.getId());
-		}
-		
-		// values are integer multiples of controller dt
-		for(int k=0;k<numstages;k++){
-			if(!BeatsMath.isintegermultipleof((double) greentime[k],controldt))
-				BeatsErrorLog.addError("Green time not a multiple of control time step in signal id=" + mySignal.getId());
-			if(stagelength[k]!=greentime[k])
-				if(!BeatsMath.isintegermultipleof((double) stagelength[k]-greentime[k],controldt))
-					BeatsErrorLog.addError("Lost time not a multiple of control time step in signal id=" + mySignal.getId());
-		}
-
-		// check cycles are long enough .....................................	
-		float totphaselength=0;
-		for(int k=0;k<numstages;k++)
-			totphaselength += stagelength[k];
-		if(!BeatsMath.equals(myPlan._cyclelength,totphaselength))
-			BeatsErrorLog.addError("Stages do not add up to cycle time in signal id=" + mySignal.getId());
-		
-		// first two commands have zero timestamp
-		if(command.get(0).time!=0.0)
-			BeatsErrorLog.addError("Initial stages for pretimed plan of signal id=" + mySignal.getId() + " must have time stamp equal zero.");
+//		// at least two stages
+//		if(numstages<=1)
+//			BeatsErrorLog.addError("ActuatorSignal id=" + mySignal.getId() + " has less than two stages.");
+//
+//		// check offset
+//		if(offset<0 || offset>=myPlan._cyclelength)
+//			BeatsErrorLog.addError("Offset for signal id=" + mySignal.getId() + " is not between zero and the cycle length.");
+//
+//		//  greentime, movA, movB
+//		for(int k=0;k<numstages;k++){
+//			if(Double.isNaN(greentime[k]) || greentime[k]<=0)
+//				BeatsErrorLog.addError("Invalid green time in stage for signal id=" + mySignal.getId());
+//			if(movA[k]==null && movB[k]==null)
+//				BeatsErrorLog.addError("Invalid phase in stage for signal id=" + mySignal.getId());
+//		}
+//
+//		// values are integer multiples of controller dt
+//		for(int k=0;k<numstages;k++){
+//			if(!BeatsMath.isintegermultipleof((double) greentime[k],controldt))
+//				BeatsErrorLog.addError("Green time not a multiple of control time step in signal id=" + mySignal.getId());
+//			if(stagelength[k]!=greentime[k])
+//				if(!BeatsMath.isintegermultipleof((double) stagelength[k]-greentime[k],controldt))
+//					BeatsErrorLog.addError("Lost time not a multiple of control time step in signal id=" + mySignal.getId());
+//		}
+//
+//		// check cycles are long enough .....................................
+//		float totphaselength=0;
+//		for(int k=0;k<numstages;k++)
+//			totphaselength += stagelength[k];
+//		if(!BeatsMath.equals(myPlan._cyclelength,totphaselength))
+//			BeatsErrorLog.addError("Stages do not add up to cycle time in signal id=" + mySignal.getId());
+//
+//		// first two commands have zero timestamp
+//		if(command.get(0).time!=0.0)
+//			BeatsErrorLog.addError("Initial stages for pretimed plan of signal id=" + mySignal.getId() + " must have time stamp equal zero.");
 	}
 
 	protected void reset(){
@@ -248,42 +248,42 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	
 	protected boolean InNextStage(SignalPhase thisphase,int stageindex)
 	{
-		int nextstage;
-		
-		if(stageindex<0 || stageindex>=numstages || thisphase==null)
-			return false;
-
-		nextstage = stageindex+1;
-
-		if(nextstage==numstages)
-			nextstage=0;
-
-		return thisphase.getNEMA().compareTo(movA[nextstage])==0 || thisphase.getNEMA().compareTo(movB[nextstage])==0;
-		
+//		int nextstage;
+//
+//		if(stageindex<0 || stageindex>=numstages || thisphase==null)
+//			return false;
+//
+//		nextstage = stageindex+1;
+//
+//		if(nextstage==numstages)
+//			nextstage=0;
+//
+//		return thisphase.getNEMA().compareTo(movA[nextstage])==0 || thisphase.getNEMA().compareTo(movB[nextstage])==0;
+        return true;
 	}
 	
 	protected void getCommandForTime(double itime,ArrayList<ActuatorSignal.Command> commandlist){
 		
-		double reltime = itime - offset;		
-		if(reltime<0)
-			reltime += myPlan._cyclelength;
-		
-		if(reltime>lastcommandtime)
-			return;
-		
-		double nexttime = command.get(nextcommand).time;
-		
-		if(nexttime<=reltime){
-			while(nexttime<=reltime){
-				commandlist.add(command.get(nextcommand));
-				nextcommand += 1;
-				if(nextcommand==command.size()){
-					nextcommand = 0;
-					break;
-				}
-				nexttime = command.get(nextcommand).time;
-			}
-		}
+//		double reltime = itime - offset;
+//		if(reltime<0)
+//			reltime += myPlan._cyclelength;
+//
+//		if(reltime>lastcommandtime)
+//			return;
+//
+//		double nexttime = command.get(nextcommand).time;
+//
+//		if(nexttime<=reltime){
+//			while(nexttime<=reltime){
+//				commandlist.add(command.get(nextcommand));
+//				nextcommand += 1;
+//				if(nextcommand==command.size()){
+//					nextcommand = 0;
+//					break;
+//				}
+//				nexttime = command.get(nextcommand).time;
+//			}
+//		}
 
 	}
 	
