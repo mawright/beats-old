@@ -20,8 +20,8 @@ public class OutputWriterTSV extends OutputWriterBase {
 	protected static String delim = "\t";
 	private String prefix;
 
-	public OutputWriterTSV(Scenario scenario, Properties props,double outDt,int outsteps){
-		super(scenario,outDt,outsteps);
+	public OutputWriterTSV(Scenario scenario, Properties props,double outDt,int outsteps,double outStart){
+		super(scenario,outDt,outsteps,outStart);
 		if (null != props) 
 			prefix = props.getProperty("prefix");
 		if (null == prefix) 

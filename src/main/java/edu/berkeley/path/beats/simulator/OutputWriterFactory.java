@@ -45,16 +45,16 @@ final public class OutputWriterFactory {
 	 * @return an output writer
 	 * @throws BeatsException
 	 */
-	public static OutputWriterBase getWriter(Scenario scenario, Properties props,double outDt,int outsteps) throws BeatsException {
+	public static OutputWriterBase getWriter(Scenario scenario, Properties props,double outDt,int outsteps,double outStart) throws BeatsException {
 		final String type = props.getProperty("type");
 		if (type.equals("xml")) 
-			return new OutputWriterXML(scenario, props,outDt,outsteps);
+			return new OutputWriterXML(scenario, props,outDt,outsteps,outStart);
 //		else if (type.equals("db")) 
 //			return new OutputWriterDB(scenario,outDt,outsteps);
 		else if (type.equals("text") || type.equals("plaintext")) 
-			return new OutputWriterTXT(scenario, props,outDt,outsteps);
+			return new OutputWriterTXT(scenario, props,outDt,outsteps,outStart);
 		else if (type.equals("tsv")) 
-			return new OutputWriterTSV(scenario, props,outDt,outsteps);
+			return new OutputWriterTSV(scenario, props,outDt,outsteps,outStart);
 		else 
 			throw new BeatsException("Unknown output writer type '" + type + "'");
 	}

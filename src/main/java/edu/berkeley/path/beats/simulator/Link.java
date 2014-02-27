@@ -421,16 +421,16 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 
 	// override density ..................................................
-	protected void set_density_with_singleton(double [] d){
-		int e,v;
-		int n1 = myNetwork.getMyScenario().getNumEnsemble();
-		int n2 = myNetwork.getMyScenario().getNumVehicleTypes();
+	protected boolean set_density(double [] d){
+        if(myNetwork.getMyScenario().getNumVehicleTypes()!=1)
+            return false;
 		if(density==null)
-			density = new double[n1][n2];
-		for(e=0;e<n1;e++)
-			for(v=0;v<n2;v++)
-				this.density[e][v] = d[v];
-	
+			return false; //density = new double[d.length][1];
+        if(density.length!=d.length)
+            return false;
+		for(int e=0;e<d.length;e++)
+	        density[e][0] = d[e];
+        return true;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -663,8 +663,8 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
     public double computeDelayInVeh(int ensemble,int vt_index){
-        double n = getDensityInVeh(ensemble,vt_index);
-        double f = getOutflowInVeh(ensemble,vt_index);
+        double n = getDensityInVeh(ensemble, vt_index);
+        double f = getOutflowInVeh(ensemble, vt_index);
         double vf = getNormalizedVf(ensemble);
         return Math.max(0d,vf*n-f);
     }

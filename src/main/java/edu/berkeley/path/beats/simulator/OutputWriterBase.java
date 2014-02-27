@@ -31,6 +31,7 @@ import edu.berkeley.path.beats.simulator.Scenario.SignalPhases;
 public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	
 	protected Scenario scenario;
+    protected double outStart;      // time to start writing output
 	protected double outDt;			// output frequency in seconds
 	protected int outSteps;			// output frequency in simulation steps
 
@@ -38,10 +39,11 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	// construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public OutputWriterBase(Scenario scenario,double outDt,int outsteps) {
+	public OutputWriterBase(Scenario scenario,double outDt,int outsteps,double outStart) {
 		this.scenario = scenario;
 		this.outDt = outDt;
 		this.outSteps = outsteps;
+        this.outStart = outStart;
 	}
 
 	/////////////////////////////////////////////////////////////////////

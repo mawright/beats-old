@@ -54,8 +54,8 @@ import edu.berkeley.path.beats.simulator.BeatsMath;
  */
 public class OutputWriterDB extends OutputWriterBase {
 
-	public OutputWriterDB(Scenario scenario,double outDt,int outsteps) {
-		super(scenario,outDt,outsteps);
+	public OutputWriterDB(Scenario scenario,double outDt,int outsteps,double outStart) {
+		super(scenario,outDt,outsteps,outStart);
 //		try {
 //			db_scenario = ScenariosPeer.retrieveByPK(scenario.getId());
 //		} catch (NoRowsException exc) {
