@@ -265,7 +265,7 @@ public final class ActuatorSignal extends Actuator {
 //		}
 
         // deploy to dynamics
-        implementor().deploy_bulb_color(myNEMA, new_bulb_colors);
+//        implementor().deploy_bulb_color(myNEMA, new_bulb_colors);
 
 	}
 
