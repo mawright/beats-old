@@ -39,7 +39,7 @@ import edu.berkeley.path.beats.simulator.Scenario;
 //	@Override
 //	protected void populate(Object jaxbobject) {
 ////		super.populate(jaxbobject);
-////        myNode = myScenario.getNodeWithId(mySignal.getNodeId());
+////        myNode = myScenario.getNodeWithId(signal.getNodeId());
 ////        inputLinks = myNode.getInput_link();
 ////    	outputLinks = myNode.getOutput_link();
 ////    	nInputs = inputLinks.length;

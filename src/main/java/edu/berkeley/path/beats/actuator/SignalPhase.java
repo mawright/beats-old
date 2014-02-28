@@ -33,7 +33,7 @@ import edu.berkeley.path.beats.simulator.*;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 final public class SignalPhase {
-	
+
 	// references ....................................................
 	protected ActuatorSignal mySignal;
 //    protected Link[] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
@@ -208,13 +208,13 @@ final public class SignalPhase {
 
 //		// check that there are links attached
 //		if(targetlinks==null || targetlinks.length==0)
-//			BeatsErrorLog.addError("No valid target link for phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
+//			BeatsErrorLog.addError("No valid target link for phase NEMA=" + getNEMA() + " in signal id=" + signal.getId());
 //
 //		// target links are valid
 //		if(targetlinks!=null)
 //			for(int i=0;i<targetlinks.length;i++)
 //				if(targetlinks[i]==null)
-//					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
+//					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getNEMA() + " in signal id=" + signal.getId());
 
 		// myNEMA is valid
 		if(myNEMA.compareTo(ActuatorSignal.NEMA.NULL)==0)
@@ -282,7 +282,7 @@ final public class SignalPhase {
 				// Force off
 				if( forceoff_approved ){
                     next_color = ActuatorSignal.BulbColor.YELLOW;
-//					mySignal.getCompletedPhases().add(mySignal.new PhaseData(myNEMA, mySignal.getMyScenario().getClock().getT() - bulbtimer.getT(), bulbtimer.getT()));
+//					signal.getCompletedPhases().add(signal.new PhaseData(myNEMA, signal.getMyScenario().getClock().getT() - bulbtimer.getT(), bulbtimer.getT()));
 					bulbtimer.reset();
 					//FlushAllStationCallsAndConflicts();
 					done = actualyellowtime>0;

@@ -8,7 +8,7 @@ import java.util.List;
 //public class ActuatorSignalStageSplits extends Actuator {
 //
 //    public List<Link> inlinks;
-//    private ActuatorSignal mySignal;
+//    private ActuatorSignal signal;
 //    private StageSplit [] stage_splits;
 //
 //    /////////////////////////////////////////////////////////////////////
@@ -37,8 +37,8 @@ import java.util.List;
 //
 ////	@Override
 ////	protected void populate(Object jaxbobject,Scenario myScenario) {
-////        mySignal = myScenario.getSignalWithId(getScenarioElement().getId());
-////        inlinks = Arrays.asList(mySignal.getMyNode().getInput_link());
+////        signal = myScenario.getSignalWithId(getScenarioElement().getId());
+////        inlinks = Arrays.asList(signal.getMyNode().getInput_link());
 ////		return;
 ////	}
 //

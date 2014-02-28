@@ -15,11 +15,11 @@ package edu.berkeley.path.beats.actuator;
 //    public SignalPhase phaseA;
 //    public SignalPhase phaseB;
 //
-//    public Stage(ActuatorSignal mySignal,ActuatorSignal.NEMA movA,ActuatorSignal.NEMA movB){
+//    public Stage(ActuatorSignal signal,ActuatorSignal.NEMA movA,ActuatorSignal.NEMA movB){
 //        this.movA = movA;
 //        this.movB = movB;
-//        this.phaseA = mySignal.getPhaseByNEMA(movA);
-//        this.phaseB = mySignal.getPhaseByNEMA(movB);
+//        this.phaseA = signal.getPhaseByNEMA(movA);
+//        this.phaseB = signal.getPhaseByNEMA(movB);
 //    }
 //
 //}

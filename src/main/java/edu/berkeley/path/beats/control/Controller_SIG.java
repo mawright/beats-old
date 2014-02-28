@@ -9,7 +9,7 @@ package edu.berkeley.path.beats.control;
 
 //public class Controller_SIG extends Controller {
 //
-//    protected ActuatorSignal mySignal;
+//    protected ActuatorSignal signal;
 //    protected double cycle_time;
 //    protected Stage[] stages;
 //
@@ -33,7 +33,7 @@ package edu.berkeley.path.beats.control;
 //
 //        // hack: assume actuator id = signal id
 //        long act_id = jaxbController.getTargetActuators().getTargetActuator().get(0).getId();
-//        mySignal = myScenario.getSignalWithId(act_id);
+//        signal = myScenario.getSignalWithId(act_id);
 //
 //        // read stages
 //        edu.berkeley.path.beats.jaxb.Table myTable = null;
@@ -51,7 +51,7 @@ package edu.berkeley.path.beats.control;
 //                List<Column> c = myTable.getRow().get(i).getColumn();
 //                ActuatorSignal.NEMA movA = ActuatorSignal.NEMA.valueOf(c.get(0).getContent());
 //                ActuatorSignal.NEMA movB = ActuatorSignal.NEMA.valueOf(c.get(1).getContent());
-//                stages[i] = new Stage(mySignal,movA,movB);
+//                stages[i] = new Stage(signal,movA,movB);
 //            }
 //        }
 //

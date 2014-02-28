@@ -63,12 +63,12 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 //
 //				// check whether the signal is in the target list
 //				Controller_SIG_Pretimed.Intersection intersection = plan.getIntersection().get(i);
-//				ActuatorSignal mySignal = myScenario.getSignalWithNodeId(intersection.getNodeId());
-//				if(mySignal==null)
+//				ActuatorSignal signal = myScenario.getSignalWithNodeId(intersection.getNodeId());
+//				if(signal==null)
 //					continue;
 //				boolean haveit = false;
 //				for(Actuator act : myController.actuators){
-//					if( se.getMyType().compareTo(ScenarioElement.Type.signal)==0 && se.getId()==mySignal.getId() ){
+//					if( se.getMyType().compareTo(ScenarioElement.Type.signal)==0 && se.getId()==signal.getId() ){
 //						haveit=true;
 //					}
 //				}
@@ -101,7 +101,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 //			for(ScenarioElement se : myController.getTargets()){
 //				foundit = false;
 //				for(int i=0;i<intersplan.length;i++){
-//					if(se.getId()==intersplan[i].mySignal.getId()){
+//					if(se.getId()==intersplan[i].signal.getId()){
 //						foundit=true;
 //						break;
 //					}
@@ -142,16 +142,16 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 			intersplan[i].getCommandForTime(itime,commandlist);
 			
 			// send command to the signal
-			intersplan[i].mySignal.set_command(commandlist);
+			intersplan[i].signal.set_command(commandlist);
 
 //			if( !coordmode ){
 //				for(j=0;j<intplan.holdpoint.length;j++)
 //					if( reltime==intplan.holdpoint[j] )
-//						intplan.mySignal.IssueHold(j);
+//						intplan.signal.IssueHold(j);
 //
 //				for(j=0;j<intplan.holdpoint.length;j++)
 //					if( reltime==intplan.forceoffpoint[j] )
-//						intplan.mySignal.IssueForceOff(j,intplan.mySignal.phase[j].actualyellowtime,intplan.mySignal.phase[j].actualredcleartime);
+//						intplan.signal.IssueForceOff(j,intplan.signal.phase[j].actualyellowtime,intplan.signal.phase[j].actualredcleartime);
 //			}
 
 			
@@ -161,7 +161,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 //			for( j=0;j<8;j++ ){
 //
 //					
-//					if( !intplan.mySignal.Phase(j).Protected() )
+//					if( !intplan.signal.Phase(j).Protected() )
 //						continue;
 //
 //					issyncphase = j==intplan.movA[0] || j==intplan.movB[0];
