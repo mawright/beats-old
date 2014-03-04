@@ -448,26 +448,4 @@ final public class SignalPhase {
 		return bulbcolor;
 	}
 
-    public static ActuatorSignal.NEMA int_to_nema(int x){
-        switch(x){
-            case 1:
-                return NEMA._1;
-            case 2:
-                return NEMA._2;
-            case 3:
-                return NEMA._3;
-            case 4:
-                return NEMA._4;
-            case 5:
-                return NEMA._5;
-            case 6:
-                return NEMA._6;
-            case 7:
-                return NEMA._7;
-            case 8:
-                return NEMA._8;
-            default:
-                return NEMA.NULL;
-        }
-    }
 }

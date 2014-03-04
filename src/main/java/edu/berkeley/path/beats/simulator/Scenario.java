@@ -897,6 +897,19 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		return null;
 	}
+
+    public ActuatorSignal get_signal_for_node(long node_id){
+        for(edu.berkeley.path.beats.jaxb.Actuator jact : getActuatorSet().getActuator()){
+            Actuator act = (Actuator)jact;
+            if(act.myType.compareTo(Actuator.Type.signal)==0){
+                ActuatorSignal signal = (ActuatorSignal) act;
+                Long signal_node_id = signal.get_node_id();
+                if(signal_node_id!=null && node_id==signal_node_id)
+                    return signal;
+            }
+        }
+        return null;
+    }
 		
 	/** Get a reference to a controller by its id.
 	 * @param id Id of the controller.

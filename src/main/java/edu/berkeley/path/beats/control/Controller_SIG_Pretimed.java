@@ -26,10 +26,7 @@
 
 package edu.berkeley.path.beats.control;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.actuator.SignalPhase;
@@ -74,7 +71,6 @@ public class Controller_SIG_Pretimed extends Controller {
 	protected void populate(Object jaxbobject) {
 
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
-
 		// must have these
 
 //		if(jaxbc.getTargetActuators()==null ||  jaxbc.getTargetActuators().getTargetActuator()==null  )
@@ -100,8 +96,9 @@ public class Controller_SIG_Pretimed extends Controller {
             int plan_id = Integer.parseInt(row.get_value_for_column_name("Plan ID"));
             PretimedPlan pp = plan_map.get(plan_id);
             int intersection_id = Integer.parseInt(row.get_value_for_column_name("Intersection"));
+            ActuatorSignal signal = myScenario.get_signal_for_node(intersection_id);
             double offset = Double.parseDouble(row.get_value_for_column_name("Offset"));
-            pp.add_intersection_with_offset(intersection_id,offset);
+            pp.add_intersection_with_offset(intersection_id,signal,offset);
         }
 
         // read phases/green times
@@ -231,8 +228,8 @@ public class Controller_SIG_Pretimed extends Controller {
             this.id = id;
             this.intersection_plans = new HashMap<Integer,IntersectionPlan>();
         }
-        public void add_intersection_with_offset(int intersection_id,double offset){
-            intersection_plans.put(intersection_id, new IntersectionPlan(intersection_id, offset));
+        public void add_intersection_with_offset(int intersection_id,ActuatorSignal signal,double offset){
+            intersection_plans.put(intersection_id, new IntersectionPlan(this,intersection_id,signal,offset));
         }
         public void add_intersection_stage(int intersection_id,int movA,int movB,double green_time){
             IntersectionPlan ip = intersection_plans.get(intersection_id);
@@ -250,24 +247,15 @@ public class Controller_SIG_Pretimed extends Controller {
             itime =  simtime % cycle;
 
             // Loop through intersections ...............
-
-//            Iterator it = intersection_plans.entrySet().iterator();
-//            while (it.hasNext()) {
-//                Map.Entry pairs = (Map.Entry)it.next();
-//                System.out.println(pairs.getKey() + " = " + pairs.getValue());
-//                it.remove(); // avoids a ConcurrentModificationException
-//            }
-
-
-            for(i=0;i<intersplan.length;i++){
+            for (IntersectionPlan int_plan : intersection_plans.values()) {
 
                 commandlist.clear();
 
                 // get commands for this intersection
-                intersplan[i].getCommandForTime(itime,commandlist);
+                int_plan.getCommandForTime(itime,commandlist);
 
                 // send command to the signal
-                intersplan[i].signal.set_command(commandlist);
+                int_plan.signal.set_command(commandlist);
 
                 if( !coordmode ){
                     for(j=0;j<intplan.holdpoint.length;j++)
@@ -281,37 +269,41 @@ public class Controller_SIG_Pretimed extends Controller {
 
 
                 // Used for coordinated actuated.
-			if( coordmode ){
-
-                for( j=0;j<8;j++ ){
-
-
-                        if( !intplan.signal.Phase(j).Protected() )
-                            continue;
-
-                        issyncphase = j==intplan.movA[0] || j==intplan.movB[0];
-
-                        // Non-persisting forceoff request at forceoffpoint
-                        if( reltime==intplan.forceoffpoint[j] )
-                            c.setRequestforceoff(i, j, true);
-
-                        // Hold request for sync phase if
-                        // currently both sync phases are active
-                        // and not reached syncpoint
-                        if( issyncphase &&
-                            c.PhaseA(i)!=null && c.PhaseA(i).MyNEMA()==intplan.movA.get(0) &&
-                            c.PhaseB(i)!=null && c.PhaseB(i).MyNEMA() == intplan.movB.get(0) &&
-                            reltime!= c.Syncpoint(i) )
-                            c.setRequesthold(i, j, true);
-                    }
-                }
+//                if( coordmode ){
+//
+//                    for( j=0;j<8;j++ ){
+//
+//
+//                            if( !intplan.signal.Phase(j).Protected() )
+//                                continue;
+//
+//                            issyncphase = j==intplan.movA[0] || j==intplan.movB[0];
+//
+//                            // Non-persisting forceoff request at forceoffpoint
+//                            if( reltime==intplan.forceoffpoint[j] )
+//                                c.setRequestforceoff(i, j, true);
+//
+//                            // Hold request for sync phase if
+//                            // currently both sync phases are active
+//                            // and not reached syncpoint
+//                            if( issyncphase &&
+//                                c.PhaseA(i)!=null && c.PhaseA(i).MyNEMA()==intplan.movA.get(0) &&
+//                                c.PhaseB(i)!=null && c.PhaseB(i).MyNEMA() == intplan.movB.get(0) &&
+//                                reltime!= c.Syncpoint(i) )
+//                                c.setRequesthold(i, j, true);
+//                        }
+//                    }
+//                }
             }
         }
-
 
     }
 
     protected class IntersectionPlan {
+
+        // reference
+        protected PretimedPlan my_plan;
+        protected ActuatorSignal my_signal;
 
         // data
         protected int intersection_id;
@@ -319,26 +311,166 @@ public class Controller_SIG_Pretimed extends Controller {
         protected List<Stage> stages;
 
         // command
-        protected ArrayList<ActuatorSignal.Command> command = new ArrayList<ActuatorSignal.Command>();
+        protected ArrayList<ActuatorSignal.Command> command_sequence;
+        protected int curr_command_index;
+        protected int nextcommand;
+        protected double lastcommandtime;
 
-        public IntersectionPlan(int intersection_id,double offset){
+        public IntersectionPlan(PretimedPlan my_plan,ActuatorSignal my_signal,int intersection_id,double offset){
+
+            this.my_plan = my_plan;
+            this.my_signal = my_signal;
             this.intersection_id = intersection_id;
             this.offset = offset;
             this.stages = new ArrayList<Stage>();
+
+//            signal = myScenario.getSignalWithNodeId(intersection.getNodeId());
+
+            // Set yellowtimes, redcleartimes, stagelength, totphaselength
+            int k;
+            SignalPhase pA;
+            SignalPhase pB;
+            double y,r,yA,yB,rA,rB;
+            float totphaselength = 0;
+            stagelength = new double[numstages];
+            for(k=0;k<numstages;k++){
+
+                pA = signal.getPhaseByNEMA(movA[k]);
+                pB = signal.getPhaseByNEMA(movB[k]);
+
+                if(pA==null && pB==null)
+                    return;
+
+                yA = pA==null ? 0.0 : pA.getYellowtime();
+                rA = pA==null ? 0.0 : pA.getRedcleartime();
+                yB = pB==null ? 0.0 : pB.getYellowtime();
+                rB = pB==null ? 0.0 : pB.getRedcleartime();
+
+                y = Math.max(yA,yB);
+                r = Math.max(rA,rB);
+
+                if( InNextStage(pA,k) ){
+                    y = yB;
+                    r = rB;
+                }
+
+                if( InNextStage(pB,k) ){
+                    y = yA;
+                    r = rA;
+                }
+
+                if(pA!=null){
+                    pA.setActualyellowtime(y);
+                    pA.setActualredcleartime(r);
+                }
+
+                if(pB!=null){
+                    pB.setActualyellowtime(y);
+                    pB.setActualredcleartime(r);
+                }
+
+                stagelength[k] = greentime[k]+y+r;
+                totphaselength += greentime[k]+y+r;
+            }
+
+            // compute hold and forceoff points ............................................
+            double stime, etime;
+            int nextstage;
+            stime=0;
+            for(k=0;k<numstages;k++){
+
+                etime = stime + greentime[k];
+                stime = stime + stagelength[k];
+
+                if(k==numstages-1)
+                    nextstage = 0;
+                else
+                    nextstage = k+1;
+
+                if(stime>=totphaselength)
+                    stime = 0;
+
+                // do something if the phase changes from this stage to the next
+                if(movA[k].compareTo(movA[nextstage])!=0){
+
+                    // force off this stage
+                    if(movA[k].compareTo(NEMA.NULL)!=0){
+                        pA = signal.getPhaseByNEMA(movA[k]);
+                        command.add(new Command(ActuatorSignal.CommandType.forceoff,movA[k],etime,pA.getActualyellowtime(),pA.getActualredcleartime()));
+                    }
+
+                    // hold next stage
+                    if(movA[nextstage].compareTo(NEMA.NULL)!=0)
+                        command.add(new Command(ActuatorSignal.CommandType.hold,movA[nextstage],stime));
+
+                }
+
+                // same for ring B
+                if(movB[k].compareTo(movB[nextstage])!=0){
+                    if(movB[k].compareTo(NEMA.NULL)!=0){
+                        pB = signal.getPhaseByNEMA(movB[k]);
+                        command.add(new Command(ActuatorSignal.CommandType.forceoff,movB[k],etime,pB.getActualyellowtime(),pB.getActualredcleartime()));
+                    }
+                    if(movB[nextstage].compareTo(NEMA.NULL)!=0)
+                        command.add(new Command(ActuatorSignal.CommandType.hold,movB[nextstage],stime));
+                }
+
+            }
+
+            // Correction: offset is with respect to end of first stage, instead of beginning
+            for(ActuatorSignal.Command c : command){
+                c.time -= greentime[0];
+                if(c.time<0)
+                    c.time += plan._cyclelength;
+            }
+
+            // sort the commands
+            Collections.sort(command);
+
+            lastcommandtime = command.get(command.size()-1).time;
+
+
         }
 
         public void add_stage(int movA,int movB,double green_time){
-            stages.add(new Stage(movA,movB,green_time);
+            stages.add(new Stage(movA,movB,green_time));
         }
+
+        protected void update_current_command(double itime){
+
+            double reltime = itime - offset;
+            if(reltime<0)
+                reltime += my_plan.cycle;
+
+            if(reltime>lastcommandtime)
+                return;
+
+            double nexttime = command_sequence.get(nextcommand).time;
+
+            if(nexttime<=reltime){
+                while(nexttime<=reltime){
+                    commandlist.add(command_sequence.get(nextcommand));
+                    nextcommand += 1;
+                    if(nextcommand==command_sequence.size()){
+                        nextcommand = 0;
+                        break;
+                    }
+                    nexttime = command_sequence.get(nextcommand).time;
+                }
+            }
+        }
+
     }
 
     protected class Stage {
-        public SignalPhase phaseA;
-        public SignalPhase phaseB;
+        public ActuatorSignal.NEMA movA;
+        public ActuatorSignal.NEMA movB;
         public double green_time;
-//        public Stage(int movA,int movB,double green_time){
-//zdfgdfg
-//        }
+        public Stage(int movAi,int movBi,double green_time){
+            this.movA = ActuatorSignal.int_to_nema(movAi);
+            this.movB = ActuatorSignal.int_to_nema(movBi);
+            this.green_time = green_time;
+        }
 
     }
 

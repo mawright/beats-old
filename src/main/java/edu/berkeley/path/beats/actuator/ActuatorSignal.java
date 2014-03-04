@@ -106,7 +106,7 @@ public final class ActuatorSignal extends Actuator {
 		nema2phase = new HashMap<NEMA,SignalPhase>();
         HashMap<ActuatorSignal.NEMA,List<Link>> nema_to_linklist = (HashMap<ActuatorSignal.NEMA,List<Link>>) implementor.get_target();
         for(Phase jphase : jaxbSignal.getPhase() ){
-            ActuatorSignal.NEMA nema = SignalPhase.int_to_nema(jphase.getNema().intValue());
+            ActuatorSignal.NEMA nema = ActuatorSignal.int_to_nema(jphase.getNema().intValue());
             List<Link> link_list = nema_to_linklist.get( nema );
             if(link_list!=null){
                 SignalPhase sp = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
@@ -306,6 +306,10 @@ public final class ActuatorSignal extends Actuator {
 		return nema2phase.get(nema);
 	}
 
+    public Long get_node_id(){
+        return myNode==null ? null : myNode.getId();
+    }
+
 	/////////////////////////////////////////////////////////////////////
 	// static NEMA methods
 	/////////////////////////////////////////////////////////////////////
@@ -369,6 +373,29 @@ public final class ActuatorSignal extends Actuator {
 		}
 		return false;
 	}
+
+    public static NEMA int_to_nema(int x){
+        switch(x){
+            case 1:
+                return NEMA._1;
+            case 2:
+                return NEMA._2;
+            case 3:
+                return NEMA._3;
+            case 4:
+                return NEMA._4;
+            case 5:
+                return NEMA._5;
+            case 6:
+                return NEMA._6;
+            case 7:
+                return NEMA._7;
+            case 8:
+                return NEMA._8;
+            default:
+                return NEMA.NULL;
+        }
+    }
 
 	/////////////////////////////////////////////////////////////////////
 	// internal class
