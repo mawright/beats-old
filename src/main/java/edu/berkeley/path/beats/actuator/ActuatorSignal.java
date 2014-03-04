@@ -45,7 +45,6 @@ public final class ActuatorSignal extends Actuator {
 	private Node myNode;
 	private ArrayList<SignalPhase> phases;
 
-
 	// local copy of the command, subject to checks
 	private boolean [] hold_approved;
 	private boolean [] forceoff_approved;
