@@ -112,6 +112,11 @@ public class Controller_SIG_Pretimed extends Controller {
             pp.add_intersection_stage(intersection_id,movA,movB,green_time);
         }
 
+        // process stage information
+        for(PretimedPlan pp : plan_map.values())
+            for(IntersectionPlan ip : pp.intersection_plans.values())
+                ip.process_stage_info();
+
         // create plan sequence
         plan_schedule = new ArrayList<PlanScheduleEntry>();
         for(Table.Row row : getTables().get("Plan Sequence").getRows()){
@@ -119,7 +124,6 @@ public class Controller_SIG_Pretimed extends Controller {
             double start_time = Double.parseDouble(row.get_value_for_column_name("Start Time"));
             plan_schedule.add(new PlanScheduleEntry(start_time, plan_id));
         }
-
         Collections.sort(plan_schedule);
 
         // initialize state
@@ -228,9 +232,11 @@ public class Controller_SIG_Pretimed extends Controller {
             this.id = id;
             this.intersection_plans = new HashMap<Integer,IntersectionPlan>();
         }
+
         public void add_intersection_with_offset(int intersection_id,ActuatorSignal signal,double offset){
-            intersection_plans.put(intersection_id, new IntersectionPlan(this,intersection_id,signal,offset));
+            intersection_plans.put(intersection_id, new IntersectionPlan(this,signal,intersection_id,offset));
         }
+
         public void add_intersection_stage(int intersection_id,int movA,int movB,double green_time){
             IntersectionPlan ip = intersection_plans.get(intersection_id);
             if(ip==null)
@@ -324,55 +330,6 @@ public class Controller_SIG_Pretimed extends Controller {
             this.offset = offset;
             this.stages = new ArrayList<Stage>();
 
-//            signal = myScenario.getSignalWithNodeId(intersection.getNodeId());
-
-            // Set yellowtimes, redcleartimes, stagelength, totphaselength
-            int k;
-            SignalPhase pA;
-            SignalPhase pB;
-            double y,r,yA,yB,rA,rB;
-            float totphaselength = 0;
-            stagelength = new double[numstages];
-            for(k=0;k<numstages;k++){
-
-                pA = signal.getPhaseByNEMA(movA[k]);
-                pB = signal.getPhaseByNEMA(movB[k]);
-
-                if(pA==null && pB==null)
-                    return;
-
-                yA = pA==null ? 0.0 : pA.getYellowtime();
-                rA = pA==null ? 0.0 : pA.getRedcleartime();
-                yB = pB==null ? 0.0 : pB.getYellowtime();
-                rB = pB==null ? 0.0 : pB.getRedcleartime();
-
-                y = Math.max(yA,yB);
-                r = Math.max(rA,rB);
-
-                if( InNextStage(pA,k) ){
-                    y = yB;
-                    r = rB;
-                }
-
-                if( InNextStage(pB,k) ){
-                    y = yA;
-                    r = rA;
-                }
-
-                if(pA!=null){
-                    pA.setActualyellowtime(y);
-                    pA.setActualredcleartime(r);
-                }
-
-                if(pB!=null){
-                    pB.setActualyellowtime(y);
-                    pB.setActualredcleartime(r);
-                }
-
-                stagelength[k] = greentime[k]+y+r;
-                totphaselength += greentime[k]+y+r;
-            }
-
             // compute hold and forceoff points ............................................
             double stime, etime;
             int nextstage;
@@ -434,6 +391,56 @@ public class Controller_SIG_Pretimed extends Controller {
 
         public void add_stage(int movA,int movB,double green_time){
             stages.add(new Stage(movA,movB,green_time));
+        }
+
+        public void process_stage_info(){
+
+            // Set yellowtimes, redcleartimes, stagelength, totphaselength
+            int k;
+            SignalPhase pA;
+            SignalPhase pB;
+            double y,r,yA,yB,rA,rB;
+            float totphaselength = 0;
+            stagelength = new double[numstages];
+            for(k=0;k<numstages;k++){
+
+                SignalPhase pA = signal.getPhaseByNEMA(movA[k]);
+                SignalPhase pB = signal.getPhaseByNEMA(movB[k]);
+
+                if(pA==null && pB==null)
+                    return;
+
+                yA = pA==null ? 0.0 : pA.getYellowtime();
+                rA = pA==null ? 0.0 : pA.getRedcleartime();
+                yB = pB==null ? 0.0 : pB.getYellowtime();
+                rB = pB==null ? 0.0 : pB.getRedcleartime();
+
+                y = Math.max(yA,yB);
+                r = Math.max(rA,rB);
+
+                if( InNextStage(pA,k) ){
+                    y = yB;
+                    r = rB;
+                }
+
+                if( InNextStage(pB,k) ){
+                    y = yA;
+                    r = rA;
+                }
+
+                if(pA!=null){
+                    pA.setActualyellowtime(y);
+                    pA.setActualredcleartime(r);
+                }
+
+                if(pB!=null){
+                    pB.setActualyellowtime(y);
+                    pB.setActualredcleartime(r);
+                }
+
+                stagelength[k] = greentime[k]+y+r;
+                totphaselength += greentime[k]+y+r;
+            }
         }
 
         protected void update_current_command(double itime){
