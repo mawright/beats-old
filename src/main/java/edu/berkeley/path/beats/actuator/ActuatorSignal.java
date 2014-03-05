@@ -268,6 +268,16 @@ public final class ActuatorSignal extends Actuator {
 
 	}
 
+    @Override
+    protected boolean register() {
+        HashMap<ActuatorSignal.NEMA,List<Link>> phase_link_map = (HashMap<ActuatorSignal.NEMA,List<Link>>) implementor.get_target();
+        boolean success = true;
+        for(List<Link> link_list : phase_link_map.values())
+            for(Link link : link_list)
+                success &= link.register_flow_controller();
+        return success;
+    }
+
     /////////////////////////////////////////////////////////////////////
 	// protected
 	/////////////////////////////////////////////////////////////////////
@@ -405,16 +415,16 @@ public final class ActuatorSignal extends Actuator {
 	public static class Command implements Comparable {
 		public ActuatorSignal.CommandType type;
 		public ActuatorSignal.NEMA nema;
-		public double time;
-		public double yellowtime;
-		public double redcleartime;
+		public Double time;
+		public Double yellowtime;
+		public Double redcleartime;
 
 		public Command(ActuatorSignal.CommandType type,ActuatorSignal.NEMA phase,double time){
 			this.type = type;
 			this.nema = phase;
 			this.time = time;
-			this.yellowtime = -1f;
-			this.redcleartime = -1f;
+			this.yellowtime = Double.NaN;
+			this.redcleartime = Double.NaN;
 		}
 		
 		public Command(ActuatorSignal.CommandType type,ActuatorSignal.NEMA phase,double time,double yellowtime,double redcleartime){

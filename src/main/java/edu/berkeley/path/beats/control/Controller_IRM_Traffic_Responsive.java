@@ -272,19 +272,19 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 			return;
 		
 		
-		// read table, initialize values. 
-		if (hasflowthres)
-			trFlowThresh=new double[table.getNoRows()];
-		
-		if (hasoccthres)
-			trOccThresh=new double[table.getNoRows()];
-		
-		if (hasspeedthres)
-			trSpeedThresh=new double[table.getNoRows()];
-		
-		
-		trMeteringRates_normalized=new double[table.getNoRows()];			
-		trlevelindex = 0;
+//		// read table, initialize values.
+//		if (hasflowthres)
+//			trFlowThresh=new double[table.getNoRows()];
+//
+//		if (hasoccthres)
+//			trOccThresh=new double[table.getNoRows()];
+//
+//		if (hasspeedthres)
+//			trSpeedThresh=new double[table.getNoRows()];
+//
+//
+//		trMeteringRates_normalized=new double[table.getNoRows()];
+//		trlevelindex = 0;
 		// extract data from the table and populate
 //		for (int i=0;i<table.getNoRows();i++){
 //			trMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * getMyScenario().getSimdtinseconds(); // in veh per sim step

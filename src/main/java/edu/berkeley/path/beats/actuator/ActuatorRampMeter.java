@@ -86,6 +86,11 @@ public class ActuatorRampMeter extends Actuator {
 	public void deploy(double current_time_in_seconds) {
 		this.implementor.deploy_metering_rate_in_veh(metering_rate_in_veh);
 	}
+
+    @Override
+    protected boolean register() {
+        return ((Link)implementor.get_target()).register_flow_controller();
+    }
 	
 	public Link getLink(){
 		return myLink;

@@ -3,6 +3,7 @@ package edu.berkeley.path.beats.actuator;
 import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
+import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 import java.util.ArrayList;
@@ -64,5 +65,10 @@ public class ActuatorCMS extends Actuator {
     @Override
     public void deploy(double current_time_in_seconds) {
         this.implementor.deploy_cms_split(splits);
+    }
+
+    @Override
+    protected boolean register() {
+        return ((Node)implementor.get_target()).register_split_controller();
     }
 }

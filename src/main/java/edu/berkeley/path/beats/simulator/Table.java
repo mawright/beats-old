@@ -47,23 +47,20 @@ final public class Table {
 	// construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public Table(edu.berkeley.path.beats.jaxb.Table T) throws BeatsException {
+	public Table(edu.berkeley.path.beats.jaxb.Table T) {
 		
 		// check column names has single key
 		boolean found_key = false;
         for(int i=0;i<T.getColumnNames().getColumnName().size();i++){
             if(T.getColumnNames().getColumnName().get(i).isKey()){
                 if(found_key)
-                    throw new BeatsException("Exaclty one column in a table must be a key.");
+                    BeatsErrorLog.addError("No more than one key allowed in a table.");
                 else{
                     found_key = true;
                     key_index = i;
                 }
             }
         }
-
-		if(!found_key)
-			throw new BeatsException("Exaclty one column in a table must be a key.");
 		
 		// populate column_names, column_ids, column_is_key
 		column_names = new ArrayList<String>();
@@ -101,26 +98,26 @@ final public class Table {
 		return 	column_names.indexOf(cname);
 	}
 	
-	public String getColumnNameForId(Long id){
-		int index = column_ids.indexOf(id);
-		if(index<0)
-			return null;
-		return column_names.get(index);
-	}
-
-    public Row get_row_with_key(String key){
-        for(Row row : rows)
-            if(row.column_value[key_index].compareTo(key)==0)
-                return row;
-        return null;
-    }
-
-    public ArrayList<String> get_keys(){
-        ArrayList<String> keys = new ArrayList<String>();
-        for(Row row : rows)
-            keys.add(row.column_value[key_index]);
-        return keys;
-    }
+//	public String getColumnNameForId(Long id){
+//		int index = column_ids.indexOf(id);
+//		if(index<0)
+//			return null;
+//		return column_names.get(index);
+//	}
+//
+//    public Row get_row_with_key(String key){
+//        for(Row row : rows)
+//            if(row.column_value[key_index].compareTo(key)==0)
+//                return row;
+//        return null;
+//    }
+//
+//    public ArrayList<String> get_keys(){
+//        ArrayList<String> keys = new ArrayList<String>();
+//        for(Row row : rows)
+//            keys.add(row.column_value[key_index]);
+//        return keys;
+//    }
 
 	public class Row {
 		public String [] column_value;
@@ -130,7 +127,7 @@ final public class Table {
                 int index = column_ids.indexOf(col.getId());
                 if(index<0)
                     continue;
-                column_value[index] = col.getContent();
+                column_value[index] = col.getContent().trim();
             }
         }
         public String get_value_for_column_name(String colname){

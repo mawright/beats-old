@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.simulator.Scenario;
 
-public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
+public class Controller_SIG_Pretimed_Plan { //} extends Controller_SIG_Pretimed.Plan {
 	
 	protected Controller_SIG_Pretimed myController;
 	
@@ -46,7 +46,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 	// populate / validate / reset  / update
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void populate(Controller_SIG_Pretimed myController, Scenario myScenario, Controller_SIG_Pretimed.Plan plan) {
+//	protected void populate(Controller_SIG_Pretimed myController, Scenario myScenario, Controller_SIG_Pretimed.Plan plan) {
 		
 //		this.myController = myController;
 //		
@@ -79,7 +79,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 //			}
 //		}
 		
-	}
+//	}
 	
 	protected void validate(){
 		

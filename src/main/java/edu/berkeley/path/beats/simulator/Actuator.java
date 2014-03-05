@@ -39,16 +39,6 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	/////////////////////////////////////////////////////////////////////
 
     protected boolean register(){
-        switch(myType){
-            case ramp_meter:
-                return ((Link)implementor.target).register_flow_controller();
-            case vsl:
-                return ((Link)implementor.target).register_speed_controller();
-            case signal:
-                return false;
-            case cms:
-                return ((Node)implementor.target).register_split_controller();
-        }
         return false;
     }
 
@@ -72,4 +62,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
         return implementor;
     }
 
+    public Actuator.Type get_type(){
+        return myType;
+    }
 }

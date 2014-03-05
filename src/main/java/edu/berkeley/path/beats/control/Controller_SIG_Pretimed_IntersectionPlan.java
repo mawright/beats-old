@@ -61,7 +61,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	/////////////////////////////////////////////////////////////////////
  	
 	@SuppressWarnings("unchecked")
-	protected void populate(Scenario myScenario, Controller_SIG_Pretimed.Intersection intersection) {
+//	protected void populate(Scenario myScenario, Controller_SIG_Pretimed.Intersection intersection) {
 								
 //		if (null != intersection.getOffset())
 //			this.offset = intersection.getOffset().floatValue();
@@ -193,7 +193,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 //
 //		lastcommandtime = command.get(command.size()-1).time;
 
-	}
+//	}
 	
 	protected void validate(double controldt){
 		

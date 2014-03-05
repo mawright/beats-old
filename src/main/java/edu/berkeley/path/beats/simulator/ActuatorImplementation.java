@@ -9,7 +9,7 @@ import java.util.List;
 public abstract class ActuatorImplementation {
 
     protected Actuator myActuator;
-    protected Object target;      // Link or Node or HashMap<Link,phase>
+    protected Object target;      // Link or Node or HashMap<ActuatorSignal.NEMA,List<Link>>
 
     public Object get_target(){ return target; };
     

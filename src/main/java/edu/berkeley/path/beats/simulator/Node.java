@@ -261,7 +261,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         has_controller_split = false;
     }
 
-	protected boolean register_split_controller(){
+	public boolean register_split_controller(){
 		if(has_controller)		// used to detect multiple controllers
 			return false;
 		else{
