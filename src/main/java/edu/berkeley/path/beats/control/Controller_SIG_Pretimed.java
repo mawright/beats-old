@@ -304,15 +304,12 @@ public class Controller_SIG_Pretimed extends Controller {
 
         // data
         protected int intersection_id;
-        protected double offset;	// offset for the intersection
+        protected double offset;
         protected CircularList<Stage> stages;
 
         // command
-        protected CircularIterator command_ptr;
+        protected CircularIterator<ActuatorSignal.Command> command_ptr;
         protected CircularList<ActuatorSignal.Command> command_sequence;
-//        protected int curr_command_index;
-       // protected int nextcommand;
-        //protected double lastcommandtime;
 
         public IntersectionPlan(PretimedPlan my_plan,ActuatorSignal my_signal,int intersection_id,double offset){
             this.my_plan = my_plan;
@@ -323,21 +320,12 @@ public class Controller_SIG_Pretimed extends Controller {
         }
 
         protected void reset(){
-            command_ptr = (CircularIterator) command_sequence.iterator();
+            command_ptr = new CircularIterator(command_sequence);
         }
 
         public void add_stage(int movA,int movB,double green_time){
             stages.add(new Stage(movA,movB,green_time));
         }
-
-//        public Stage get_next_stage(Stage this_stage){
-//            return get_next_stage(stages.indexOf(this_stage));
-//        }
-//
-//        public Stage get_next_stage(int this_stage_index){
-//            int index = (this_stage_index+1) % stages.size();
-//            return stages.get(index);
-//        }
 
         public void compute_stage_info(){
 
@@ -356,7 +344,7 @@ public class Controller_SIG_Pretimed extends Controller {
                 if(pA==null && pB==null)
                     return;
 
-                Stage next_stage = get_next_stage(stage);
+                Stage next_stage = stages.get_next(stage);
                 ignore_A = pA==null || next_stage.has_movement(stage.movA);
                 ignore_B = pB==null || next_stage.has_movement(stage.movB);
 
@@ -425,32 +413,20 @@ public class Controller_SIG_Pretimed extends Controller {
 
             // sort the commands
             Collections.sort(command_sequence);
-
-            lastcommandtime = command_sequence.get(command_sequence.size()-1).time;
-
         }
 
         protected ArrayList<ActuatorSignal.Command> get_commands_for_time(double itime){
 
-            double reltime = itime - offset;
-            if(reltime<0)
-                reltime += my_plan.cycle;
+            double rel_time = itime - offset;
+            if(rel_time<0)
+                rel_time += my_plan.cycle;
 
-            if(reltime>lastcommandtime)
+            if(command_ptr.next().time < command_ptr.current().time)
                 return null;
 
-            double nexttime = ((ActuatorSignal.Command)command_ptr.next()).time;
-
             ArrayList<ActuatorSignal.Command> new_commands = new ArrayList<ActuatorSignal.Command>();
-            while(reltime>=nexttime){
-                new_commands.add(command_sequence.get(nextcommand));
-                nextcommand += 1;
-                if(nextcommand==command_sequence.size()){
-                    nextcommand = 0;
-                    break;
-                }
-                nexttime = command_sequence.get(nextcommand).time;
-            }
+            while(rel_time>=command_ptr.next().time)
+                new_commands.add(command_ptr.advance());
 
             return new_commands;
         }
@@ -480,10 +456,10 @@ public class Controller_SIG_Pretimed extends Controller {
         public T get(int index) {
             return super.get(index % this.size());
         }
-        @Override
-        public Iterator<T> iterator() {
-            return new CircularIterator(this);
-        }
+//        @Override
+//        public Iterator<T> iterator() {
+//            return new CircularIterator(this);
+//        }
         public T get_next(T x){
             int ind = this.indexOf(x);
             if(ind<0)
@@ -504,8 +480,9 @@ public class Controller_SIG_Pretimed extends Controller {
             return coll.size() > 0;
         }
 
-        public void advance(){
+        public T advance(){
             cur = (cur+1)%coll.size();
+            return coll.get(cur);
         }
         public T next(){        // NOTE: DOES NOT ADVANCE!!
             return coll.get((cur+1)%coll.size());
