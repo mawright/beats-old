@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.actuator.NEMA;
+import edu.berkeley.path.beats.control.SignalCommand;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -13,7 +14,6 @@ import org.junit.Test;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.actuator.ActuatorSignal.Command;
 import edu.berkeley.path.beats.actuator.SignalPhase;
 
 @Ignore("redo signals")
@@ -42,19 +42,19 @@ public class SignalTest {
 	@Test
 	public void test_getPhaseByNEMA() {
 		
-		assertNotNull(signal.getPhaseByNEMA(NEMA.ID._2));
-		assertNull(signal.getPhaseByNEMA(NEMA.ID.NULL));
+		assertNotNull(signal.get_phase_with_nema(NEMA.ID._2));
+		assertNull(signal.get_phase_with_nema(NEMA.ID.NULL));
 		
 		// edge case
-		assertNull(signal.getPhaseByNEMA(null));
+		assertNull(signal.get_phase_with_nema(null));
 	}
 
 	@Test
 	public void test_requestCommand() {
-		ArrayList<ActuatorSignal.Command> command = new ArrayList<ActuatorSignal.Command>();
+		ArrayList<SignalCommand> command = new ArrayList<SignalCommand>();
 		NEMA.ID nema = NEMA.ID._2;
-		SignalPhase phase = signal.getPhaseByNEMA(nema);
-		command.add( new Command(ActuatorSignal.CommandType.forceoff,nema,10f,20f,30f) );
+		SignalPhase phase = signal.get_phase_with_nema(nema);
+		command.add( new SignalCommand(SignalCommand.Type.forceoff,nema,10f,20f,30f) );
 		signal.set_command(command);
 		assertEquals(phase.getActualredcleartime(),30,1e-4);
 		assertEquals(phase.getActualyellowtime(),20,1e-4);

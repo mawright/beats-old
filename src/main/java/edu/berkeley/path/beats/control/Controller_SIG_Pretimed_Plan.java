@@ -40,7 +40,7 @@ public class Controller_SIG_Pretimed_Plan { //} extends Controller_SIG_Pretimed.
 	protected boolean [] havesignaltarget;	// true if this intersection is in the target list
 	protected double _cyclelength;	
 
-	ArrayList<ActuatorSignal.Command> commandlist = new ArrayList<ActuatorSignal.Command>();
+	ArrayList<SignalCommand> commandlist = new ArrayList<SignalCommand>();
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset  / update

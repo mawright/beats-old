@@ -113,7 +113,7 @@ final public class SignalPhase {
 	protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Phase jaxbPhase){
 
 		if(jaxbPhase.getNema()!=null)
-			myNEMA = NEMA.String2NEMA(jaxbPhase.getNema().toString());
+			myNEMA = NEMA.string_to_nema(jaxbPhase.getNema().toString());
 		else
 			myNEMA = NEMA.ID.NULL;
 
@@ -144,42 +144,42 @@ final public class SignalPhase {
 		// dual ring structure: opposingPhase, isthrough, myRingGroup
 		switch(myNEMA){
 		case _1:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._2);
+			opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._2);
 			isthrough = false;
 			myRingGroup = 0;
 			break;
 		case _2:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._1);
+			opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._1);
 			isthrough = true;
 			myRingGroup = 0;
 			break;
 		case _3:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._4);
+			opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._4);
 			isthrough = false;
 			myRingGroup = 1;
 			break;
 		case _4:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._3);
+			opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._3);
 			isthrough = true;
 			myRingGroup = 1;
 			break;
 		case _5:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._6);
+			opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._6);
 			isthrough = false;
 			myRingGroup = 0;
 			break;
 		case _6:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._5);
+			opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._5);
 			isthrough = true;
 			myRingGroup = 0;
 			break;
 		case _7:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._8);
+			opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._8);
 			isthrough = false;
 			myRingGroup = 1;
 			break;
 		case _8:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._7);
+			opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._7);
 			isthrough = true;
 			myRingGroup = 1;
 			break;

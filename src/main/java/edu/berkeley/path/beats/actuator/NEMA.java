@@ -11,7 +11,7 @@ public abstract class NEMA {
 
     public static enum ID {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
 
-    public static ID String2NEMA(String str){
+    public static ID string_to_nema(String str){
         if(str==null)
             return ID.NULL;
         if(str.isEmpty())
@@ -28,7 +28,7 @@ public abstract class NEMA {
         return nema;
     }
 
-    public static boolean isCompatible(SignalPhase pA,SignalPhase pB){
+    public static boolean is_compatible(SignalPhase pA, SignalPhase pB){
         ID nemaA = pA.getNEMA();
         ID nemaB = pB.getNEMA();
 

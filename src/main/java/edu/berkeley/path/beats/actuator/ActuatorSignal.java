@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.actuator;
 
+import edu.berkeley.path.beats.control.SignalCommand;
 import edu.berkeley.path.beats.jaxb.Phase;
 import edu.berkeley.path.beats.simulator.*;
 
@@ -37,7 +38,6 @@ import java.util.*;
 */
 public final class ActuatorSignal extends Actuator {
 
-    public static enum CommandType {hold,forceoff};
     public static enum BulbColor {GREEN,YELLOW,RED,DARK};
 //    public static enum NEMA {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
 
@@ -67,8 +67,8 @@ public final class ActuatorSignal extends Actuator {
     // actuation command
     /////////////////////////////////////////////////////////////////////
 
-    public void set_command(ArrayList<ActuatorSignal.Command> command){
-        for(ActuatorSignal.Command c : command){
+    public void set_command(ArrayList<SignalCommand> command){
+        for(SignalCommand c : command){
             SignalPhase p = nema2phase.get(c.nema);
             if(p==null)
                 continue;
@@ -182,7 +182,7 @@ public final class ActuatorSignal extends Actuator {
 		for(SignalPhase phaseA:phases){
             phaseA.setPermithold(true);
 			for(SignalPhase phaseB:phases)
-				if(!NEMA.isCompatible(phaseA, phaseB) && !phaseB.isPermitopposinghold() )
+				if(!NEMA.is_compatible(phaseA, phaseB) && !phaseB.isPermitopposinghold() )
                     phaseA.setPermithold(false);
 		}
 		
@@ -193,7 +193,7 @@ public final class ActuatorSignal extends Actuator {
 		for(SignalPhase phaseA:phases)
 			if(phaseA.isHold_requested())
 				for(SignalPhase phaseB:phases)
-					if( phaseB.isHold_requested() && !NEMA.isCompatible(phaseA, phaseB) ){
+					if( phaseB.isHold_requested() && !NEMA.is_compatible(phaseA, phaseB) ){
                         phaseA.setHold_requested(false);
                         phaseB.setHold_requested(false);
 					}
@@ -278,39 +278,11 @@ public final class ActuatorSignal extends Actuator {
         return success;
     }
 
-    /////////////////////////////////////////////////////////////////////
-	// protected
-	/////////////////////////////////////////////////////////////////////
-	
-//	protected boolean register(){
-//		if(myNode==null)
-//			return true;
-//		else
-//			return myPhaseController.register();
-//	}
-
-	protected SignalPhase getPhaseForNEMA(NEMA.ID nema){
-		for(SignalPhase p:phases){
-			if(p!=null)
-				if(p.getNEMA().compareTo(nema)==0)
-					return p;
-		}
-		return null;
-	}
-	
-//	protected SignalPhaseController getMyPhaseController() {
-//		return myPhaseController;
-//	}
-
-//	protected java.util.List<PhaseData> getCompletedPhases() {
-//		return completedPhases;
-//	}
-	
 	/////////////////////////////////////////////////////////////////////
 	// public methods
 	/////////////////////////////////////////////////////////////////////
 
-	public SignalPhase getPhaseByNEMA(NEMA.ID nema){
+	public SignalPhase get_phase_with_nema(NEMA.ID nema){
 		if(nema==null)
 			return null;
 		return nema2phase.get(nema);
@@ -319,106 +291,6 @@ public final class ActuatorSignal extends Actuator {
     public Long get_node_id(){
         return myNode==null ? null : myNode.getId();
     }
-
-	/////////////////////////////////////////////////////////////////////
-	// internal class
-	/////////////////////////////////////////////////////////////////////
-
-	@SuppressWarnings("rawtypes")
-	public static class Command implements Comparable {
-		public ActuatorSignal.CommandType type;
-		public NEMA.ID nema;
-		public Double time;
-		public Double yellowtime;
-		public Double redcleartime;
-
-		public Command(ActuatorSignal.CommandType type,NEMA.ID phase,double time){
-			this.type = type;
-			this.nema = phase;
-			this.time = time;
-			this.yellowtime = Double.NaN;
-			this.redcleartime = Double.NaN;
-		}
-		
-		public Command(ActuatorSignal.CommandType type,NEMA.ID phase,double time,double yellowtime,double redcleartime){
-			this.type = type;
-			this.nema = phase;
-			this.time = time;
-			this.yellowtime = yellowtime;
-			this.redcleartime = redcleartime;
-		}
-		
-		@Override
-		public int compareTo(Object arg0) {
-			
-			if(arg0==null)
-				return 1;
-			
-			int compare;
-			Command that = (Command) arg0;
-			
-			// first ordering by time stamp
-			Double thiststamp = this.time;
-			Double thattstamp = that.time;
-			compare = thiststamp.compareTo(thattstamp);
-			if(compare!=0)
-				return compare;
-
-			// second ordering by phases
-			NEMA.ID thistphase = this.nema;
-			NEMA.ID thattphase = that.nema;
-			compare = thistphase.compareTo(thattphase);
-			if(compare!=0)
-				return compare;
-			
-			// third ordering by type
-			CommandType thisttype = this.type;
-			CommandType thatttype = that.type;
-			compare = thisttype.compareTo(thatttype);
-			if(compare!=0)
-				return compare;
-
-			// fourth ordering by yellowtime
-			Double thistyellowtime = this.yellowtime;
-			Double thattyellowtime = that.yellowtime;
-			compare = thistyellowtime.compareTo(thattyellowtime);
-			if(compare!=0)
-				return compare;
-
-			// fifth ordering by redcleartime
-			Double thistredcleartime = this.redcleartime;
-			Double thattredcleartime = that.redcleartime;
-			compare = thistredcleartime.compareTo(thattredcleartime);
-			if(compare!=0)
-				return compare;
-			
-			return 0;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if(obj==null)
-				return false;
-			else
-				return this.compareTo((Command) obj)==0;
-		}
-
-        @Override
-        public String toString() {
-            return time + ": " + type.toString() + " " + nema + " (y=" + yellowtime + ",r=" + redcleartime + ")";
-        }
-    }
-
-	public class PhaseData{
-		public NEMA.ID nema;
-		public double starttime;
-		public double greentime;
-		public PhaseData(NEMA.ID nema, double starttime, double greentime){
-			this.nema = nema;
-			this.starttime = starttime;
-			this.greentime = greentime;
-		}
-	}
 
 }
 

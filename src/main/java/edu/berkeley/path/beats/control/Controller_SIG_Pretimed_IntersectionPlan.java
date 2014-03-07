@@ -84,8 +84,8 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 //			else
 //				greentime[i] = Double.NaN;
 //
-//			movA[i] = ActuatorSignal.String2NEMA(stage.getMovA());
-//			movB[i] = ActuatorSignal.String2NEMA(stage.getMovB());
+//			movA[i] = ActuatorSignal.string_to_nema(stage.getMovA());
+//			movB[i] = ActuatorSignal.string_to_nema(stage.getMovB());
 //		}
 //
 //		signal = myScenario.getSignalWithNodeId(intersection.getNodeId());
@@ -258,7 +258,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
         return true;
 	}
 	
-	protected void getCommandForTime(double itime,ArrayList<ActuatorSignal.Command> commandlist){
+	protected void getCommandForTime(double itime,ArrayList<SignalCommand> commandlist){
 		
 //		double reltime = itime - offset;
 //		if(reltime<0)

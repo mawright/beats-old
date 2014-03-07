@@ -244,9 +244,9 @@ public class Controller_SIG_Pretimed extends Controller {
             for (IntersectionPlan int_plan : intersection_plans.values()) {
 
                 // get commands for this intersection
-                ArrayList<ActuatorSignal.Command> int_commands = int_plan.get_commands_for_time(mod_time);
+                ArrayList<SignalCommand> int_commands = int_plan.get_commands_for_time(mod_time);
 
-                for(ActuatorSignal.Command c : int_commands)
+                for(SignalCommand c : int_commands)
                     System.out.println(c);
 
 
@@ -312,8 +312,8 @@ public class Controller_SIG_Pretimed extends Controller {
         protected CircularList<Stage> stages;
 
         // command
-        protected CircularIterator<ActuatorSignal.Command> command_ptr;
-        protected CircularList<ActuatorSignal.Command> command_sequence;
+        protected CircularIterator<SignalCommand> command_ptr;
+        protected CircularList<SignalCommand> command_sequence;
 
         public IntersectionPlan(PretimedPlan my_plan,ActuatorSignal my_signal,int intersection_id,double offset){
             this.my_plan = my_plan;
@@ -351,8 +351,8 @@ public class Controller_SIG_Pretimed extends Controller {
 
             for(Stage stage : stages){
 
-                SignalPhase pA = my_signal.getPhaseByNEMA(stage.movA);
-                SignalPhase pB = my_signal.getPhaseByNEMA(stage.movB);
+                SignalPhase pA = my_signal.get_phase_with_nema(stage.movA);
+                SignalPhase pB = my_signal.get_phase_with_nema(stage.movB);
 
                 if(pA==null && pB==null)
                     return;
@@ -381,7 +381,7 @@ public class Controller_SIG_Pretimed extends Controller {
 
         public void generate_command_sequence(){
 
-            command_sequence = new CircularList<ActuatorSignal.Command>();
+            command_sequence = new CircularList<SignalCommand>();
 
             for(Stage stage : stages){
 
@@ -390,35 +390,35 @@ public class Controller_SIG_Pretimed extends Controller {
 
                 // holds
                 if(have_movA)
-                    command_sequence.add(new ActuatorSignal.Command(ActuatorSignal.CommandType.hold,
-                                                                    stage.movA,
-                                                                    stage.start_hold_time));
+                    command_sequence.add(new SignalCommand(SignalCommand.Type.hold,
+                                                           stage.movA,
+                                                           stage.start_hold_time));
 
                 if(have_movB)
-                    command_sequence.add(new ActuatorSignal.Command(ActuatorSignal.CommandType.hold,
-                                                                    stage.movB,
-                                                                    stage.start_hold_time));
+                    command_sequence.add(new SignalCommand(SignalCommand.Type.hold,
+                                                           stage.movB,
+                                                           stage.start_hold_time));
 
                 // force-off
                 Stage next_stage = stages.get_next(stage);
 
                 if(have_movA && !next_stage.has_movement(stage.movA))
-                    command_sequence.add(new ActuatorSignal.Command(ActuatorSignal.CommandType.forceoff,
-                                                                    stage.movA,
-                                                                    stage.start_forceoff_time,
-                                                                    stage.yellow_time,
-                                                                    stage.red_time));
+                    command_sequence.add(new SignalCommand(SignalCommand.Type.forceoff,
+                                                           stage.movA,
+                                                           stage.start_forceoff_time,
+                                                           stage.yellow_time,
+                                                           stage.red_time));
 
                 if(have_movB && !next_stage.has_movement(stage.movB))
-                    command_sequence.add(new ActuatorSignal.Command(ActuatorSignal.CommandType.forceoff,
-                                                                    stage.movB,
-                                                                    stage.start_forceoff_time,
-                                                                    stage.yellow_time,
-                                                                    stage.red_time));
+                    command_sequence.add(new SignalCommand(SignalCommand.Type.forceoff,
+                                                           stage.movB,
+                                                           stage.start_forceoff_time,
+                                                           stage.yellow_time,
+                                                           stage.red_time));
             }
 
             // Correction: offset is with respect to end of first stage, instead of beginning
-            for(ActuatorSignal.Command c : command_sequence){
+            for(SignalCommand c : command_sequence){
                 c.time -= stages.get(0).green_time;
                 if(c.time<0)
                     c.time += my_plan.cycle;
@@ -428,13 +428,13 @@ public class Controller_SIG_Pretimed extends Controller {
             Collections.sort(command_sequence);
         }
 
-        protected ArrayList<ActuatorSignal.Command> get_commands_for_time(double mod_time){
+        protected ArrayList<SignalCommand> get_commands_for_time(double mod_time){
             if(command_ptr.next().time < command_ptr.current().time)
                 return null;
             double rel_time = mod_time - offset;
             if(rel_time<0)
                 rel_time += my_plan.cycle;
-            ArrayList<ActuatorSignal.Command> new_commands = new ArrayList<ActuatorSignal.Command>();
+            ArrayList<SignalCommand> new_commands = new ArrayList<SignalCommand>();
             while(rel_time>=command_ptr.next().time)
                 new_commands.add(command_ptr.advance());
             return new_commands;
