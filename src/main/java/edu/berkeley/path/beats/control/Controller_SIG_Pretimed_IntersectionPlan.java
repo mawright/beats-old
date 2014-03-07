@@ -24,16 +24,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.control;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import edu.berkeley.path.beats.actuator.ActuatorSignal;
-import edu.berkeley.path.beats.actuator.SignalPhase;
-import edu.berkeley.path.beats.simulator.Scenario;
-
-public class Controller_SIG_Pretimed_IntersectionPlan {
+//package edu.berkeley.path.beats.control;
+//
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//import edu.berkeley.path.beats.actuator.ActuatorSignal;
+//import edu.berkeley.path.beats.actuator.SignalPhase;
+//import edu.berkeley.path.beats.simulator.Scenario;
+//
+//public class Controller_SIG_Pretimed_IntersectionPlan {
 
     // up references
 //    protected Controller_SIG_Pretimed_Plan plan;
@@ -60,7 +60,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	// populate / validate / reset  / update
 	/////////////////////////////////////////////////////////////////////
  	
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 //	protected void populate(Scenario myScenario, Controller_SIG_Pretimed.Intersection intersection) {
 								
 //		if (null != intersection.getOffset())
@@ -194,9 +194,9 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 //		lastcommandtime = command.get(command.size()-1).time;
 
 //	}
-	
-	protected void validate(double controldt){
-		
+//
+//	protected void validate(double controldt){
+//
 //		// at least two stages
 //		if(numstages<=1)
 //			BeatsErrorLog.addError("ActuatorSignal ID=" + signal.getId() + " has less than two stages.");
@@ -232,18 +232,18 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 //		// first two commands have zero timestamp
 //		if(command.get(0).time!=0.0)
 //			BeatsErrorLog.addError("Initial stages for pretimed plan of signal ID=" + signal.getId() + " must have time stamp equal zero.");
-	}
+//	}
 
 //	protected void reset(){
 //		nextcommand = 0;
 //	}
-
-	/////////////////////////////////////////////////////////////////////
-	// protected methods
-	/////////////////////////////////////////////////////////////////////
-	
-	protected boolean InNextStage(SignalPhase thisphase,int stageindex)
-	{
+//
+//	/////////////////////////////////////////////////////////////////////
+//	// protected methods
+//	/////////////////////////////////////////////////////////////////////
+//
+//	protected boolean InNextStage(SignalPhase thisphase,int stageindex)
+//	{
 //		int nextstage;
 //
 //		if(stageindex<0 || stageindex>=numstages || thisphase==null)
@@ -255,11 +255,11 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 //			nextstage=0;
 //
 //		return thisphase.getNEMA().compareTo(movA[nextstage])==0 || thisphase.getNEMA().compareTo(movB[nextstage])==0;
-        return true;
-	}
-	
-	protected void getCommandForTime(double itime,ArrayList<SignalCommand> commandlist){
-		
+//        return true;
+//	}
+//
+//	protected void getCommandForTime(double itime,ArrayList<SignalCommand> commandlist){
+//
 //		double reltime = itime - offset;
 //		if(reltime<0)
 //			reltime += plan._cyclelength;
@@ -280,7 +280,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 //				nexttime = command.get(nextcommand).time;
 //			}
 //		}
-
-	}
-	
-}
+//
+//	}
+//
+//}

@@ -293,9 +293,6 @@ public class Controller_SIG_Pretimed extends Controller {
 //                }
             }
 
-
-
-
         }
 
     }
@@ -334,6 +331,12 @@ public class Controller_SIG_Pretimed extends Controller {
                 BeatsErrorLog.addError("offset cannot exceed the cycle length.");
             for(Stage stage : stages)
                 stage.validate();
+            // check that total stage length equals cycle
+            double total_length = 0d;
+            for(Stage stage : stages)
+                total_length += stage.get_length();
+            if(!BeatsMath.equals(total_length,my_plan.cycle))
+                BeatsErrorLog.addError("Total length of stages must equal cycle.");
         }
 
         public void add_stage(int movA,int movB,double green_time){
@@ -458,11 +461,17 @@ public class Controller_SIG_Pretimed extends Controller {
         protected void validate(){
             if(green_time<0 || yellow_time<0 || red_time<0)
                 BeatsErrorLog.addError("green, yellow, and red clear times must be non-negative.");
-
-
+            if(NEMA.isNULL(movA) && NEMA.isNULL(movB))
+                BeatsErrorLog.addError("A stage must have at least one valid movement.");
+            else
+                if(!NEMA.is_compatible(movA,movB))
+                    BeatsErrorLog.addError("Stage movements are incompatible.");
         }
         public boolean has_movement(NEMA.ID m){
             return m.compareTo(movA)==0 || m.compareTo(movB)==0;
+        }
+        public double get_length(){
+            return green_time+yellow_time+red_time;
         }
     }
 
