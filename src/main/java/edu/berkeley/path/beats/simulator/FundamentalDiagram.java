@@ -396,7 +396,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 			return;
 				
 		if(_vf<0 || _w<0 || _densityJam<0 || _capacity<0 || _capacityDrop<0)
-			BeatsErrorLog.addError("Negative fundamental diagram parameters for link id=" + myLink.getId());
+			BeatsErrorLog.addError("Negative fundamental diagram parameters for link ID=" + myLink.getId());
 
         double dens_critical = _capacity / _vf;
         double dens_crit_congestion = _densityJam-_capacity/_w;	// [veh]

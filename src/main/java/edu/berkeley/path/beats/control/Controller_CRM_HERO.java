@@ -283,43 +283,43 @@ public class Controller_CRM_HERO extends Controller {
 
 		// must have exactly one targetDensity
 		if(getNumActuators()!=1)
-			BeatsErrorLog.addError("Numnber of targets for HERO controller id=" + getId()+ " does not equal one.");
+			BeatsErrorLog.addError("Numnber of targets for HERO controller ID=" + getId()+ " does not equal one.");
 
-		// bad mainline sensor id
+		// bad mainline sensor ID
 		if(hasMainlineSensor && mainlineSensor==null)
-			BeatsErrorLog.addError("Bad mainline sensor id in HERO controller id=" + getId()+".");
+			BeatsErrorLog.addError("Bad mainline sensor ID in HERO controller ID=" + getId()+".");
 
-		// bad queue sensor id
+		// bad queue sensor ID
 		if(hasQueueSensor && queueSensor==null)
-			BeatsErrorLog.addError("Bad queue sensor id in HERO controller id=" + getId()+".");
+			BeatsErrorLog.addError("Bad queue sensor ID in HERO controller ID=" + getId()+".");
 		
 		// Mainline sensor is disconnected
 		if(mainlineSensor.getMyLink()==null)
-			BeatsErrorLog.addError("Mainline sensor is not connected to a link in HERO controller id=" + getId()+ " ");
+			BeatsErrorLog.addError("Mainline sensor is not connected to a link in HERO controller ID=" + getId()+ " ");
 		
 		// Queue sensor is disconnected
 		if(queueSensor!=null && queueSensor.getMyLink()==null)
-				BeatsErrorLog.addError("Queue sensor in HERO controller id=" + getId()+ " is not connected to a link");
+				BeatsErrorLog.addError("Queue sensor in HERO controller ID=" + getId()+ " is not connected to a link");
 
 		// no feedback
 		if(mainlineLink==null)
-			BeatsErrorLog.addError("Invalid mainline link for HERO controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid mainline link for HERO controller ID=" + getId()+ ".");
 		
-		// Target link id not found, or number of targets not 1.
+		// Target link ID not found, or number of targets not 1.
 		if(onrampLink==null)
-			BeatsErrorLog.addError("Invalid onramp link for HERO controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid onramp link for HERO controller ID=" + getId()+ ".");
 		
 		// No queue sensor
 		if(queueSensor==null)
-			BeatsErrorLog.addError("Invalid/Unavailable queue sensor for HERO controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid/Unavailable queue sensor for HERO controller ID=" + getId()+ ".");
 		
-		// queueSensor link_reference is not the same as onrampLink id
+		// queueSensor link_reference is not the same as onrampLink ID
 		if(queueSensor!=null && (queueSensor.getMyLink().getId()!=onrampLink.getId() || !queueSensor.getMyLink().isOnramp() ))
-			BeatsErrorLog.addError("Queue sensor is not connected to the onramp link of HERO controller id=" + getId()+ " ");		
+			BeatsErrorLog.addError("Queue sensor is not connected to the onramp link of HERO controller ID=" + getId()+ " ");
 				
 		// negative gain
 		if(mainlineLink!=null && alineaGainNormalized<=0f)
-			BeatsErrorLog.addError("Non-positive gainAlinea for HERO controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Non-positive gainAlinea for HERO controller ID=" + getId()+ ".");
 		
 		//Controller Ids not unique
 		Set<Long> s = new HashSet<Long>(controllersOrdered);  
@@ -329,12 +329,12 @@ public class Controller_CRM_HERO extends Controller {
 		//negative inputs
 		if(minFlow<0f || maxFlow<0f || queueControllerGainNormalized<0f || queueMinControllerGainNormalized<0f 
 				|| alineaGainNormalized<0f || queueMax<0f ||targetVehicles<0f){
-			BeatsErrorLog.addError("Negative input value(s) for HERO controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Negative input value(s) for HERO controller ID=" + getId()+ ".");
 		}
 		
 		//Thresholds smaller or equal to zero
 		if(actThresholdQ<=0f || deactThresholdQ<=0f || actThresholdM<=0f || deactThresholdM <=0f ) {
-			BeatsErrorLog.addError("Negative threshold value(s) for HERO controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Negative threshold value(s) for HERO controller ID=" + getId()+ ".");
 		}
 		
 	}
@@ -605,7 +605,7 @@ public class Controller_CRM_HERO extends Controller {
     	
     	if (printMessages)
     		System.out.println("time step "+timeStep+ ": " + controllerList.get(i).typePrevious + " Conroller "+i+
-				" (id=" + controllerList.get(i).getId() +") was set to " +controllerList.get(i).type);
+				" (ID=" + controllerList.get(i).getId() +") was set to " +controllerList.get(i).type);
 	}
     
     protected void printSensorCumulativeInflowAndOutflow(Integer controllerIndex){

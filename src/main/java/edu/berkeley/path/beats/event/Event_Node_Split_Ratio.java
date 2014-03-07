@@ -139,24 +139,24 @@ public class Event_Node_Split_Ratio extends Event {
 //		super.validate();
 //		
 //		if(getTargets().size()!=1)
-//			BeatsErrorLog.addError("Multiple targets assigned to split ratio event id="+this.getId()+".");
+//			BeatsErrorLog.addError("Multiple targets assigned to split ratio event ID="+this.getId()+".");
 //		
 //		// check each target is valid
 //		if(getTargets().get(0).getMyType().compareTo(ScenarioElement.Type.node)!=0)
-//			BeatsErrorLog.addError("Wrong target type for event id="+getId()+".");
+//			BeatsErrorLog.addError("Wrong target type for event ID="+getId()+".");
 //		
 //		if(myNode==null)
-//			BeatsErrorLog.addWarning("Invalid node id for event id="+getId()+".");
+//			BeatsErrorLog.addWarning("Invalid node ID for event ID="+getId()+".");
 //		
 //		// check split ratio matrix
 //		if(!resetToNominal){
 //			for (SplitRatio sr : splitratios) {
 //				if (sr.getInputIndex() < 0 || sr.getInputIndex() >= myNode.getnIn())
-//					BeatsErrorLog.addWarning("Invalid input link index for event id="+getId()+".");
+//					BeatsErrorLog.addWarning("Invalid input link index for event ID="+getId()+".");
 //				if (sr.getOutputIndex() < 0 || sr.getOutputIndex() >= myNode.getnOut())
-//					BeatsErrorLog.addWarning("Invalid output link index for event id="+getId()+".");
+//					BeatsErrorLog.addWarning("Invalid output link index for event ID="+getId()+".");
 //				if (sr.getVehicleTypeIndex() < 0 || sr.getVehicleTypeIndex() >= getMyScenario().getNumVehicleTypes())
-//					BeatsErrorLog.addWarning("Invalid vehicle type index for event id="+getId()+".");
+//					BeatsErrorLog.addWarning("Invalid vehicle type index for event ID="+getId()+".");
 //			}
 //		}
 	}

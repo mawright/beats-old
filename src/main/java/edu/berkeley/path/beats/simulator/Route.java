@@ -35,7 +35,7 @@ public class Route extends edu.berkeley.path.beats.jaxb.Route {
         // check link ids
         for(Link link : ordered_links)
             if(link==null)
-                BeatsErrorLog.addError("Incorrect link id or missing order index in route " + getId());
+                BeatsErrorLog.addError("Incorrect link ID or missing order index in route " + getId());
 
         // check order
         for(int i=0;i<ordered_links.size()-1;i++){

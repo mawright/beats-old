@@ -150,7 +150,7 @@
   </group>
 <!--
   <group table="link_speed_limit" element="">
-    <match column="id" child=""/>
+    <match column="ID" child=""/>
     <match column="network_id" child=""/>
     <match column="speed_limit" child=""/>
   </group>
@@ -279,7 +279,7 @@
   </group>
 	<!--
   <group table="fund_diag_types" element="">
-    <match column="id" child=""/>
+    <match column="ID" child=""/>
     <match column="description" child=""/>
   </group>
 	-->

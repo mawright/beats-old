@@ -73,13 +73,13 @@ public class ActuatorRampMeter extends Actuator {
 	@Override
 	protected void validate() {
 		if(myLink==null)
-			BeatsErrorLog.addError("Bad link id in ramp metering actuator id="+getId());
+			BeatsErrorLog.addError("Bad link ID in ramp metering actuator ID="+getId());
 		if(max_rate_in_veh<0)
-			BeatsErrorLog.addError("Negative max rate in ramp metering actuator id="+getId());
+			BeatsErrorLog.addError("Negative max rate in ramp metering actuator ID="+getId());
 		if(min_rate_in_veh<0)
-			BeatsErrorLog.addError("Negative min rate in ramp metering actuator id="+getId());
+			BeatsErrorLog.addError("Negative min rate in ramp metering actuator ID="+getId());
 		if(max_rate_in_veh<min_rate_in_veh)
-			BeatsErrorLog.addError("max rate less than min rate in actuator id="+getId());
+			BeatsErrorLog.addError("max rate less than min rate in actuator ID="+getId());
 	}
 
 	@Override

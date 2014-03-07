@@ -1551,7 +1551,7 @@
 		</foreign-key>
 <!--
 		<foreign-key foreignTable="dest_networks">
-			<reference local="dest_network_id" foreign="id"/>
+			<reference local="dest_network_id" foreign="ID"/>
 		</foreign-key>
 -->
 		<foreign-key foreignTable="veh_types">

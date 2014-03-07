@@ -88,8 +88,8 @@ public class OutputWriterDB extends OutputWriterBase {
 //	private AggregationTypes db_aggregation_type_raw = null;
 //	private QuantityTypes db_quantity_type_mean = null;
 //
-//	private Long str2id(String id) {
-//		return Long.parseLong(id, 10);
+//	private Long str2id(String ID) {
+//		return Long.parseLong(ID, 10);
 //	}
 //
 //	boolean success = false;

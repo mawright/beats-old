@@ -2,6 +2,7 @@ package edu.berkeley.path.beats.test.simulator;
 
 import static org.junit.Assert.*;
 
+import edu.berkeley.path.beats.actuator.NEMA;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -9,7 +10,6 @@ import org.junit.Test;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.actuator.ActuatorSignal.NEMA;
 import edu.berkeley.path.beats.actuator.SignalPhase;
 
 @Ignore("redo signals")
@@ -51,7 +51,7 @@ public class SignalPhaseTest {
 
 	@Test
 	public void test_getMyNEMA() {
-		assertEquals(signalphase.getNEMA().compareTo(NEMA._2),0);
+		assertEquals(signalphase.getNEMA().compareTo(NEMA.ID._2),0);
 	}
 
 	@Test

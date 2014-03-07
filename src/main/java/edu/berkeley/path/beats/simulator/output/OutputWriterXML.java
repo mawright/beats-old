@@ -128,14 +128,14 @@ public final class OutputWriterXML extends OutputWriterBase {
 			xmlsw.writeStartElement("netl");
 			for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()) {
 				xmlsw.writeStartElement("net");
-				xmlsw.writeAttribute("id", Long.toString(network.getId()) );
+				xmlsw.writeAttribute("ID", Long.toString(network.getId()) );
 				// dt = time interval of reporting, sec
 				xmlsw.writeAttribute("dt", dt);
 				// link list
 				xmlsw.writeStartElement("ll");
 				for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
 					xmlsw.writeStartElement("l");
-					xmlsw.writeAttribute("id", Long.toString(link.getId()) );
+					xmlsw.writeAttribute("ID", Long.toString(link.getId()) );
 					Link _link = (Link) link;
 					LinkCumulativeData link_cum_data = getCumulatives(link);
 					// d = average number of vehicles during the interval of reporting dt
@@ -180,7 +180,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 				xmlsw.writeStartElement("nl");
 				for (edu.berkeley.path.beats.jaxb.Node node : network.getNodeList().getNode()) {
 					xmlsw.writeStartElement("n");
-					xmlsw.writeAttribute("id", Long.toString(node.getId()));
+					xmlsw.writeAttribute("ID", Long.toString(node.getId()));
 					Node _node = (Node) node;
 					for (int ili = 0; ili < _node.getnIn(); ++ili)
 						for (int oli = 0; oli < _node.getnOut(); ++oli) {
@@ -202,7 +202,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 //					xmlsw.writeStartElement("sigl");
 //					for (edu.berkeley.path.beats.jaxb.Signal signal : sigl) {
 //						xmlsw.writeStartElement("sig");
-//						xmlsw.writeAttribute("id", Long.toString(signal.getId()));
+//						xmlsw.writeAttribute("ID", Long.toString(signal.getId()));
 //						List<ActuatorSignal.PhaseData> phdata = getCompletedPhases(signal).getPhaseList();
 //						for (ActuatorSignal.PhaseData ph : phdata) {
 //							xmlsw.writeStartElement("ph");

@@ -26,7 +26,6 @@
 
 package edu.berkeley.path.beats.actuator;
 
-import edu.berkeley.path.beats.actuator.ActuatorSignal.NEMA;
 import edu.berkeley.path.beats.simulator.*;
 
 /**
@@ -48,7 +47,7 @@ final public class SignalPhase {
 	// dual ring structure
     protected int myRingGroup = -1;
     protected SignalPhase opposingPhase;
-    protected ActuatorSignal.NEMA myNEMA = ActuatorSignal.NEMA.NULL;
+    protected NEMA.ID myNEMA = NEMA.ID.NULL;
 
 	// Basic timing parameters
     protected double mingreen;
@@ -114,9 +113,9 @@ final public class SignalPhase {
 	protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Phase jaxbPhase){
 
 		if(jaxbPhase.getNema()!=null)
-			myNEMA = ActuatorSignal.String2NEMA(jaxbPhase.getNema().toString());
+			myNEMA = NEMA.String2NEMA(jaxbPhase.getNema().toString());
 		else
-			myNEMA = ActuatorSignal.NEMA.NULL;
+			myNEMA = NEMA.ID.NULL;
 
 		if(!Double.isNaN(jaxbPhase.getMinGreenTime()))
 			this.mingreen = jaxbPhase.getMinGreenTime();
@@ -145,42 +144,42 @@ final public class SignalPhase {
 		// dual ring structure: opposingPhase, isthrough, myRingGroup
 		switch(myNEMA){
 		case _1:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA._2);
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._2);
 			isthrough = false;
 			myRingGroup = 0;
 			break;
 		case _2:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA._1);
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._1);
 			isthrough = true;
 			myRingGroup = 0;
 			break;
 		case _3:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA._4);
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._4);
 			isthrough = false;
 			myRingGroup = 1;
 			break;
 		case _4:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA._3);
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._3);
 			isthrough = true;
 			myRingGroup = 1;
 			break;
 		case _5:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA._6);
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._6);
 			isthrough = false;
 			myRingGroup = 0;
 			break;
 		case _6:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA._5);
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._5);
 			isthrough = true;
 			myRingGroup = 0;
 			break;
 		case _7:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA._8);
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._8);
 			isthrough = false;
 			myRingGroup = 1;
 			break;
 		case _8:
-			opposingPhase = mySignal.getPhaseForNEMA(NEMA._7);
+			opposingPhase = mySignal.getPhaseForNEMA(NEMA.ID._7);
 			isthrough = true;
 			myRingGroup = 1;
 			break;
@@ -208,27 +207,27 @@ final public class SignalPhase {
 
 //		// check that there are links attached
 //		if(targetlinks==null || targetlinks.length==0)
-//			BeatsErrorLog.addError("No valid target link for phase NEMA=" + getNEMA() + " in signal id=" + signal.getId());
+//			BeatsErrorLog.addError("No valid target link for phase NEMA=" + getNEMA() + " in signal ID=" + signal.getId());
 //
 //		// target links are valid
 //		if(targetlinks!=null)
 //			for(int i=0;i<targetlinks.length;i++)
 //				if(targetlinks[i]==null)
-//					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getNEMA() + " in signal id=" + signal.getId());
+//					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getNEMA() + " in signal ID=" + signal.getId());
 
 		// myNEMA is valid
-		if(myNEMA.compareTo(ActuatorSignal.NEMA.NULL)==0)
-			BeatsErrorLog.addError("Invalid NEMA code in phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
+		if(myNEMA.compareTo(NEMA.ID.NULL)==0)
+			BeatsErrorLog.addError("Invalid NEMA code in phase NEMA=" + getNEMA() + " in signal ID=" + mySignal.getId());
 
 		// numbers are positive
 		if( mingreen<0 )
-			BeatsErrorLog.addError("Negative mingreen=" + mingreen + " in signal id=" + mySignal.getId());
+			BeatsErrorLog.addError("Negative mingreen=" + mingreen + " in signal ID=" + mySignal.getId());
 
 		if( yellowtime<0 )
-			BeatsErrorLog.addError("Negative yellowtime=" + yellowtime + " in signal id=" + mySignal.getId());
+			BeatsErrorLog.addError("Negative yellowtime=" + yellowtime + " in signal ID=" + mySignal.getId());
 
 		if( redcleartime<0 )
-			BeatsErrorLog.addError("Negative redcleartime=" + redcleartime + " in signal id=" + mySignal.getId());
+			BeatsErrorLog.addError("Negative redcleartime=" + redcleartime + " in signal ID=" + mySignal.getId());
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -432,7 +431,7 @@ final public class SignalPhase {
 		return mingreen;
 	}
 
-	public ActuatorSignal.NEMA getNEMA() {
+	public NEMA.ID getNEMA() {
 		return myNEMA;
 	}
 

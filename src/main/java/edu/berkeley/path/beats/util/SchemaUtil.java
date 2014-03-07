@@ -120,12 +120,12 @@ public class SchemaUtil {
 
 //	/**
 //	 * Restores a scenario from the database
-//	 * @param id the scenario id
+//	 * @param ID the scenario ID
 //	 * @return the restored scenario
 //	 * @throws BeatsException
 //	 */
-//	public static edu.berkeley.path.beats.simulator.Scenario getScenario(long id) throws BeatsException {
-//		return ScenarioLoader.load(id);
+//	public static edu.berkeley.path.beats.simulator.Scenario getScenario(long ID) throws BeatsException {
+//		return ScenarioLoader.load(ID);
 //	}
 
 //	/**
@@ -143,14 +143,14 @@ public class SchemaUtil {
 //
 //	/**
 //	 * runs a scenario simulation once
-//	 * @param id the scenario id
+//	 * @param ID the scenario ID
 //	 * @param startTime simulation start time, sec
 //	 * @param endTime simulation end time, sec
 //	 * @param outDt output frequency
 //	 * @throws BeatsException
 //	 */
-//	public static void runScenario(long id, double startTime, double endTime, double outDt) throws BeatsException {
-//		runScenario(getScenario(id), startTime, endTime, outDt);
+//	public static void runScenario(long ID, double startTime, double endTime, double outDt) throws BeatsException {
+//		runScenario(getScenario(ID), startTime, endTime, outDt);
 //	}
 
 }

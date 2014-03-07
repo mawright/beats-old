@@ -342,7 +342,7 @@ public class UnitConverter {
 		if (null == table) 
 			return;
 		
-		// column id/name map
+		// column ID/name map
 		HashMap<Long,String> column_id_to_name = new HashMap<Long,String>();
 		for(ColumnName cn : table.getColumnNames().getColumnName())
 			column_id_to_name.put(cn.getId(), cn.getName());

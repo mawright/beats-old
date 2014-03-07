@@ -31,7 +31,7 @@ package edu.berkeley.path.beats.control;
 //
 //        // read target actuator
 //
-//        // hack: assume actuator id = signal id
+//        // hack: assume actuator ID = signal ID
 //        long act_id = jaxbController.getTargetActuators().getTargetActuator().get(0).getId();
 //        signal = myScenario.getSignalWithId(act_id);
 //

@@ -290,7 +290,7 @@
 
 				<executions>
 					<execution>
-						<id>default-testCompile</id>
+						<ID>default-testCompile</ID>
 						<phase>test-compile</phase>
 						<configuration>
 							<testExcludes>

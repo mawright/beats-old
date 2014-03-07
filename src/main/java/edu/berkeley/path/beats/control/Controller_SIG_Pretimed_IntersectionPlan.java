@@ -36,25 +36,25 @@ import edu.berkeley.path.beats.simulator.Scenario;
 public class Controller_SIG_Pretimed_IntersectionPlan {
 
     // up references
-    protected Controller_SIG_Pretimed_Plan plan;
-    protected ActuatorSignal signal;
-
-    // data
-    protected float offset;	// offset for the intersection
-    protected List<Controller_SIG_Stage> stages;
-
-    // command
-	protected ArrayList<ActuatorSignal.Command> command = new ArrayList<ActuatorSignal.Command>();
-    protected int nextcommand;
-    protected double lastcommandtime;
+//    protected Controller_SIG_Pretimed_Plan plan;
+//    protected ActuatorSignal signal;
+//
+//    // data
+//    protected float offset;	// offset for the intersection
+//    protected List<Controller_SIG_Stage> stages;
+//
+//    // command
+//	protected ArrayList<ActuatorSignal.Command> command = new ArrayList<ActuatorSignal.Command>();
+//    protected int nextcommand;
+//    protected double lastcommandtime;
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 	
- 	public Controller_SIG_Pretimed_IntersectionPlan(Controller_SIG_Pretimed_Plan myPlan){
-		this.plan = myPlan;
-	}
+// 	public Controller_SIG_Pretimed_IntersectionPlan(Controller_SIG_Pretimed_Plan myPlan){
+//		this.plan = myPlan;
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset  / update
@@ -199,27 +199,27 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		
 //		// at least two stages
 //		if(numstages<=1)
-//			BeatsErrorLog.addError("ActuatorSignal id=" + signal.getId() + " has less than two stages.");
+//			BeatsErrorLog.addError("ActuatorSignal ID=" + signal.getId() + " has less than two stages.");
 //
 //		// check offset
 //		if(offset<0 || offset>=plan._cyclelength)
-//			BeatsErrorLog.addError("Offset for signal id=" + signal.getId() + " is not between zero and the cycle length.");
+//			BeatsErrorLog.addError("Offset for signal ID=" + signal.getId() + " is not between zero and the cycle length.");
 //
 //		//  greentime, movA, movB
 //		for(int k=0;k<numstages;k++){
 //			if(Double.isNaN(greentime[k]) || greentime[k]<=0)
-//				BeatsErrorLog.addError("Invalid green time in stage for signal id=" + signal.getId());
+//				BeatsErrorLog.addError("Invalid green time in stage for signal ID=" + signal.getId());
 //			if(movA[k]==null && movB[k]==null)
-//				BeatsErrorLog.addError("Invalid phase in stage for signal id=" + signal.getId());
+//				BeatsErrorLog.addError("Invalid phase in stage for signal ID=" + signal.getId());
 //		}
 //
 //		// values are integer multiples of controller dt
 //		for(int k=0;k<numstages;k++){
 //			if(!BeatsMath.isintegermultipleof((double) greentime[k],controldt))
-//				BeatsErrorLog.addError("Green time not a multiple of control time step in signal id=" + signal.getId());
+//				BeatsErrorLog.addError("Green time not a multiple of control time step in signal ID=" + signal.getId());
 //			if(stagelength[k]!=greentime[k])
 //				if(!BeatsMath.isintegermultipleof((double) stagelength[k]-greentime[k],controldt))
-//					BeatsErrorLog.addError("Lost time not a multiple of control time step in signal id=" + signal.getId());
+//					BeatsErrorLog.addError("Lost time not a multiple of control time step in signal ID=" + signal.getId());
 //		}
 //
 //		// check cycles are long enough .....................................
@@ -227,16 +227,16 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 //		for(int k=0;k<numstages;k++)
 //			totphaselength += stagelength[k];
 //		if(!BeatsMath.equals(plan._cyclelength,totphaselength))
-//			BeatsErrorLog.addError("Stages do not add up to cycle time in signal id=" + signal.getId());
+//			BeatsErrorLog.addError("Stages do not add up to cycle time in signal ID=" + signal.getId());
 //
 //		// first two commands have zero timestamp
 //		if(command.get(0).time!=0.0)
-//			BeatsErrorLog.addError("Initial stages for pretimed plan of signal id=" + signal.getId() + " must have time stamp equal zero.");
+//			BeatsErrorLog.addError("Initial stages for pretimed plan of signal ID=" + signal.getId() + " must have time stamp equal zero.");
 	}
 
-	protected void reset(){
-		nextcommand = 0;
-	}
+//	protected void reset(){
+//		nextcommand = 0;
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// protected methods

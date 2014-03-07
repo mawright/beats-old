@@ -118,18 +118,18 @@ public class Event implements Comparable {
 	protected void validate() {
 		
 		if(myType==null)
-			BeatsErrorLog.addError("Event with id=" + getId() + " has bad type.");
+			BeatsErrorLog.addError("Event with ID=" + getId() + " has bad type.");
 			
 		// check that there are targets assigned to non-global events
 		if(myType!=null)
 			if(myType.compareTo(Event.Type.global_control_toggle)!=0 && myType.compareTo(Event.Type.global_demand_knob)!=0)
 				if(targets.isEmpty())
-					BeatsErrorLog.addError("No targets assigned in event with id=" + getId() + ".");
+					BeatsErrorLog.addError("No targets assigned in event with ID=" + getId() + ".");
 		
 		// check each target is valid
 		for(ScenarioElement s : targets)
 			if(s.getReference()==null)
-				BeatsErrorLog.addError("Invalid target id=" + s.getId() + " in event id=" + getId() + ".");
+				BeatsErrorLog.addError("Invalid target ID=" + s.getId() + " in event ID=" + getId() + ".");
 
 	}
 	
@@ -179,7 +179,7 @@ public class Event implements Comparable {
 				return compare;		
 		}
 
-		// fifth ordering by target id
+		// fifth ordering by target ID
 		for(int i=0;i<thisnumtargets;i++){
 			Long thistargetId = this.targets.get(i).getId();
 			Long thattargetId = that.targets.get(i).getId();

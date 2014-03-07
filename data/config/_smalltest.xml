@@ -16,14 +16,14 @@
   </SplitRatioSet>
   
   <!--
-  <EventSet project_id="-1" id="-1">
-    <event enabled="true" id="0" tstamp="10980" type="link_lanes">
+  <EventSet project_id="-1" ID="-1">
+    <event enabled="true" ID="0" tstamp="10980" type="link_lanes">
       <description/>
       <display_position>
         <point lat="37.8649695878758" lng="-122.302958965302"/>
       </display_position>
       <targetElements>
-        <scenarioElement id="-3" type="link"/>
+        <scenarioElement ID="-3" type="link"/>
       </targetElements>
       <parameters>
         <parameter name="reset_to_nominal" value="true"/>
@@ -286,18 +286,18 @@
 	</route>
 	
 	<!-- bad continuity
-	<route id="2">
-		<route_link id="0" link_id="-1" link_order="0"/>
-		<route_link id="0" link_id="-2" link_order="1"/>
-		<route_link id="0" link_id="-4" link_order="2"/>
+	<route ID="2">
+		<route_link ID="0" link_id="-1" link_order="0"/>
+		<route_link ID="0" link_id="-2" link_order="1"/>
+		<route_link ID="0" link_id="-4" link_order="2"/>
 	</route>-->
 	
 	<!-- missing order 
-	<route id="3">
-		<route_link id="0" link_id="-1" link_order="0"/>
-		<route_link id="0" link_id="-3" link_order="2"/>
-		<route_link id="0" link_id="-4" link_order="3"/>
-		<route_link id="0" link_id="-5" link_order="4"/>
+	<route ID="3">
+		<route_link ID="0" link_id="-1" link_order="0"/>
+		<route_link ID="0" link_id="-3" link_order="2"/>
+		<route_link ID="0" link_id="-4" link_order="3"/>
+		<route_link ID="0" link_id="-5" link_order="4"/>
 	</route>-->
 	
   </RouteSet>

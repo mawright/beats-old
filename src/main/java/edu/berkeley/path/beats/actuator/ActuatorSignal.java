@@ -39,9 +39,9 @@ public final class ActuatorSignal extends Actuator {
 
     public static enum CommandType {hold,forceoff};
     public static enum BulbColor {GREEN,YELLOW,RED,DARK};
-    public static enum NEMA {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
+//    public static enum NEMA {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
 
-	private HashMap<NEMA,SignalPhase> nema2phase;
+	private HashMap<NEMA.ID,SignalPhase> nema2phase;
 	private Node myNode;
 	private ArrayList<SignalPhase> phases;
 
@@ -59,7 +59,7 @@ public final class ActuatorSignal extends Actuator {
 
         super(act_implementor,Type.signal);
 
-        // set id for this acuator
+        // set ID for this acuator
         setId(jaxbS.getId());
     }
 
@@ -103,10 +103,10 @@ public final class ActuatorSignal extends Actuator {
 
         // make list of phases and map
 		phases = new ArrayList<SignalPhase>();
-		nema2phase = new HashMap<NEMA,SignalPhase>();
-        HashMap<ActuatorSignal.NEMA,List<Link>> nema_to_linklist = (HashMap<ActuatorSignal.NEMA,List<Link>>) implementor.get_target();
+		nema2phase = new HashMap<NEMA.ID,SignalPhase>();
+        HashMap<NEMA.ID,List<Link>> nema_to_linklist = (HashMap<NEMA.ID,List<Link>>) implementor.get_target();
         for(Phase jphase : jaxbSignal.getPhase() ){
-            ActuatorSignal.NEMA nema = ActuatorSignal.int_to_nema(jphase.getNema().intValue());
+            NEMA.ID nema = NEMA.int_to_nema(jphase.getNema().intValue());
             List<Link> link_list = nema_to_linklist.get( nema );
             if(link_list!=null){
                 SignalPhase sp = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
@@ -133,12 +133,12 @@ public final class ActuatorSignal extends Actuator {
 	protected void validate() {
 		
 		if(myNode==null){
-			BeatsErrorLog.addWarning("Unknow node id in signal id=" + getId());
+			BeatsErrorLog.addWarning("Unknow node ID in signal ID=" + getId());
 			return; // this signal will be ignored
 		}
 		
 		if(phases==null)
-			BeatsErrorLog.addError("ActuatorSignal id=" + getId() + " contains no valid phases.");
+			BeatsErrorLog.addError("ActuatorSignal ID=" + getId() + " contains no valid phases.");
         else
 			for(SignalPhase p : phases)
 				p.validate();
@@ -182,7 +182,7 @@ public final class ActuatorSignal extends Actuator {
 		for(SignalPhase phaseA:phases){
             phaseA.setPermithold(true);
 			for(SignalPhase phaseB:phases)
-				if(!isCompatible(phaseA,phaseB) && !phaseB.isPermitopposinghold() )
+				if(!NEMA.isCompatible(phaseA, phaseB) && !phaseB.isPermitopposinghold() )
                     phaseA.setPermithold(false);
 		}
 		
@@ -193,7 +193,7 @@ public final class ActuatorSignal extends Actuator {
 		for(SignalPhase phaseA:phases)
 			if(phaseA.isHold_requested())
 				for(SignalPhase phaseB:phases)
-					if( phaseB.isHold_requested() && !isCompatible(phaseA,phaseB) ){
+					if( phaseB.isHold_requested() && !NEMA.isCompatible(phaseA, phaseB) ){
                         phaseA.setHold_requested(false);
                         phaseB.setHold_requested(false);
 					}
@@ -270,7 +270,7 @@ public final class ActuatorSignal extends Actuator {
 
     @Override
     protected boolean register() {
-        HashMap<ActuatorSignal.NEMA,List<Link>> phase_link_map = (HashMap<ActuatorSignal.NEMA,List<Link>>) implementor.get_target();
+        HashMap<NEMA.ID,List<Link>> phase_link_map = (HashMap<NEMA.ID,List<Link>>) implementor.get_target();
         boolean success = true;
         for(List<Link> link_list : phase_link_map.values())
             for(Link link : link_list)
@@ -289,7 +289,7 @@ public final class ActuatorSignal extends Actuator {
 //			return myPhaseController.register();
 //	}
 
-	protected SignalPhase getPhaseForNEMA(NEMA nema){
+	protected SignalPhase getPhaseForNEMA(NEMA.ID nema){
 		for(SignalPhase p:phases){
 			if(p!=null)
 				if(p.getNEMA().compareTo(nema)==0)
@@ -310,7 +310,7 @@ public final class ActuatorSignal extends Actuator {
 	// public methods
 	/////////////////////////////////////////////////////////////////////
 
-	public SignalPhase getPhaseByNEMA(ActuatorSignal.NEMA nema){
+	public SignalPhase getPhaseByNEMA(NEMA.ID nema){
 		if(nema==null)
 			return null;
 		return nema2phase.get(nema);
@@ -321,105 +321,18 @@ public final class ActuatorSignal extends Actuator {
     }
 
 	/////////////////////////////////////////////////////////////////////
-	// static NEMA methods
-	/////////////////////////////////////////////////////////////////////
-	
-	public static ActuatorSignal.NEMA String2NEMA(String str){
-		if(str==null)
-			return ActuatorSignal.NEMA.NULL;
-		if(str.isEmpty())
-			return ActuatorSignal.NEMA.NULL;
-		if(!str.startsWith("_"))
-			str = "_"+str;
-		ActuatorSignal.NEMA nema;
-		try{
-			nema = ActuatorSignal.NEMA.valueOf(str);
-		}
-		catch(IllegalArgumentException  e){
-			nema = ActuatorSignal.NEMA.NULL;
-		}
-		return nema;
-	}
-	
-	public static boolean isCompatible(SignalPhase pA,SignalPhase pB){
-		ActuatorSignal.NEMA nemaA = pA.getNEMA();
-		ActuatorSignal.NEMA nemaB = pB.getNEMA();
-		
-		if(nemaA.compareTo(nemaB)==0)
-			return true;
-
-		if( !pA.isProtected() || !pB.isProtected() )
-			return true;
-
-		switch(nemaA){
-		case _1:
-		case _2:
-			if(nemaB.compareTo(NEMA._5)==0 || nemaB.compareTo(NEMA._6)==0)
-				return true;
-			else
-				return false;
-		case _3:
-		case _4:
-			if(nemaB.compareTo(NEMA._7)==0 || nemaB.compareTo(NEMA._8)==0 )
-				return true;
-			else
-				return false;
-		case _5:
-		case _6:
-			if(nemaB.compareTo(NEMA._1)==0 || nemaB.compareTo(NEMA._2)==0 )
-				return true;
-			else
-				return false;
-		case _7:
-		case _8:
-			if(nemaB.compareTo(NEMA._3)==0 || nemaB.compareTo(NEMA._4)==0 )
-				return true;
-			else
-				return false;
-		case NULL:
-			break;
-		default:
-			break;
-		}
-		return false;
-	}
-
-    public static NEMA int_to_nema(int x){
-        switch(x){
-            case 1:
-                return NEMA._1;
-            case 2:
-                return NEMA._2;
-            case 3:
-                return NEMA._3;
-            case 4:
-                return NEMA._4;
-            case 5:
-                return NEMA._5;
-            case 6:
-                return NEMA._6;
-            case 7:
-                return NEMA._7;
-            case 8:
-                return NEMA._8;
-            default:
-                return NEMA.NULL;
-        }
-    }
-
-	/////////////////////////////////////////////////////////////////////
 	// internal class
 	/////////////////////////////////////////////////////////////////////
 
 	@SuppressWarnings("rawtypes")
 	public static class Command implements Comparable {
 		public ActuatorSignal.CommandType type;
-		public ActuatorSignal.NEMA nema;
+		public NEMA.ID nema;
 		public Double time;
 		public Double yellowtime;
 		public Double redcleartime;
 
-		public Command(ActuatorSignal.CommandType type,ActuatorSignal.NEMA phase,double time){
+		public Command(ActuatorSignal.CommandType type,NEMA.ID phase,double time){
 			this.type = type;
 			this.nema = phase;
 			this.time = time;
@@ -427,7 +340,7 @@ public final class ActuatorSignal extends Actuator {
 			this.redcleartime = Double.NaN;
 		}
 		
-		public Command(ActuatorSignal.CommandType type,ActuatorSignal.NEMA phase,double time,double yellowtime,double redcleartime){
+		public Command(ActuatorSignal.CommandType type,NEMA.ID phase,double time,double yellowtime,double redcleartime){
 			this.type = type;
 			this.nema = phase;
 			this.time = time;
@@ -452,8 +365,8 @@ public final class ActuatorSignal extends Actuator {
 				return compare;
 
 			// second ordering by phases
-			ActuatorSignal.NEMA thistphase = this.nema;
-			ActuatorSignal.NEMA thattphase = that.nema;
+			NEMA.ID thistphase = this.nema;
+			NEMA.ID thattphase = that.nema;
 			compare = thistphase.compareTo(thattphase);
 			if(compare!=0)
 				return compare;
@@ -489,14 +402,18 @@ public final class ActuatorSignal extends Actuator {
 			else
 				return this.compareTo((Command) obj)==0;
 		}
-		
-	}
+
+        @Override
+        public String toString() {
+            return time + ": " + type.toString() + " " + nema + " (y=" + yellowtime + ",r=" + redcleartime + ")";
+        }
+    }
 
 	public class PhaseData{
-		public NEMA nema;
+		public NEMA.ID nema;
 		public double starttime;
 		public double greentime;
-		public PhaseData(NEMA nema, double starttime, double greentime){
+		public PhaseData(NEMA.ID nema, double starttime, double greentime){
 			this.nema = nema;
 			this.starttime = starttime;
 			this.greentime = greentime;

@@ -499,7 +499,7 @@
 
 	<!-- 
 	sensor parameters used in beats:
-		vds - used to assign a VDS station id to a loop sensor
+		vds - used to assign a VDS station ID to a loop sensor
 	sensor tables used in beats:
 		name="data_sources", columns={"url","dt" key="false","format"} - used to reference PeMS data sources.
 	-->

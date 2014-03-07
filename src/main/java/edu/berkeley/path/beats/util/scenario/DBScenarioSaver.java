@@ -5,15 +5,15 @@ import edu.berkeley.path.beats.simulator.BeatsException;
 
 class DBScenarioSaver implements ScenarioSaverIF {
 
-//	Long id = null;
+//	Long ID = null;
 //
 //	@Override
 //	public void save(Scenario scenario) throws BeatsException {
-//		id = edu.berkeley.path.beats.db.ScenarioImporter.doImport(scenario);
+//		ID = edu.berkeley.path.beats.db.ScenarioImporter.doImport(scenario);
 //	}
 //
 //	public Long getID() {
-//		return id;
+//		return ID;
 //	}
 
 	

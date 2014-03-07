@@ -148,8 +148,8 @@ public class RunnerCOP {
 //						ScenarioLoader.load(filename);
 //				logger.info("Loaded configuration file '" + filename + "'");
 //
-//				Long id = ScenarioSaver.save(scenario);
-//				logger.info("Scenario imported, ID=" + id);
+//				Long ID = ScenarioSaver.save(scenario);
+//				logger.info("Scenario imported, ID=" + ID);
 //			} else if (cmd.equals("update") || md.equals("u")) {
 //				throw new NotImplementedException(cmd);
 //			} else if (cmd.equals("export") || cmd.equals("e")) {

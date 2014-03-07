@@ -2,6 +2,7 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 //import edu.berkeley.path.beats.actuator.ActuatorSignalStageSplits;
+import edu.berkeley.path.beats.actuator.NEMA;
 import edu.berkeley.path.beats.actuator.SignalPhase;
 //import edu.berkeley.path.beats.actuator.StageSplit;
 import edu.berkeley.path.beats.jaxb.LinkReference;
@@ -32,14 +33,14 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 
     public BeatsActuatorImplementation(edu.berkeley.path.beats.jaxb.Signal signal,Object context){
         Scenario scenario = (Scenario) context;
-        HashMap<ActuatorSignal.NEMA,List<Link>> targ = new HashMap<ActuatorSignal.NEMA,List<Link>>();
+        HashMap<NEMA.ID,List<Link>> targ = new HashMap<NEMA.ID,List<Link>>();
         for(Phase phase : signal.getPhase()){
             List linklist = new ArrayList<Link>();
             if(phase.getLinkReferences()!=null && phase.getLinkReferences().getLinkReference()!=null)
                 for(LinkReference linkref : phase.getLinkReferences().getLinkReference())
                     linklist.add(scenario.getLinkWithId(linkref.getId()));
             if(!linklist.isEmpty())
-                targ.put( ActuatorSignal.int_to_nema(phase.getNema().intValue()) , linklist );
+                targ.put( NEMA.int_to_nema(phase.getNema().intValue()) , linklist );
         }
         target = targ;
     }
@@ -98,7 +99,7 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 	}
 
     @Override
-    public void deploy_bulb_color(ActuatorSignal.NEMA nema,ActuatorSignal.BulbColor color){
+    public void deploy_bulb_color(NEMA.ID nema,ActuatorSignal.BulbColor color){
 //        Integer [] indices = nema2indices.get(nema);
 //        if(indices==null)
 //            return;

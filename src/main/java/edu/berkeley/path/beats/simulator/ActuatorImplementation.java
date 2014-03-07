@@ -1,7 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
-//import edu.berkeley.path.beats.actuator.StageSplit;
+import edu.berkeley.path.beats.actuator.NEMA;
 import edu.berkeley.path.beats.jaxb.Splitratio;
 
 import java.util.List;
@@ -22,6 +22,6 @@ public abstract class ActuatorImplementation {
 //	public void deploy_stage_splits(StageSplit[] stage_splits){};
 	public void deploy_cms_split(List<Splitratio> splits){};
 	public void deploy_vsl_speed(){};
-    public void deploy_bulb_color(ActuatorSignal.NEMA nema,ActuatorSignal.BulbColor color){};
+    public void deploy_bulb_color(NEMA.ID nema,ActuatorSignal.BulbColor color){};
 
 }

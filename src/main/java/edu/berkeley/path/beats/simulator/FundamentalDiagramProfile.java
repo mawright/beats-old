@@ -106,14 +106,14 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
 	protected void validate() {
 		
 		if(myLink==null)
-			BeatsErrorLog.addError("Bad link id=" + getLinkId() + " in fundamental diagram.");
+			BeatsErrorLog.addError("Bad link ID=" + getLinkId() + " in fundamental diagram.");
 		
 		// check dtinseconds
 		if( BeatsMath.lessorequalthan(dtinseconds,0d) && FD.size()>1 )
-			BeatsErrorLog.addError("Non-positive dt in fundamental diagram profile for link id=" + getLinkId() + ".");
+			BeatsErrorLog.addError("Non-positive dt in fundamental diagram profile for link ID=" + getLinkId() + ".");
 	
 		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && FD.size()>1 )
-			BeatsErrorLog.addError("Time step in fundamental diagram profile for link id=" + getLinkId() + " is not a multiple of simulation time step.");
+			BeatsErrorLog.addError("Time step in fundamental diagram profile for link ID=" + getLinkId() + " is not a multiple of simulation time step.");
 		
 		// check fundamental diagrams
 		for(FundamentalDiagram fd : FD)

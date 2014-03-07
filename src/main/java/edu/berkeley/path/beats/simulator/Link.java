@@ -119,16 +119,16 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	protected void validate() {
 
 		if(!issource && begin_node==null)
-			BeatsErrorLog.addError("Incorrect begin node id=" + getBegin().getNodeId() + " in link id=" + getId() + ".");
+			BeatsErrorLog.addError("Incorrect begin node ID=" + getBegin().getNodeId() + " in link ID=" + getId() + ".");
 
 		if(!issink && end_node==null)
-			BeatsErrorLog.addError("Incorrect node id=" + getEnd().getNodeId() + " in link id=" + getId() + ".");
+			BeatsErrorLog.addError("Incorrect node ID=" + getEnd().getNodeId() + " in link ID=" + getId() + ".");
 
 		if(_length<=0)
-			BeatsErrorLog.addError("Non-positive length in link id=" + getId() + ".");
+			BeatsErrorLog.addError("Non-positive length in link ID=" + getId() + ".");
 
 		if(_lanes<=0)
-			BeatsErrorLog.addError("Non-positive number of lanes in link id=" + getId() + ".");		
+			BeatsErrorLog.addError("Non-positive number of lanes in link ID=" + getId() + ".");
 	}
 
 	protected void reset(){

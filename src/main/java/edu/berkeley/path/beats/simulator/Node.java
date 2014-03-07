@@ -155,12 +155,12 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		if(output_link!=null)
 			for(Link link : output_link)
 				if(link==null)
-					BeatsErrorLog.addError("Incorrect output link id in node id=" + getId());
+					BeatsErrorLog.addError("Incorrect output link ID in node ID=" + getId());
 
 		if(input_link!=null)
 			for(Link link : input_link)
 				if(link==null)
-					BeatsErrorLog.addError("Incorrect input link id in node id=" + getId());
+					BeatsErrorLog.addError("Incorrect input link ID in node ID=" + getId());
 		
 	}
 	
@@ -315,7 +315,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 				for(k=0;k<X.getnVTypes();k++){
 					value = X.get(i,j,k);
 					if( !Double.isNaN(value) && (value>1 || value<0) ){
-						BeatsErrorLog.addError("Invalid split ratio values for node id=" + getId());
+						BeatsErrorLog.addError("Invalid split ratio values for node ID=" + getId());
 						return false;
 					}
 				}
@@ -398,7 +398,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		return input_link;
 	}
 
-    /** Index of link with given id in the list of input links of this node */ 
+    /** Index of link with given ID in the list of input links of this node */
 	public int getInputLinkIndex(long id){
 		for(int i=0;i<getnIn();i++){
 			if(input_link[i]!=null)
@@ -408,7 +408,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		return -1;
 	}
 	
-    /** Index of link with given id in the list of output links of this node */ 
+    /** Index of link with given ID in the list of output links of this node */
 	public int getOutputLinkIndex(long id){
 		for(int i=0;i<getnOut();i++){
 			if(output_link[i]!=null)

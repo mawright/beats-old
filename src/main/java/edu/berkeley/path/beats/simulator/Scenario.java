@@ -590,8 +590,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// protected complex getters
 	/////////////////////////////////////////////////////////////////////
 
-	/** Retrieve a network with a given id.
-	 * @param id The string id of the network
+	/** Retrieve a network with a given ID.
+	 * @param id The string ID of the network
 	 * @return The corresponding network if it exists, <code>null</code> otherwise.
 	 * 
 	 */
@@ -708,7 +708,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return -1;
 	}
 
-	/** Vehicle type index from id
+	/** Vehicle type index from ID
 	 * @return integer index of the vehicle type.
 	 */
 	public int getVehicleTypeIndexForId(long id){
@@ -784,8 +784,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return vehtypenames;
 	}
 
-	/** Get the current density state for the network with given id.
-	 * @param network_id String id of the network
+	/** Get the current density state for the network with given ID.
+	 * @param network_id String ID of the network
 	 * @return A two-dimensional array of doubles where the first dimension is the
 	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
 	 * (ordered as in {@link Scenario#getVehicleTypeNames})
@@ -840,9 +840,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return clock;
 	}
 	
-	/** Get a reference to a link by its composite id.
+	/** Get a reference to a link by its composite ID.
 	 * 
-	 * @param id String id of the link. 
+	 * @param id String ID of the link.
 	 * @return Reference to the link if it exists, <code>null</code> otherwise
 	 */
 	public Link getLinkWithId(long id) {
@@ -855,9 +855,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 	
-	/** Get a reference to a node by its id.
+	/** Get a reference to a node by its ID.
 	 * 
-	 * @param id String id of the node. 
+	 * @param id String ID of the node.
 	 * @return Reference to the node if it exists, <code>null</code> otherwise
 	 */
 	public Node getNodeWithId(long id) {
@@ -870,8 +870,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
-	/** Get sensor with given id.
-	 * @param id String id of the sensor.
+	/** Get sensor with given ID.
+	 * @param id String ID of the sensor.
 	 * @return Sensor object.
 	 */
 	public Sensor getSensorWithId(long id) {
@@ -884,8 +884,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
-	/** Get actuator with given id.
-	 * @param id String id of the actuator.
+	/** Get actuator with given ID.
+	 * @param id String ID of the actuator.
 	 * @return Actuator object.
 	 */
 	public Actuator getActuatorWithId(long id) {
@@ -912,7 +912,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return null;
     }
 		
-	/** Get a reference to a controller by its id.
+	/** Get a reference to a controller by its ID.
 	 * @param id Id of the controller.
 	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
 	 */
@@ -930,7 +930,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 	
-	/** Get a reference to an event by its id.
+	/** Get a reference to an event by its ID.
 	 * @param id Id of the event.
 	 * @return A reference to the event if it exists, <code>null</code> otherwise.
 	 */
@@ -1263,10 +1263,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	protected static class Cumulatives {
 		private Scenario scenario;
 
-		/** link id -> cumulative data */
+		/** link ID -> cumulative data */
 		java.util.Map<Long, LinkCumulativeData> links = null;
 
-		/** signal id -> completed phases */
+		/** signal ID -> completed phases */
 //		java.util.Map<Long, SignalPhases> phases = null;
 
 		private static Logger logger = Logger.getLogger(Cumulatives.class);
@@ -1283,7 +1283,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 						continue;
 					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
 						if (links.containsKey(link.getId()))
-							logger.warn("Duplicate link: id=" + link.getId());
+							logger.warn("Duplicate link: ID=" + link.getId());
 						links.put(link.getId(), new LinkCumulativeData((edu.berkeley.path.beats.simulator.Link) link));
 					}
 				}
@@ -1297,7 +1297,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //				if (null != scenario.getSignalSet())
 //					for (edu.berkeley.path.beats.jaxb.Signal signal : scenario.getSignalSet().getSignal()) {
 //						if (phases.containsKey(signal.getId()))
-//							logger.warn("Duplicate signal: id=" + signal.getId());
+//							logger.warn("Duplicate signal: ID=" + signal.getId());
 //						phases.put(signal.getId(), new SignalPhases(signal));
 //					}
 //				logger.info("ActuatorSignal phases have been requested");

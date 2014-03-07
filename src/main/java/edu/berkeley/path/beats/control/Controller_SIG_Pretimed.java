@@ -29,6 +29,7 @@ package edu.berkeley.path.beats.control;
 import java.util.*;
 
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
+import edu.berkeley.path.beats.actuator.NEMA;
 import edu.berkeley.path.beats.actuator.SignalPhase;
 
 import edu.berkeley.path.beats.simulator.*;
@@ -41,8 +42,7 @@ public class Controller_SIG_Pretimed extends Controller {
     private boolean done;
 
 	// state
-	private int cplan_index;        // current plans id
-	//private int cperiod;						  // current index to planstarttime and plansequence
+	private int cplan_index;        // current plans ID
 
 	// coordination
 //	private ControllerCoordinated coordcont;
@@ -129,12 +129,12 @@ public class Controller_SIG_Pretimed extends Controller {
 	@Override
 	protected void update() {
 
-		double simtime = getMyScenario().getCurrentTimeInSeconds();
+		double sim_time = getMyScenario().getCurrentTimeInSeconds();
 
 		// time to switch plans .....................................
 		if( !done ){
             PlanScheduleEntry next_entry = plan_schedule.get(cplan_index+1);
-			if( BeatsMath.greaterorequalthan(simtime,next_entry.start_time) ){
+			if( BeatsMath.greaterorequalthan(sim_time,next_entry.start_time) ){
                 cplan_index++;
 //				if(null == plansequence[cperiod]){
 //					// GCG asc.ResetSignals();  GG FIX THIS
@@ -147,8 +147,8 @@ public class Controller_SIG_Pretimed extends Controller {
 //		if( plansequence[cperiod]==0 )
 //			ImplementASC();
 //		else
-//			plans.get(plansequence[cperiod]).implementPlan(simtime,coordmode);
-        plan_schedule.get(cplan_index).plan.implementPlan(simtime, false);
+//			plans.get(plansequence[cperiod]).update_command(simtime,coordmode);
+        plan_schedule.get(cplan_index).plan.update_command(sim_time, false);
 
 	}
 
@@ -156,8 +156,6 @@ public class Controller_SIG_Pretimed extends Controller {
 	protected void validate() {
 
 		super.validate();
-
-		int i;
 
         // check all tables
         for (String table_name : new String[] {"Cycle Length", "Offsets", "Plan List", "Plan Sequence"})
@@ -168,7 +166,7 @@ public class Controller_SIG_Pretimed extends Controller {
 		// all plan ids in plan sequence are validand start times non-negative
         for(PlanScheduleEntry pse : plan_schedule){
             if(pse.plan==null)
-                BeatsErrorLog.addError("Bad plan id in plan schedule.");
+                BeatsErrorLog.addError("Bad plan ID in plan schedule.");
             if(pse.start_time<0)
                 BeatsErrorLog.addError("Negative start-time in plan schedule.");
         }
@@ -229,25 +227,31 @@ public class Controller_SIG_Pretimed extends Controller {
 
         protected void validate() {
             // check cycle is non-negative
+            if(cycle<0)
+                BeatsErrorLog.addError("pre-timed cycle length must be non-negative.");
 
-            // check that stage lengths add up to cycle, for each phase
+            // validate intersection plans
+            for(IntersectionPlan ip : this.intersection_plans.values())
+                ip.validate();
         }
 
-
-        public void implementPlan(double simtime,boolean coordmode){
-
-            double itime;
+        public void update_command(double simtime, boolean coordmode){
 
             // Master clock .............................
-            itime =  simtime % cycle;
+            double mod_time =  simtime % cycle;
 
             // Loop through intersections ...............
             for (IntersectionPlan int_plan : intersection_plans.values()) {
 
                 // get commands for this intersection
-                ArrayList<ActuatorSignal.Command> int_commands = int_plan.get_commands_for_time(itime);
+                ArrayList<ActuatorSignal.Command> int_commands = int_plan.get_commands_for_time(mod_time);
 
-                int_plan.my_signal.set_command(int_commands);
+                for(ActuatorSignal.Command c : int_commands)
+                    System.out.println(c);
+
+
+                // send to signal actuator
+//                int_plan.my_signal.set_command(int_commands);
 
 
 //                if( !coordmode ){
@@ -323,6 +327,15 @@ public class Controller_SIG_Pretimed extends Controller {
             command_ptr = new CircularIterator(command_sequence);
         }
 
+        protected void validate() {
+            if(offset<0)
+                BeatsErrorLog.addError("offset must be non-negative");
+            if(offset>my_plan.cycle)
+                BeatsErrorLog.addError("offset cannot exceed the cycle length.");
+            for(Stage stage : stages)
+                stage.validate();
+        }
+
         public void add_stage(int movA,int movB,double green_time){
             stages.add(new Stage(movA,movB,green_time));
         }
@@ -372,8 +385,8 @@ public class Controller_SIG_Pretimed extends Controller {
 
             for(Stage stage : stages){
 
-                boolean have_movA = stage.movA.compareTo(ActuatorSignal.NEMA.NULL)!=0;
-                boolean have_movB = stage.movB.compareTo(ActuatorSignal.NEMA.NULL)!=0;
+                boolean have_movA = stage.movA.compareTo(NEMA.ID.NULL)!=0;
+                boolean have_movB = stage.movB.compareTo(NEMA.ID.NULL)!=0;
 
                 // holds
                 if(have_movA)
@@ -415,38 +428,40 @@ public class Controller_SIG_Pretimed extends Controller {
             Collections.sort(command_sequence);
         }
 
-        protected ArrayList<ActuatorSignal.Command> get_commands_for_time(double itime){
-
-            double rel_time = itime - offset;
-            if(rel_time<0)
-                rel_time += my_plan.cycle;
-
+        protected ArrayList<ActuatorSignal.Command> get_commands_for_time(double mod_time){
             if(command_ptr.next().time < command_ptr.current().time)
                 return null;
-
+            double rel_time = mod_time - offset;
+            if(rel_time<0)
+                rel_time += my_plan.cycle;
             ArrayList<ActuatorSignal.Command> new_commands = new ArrayList<ActuatorSignal.Command>();
             while(rel_time>=command_ptr.next().time)
                 new_commands.add(command_ptr.advance());
-
             return new_commands;
         }
 
     }
 
     protected class Stage {
-        public ActuatorSignal.NEMA movA;
-        public ActuatorSignal.NEMA movB;
+        public NEMA.ID movA;
+        public NEMA.ID movB;
         public double green_time;
         public double yellow_time;
         public double red_time;
         public double start_hold_time;
         public double start_forceoff_time;
         public Stage(int movAi,int movBi,double green_time){
-            this.movA = ActuatorSignal.int_to_nema(movAi);
-            this.movB = ActuatorSignal.int_to_nema(movBi);
+            this.movA = NEMA.int_to_nema(movAi);
+            this.movB = NEMA.int_to_nema(movBi);
             this.green_time = green_time;
         }
-        public boolean has_movement(ActuatorSignal.NEMA m){
+        protected void validate(){
+            if(green_time<0 || yellow_time<0 || red_time<0)
+                BeatsErrorLog.addError("green, yellow, and red clear times must be non-negative.");
+
+
+        }
+        public boolean has_movement(NEMA.ID m){
             return m.compareTo(movA)==0 || m.compareTo(movB)==0;
         }
     }
@@ -456,10 +471,6 @@ public class Controller_SIG_Pretimed extends Controller {
         public T get(int index) {
             return super.get(index % this.size());
         }
-//        @Override
-//        public Iterator<T> iterator() {
-//            return new CircularIterator(this);
-//        }
         public T get_next(T x){
             int ind = this.indexOf(x);
             if(ind<0)
@@ -468,23 +479,17 @@ public class Controller_SIG_Pretimed extends Controller {
         }
     }
 
-    protected class CircularIterator<T> implements Iterator<T>
-    {
+    protected class CircularIterator<T> {
         private int cur = 0;
         private CircularList<T> coll = null;
-
         protected CircularIterator(CircularList<T> coll) {
             this.coll = coll;
         }
-        public boolean hasNext() {
-            return coll.size() > 0;
-        }
-
         public T advance(){
             cur = (cur+1)%coll.size();
             return coll.get(cur);
         }
-        public T next(){        // NOTE: DOES NOT ADVANCE!!
+        public T next(){
             return coll.get((cur+1)%coll.size());
         }
         public T current(){
@@ -492,9 +497,6 @@ public class Controller_SIG_Pretimed extends Controller {
         }
         public T prev(){
             return coll.get((cur-1)%coll.size());
-        }
-        public void remove() {
-            throw new UnsupportedOperationException();
         }
     }
 }

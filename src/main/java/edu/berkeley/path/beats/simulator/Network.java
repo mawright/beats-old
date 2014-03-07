@@ -125,8 +125,8 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		return myScenario;
 	}
 
-	/** Get link with given id.
-	 * @param id String id of the link.
+	/** Get link with given ID.
+	 * @param id String ID of the link.
 	 * @return Link object.
 	 */
 	public Link getLinkWithId(long id){
@@ -139,8 +139,8 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		return null;
 	}
 
-	/** Get node with given id.
-	 * @param id String id of the node.
+	/** Get node with given ID.
+	 * @param id String ID of the node.
 	 * @return Node object.
 	 */
 	public Node getNodeWithId(long id){

@@ -541,7 +541,7 @@ final public class ObjectFactory {
 //	 * 
 //	 * @param myScenario		The scenario.
 //	 * @param node				The node
-//	 * @param inlink			String id of the input link 
+//	 * @param inlink			String ID of the input link
 //	 * @param vehicleType		String name of the vehicle type
 //	 * @param splits			An array of splits for every link exiting the node.
 //	 * @return					Event object
@@ -560,7 +560,7 @@ final public class ObjectFactory {
 //	 * location on a link. 
 //	 * 
 //	 * @param myScenario		The scenario.
-//	 * @param linkId			The id of the link where the sensor is placed.
+//	 * @param linkId			The ID of the link where the sensor is placed.
 //	 * @return					Sensor object
 //	 */
 //	public static Sensor createSensor_LoopStation(Scenario myScenario,String linkId){
@@ -652,7 +652,7 @@ final public class ObjectFactory {
 //	 * 
 //	 * @param scenario The scenario
 //	 * @param tstamp A double with the time stamp in seconds after midnight
-//	 * @param link_id The String id of the link
+//	 * @param link_id The String ID of the link
 //	 * @param vehtype An array of String link type names
 //	 * @param init_density 2-D matrix of doubles with densities per link and vehicle type.
 //	 * @throws BeatsException

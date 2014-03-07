@@ -98,8 +98,8 @@ final public class Table {
 		return 	column_names.indexOf(cname);
 	}
 	
-//	public String getColumnNameForId(Long id){
-//		int index = column_ids.indexOf(id);
+//	public String getColumnNameForId(Long ID){
+//		int index = column_ids.indexOf(ID);
 //		if(index<0)
 //			return null;
 //		return column_names.get(index);

@@ -84,16 +84,16 @@ public class Controller_SIG_Pretimed_Plan { //} extends Controller_SIG_Pretimed.
 	protected void validate(){
 		
 //		if(myController==null)
-//			BeatsErrorLog.addError("Invalid controller for pretimed signal plan id=" + getId() + ".");
+//			BeatsErrorLog.addError("Invalid controller for pretimed signal plan ID=" + getId() + ".");
 //		
 //		// positive cycle
 //		if(_cyclelength<=0)
-//			BeatsErrorLog.addError("Non-positive cycle length in pretimed signal controller id=" + getId() + ".");
+//			BeatsErrorLog.addError("Non-positive cycle length in pretimed signal controller ID=" + getId() + ".");
 //		
 //		// cycle length should be a multiple of controller dt
 //		if(myController!=null)
 //			if(!BeatsMath.isintegermultipleof(_cyclelength,myController.getDtinseconds()))
-//				BeatsErrorLog.addError("Cycle length is not an integer multiple of controller rate in pretimed signal controller id=" + getId()+ ".");
+//				BeatsErrorLog.addError("Cycle length is not an integer multiple of controller rate in pretimed signal controller ID=" + getId()+ ".");
 //		
 //		// plan includes all targets
 //		boolean foundit;
@@ -107,7 +107,7 @@ public class Controller_SIG_Pretimed_Plan { //} extends Controller_SIG_Pretimed.
 //					}
 //				}
 //				if(!foundit)
-//					BeatsErrorLog.addError("Controller target (id="+se.getId()+") not found in pretimed signal plan id="+getId());
+//					BeatsErrorLog.addError("Controller target (ID="+se.getId()+") not found in pretimed signal plan ID="+getId());
 //			}
 //		
 //		// intersection plans
@@ -116,10 +116,10 @@ public class Controller_SIG_Pretimed_Plan { //} extends Controller_SIG_Pretimed.
 		
 	}
 
-	protected void reset() {
-		for(int i=0;i<intersplan.length;i++)
-			intersplan[i].reset();		
-	}
+//	protected void reset() {
+//		for(int i=0;i<intersplan.length;i++)
+//			intersplan[i].reset();
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// protected methods
@@ -136,13 +136,13 @@ public class Controller_SIG_Pretimed_Plan { //} extends Controller_SIG_Pretimed.
 		// Loop through intersections ...............
 		for(i=0;i<intersplan.length;i++){
 
-			commandlist.clear();
-			
-			// get commands for this intersection
-			intersplan[i].getCommandForTime(itime,commandlist);
-			
-			// send command to the signal
-			intersplan[i].signal.set_command(commandlist);
+//			commandlist.clear();
+//
+//			// get commands for this intersection
+//			intersplan[i].getCommandForTime(itime,commandlist);
+//
+//			// send command to the signal
+//			intersplan[i].signal.set_command(commandlist);
 
 //			if( !coordmode ){
 //				for(j=0;j<intplan.holdpoint.length;j++)

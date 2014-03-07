@@ -48,7 +48,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 
 	protected void validate() {
 //		if(implementor.getLink()==null)
-//			BeatsErrorLog.addError("Bad link reference in actuator id="+getId());
+//			BeatsErrorLog.addError("Bad link reference in actuator ID="+getId());
 	}
 
 	protected void reset() throws BeatsException {
