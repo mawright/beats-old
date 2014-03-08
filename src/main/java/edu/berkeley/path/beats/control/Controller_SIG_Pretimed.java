@@ -110,6 +110,8 @@ public class Controller_SIG_Pretimed extends Controller {
             for(IntersectionPlan ip : pp.intersection_plans.values()){
                 ip.compute_stage_info();
                 ip.generate_command_sequence();
+                System.out.println(pp.id + ", " + ip.intersection_id);
+                System.out.println(ip.command_sequence);
             }
 
         // create plan sequence
@@ -123,33 +125,7 @@ public class Controller_SIG_Pretimed extends Controller {
 
         // initialize state
         cplan_index = 0;
-        done = false;
-	}
-
-	@Override
-	protected void update() {
-
-		double sim_time = getMyScenario().getCurrentTimeInSeconds();
-
-		// time to switch plans .....................................
-		if( !done ){
-            PlanScheduleEntry next_entry = plan_schedule.get(cplan_index+1);
-			if( BeatsMath.greaterorequalthan(sim_time,next_entry.start_time) ){
-                cplan_index++;
-//				if(null == plansequence[cperiod]){
-//					// GCG asc.ResetSignals();  GG FIX THIS
-//				}
-//				if(coordmode)
-//					coordcont.SetSyncPoints();
-			}
-		}
-
-//		if( plansequence[cperiod]==0 )
-//			ImplementASC();
-//		else
-//			plans.get(plansequence[cperiod]).update_command(simtime,coordmode);
-        plan_schedule.get(cplan_index).plan.update_command(sim_time, false);
-
+        done = plan_schedule.size()==1;
 	}
 
 	@Override
@@ -189,6 +165,33 @@ public class Controller_SIG_Pretimed extends Controller {
             for(IntersectionPlan ip:plan.intersection_plans.values())
                 ip.reset();
 	}
+
+    @Override
+    protected void update() {
+
+        double sim_time = getMyScenario().getCurrentTimeInSeconds();
+
+        // time to switch plans .....................................
+        if( !done ){
+            PlanScheduleEntry next_entry = plan_schedule.get(cplan_index+1);
+            if( BeatsMath.greaterorequalthan(sim_time,next_entry.start_time) ){
+                cplan_index++;
+                done = cplan_index==plan_schedule.size()-1;
+//				if(null == plansequence[cperiod]){
+//					// GCG asc.ResetSignals();  GG FIX THIS
+//				}
+//				if(coordmode)
+//					coordcont.SetSyncPoints();
+            }
+        }
+
+//		if( plansequence[cperiod]==0 )
+//			ImplementASC();
+//		else
+//			plans.get(plansequence[cperiod]).update_command(simtime,coordmode);
+        plan_schedule.get(cplan_index).plan.update_command(sim_time, false);
+
+    }
 
     protected class PlanScheduleEntry implements Comparable<PlanScheduleEntry> {
         protected PretimedPlan plan;
@@ -245,10 +248,6 @@ public class Controller_SIG_Pretimed extends Controller {
 
                 // get commands for this intersection
                 ArrayList<SignalCommand> int_commands = int_plan.get_commands_for_time(mod_time);
-
-                for(SignalCommand c : int_commands)
-                    System.out.println(c);
-
 
                 // send to signal actuator
 //                int_plan.my_signal.set_command(int_commands);
@@ -374,8 +373,8 @@ public class Controller_SIG_Pretimed extends Controller {
 
                 stage.yellow_time = yellow_time;
                 stage.red_time = red_clear_time;
-                stage.start_hold_time = intersection_time;
-                stage.start_forceoff_time = intersection_time + stage.green_time;
+                stage.start_hold_time = intersection_time % my_plan.cycle;
+                stage.start_forceoff_time = (intersection_time + stage.green_time) % my_plan.cycle;
 
                 intersection_time += stage.green_time + yellow_time + red_clear_time;
                 intersection_time %= my_plan.cycle;
@@ -421,25 +420,26 @@ public class Controller_SIG_Pretimed extends Controller {
             }
 
             // Correction: offset is with respect to end of first stage, instead of beginning
-            for(SignalCommand c : command_sequence){
-                c.time -= stages.get(0).green_time;
-                if(c.time<0)
-                    c.time += my_plan.cycle;
-            }
+//            for(SignalCommand c : command_sequence){
+//                c.time -= stages.get(0).green_time;
+//                if(c.time<0)
+//                    c.time += my_plan.cycle;
+//            }
 
             // sort the commands
             Collections.sort(command_sequence);
         }
 
         protected ArrayList<SignalCommand> get_commands_for_time(double mod_time){
-            if(command_ptr.next().time < command_ptr.current().time)
-                return null;
             double rel_time = mod_time - offset;
             if(rel_time<0)
                 rel_time += my_plan.cycle;
             ArrayList<SignalCommand> new_commands = new ArrayList<SignalCommand>();
-            while(rel_time>=command_ptr.next().time)
-                new_commands.add(command_ptr.advance());
+            boolean looped = false;
+            while(rel_time>=command_ptr.current().time && !looped){
+                new_commands.add(command_ptr.current());
+                looped = command_ptr.advance();
+            }
             return new_commands;
         }
 
@@ -494,9 +494,9 @@ public class Controller_SIG_Pretimed extends Controller {
         protected CircularIterator(CircularList<T> coll) {
             this.coll = coll;
         }
-        public T advance(){
+        public boolean advance(){
             cur = (cur+1)%coll.size();
-            return coll.get(cur);
+            return cur==0;
         }
         public T next(){
             return coll.get((cur+1)%coll.size());

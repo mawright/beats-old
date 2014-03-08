@@ -28,15 +28,19 @@ public abstract class NEMA {
         return nema;
     }
 
+    public static boolean is_compatible(SignalPhase phaseA,SignalPhase phaseB){
+        if( !phaseA.isProtected() || !phaseB.isProtected() )
+            return true;
+        return is_compatible(phaseA.getNEMA(), phaseB.getNEMA());
+    }
+
     public static boolean is_compatible(ID nemaA, ID nemaB){
-//        ID nemaA = pA.getNEMA();
-//        ID nemaB = pB.getNEMA();
 
         if(nemaA.compareTo(nemaB)==0)
             return true;
 
-//        if( !pA.isProtected() || !pB.isProtected() )
-//            return true;
+        if( NEMA.isNULL(nemaA) || NEMA.isNULL(nemaB) )
+            return true;
 
         switch(nemaA){
             case _1:
