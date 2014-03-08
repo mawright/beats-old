@@ -14,7 +14,7 @@ import org.junit.Test;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.actuator.SignalPhase;
+import edu.berkeley.path.beats.actuator.ActuatorSignal.SignalPhase;
 
 @Ignore("redo signals")
 public class SignalTest {

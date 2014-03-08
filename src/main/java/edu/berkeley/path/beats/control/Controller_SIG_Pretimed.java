@@ -30,7 +30,6 @@ import java.util.*;
 
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.actuator.NEMA;
-import edu.berkeley.path.beats.actuator.SignalPhase;
 
 import edu.berkeley.path.beats.simulator.*;
 
@@ -250,7 +249,7 @@ public class Controller_SIG_Pretimed extends Controller {
                 ArrayList<SignalCommand> int_commands = int_plan.get_commands_for_time(mod_time);
 
                 // send to signal actuator
-//                int_plan.my_signal.set_command(int_commands);
+                int_plan.my_signal.set_command(int_commands);
 
 
 //                if( !coordmode ){
@@ -353,8 +352,8 @@ public class Controller_SIG_Pretimed extends Controller {
 
             for(Stage stage : stages){
 
-                SignalPhase pA = my_signal.get_phase_with_nema(stage.movA);
-                SignalPhase pB = my_signal.get_phase_with_nema(stage.movB);
+                ActuatorSignal.SignalPhase pA = my_signal.get_phase_with_nema(stage.movA);
+                ActuatorSignal.SignalPhase pB = my_signal.get_phase_with_nema(stage.movB);
 
                 if(pA==null && pB==null)
                     return;

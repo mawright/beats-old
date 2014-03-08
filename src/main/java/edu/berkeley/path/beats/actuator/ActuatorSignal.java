@@ -39,8 +39,6 @@ import java.util.*;
 public final class ActuatorSignal extends Actuator {
 
     public static enum BulbColor {GREEN,YELLOW,RED,DARK};
-//    public static enum NEMA {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
-
 	private HashMap<NEMA.ID,SignalPhase> nema2phase;
 	private Node myNode;
 	private ArrayList<SignalPhase> phases;
@@ -48,8 +46,6 @@ public final class ActuatorSignal extends Actuator {
 	// local copy of the command, subject to checks
 	private boolean [] hold_approved;
 	private boolean [] forceoff_approved;
-	
-//	private ArrayList<PhaseData> completedPhases = new ArrayList<PhaseData>(); // used for output
 
     /////////////////////////////////////////////////////////////////////
     // construction
@@ -75,13 +71,13 @@ public final class ActuatorSignal extends Actuator {
 
             switch(c.type){
                 case forceoff:
-                    p.setForceoff_requested(true);
-                    p.setActualyellowtime( c.yellowtime>=0 ? c.yellowtime : p.getYellowtime() );
-                    p.setActualredcleartime( c.redcleartime>=0 ? c.redcleartime : p.getRedcleartime() );
+                    p.forceoff_requested = true;
+                    p.actualyellowtime = c.yellowtime>=0 ? c.yellowtime : p.yellowtime;
+                    p.actualredcleartime = c.redcleartime>=0 ? c.redcleartime : p.redcleartime;
                     break;
 
                 case hold:
-                    p.setHold_requested(true);
+                    p.hold_requested = true;
                     break;
             }
         }
@@ -152,7 +148,7 @@ public final class ActuatorSignal extends Actuator {
 
 		// 0) Advance all phase timers ...........................................
 		for(SignalPhase phase : phases)
-            phase.getBulbtimer().advance();
+            phase.bulbtimer.advance();
 
 		// Update detector stations ............................................
 //		for(SignalPhase phase : phases)
@@ -180,10 +176,10 @@ public final class ActuatorSignal extends Actuator {
 		
 		// 3) Update permitted holds ............................................
 		for(SignalPhase phaseA:phases){
-            phaseA.setPermithold(true);
+            phaseA.permithold = true;
 			for(SignalPhase phaseB:phases)
-				if(!NEMA.is_compatible(phaseA, phaseB) && !phaseB.isPermitopposinghold() )
-                    phaseA.setPermithold(false);
+				if(!NEMA.is_compatible(phaseA, phaseB) && !phaseB.permitopposinghold )
+                    phaseA.permithold = false;
 		}
 		
 		// 4) Update signal commands ...................................................
@@ -191,33 +187,33 @@ public final class ActuatorSignal extends Actuator {
 		// Throw away conflicting hold pairs 
 		// (This is purposely drastic to create an error)
 		for(SignalPhase phaseA:phases)
-			if(phaseA.isHold_requested())
+			if(phaseA.hold_requested)
 				for(SignalPhase phaseB:phases)
-					if( phaseB.isHold_requested() && !NEMA.is_compatible(phaseA, phaseB) ){
-                        phaseA.setHold_requested(false);
-                        phaseB.setHold_requested(false);
+					if( phaseB.hold_requested && !NEMA.is_compatible(phaseA, phaseB) ){
+                        phaseA.hold_requested = false;
+                        phaseB.hold_requested = false;
 					}
 
 		// Deal with simultaneous hold and forceoff (RHODES needs this)
 		for(SignalPhase phase: phases)
-			if( phase.isHold_requested() && phase.isForceoff_requested() )
-                phase.setForceoff_requested(false);
+			if( phase.hold_requested && phase.forceoff_requested )
+                phase.forceoff_requested = false;
 
 		// Make local relaying copy
         for(int i=0;i<phases.size();i++){
             SignalPhase phase = phases.get(i);
-            hold_approved[i] = phase.isHold_requested();
-            forceoff_approved[i] = phase.isForceoff_requested();
+            hold_approved[i] = phase.hold_requested;
+            forceoff_approved[i] = phase.forceoff_requested;
 		}
 
 		// No transition if no permission
         for(int i=0;i<phases.size();i++)
-			if( !phases.get(i).isPermithold() )
+			if( !phases.get(i).permithold )
 				hold_approved[i] = false;
 
 		// No transition if green time < mingreen
         for(int i=0;i<phases.size();i++)
-            if( phases.get(i).getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phases.get(i).getBulbtimer().getT(), phases.get(i).getMingreen()) )
+            if( phases.get(i).bulbcolor.compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phases.get(i).bulbtimer.getT(), phases.get(i).mingreen) )
 				forceoff_approved[i] = false;
 
 		// collect updated bulb indications
@@ -291,6 +287,340 @@ public final class ActuatorSignal extends Actuator {
     public Long get_node_id(){
         return myNode==null ? null : myNode.getId();
     }
+
+    /////////////////////////////////////////////////////////////////////
+    // SignalPhase class
+    /////////////////////////////////////////////////////////////////////
+
+    public class SignalPhase {
+
+        // references ....................................................
+        protected ActuatorSignal mySignal;
+
+        // properties ....................................................
+        protected boolean protectd	    = false;
+        protected boolean isthrough	    = false;
+        protected boolean recall		= false;
+        protected boolean permissive	= false;
+        protected boolean lag 		    = false;
+
+        // dual ring structure
+        protected int myRingGroup = -1;
+        protected SignalPhase opposingPhase;
+        protected NEMA.ID myNEMA = NEMA.ID.NULL;
+
+        // Basic timing parameters
+        protected double mingreen;
+        protected double yellowtime;
+        protected double redcleartime;
+        protected double actualyellowtime;
+        protected double actualredcleartime;
+
+        // timers
+        protected Clock bulbtimer;
+
+        // State
+        protected ActuatorSignal.BulbColor bulbcolor;
+
+        //private int [] myControlIndex;
+
+        // Detectors
+        //private DetectorStation ApproachStation = null;
+        //private DetectorStation StoplineStation = null;
+        //private Vector<Integer> ApproachStationIds;
+        //private Vector<Integer> StoplineStationIds;
+
+        // Detector memory
+        protected boolean hasstoplinecall		= false;
+        protected boolean hasapproachcall		= false;
+        protected boolean hasconflictingcall	= false;
+        protected boolean currentconflictcall   = false;
+        protected float conflictingcalltime	= 0f;
+
+        // Safety
+        protected boolean permitopposinghold 	= true;
+        protected boolean permithold			= true;
+
+        // Controller command
+        protected boolean hold_requested 		= false;
+        protected boolean forceoff_requested	= false;
+
+        /////////////////////////////////////////////////////////////////////
+        // construction
+        /////////////////////////////////////////////////////////////////////
+
+        public SignalPhase(Node myNode,ActuatorSignal mySignal,double dt){
+            this.mySignal = mySignal;
+            this.bulbtimer = new Clock(0d,Double.POSITIVE_INFINITY,dt);
+        }
+
+        /////////////////////////////////////////////////////////////////////
+        // populate / rese / validate
+        /////////////////////////////////////////////////////////////////////
+
+        protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Phase jaxbPhase){
+
+            if(jaxbPhase.getNema()!=null)
+                myNEMA = NEMA.string_to_nema(jaxbPhase.getNema().toString());
+            else
+                myNEMA = NEMA.ID.NULL;
+
+            if(!Double.isNaN(jaxbPhase.getMinGreenTime()))
+                this.mingreen = jaxbPhase.getMinGreenTime();
+            else
+                this.mingreen = Defaults.mingreen;
+
+            if(!Double.isNaN(jaxbPhase.getRedClearTime()))
+                this.redcleartime = jaxbPhase.getRedClearTime();
+            else
+                this.redcleartime = Defaults.redcleartime;
+
+            if(!Double.isNaN(jaxbPhase.getYellowTime()))
+                this.yellowtime = jaxbPhase.getYellowTime();
+            else
+                this.yellowtime = Defaults.yellowtime;
+
+            this.lag = jaxbPhase.isLag();
+            this.permissive = jaxbPhase.isPermissive();
+            this.protectd = jaxbPhase.isProtected();
+            this.recall = jaxbPhase.isRecall();
+
+            // actual yellow and red clear times
+            this.actualyellowtime   = yellowtime;
+            this.actualredcleartime = redcleartime;
+
+            // dual ring structure: opposingPhase, isthrough, myRingGroup
+            switch(myNEMA){
+                case _1:
+                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._2);
+                    isthrough = false;
+                    myRingGroup = 0;
+                    break;
+                case _2:
+                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._1);
+                    isthrough = true;
+                    myRingGroup = 0;
+                    break;
+                case _3:
+                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._4);
+                    isthrough = false;
+                    myRingGroup = 1;
+                    break;
+                case _4:
+                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._3);
+                    isthrough = true;
+                    myRingGroup = 1;
+                    break;
+                case _5:
+                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._6);
+                    isthrough = false;
+                    myRingGroup = 0;
+                    break;
+                case _6:
+                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._5);
+                    isthrough = true;
+                    myRingGroup = 0;
+                    break;
+                case _7:
+                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._8);
+                    isthrough = false;
+                    myRingGroup = 1;
+                    break;
+                case _8:
+                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._7);
+                    isthrough = true;
+                    myRingGroup = 1;
+                    break;
+                case NULL:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        protected void reset() {
+            hasstoplinecall		= false;
+            hasapproachcall		= false;
+            hasconflictingcall	= false;
+            conflictingcalltime	= 0f;
+            hold_requested 		= false;
+            forceoff_requested	= false;
+            permithold			= true;
+            permitopposinghold  = false;
+            bulbcolor = ActuatorSignal.BulbColor.RED;
+            bulbtimer.reset();
+        }
+
+        protected void validate() {
+
+//		// check that there are links attached
+//		if(targetlinks==null || targetlinks.length==0)
+//			BeatsErrorLog.addError("No valid target link for phase NEMA=" + getNEMA() + " in signal ID=" + signal.getId());
+//
+//		// target links are valid
+//		if(targetlinks!=null)
+//			for(int i=0;i<targetlinks.length;i++)
+//				if(targetlinks[i]==null)
+//					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getNEMA() + " in signal ID=" + signal.getId());
+
+            // myNEMA is valid
+            if(myNEMA.compareTo(NEMA.ID.NULL)==0)
+                BeatsErrorLog.addError("Invalid NEMA code in phase NEMA=" + myNEMA + " in signal ID=" + mySignal.getId());
+
+            // numbers are positive
+            if( mingreen<0 )
+                BeatsErrorLog.addError("Negative mingreen=" + mingreen + " in signal ID=" + mySignal.getId());
+
+            if( yellowtime<0 )
+                BeatsErrorLog.addError("Negative yellowtime=" + yellowtime + " in signal ID=" + mySignal.getId());
+
+            if( redcleartime<0 )
+                BeatsErrorLog.addError("Negative redcleartime=" + redcleartime + " in signal ID=" + mySignal.getId());
+        }
+
+        /////////////////////////////////////////////////////////////////////
+        // protected
+        /////////////////////////////////////////////////////////////////////
+
+        protected void updatePermitOpposingHold(){
+
+            switch(bulbcolor){
+
+                case GREEN:
+                    // iff I am about to go off and there is no transition time
+                    permitopposinghold = forceoff_requested && actualyellowtime==0 && redcleartime==0;
+                    break;
+                case YELLOW:
+                    // iff near end yellow time and there is no red clear time
+                    permitopposinghold =  BeatsMath.greaterorequalthan(bulbtimer.getT(),actualyellowtime-bulbtimer.getDt()) && redcleartime==0 ;
+                    break;
+                case RED:
+                    // iff near end of red clear time and not starting again.
+                    permitopposinghold =  BeatsMath.greaterorequalthan(bulbtimer.getT(),redcleartime-bulbtimer.getDt()) && !hold_requested;
+                    break;
+                case DARK:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        protected ActuatorSignal.BulbColor get_new_bulb_color(boolean hold_approved,boolean forceoff_approved){
+
+            ActuatorSignal.BulbColor next_color = null;
+            double bulbt = bulbtimer.getT();
+
+            if(!protectd)
+                return permissive ? null : ActuatorSignal.BulbColor.RED;
+
+            // execute this state machine until "done". May be more than once if
+            // some state has zero holding time (eg yellowtime=0)
+            boolean done=false;
+
+            while(!done){
+
+                switch(bulbcolor){
+
+                    // .............................................................................................
+                    case GREEN:
+
+//				permitopposinghold = false;
+
+                        // Force off
+                        if( forceoff_approved ){
+                            next_color = ActuatorSignal.BulbColor.YELLOW;
+//					signal.getCompletedPhases().add(signal.new PhaseData(myNEMA, signal.getMyScenario().getClock().getT() - bulbtimer.getT(), bulbtimer.getT()));
+                            bulbtimer.reset();
+                            //FlushAllStationCallsAndConflicts();
+                            done = actualyellowtime>0;
+                        }
+                        else
+                            done = true;
+
+                        break;
+
+                    // .............................................................................................
+                    case YELLOW:
+
+                        // set permitopposinghold one step ahead of time so that other phases update correctly next time.
+//				permitopposinghold = false;
+
+//				if( BeatsMath.greaterorequalthan(bulbt,actualyellowtime-bulbtimer.dt) && redcleartime==0)
+//					permitopposinghold = true;
+
+                        // yellow time over, go immediately to red if redcleartime==0
+                        if( BeatsMath.greaterorequalthan(bulbt,actualyellowtime) ){
+                            next_color = ActuatorSignal.BulbColor.RED;
+                            bulbtimer.reset();
+                            done = redcleartime>0;
+                        }
+                        else
+                            done = true;
+                        break;
+
+                    // .............................................................................................
+                    case RED:
+
+                        //if( BeatsMath.greaterorequalthan(bulbt,redcleartime-myNode.getMyNetwork().getTP()*3600f  && !goG )
+//				if( BeatsMath.greaterorequalthan(bulbt,redcleartime-bulbtimer.dt) && !hold_approved )
+//					permitopposinghold = true;
+//				else
+//					permitopposinghold = false;
+
+                        // if hold, set to green, go to green, etc.
+                        if( hold_approved ){
+                            next_color = ActuatorSignal.BulbColor.GREEN;
+                            bulbtimer.reset();
+
+                            // Unregister calls (for reading conflicting calls)
+                            //FlushAllStationCallsAndConflicts(); // GCG ?????
+
+                            done = !forceoff_approved;
+                        }
+                        else
+                            done = true;
+
+                        break;
+                    case DARK:
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+            return next_color;
+        }
+
+        /////////////////////////////////////////////////////////////////////
+        // public interface
+        /////////////////////////////////////////////////////////////////////
+
+        public double getYellowtime() {
+            return yellowtime;
+        }
+
+        public double getRedcleartime() {
+            return redcleartime;
+        }
+
+        public double getMingreen() {
+            return mingreen;
+        }
+
+        public NEMA.ID getNEMA() {
+            return myNEMA;
+        }
+
+        public double getActualyellowtime() {
+            return actualyellowtime;
+        }
+
+        public double getActualredcleartime() {
+            return actualredcleartime;
+        }
+
+    }
+
 
 }
 

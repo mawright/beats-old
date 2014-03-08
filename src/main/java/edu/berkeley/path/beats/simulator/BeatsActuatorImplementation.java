@@ -3,7 +3,6 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 //import edu.berkeley.path.beats.actuator.ActuatorSignalStageSplits;
 import edu.berkeley.path.beats.actuator.NEMA;
-import edu.berkeley.path.beats.actuator.SignalPhase;
 //import edu.berkeley.path.beats.actuator.StageSplit;
 import edu.berkeley.path.beats.jaxb.LinkReference;
 import edu.berkeley.path.beats.jaxb.Phase;

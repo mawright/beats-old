@@ -28,10 +28,10 @@ public abstract class NEMA {
         return nema;
     }
 
-    public static boolean is_compatible(SignalPhase phaseA,SignalPhase phaseB){
-        if( !phaseA.isProtected() || !phaseB.isProtected() )
+    public static boolean is_compatible(ActuatorSignal.SignalPhase phaseA,ActuatorSignal.SignalPhase phaseB){
+        if( !phaseA.protectd || !phaseB.protectd )
             return true;
-        return is_compatible(phaseA.getNEMA(), phaseB.getNEMA());
+        return is_compatible(phaseA.myNEMA, phaseB.myNEMA);
     }
 
     public static boolean is_compatible(ID nemaA, ID nemaB){
