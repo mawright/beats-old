@@ -120,7 +120,11 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	public Link getMyLink() {
 		return myLink;
 	}
-	
+
+    public int get_VDS(){
+        return Integer.parseInt(jaxbSensor.getSensorIdOriginal());
+    }
+
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset / update
 	/////////////////////////////////////////////////////////////////////

@@ -5,17 +5,11 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 
+import edu.berkeley.path.beats.simulator.*;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.simulator.Defaults;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
-import edu.berkeley.path.beats.simulator.Scenario;
 
 public class ScenarioTest {
 
@@ -267,5 +261,17 @@ public class ScenarioTest {
 	@Test
 	public void test_calibrate_fundamental_diagrams() {
 	}
+
+    @Test
+    public void test_getSensorWithVDS() {
+        int vds = 100;
+        Sensor sensor = static_scenario.getSensorWithVDS(vds);
+        long exp = -2;
+        assertEquals(sensor.getId(),exp,1e-4);
+
+        // edge cases
+        assertNull(static_scenario.getSensorWithVDS(0));
+
+    }
 	
 }

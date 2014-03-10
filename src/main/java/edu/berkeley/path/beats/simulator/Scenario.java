@@ -893,10 +893,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     public Sensor getSensorWithVDS(int vds) {
         if(sensorset==null)
             return null;
-        for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
-            if( Integer.parseInt(sensor.getSensorIdOriginal())==vds)
-                return (Sensor) sensor;
-        }
+        for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() )
+            if(sensor.get_VDS()==vds)
+                return sensor;
         return null;
     }
 
