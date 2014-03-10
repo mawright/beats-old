@@ -187,8 +187,10 @@ public class Controller_SIG_Pretimed extends Controller {
 //		if( plansequence[cperiod]==0 )
 //			ImplementASC();
 //		else
-//			plans.get(plansequence[cperiod]).update_command(simtime,coordmode);
-        plan_schedule.get(cplan_index).plan.update_command(sim_time, false);
+//			plans.get(plansequence[cperiod]).send_commands_to_signal(simtime,coordmode);
+
+        // send commands to intersection actuators
+        plan_schedule.get(cplan_index).plan.send_commands_to_signal(sim_time, false);
 
     }
 
@@ -237,7 +239,7 @@ public class Controller_SIG_Pretimed extends Controller {
                 ip.validate();
         }
 
-        public void update_command(double simtime, boolean coordmode){
+        public void send_commands_to_signal(double simtime, boolean coordmode){
 
             // Master clock .............................
             double mod_time =  simtime % cycle;
@@ -250,7 +252,6 @@ public class Controller_SIG_Pretimed extends Controller {
 
                 // send to signal actuator
                 int_plan.my_signal.set_command(int_commands);
-
 
 //                if( !coordmode ){
 //                    for(j=0;j<intplan.holdpoint.length;j++)

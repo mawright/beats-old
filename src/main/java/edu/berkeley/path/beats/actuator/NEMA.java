@@ -121,4 +121,63 @@ public abstract class NEMA {
     public static boolean isNULL(ID nema){
         return nema.compareTo(ID.NULL)==0;
     }
+
+    public static NEMA.ID get_opposing(NEMA.ID x){
+
+        switch(x){
+            case _1:
+                return NEMA.ID._2;
+            case _2:
+                return NEMA.ID._1;
+            case _3:
+                return NEMA.ID._4;
+            case _4:
+                return NEMA.ID._3;
+            case _5:
+                return NEMA.ID._6;
+            case _6:
+                return NEMA.ID._5;
+            case _7:
+                return NEMA.ID._8;
+            case _8:
+                return NEMA.ID._7;
+            case NULL:
+                return NEMA.ID.NULL;
+        }
+        return NEMA.ID.NULL;
+    }
+
+    public static int get_ring_group(NEMA.ID x){
+        switch(x){
+            case _1:
+            case _2:
+            case _5:
+            case _6:
+                return 0;
+            case _3:
+            case _4:
+            case _7:
+            case _8:
+                return 1;
+            case NULL:
+                return -1;
+        }
+        return -1;
+    }
+
+    public static boolean is_through(NEMA.ID x){
+        switch(x){
+            case _1:
+            case _3:
+            case _5:
+            case _7:
+                return false;
+            case _2:
+            case _4:
+            case _6:
+            case _8:
+                return true;
+        }
+        return false;
+    }
 }

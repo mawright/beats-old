@@ -331,11 +331,11 @@ public final class ActuatorSignal extends Actuator {
         //private Vector<Integer> StoplineStationIds;
 
         // Detector memory
-        protected boolean hasstoplinecall		= false;
-        protected boolean hasapproachcall		= false;
-        protected boolean hasconflictingcall	= false;
-        protected boolean currentconflictcall   = false;
-        protected float conflictingcalltime	= 0f;
+//        protected boolean hasstoplinecall		= false;
+//        protected boolean hasapproachcall		= false;
+//        protected boolean hasconflictingcall	= false;
+//        protected boolean currentconflictcall   = false;
+//        protected float conflictingcalltime	= 0f;
 
         // Safety
         protected boolean permitopposinghold 	= true;
@@ -359,90 +359,26 @@ public final class ActuatorSignal extends Actuator {
         /////////////////////////////////////////////////////////////////////
 
         protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Phase jaxbPhase){
-
-            if(jaxbPhase.getNema()!=null)
-                myNEMA = NEMA.string_to_nema(jaxbPhase.getNema().toString());
-            else
-                myNEMA = NEMA.ID.NULL;
-
-            if(!Double.isNaN(jaxbPhase.getMinGreenTime()))
-                this.mingreen = jaxbPhase.getMinGreenTime();
-            else
-                this.mingreen = Defaults.mingreen;
-
-            if(!Double.isNaN(jaxbPhase.getRedClearTime()))
-                this.redcleartime = jaxbPhase.getRedClearTime();
-            else
-                this.redcleartime = Defaults.redcleartime;
-
-            if(!Double.isNaN(jaxbPhase.getYellowTime()))
-                this.yellowtime = jaxbPhase.getYellowTime();
-            else
-                this.yellowtime = Defaults.yellowtime;
-
-            this.lag = jaxbPhase.isLag();
-            this.permissive = jaxbPhase.isPermissive();
-            this.protectd = jaxbPhase.isProtected();
-            this.recall = jaxbPhase.isRecall();
-
-            // actual yellow and red clear times
-            this.actualyellowtime   = yellowtime;
-            this.actualredcleartime = redcleartime;
-
-            // dual ring structure: opposingPhase, isthrough, myRingGroup
-            switch(myNEMA){
-                case _1:
-                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._2);
-                    isthrough = false;
-                    myRingGroup = 0;
-                    break;
-                case _2:
-                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._1);
-                    isthrough = true;
-                    myRingGroup = 0;
-                    break;
-                case _3:
-                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._4);
-                    isthrough = false;
-                    myRingGroup = 1;
-                    break;
-                case _4:
-                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._3);
-                    isthrough = true;
-                    myRingGroup = 1;
-                    break;
-                case _5:
-                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._6);
-                    isthrough = false;
-                    myRingGroup = 0;
-                    break;
-                case _6:
-                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._5);
-                    isthrough = true;
-                    myRingGroup = 0;
-                    break;
-                case _7:
-                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._8);
-                    isthrough = false;
-                    myRingGroup = 1;
-                    break;
-                case _8:
-                    opposingPhase = mySignal.get_phase_with_nema(NEMA.ID._7);
-                    isthrough = true;
-                    myRingGroup = 1;
-                    break;
-                case NULL:
-                    break;
-                default:
-                    break;
-            }
+            myNEMA = NEMA.string_to_nema(jaxbPhase.getNema().toString());
+            mingreen = jaxbPhase.getMinGreenTime();
+            redcleartime = jaxbPhase.getRedClearTime();
+            yellowtime = jaxbPhase.getYellowTime();
+            lag = jaxbPhase.isLag();
+            permissive = jaxbPhase.isPermissive();
+            protectd = jaxbPhase.isProtected();
+            recall = jaxbPhase.isRecall();
+            actualyellowtime   = yellowtime;
+            actualredcleartime = redcleartime;
+            isthrough = NEMA.is_through(myNEMA);
+            myRingGroup = NEMA.get_ring_group(myNEMA);
+            opposingPhase = mySignal.get_phase_with_nema(NEMA.get_opposing(myNEMA));
         }
 
         protected void reset() {
-            hasstoplinecall		= false;
-            hasapproachcall		= false;
-            hasconflictingcall	= false;
-            conflictingcalltime	= 0f;
+//            hasstoplinecall		= false;
+//            hasapproachcall		= false;
+//            hasconflictingcall	= false;
+//            conflictingcalltime	= 0f;
             hold_requested 		= false;
             forceoff_requested	= false;
             permithold			= true;
@@ -620,7 +556,6 @@ public final class ActuatorSignal extends Actuator {
         }
 
     }
-
 
 }
 
