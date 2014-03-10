@@ -19,6 +19,7 @@ public class SignalCommand implements Comparable {
     public Double time;
     public Double yellowtime;
     public Double redcleartime;
+    public boolean is_first = false;
 
     public SignalCommand(Type type,NEMA.ID phase,double time){
         this.type = type;

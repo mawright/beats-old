@@ -228,14 +228,14 @@ public final class ActuatorSignal extends Actuator {
             }
         }
 
-//        // Remove serviced commands
-//		for(SignalPhase phase: phases){
-//			if(phase.isGreen())
-//                phase.setHold_requested(false);
-//			if(phase.isYellow() || phase.isRed() )
-//                phase.setForceoff_requested(false);
-//		}
-//
+        // Remove serviced commands
+		for(SignalPhase phase: phases){
+			if(phase.is_green())
+                phase.hold_requested = false;
+			if(phase.is_yellow() || phase.is_red() )
+                phase.forceoff_requested = false;
+		}
+
 //		// Set permissive opposing left turn to yellow
 //		// opposing is yellow if I am green or yellow, and I am through, and opposing is permissive
 //		// opposing is red if I am red and it is not protected
@@ -299,12 +299,12 @@ public final class ActuatorSignal extends Actuator {
         // properties ....................................................
         protected boolean protectd	    = false;
         protected boolean isthrough	    = false;
-        protected boolean recall		= false;
+//        protected boolean recall		= false;
         protected boolean permissive	= false;
-        protected boolean lag 		    = false;
+//        protected boolean lag 		    = false;
 
         // dual ring structure
-        protected int myRingGroup = -1;
+//        protected int myRingGroup = -1;
 //        protected SignalPhase opposingPhase;
         protected NEMA.ID myNEMA = NEMA.ID.NULL;
 
@@ -364,14 +364,14 @@ public final class ActuatorSignal extends Actuator {
             mingreen = jaxbPhase.getMinGreenTime();
             redcleartime = jaxbPhase.getRedClearTime();
             yellowtime = jaxbPhase.getYellowTime();
-            lag = jaxbPhase.isLag();
+//            lag = jaxbPhase.isLag();
             permissive = jaxbPhase.isPermissive();
             protectd = jaxbPhase.isProtected();
-            recall = jaxbPhase.isRecall();
+//            recall = jaxbPhase.isRecall();
             actualyellowtime   = yellowtime;
             actualredcleartime = redcleartime;
             isthrough = NEMA.is_through(myNEMA);
-            myRingGroup = NEMA.get_ring_group(myNEMA);
+//            myRingGroup = NEMA.get_ring_group(myNEMA);
         }
 
         protected void reset() {
@@ -526,6 +526,18 @@ public final class ActuatorSignal extends Actuator {
         /////////////////////////////////////////////////////////////////////
         // public interface
         /////////////////////////////////////////////////////////////////////
+
+        public boolean is_green(){
+            return bulbcolor.compareTo(BulbColor.GREEN)==0;
+        }
+
+        public boolean is_yellow(){
+            return bulbcolor.compareTo(BulbColor.YELLOW)==0;
+        }
+
+        public boolean is_red(){
+            return bulbcolor.compareTo(BulbColor.RED)==0;
+        }
 
         public double getYellowtime() {
             return yellowtime;

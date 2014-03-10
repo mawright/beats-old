@@ -109,8 +109,6 @@ public class Controller_SIG_Pretimed extends Controller {
             for(IntersectionPlan ip : pp.intersection_plans.values()){
                 ip.compute_stage_info();
                 ip.generate_command_sequence();
-                System.out.println(pp.id + ", " + ip.intersection_id);
-                System.out.println(ip.command_sequence);
             }
 
         // create plan sequence
@@ -244,11 +242,17 @@ public class Controller_SIG_Pretimed extends Controller {
             // Master clock .............................
             double mod_time =  simtime % cycle;
 
+            System.out.println(mod_time);
+
             // Loop through intersections ...............
             for (IntersectionPlan int_plan : intersection_plans.values()) {
 
                 // get commands for this intersection
                 ArrayList<SignalCommand> int_commands = int_plan.get_commands_for_time(mod_time);
+
+                if(!int_commands.isEmpty())
+                    System.out.println(int_commands);
+
 
                 // send to signal actuator
                 int_plan.my_signal.set_command(int_commands);
@@ -428,17 +432,18 @@ public class Controller_SIG_Pretimed extends Controller {
 
             // sort the commands
             Collections.sort(command_sequence);
+            command_sequence.get(0).is_first = true;
         }
 
         protected ArrayList<SignalCommand> get_commands_for_time(double mod_time){
-            double rel_time = mod_time - offset;
+            double rel_time = (mod_time-offset) % my_plan.cycle;
             if(rel_time<0)
                 rel_time += my_plan.cycle;
             ArrayList<SignalCommand> new_commands = new ArrayList<SignalCommand>();
-            boolean looped = false;
-            while(rel_time>=command_ptr.current().time && !looped){
+            boolean added_last = false;
+            while(rel_time>=command_ptr.current().time && !added_last){
                 new_commands.add(command_ptr.current());
-                looped = command_ptr.advance();
+                added_last = command_ptr.advance();
             }
             return new_commands;
         }

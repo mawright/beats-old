@@ -55,7 +55,6 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
                 if(A!=null)
                     actuators.add(A);
             }
-
         }
 
 	}
