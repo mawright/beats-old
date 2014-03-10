@@ -27,6 +27,8 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
             case cms:
                 target = scenario.getNodeWithId(se.getId());
                 break;
+            case signal:
+                break;
         }
 	}
 
@@ -99,28 +101,25 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 
     @Override
     public void deploy_bulb_color(NEMA.ID nema,ActuatorSignal.BulbColor color){
-//        Integer [] indices = nema2indices.get(nema);
-//        if(indices==null)
-//            return;
-//
-//        double maxflow;
-//        switch(color){
-//            case GREEN:
-//            case YELLOW:
-//                maxflow = Double.POSITIVE_INFINITY;
-//                break;
-//            case RED:
-//            case DARK:
-//                maxflow = 0d;
-//                break;
-//            default:
-//                maxflow = 0d;
-//                break;
-//        }
-//
-//        for(Integer index:indices)
-//            this.setControl_maxflow(index, maxflow);
 
+        List<Link> links = ((HashMap<NEMA.ID,List<Link>>) target).get(nema);
+        if(links==null || links.isEmpty())
+            return;
+
+        double maxflow = Double.POSITIVE_INFINITY;
+        switch(color){
+            case GREEN:
+            case YELLOW:
+                maxflow = Double.POSITIVE_INFINITY;
+                break;
+            case RED:
+            case DARK:
+                maxflow = 0d;
+                break;
+        }
+
+        for(Link link : links)
+            link.set_external_max_flow_in_veh(maxflow);
     }
 
 }
