@@ -112,7 +112,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         has_flow_controller = false;
         has_speed_controller = false;
 
-        is_queue_link = getLinkType().getName().compareToIgnoreCase("queueing")==0;
+        is_queue_link = getLinkType().getName().compareToIgnoreCase("Intersection Approach")==0;
 				
 	}
 
