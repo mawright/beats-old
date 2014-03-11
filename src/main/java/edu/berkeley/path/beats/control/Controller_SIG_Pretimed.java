@@ -242,17 +242,11 @@ public class Controller_SIG_Pretimed extends Controller {
             // Master clock .............................
             double mod_time =  simtime % cycle;
 
-            System.out.println(mod_time);
-
             // Loop through intersections ...............
             for (IntersectionPlan int_plan : intersection_plans.values()) {
 
                 // get commands for this intersection
                 ArrayList<SignalCommand> int_commands = int_plan.get_commands_for_time(mod_time);
-
-                if(!int_commands.isEmpty())
-                    System.out.println(int_commands);
-
 
                 // send to signal actuator
                 int_plan.my_signal.set_command(int_commands);
@@ -314,6 +308,7 @@ public class Controller_SIG_Pretimed extends Controller {
         // command
         protected CircularIterator<SignalCommand> command_ptr;
         protected CircularList<SignalCommand> command_sequence;
+        protected double last_command_time;
 
         public IntersectionPlan(PretimedPlan my_plan,ActuatorSignal my_signal,int intersection_id,double offset){
             this.my_plan = my_plan;
@@ -432,7 +427,7 @@ public class Controller_SIG_Pretimed extends Controller {
 
             // sort the commands
             Collections.sort(command_sequence);
-            command_sequence.get(0).is_first = true;
+            last_command_time = command_sequence.get(command_sequence.size()-1).time;
         }
 
         protected ArrayList<SignalCommand> get_commands_for_time(double mod_time){
@@ -440,10 +435,13 @@ public class Controller_SIG_Pretimed extends Controller {
             if(rel_time<0)
                 rel_time += my_plan.cycle;
             ArrayList<SignalCommand> new_commands = new ArrayList<SignalCommand>();
-            boolean added_last = false;
-            while(rel_time>=command_ptr.current().time && !added_last){
-                new_commands.add(command_ptr.current());
-                added_last = command_ptr.advance();
+
+            if(rel_time<=last_command_time){
+                boolean looped = false;
+                while(rel_time>=command_ptr.current().time && !looped){
+                    new_commands.add(command_ptr.current());
+                    looped = command_ptr.advance();
+                }
             }
             return new_commands;
         }
@@ -494,8 +492,8 @@ public class Controller_SIG_Pretimed extends Controller {
     }
 
     protected class CircularIterator<T> {
-        private int cur = 0;
-        private CircularList<T> coll = null;
+        public int cur = 0;
+        public CircularList<T> coll = null;
         protected CircularIterator(CircularList<T> coll) {
             this.coll = coll;
         }
