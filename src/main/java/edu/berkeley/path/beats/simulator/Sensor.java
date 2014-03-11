@@ -45,8 +45,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	private Link myLink = null;
 
 	/** Type of sensor. */
-	public static enum Type	{  
-	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	loop }
+	public static enum Type	{ loop }
 				   	   	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -120,7 +119,11 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	public Link getMyLink() {
 		return myLink;
 	}
-	
+
+    public int get_VDS(){
+        return Integer.parseInt(jaxbSensor.getSensorIdOriginal());
+    }
+
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset / update
 	/////////////////////////////////////////////////////////////////////

@@ -369,7 +369,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 				break;
 
 			case gaussian:
-				samp._capacity += BeatsMath.sampleZeroMeanUniform(std_dev_capacity);
+				samp._capacity += BeatsMath.sampleZeroMeanGaussian(std_dev_capacity);
 				break;
 			}			
 		}

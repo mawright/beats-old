@@ -489,7 +489,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 			OutputWriterBase outputwriter = null;
 			if (runParam.writefiles){
-				outputwriter = OutputWriterFactory.getWriter(this, owr_props, runParam.dt_output,runParam.outsteps);
+				outputwriter = OutputWriterFactory.getWriter(this, owr_props, runParam.dt_output,runParam.outsteps,runParam.t_start_output);
 				outputwriter.open(i);
 			}
 
@@ -498,7 +498,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				reset();
 
 				// advance to end of simulation
-				while( advanceNSteps_internal(1,runParam.writefiles,outputwriter,runParam.t_start_output) ){}
+				while( advanceNSteps_internal(1,runParam.writefiles,outputwriter) ){}
 
 			}
 
@@ -543,8 +543,19 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(!BeatsMath.isintegermultipleof(nsec,runParam.dt_sim))
 			throw new BeatsException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + runParam.dt_sim + ").");
 		int nsteps = BeatsMath.round(nsec/runParam.dt_sim);
-		return advanceNSteps_internal(nsteps,false,null,-1d);
+		return advanceNSteps_internal(nsteps,false,null);
 	}
+
+    public boolean advanceNSeconds(double nsec,OutputWriterBase outputwriter) throws BeatsException{
+
+        if(!scenario_locked)
+            throw new BeatsException("Run not initialized. Use initialize_run() first.");
+
+        if(!BeatsMath.isintegermultipleof(nsec,runParam.dt_sim))
+            throw new BeatsException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + runParam.dt_sim + ").");
+        int nsteps = BeatsMath.round(nsec/runParam.dt_sim);
+        return advanceNSteps_internal(nsteps,true,outputwriter);
+    }
 
 	/////////////////////////////////////////////////////////////////////
 	// protected simple getters and setters
@@ -638,7 +649,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         }
 	}
 	
-	// scalar getters ........................................................
+	// getters ........................................................
 
 	public UncertaintyType getUncertaintyModel() {
 		return uncertaintyModel;
@@ -768,9 +779,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public NodeSRSolver getNodeSRSolver(){
 		return this.nodesrsolver;
 	}
-	
-	// array getters ........................................................
-	
+
 	/** Vehicle type names.
 	 * @return	Array of strings with the names of the vehicles types.
 	 */
@@ -830,8 +839,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return density;           
 	}
 
-	// object getters ........................................................
-
 	public Cumulatives getCumulatives() {
         return cumulatives;
 	}
@@ -870,6 +877,19 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
+	/** Get sensor with given id.
+	 * @param id String id of the sensor.
+	 * @return Sensor object.
+	 */
+	public Sensor getSensorWithId(long id) {
+		if(sensorset==null)
+			return null;
+		for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
+			if(sensor.getId()==id)
+				return (Sensor) sensor;
+		}
+		return null;
+	}
 	/** Get sensor with given ID.
 	 * @param id String ID of the sensor.
 	 * @return Sensor object.
@@ -883,6 +903,28 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		return null;
 	}
+    /** Get sensor with given id.
+     * @param id String id of the sensor.
+     * @return Sensor object.
+     */
+    public Sensor getSensorWithId(long id) {
+        if(sensorset==null)
+            return null;
+        for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
+            if(sensor.getId()==id)
+                return (Sensor) sensor;
+        }
+        return null;
+    }
+
+    public Sensor getSensorWithVDS(int vds) {
+        if(sensorset==null)
+            return null;
+        for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() )
+            if(sensor.get_VDS()==vds)
+                return sensor;
+        return null;
+    }
 
 	/** Get actuator with given ID.
 	 * @param id String ID of the actuator.
@@ -957,7 +999,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         }
         return null;
     }
-
 
     /////////////////////////////////////////////////////////////////////
 	// scenario modification
@@ -1134,7 +1175,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	}
 
-	private boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
+	private boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter) throws BeatsException{
 
 //        if(BeatsMath.isintegermultipleof(clock.getTElapsed(),1d))
 //            System.out.println(clock.getT());
@@ -1143,7 +1184,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		for(int k=0;k<n;k++){
 
             // export initial condition
-	        if(!started_writing && BeatsMath.equals(clock.getT(),outStart) ){
+	        if(outputwriter!=null && !started_writing && BeatsMath.equals(clock.getT(),outputwriter.outStart) ){
 	        	recordstate(writefiles,outputwriter,false);
 	        	started_writing = true;
 	        }
@@ -1151,7 +1192,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         	// update scenario
         	update();
 
-            if(started_writing && clock.getRelativeTimeStep()%outputwriter.outSteps == 0 )
+            if(outputwriter!=null && started_writing && clock.getRelativeTimeStep()%outputwriter.outSteps == 0 )
                 recordstate(writefiles,outputwriter,true);
 
         	if(clock.expired())
@@ -1481,4 +1522,43 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         }
         return demand_set;
     }
+
+    /////////////////////////////////////////////////////////////////////
+    // used for estimation
+    /////////////////////////////////////////////////////////////////////
+
+    // set density indexed by [link][ensemble]
+    public boolean setTotalDensity(double [][] d){
+
+        if(getNetworkSet().getNetwork().size()>1){
+            System.err.println("This methos works only with single network scenarios.");
+            return false;
+        }
+
+        if(getNumVehicleTypes()>1){
+            System.err.println("This methos works only with single vehicle type scenarios.");
+            return false;
+        }
+
+        Network network = (Network) getNetworkSet().getNetwork().get(0);
+        int numLinks = network.getLinkList().getLink().size();
+
+        if(numLinks!=d.length){
+            System.err.println("The 1st dimension of the input should equal the number of links in the scenario.");
+            return false;
+        }
+
+        if(getNumEnsemble()!=d[0].length){
+            System.err.println("The 2nd dimension of the input should equal the number of links in the scenario.");
+            return false;
+        }
+
+        int i,e;
+        boolean success = true;
+        for(i=0;i<numLinks;i++)
+            for(e=0;e<getNumEnsemble();e++)
+                success &= ((Link)network.getLinkList().getLink().get(i)).set_density(d[i]);
+        return success;
+    }
+
 }

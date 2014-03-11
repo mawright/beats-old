@@ -57,7 +57,7 @@ final class SensorSet extends edu.berkeley.path.beats.jaxb.SensorSet  {
 		    	try {
 		    		SensorType stype = sensorjaxb.getSensorType();
 		    		if(stype!=null)
-		    			myType = Sensor.Type.valueOf(stype.getName());
+		    			myType = Sensor.Type.valueOf(stype.getName().toLowerCase());
 				} catch (IllegalArgumentException e) {
 					continue;
 				}
