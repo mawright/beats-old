@@ -877,10 +877,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
-	/** Get sensor with given id.
-	 * @param id String id of the sensor.
-	 * @return Sensor object.
-	 */
 	public Sensor getSensorWithId(long id) {
 		if(sensorset==null)
 			return null;
@@ -890,32 +886,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		return null;
 	}
-	/** Get sensor with given ID.
-	 * @param id String ID of the sensor.
-	 * @return Sensor object.
-	 */
-	public Sensor getSensorWithId(long id) {
-		if(sensorset==null)
-			return null;
-		for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
-			if(sensor.getId()==id)
-				return (Sensor) sensor;
-		}
-		return null;
-	}
-    /** Get sensor with given id.
-     * @param id String id of the sensor.
-     * @return Sensor object.
-     */
-    public Sensor getSensorWithId(long id) {
-        if(sensorset==null)
-            return null;
-        for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
-            if(sensor.getId()==id)
-                return (Sensor) sensor;
-        }
-        return null;
-    }
 
     public Sensor getSensorWithVDS(int vds) {
         if(sensorset==null)
