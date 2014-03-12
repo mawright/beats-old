@@ -43,10 +43,6 @@ public final class ActuatorSignal extends Actuator {
 	private Node myNode;
 	private ArrayList<SignalPhase> phases;
 
-//	// local copy of the command, subject to checks
-//	private boolean [] hold_approved;
-//	private boolean [] forceoff_approved;
-
     /////////////////////////////////////////////////////////////////////
     // construction
     /////////////////////////////////////////////////////////////////////
@@ -64,6 +60,10 @@ public final class ActuatorSignal extends Actuator {
     /////////////////////////////////////////////////////////////////////
 
     public void set_command(ArrayList<SignalCommand> command){
+
+        if(!command.isEmpty())
+            System.out.println(command);
+
         for(SignalCommand c : command){
             SignalPhase p = nema2phase.get(c.nema);
             if(p==null)
@@ -383,7 +383,7 @@ public final class ActuatorSignal extends Actuator {
             forceoff_requested	= false;
 //            permithold			= true;
 //            permitopposinghold  = false;
-            bulbcolor = ActuatorSignal.BulbColor.RED;
+            bulbcolor = ActuatorSignal.BulbColor.DARK;
             bulbtimer.reset();
         }
 
@@ -514,6 +514,8 @@ public final class ActuatorSignal extends Actuator {
 
                         break;
                     case DARK:
+                        next_color = ActuatorSignal.BulbColor.RED;
+                        done = true;
                         break;
                     default:
                         break;

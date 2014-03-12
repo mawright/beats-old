@@ -102,6 +102,9 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
     @Override
     public void deploy_bulb_color(NEMA.ID nema,ActuatorSignal.BulbColor color){
 
+        if(nema.compareTo(NEMA.ID._8)==0)
+            System.out.println(color);
+
         List<Link> links = ((HashMap<NEMA.ID,List<Link>>) target).get(nema);
         if(links==null || links.isEmpty())
             return;
