@@ -33,16 +33,21 @@ import java.math.BigDecimal;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 public class Link extends edu.berkeley.path.beats.jaxb.Link {
-	
+
+    protected Scenario myScenario;
+    protected Network myNetwork;
+
 	// does not change ....................................
-	protected Network myNetwork;
     protected Node begin_node;
     protected Node end_node;
 
-	// link geometry
+    // in/out flows (from node model or demand profiles)
+    protected double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
+    protected double [][] outflow;    				    // [veh]	numEnsemble x numVehTypes
+
+    // link geometry
     protected double _lanes;							// [-]
-    protected boolean is_queue_link;                    // true if this is a queue-type link
-	
+
 	// source/sink indicators
     protected boolean issource; 						// [boolean]
     protected boolean issink;     					    // [boolean]
@@ -87,8 +92,17 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	protected void populate(Network myNetwork) {
 
-		this.myNetwork = myNetwork;
-        this.link_behavior = new LinkBehavior(this);
+        this.myNetwork = myNetwork;
+        this.myScenario = myNetwork.getMyScenario();
+
+        if(linkType.getName().compareTo("Intersection Approach")==0)
+            link_behavior = new LinkBehaviorQueue(this);
+
+        else if (linkType.getName().compareTo("Street")==0)
+            link_behavior = new LinkBehaviorTravelTime(this);
+
+        else
+            link_behavior = new LinkBehaviorCTM(this);
 
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
@@ -107,8 +121,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         has_flow_controller = false;
         has_speed_controller = false;
 
-        is_queue_link = getLinkType()==null ? false : getLinkType().getName().compareToIgnoreCase("Intersection Approach")==0;
-				
 	}
 
 	protected void validate() {
@@ -128,27 +140,24 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	protected void reset(){
 		resetLanes();		
-		resetState();
 		resetFD();
-		
-		this.external_max_flow = Double.POSITIVE_INFINITY;
-		this.external_max_speed = Double.POSITIVE_INFINITY;
-	}
-	
-	private void resetState() {
-
         link_behavior.reset(initial_density);
 
+        int n1 = myScenario.getNumEnsemble();
+        int n2 = myScenario.getNumVehicleTypes();
+        inflow = BeatsMath.zeros(n1,n2);
+        outflow = BeatsMath.zeros(n1,n2);
 
-		return;
-	}
+		this.external_max_flow = Double.POSITIVE_INFINITY;
+		this.external_max_speed = Double.POSITIVE_INFINITY;
+    }
 
 	private void resetLanes(){
 		_lanes = getLanes();
 	}
 
 	private void resetFD(){
-		FDfromProfile = new FundamentalDiagram [myNetwork.getMyScenario().getNumEnsemble()];
+		FDfromProfile = new FundamentalDiagram [myScenario.getNumEnsemble()];
 		for(int i=0;i<FDfromProfile.length;i++){
 			FDfromProfile[i] = new FundamentalDiagram(this);
 			FDfromProfile[i].settoDefault();
@@ -158,7 +167,18 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 
 	protected void update() {
-        link_behavior.update();
+
+        // behavior for all sink links
+        if(issink)
+            outflow = link_behavior.outflowDemand;
+
+        // behavior for all source links
+        if(issource && myDemandProfile!=null)
+            for(int e=0;e<myScenario.getNumEnsemble();e++)
+                inflow[e] = myDemandProfile.getCurrentValue();
+
+
+        link_behavior.update_state(inflow,outflow);
 	}
 
     protected void updateOutflowDemand(){
@@ -212,13 +232,13 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	// used by Event.setLinkLanes
 	protected void set_Lanes(double newlanes) throws BeatsException{
-		for(int e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++)
+		for(int e=0;e<myScenario.getNumEnsemble();e++)
 			if(getDensityJamInVeh(e)*newlanes/get_Lanes() < link_behavior.getTotalDensityInVeh(e))
 				throw new BeatsException("ERROR: Lanes could not be set.");
 
 		if(myFDprofile!=null)
 			myFDprofile.set_Lanes(newlanes);	// adjust present and future fd's
-		for(int e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++)
+		for(int e=0;e<myScenario.getNumEnsemble();e++)
 			FDfromProfile[e].setLanes(newlanes);
 		_lanes = newlanes;					// adjust local copy of lane count
 	}
@@ -238,7 +258,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return;
 
 		// sample the fundamental digram
-		for(int e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++)
+		for(int e=0;e<myScenario.getNumEnsemble();e++)
 			FDfromProfile[e] = fd.perturb();
 	}
 
@@ -265,7 +285,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	public void set_external_max_flow_in_vph(double value_in_vph){
         if(has_flow_controller)
-            external_max_flow = value_in_vph*getMyNetwork().getMyScenario().getSimdtinseconds()/3600d;
+            external_max_flow = value_in_vph*myScenario.getSimdtinseconds()/3600d;
 	}
 	
     public void set_external_max_speed(double value){
@@ -273,15 +293,18 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
             external_max_speed = value;
     }
 
+    public Network getMyNetwork(){
+        return myNetwork;
+    }
+
 	// initial condition ..................................................
 	protected void copy_state_to_initial_state(){
-		initial_density = link_behavior.density[0].clone();
+		initial_density = link_behavior.getDensityInVeh(0);
 	}
 	
 	protected void set_initial_state(double [] d){
-		initial_density  = d==null ? BeatsMath.zeros(myNetwork.getMyScenario().getNumVehicleTypes()) : d.clone();
+		initial_density  = d==null ? BeatsMath.zeros(myScenario.getNumVehicleTypes()) : d.clone();
 	}
-
 	
 	/////////////////////////////////////////////////////////////////////
 	// public API
@@ -321,9 +344,9 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// Link geometry ....................
 
 	/** network that contains this link */
-	public Network getMyNetwork() {
-		return myNetwork;
-	}
+//	public Network getMyNetwork() {
+//		return myNetwork;
+//	}
 
 	/** upstream node of this link  */
 	public Node getBegin_node() {
@@ -389,36 +412,64 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
 
-    protected void setInflow(int ensemble,double[] inflow) {
-        link_behavior.setInflow(ensemble,inflow);
+    /////////////////////////////////////////////////////////////////////
+    // interface for node model
+    /////////////////////////////////////////////////////////////////////
+
+    public void setInflow(int ensemble,double[] inflow) {
+        this.inflow[ensemble] = inflow;
     }
 
-    protected void setOutflow(int ensemble,double[] outflow) {
-        link_behavior.setOutflow(ensemble,outflow);
+    public void setOutflow(int ensemble,double[] outflow) {
+        this.outflow[ensemble] = outflow;
     }
 
     public double[] getOutflowInVeh(int ensemble) {
-        return link_behavior.getOutflowInVeh(ensemble);
+        try{
+            return outflow[ensemble].clone();
+        } catch(Exception e){
+            return null;
+        }
     }
 
     public double getTotalOutflowInVeh(int ensemble) {
-        return link_behavior.getTotalOutflowInVeh(ensemble);
+        try{
+            return BeatsMath.sum(outflow[ensemble]);
+        } catch(Exception e){
+            return Double.NaN;
+        }
     }
 
     public double getInflowInVeh(int ensemble,int vehicletype) {
-        return link_behavior.getInflowInVeh(ensemble,vehicletype);
+        try{
+            return inflow[ensemble][vehicletype];
+        } catch(Exception e){
+            return Double.NaN;
+        }
     }
 
     public double[] getInflowInVeh(int ensemble) {
-        return link_behavior.getInflowInVeh(ensemble);
+        try{
+            return inflow[ensemble].clone();
+        } catch(Exception e){
+            return null;
+        }
     }
 
     public double getTotalInlowInVeh(int ensemble) {
-        return link_behavior.getTotalInlowInVeh(ensemble);
+        try{
+            return BeatsMath.sum(inflow[ensemble]);
+        } catch(Exception e){
+            return Double.NaN;
+        }
     }
 
     public double getOutflowInVeh(int ensemble,int vehicletype) {
-        return link_behavior.getOutflowInVeh(ensemble,vehicletype);
+        try{
+            return outflow[ensemble][vehicletype];
+        } catch(Exception e){
+            return Double.NaN;
+        }
     }
 
     public double getTotalDensityInVPMeter(int ensemble) {
@@ -523,7 +574,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD._getCapacityDropInVeh() / myNetwork.getMyScenario().getSimdtinseconds() / _lanes;
+			return FD._getCapacityDropInVeh() / myScenario.getSimdtinseconds() / _lanes;
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -535,7 +586,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD._getCapacityInVeh() / myNetwork.getMyScenario().getSimdtinseconds();
+			return FD._getCapacityInVeh() / myScenario.getSimdtinseconds();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -547,7 +598,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD._getCapacityInVeh() / myNetwork.getMyScenario().getSimdtinseconds() / _lanes;
+			return FD._getCapacityInVeh() / myScenario.getSimdtinseconds() / _lanes;
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -571,7 +622,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD.getVfNormalized() * getLengthInMeters() / myNetwork.getMyScenario().getSimdtinseconds();
+			return FD.getVfNormalized() * getLengthInMeters() / myScenario.getSimdtinseconds();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -610,7 +661,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD.getWNormalized() * getLengthInMeters() / myNetwork.getMyScenario().getSimdtinseconds();
+			return FD.getWNormalized() * getLengthInMeters() / myScenario.getSimdtinseconds();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
