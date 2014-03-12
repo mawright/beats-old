@@ -1,7 +1,10 @@
 package edu.berkeley.path.beats.actuator;
 
-import edu.berkeley.path.beats.jaxb.Parameter;
+import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.Actuator;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Scenario;
 
 public class ActuatorRampMeter extends Actuator {
 
@@ -40,15 +43,16 @@ public class ActuatorRampMeter extends Actuator {
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
-	protected void populate(Object jaxbobject,Scenario myScenario) {
+	protected void populate(Object jaxb,Scenario myScenario) {
 
+        edu.berkeley.path.beats.jaxb.Actuator jaxbA = (edu.berkeley.path.beats.jaxb.Actuator) jaxb;
         double max_rate_in_vph = Double.POSITIVE_INFINITY;
         double min_rate_in_vph = 0d;
-		myLink = myScenario.getLinkWithId(getScenarioElement().getId());
+		myLink = myScenario.getLinkWithId(jaxbA.getScenarioElement().getId());
 
-		if(myLink!=null && getParameters()!=null){
+		if(myLink!=null && jaxbA.getParameters()!=null){
 			double lanes = myLink.get_Lanes();
-			for(Parameter p : getParameters().getParameter()){
+			for(Parameter p : jaxbA.getParameters().getParameter()){
 				if(p.getName().compareTo("max_rate_in_vphpl")==0)
 					max_rate_in_vph = Double.parseDouble(p.getValue())*lanes;
 				if(p.getName().compareTo("min_rate_in_vphpl")==0)
@@ -56,8 +60,8 @@ public class ActuatorRampMeter extends Actuator {
 			}	
 		}
 
-        if(getParameters()!=null){
-            for(Parameter p : getParameters().getParameter()){
+        if(jaxbA.getParameters()!=null){
+            for(Parameter p : jaxbA.getParameters().getParameter()){
                 if(p.getName().compareTo("max_rate_in_vphpl")==0)
                     max_rate_in_vph = Double.parseDouble(p.getValue())*myLink.get_Lanes();
                 if(p.getName().compareTo("min_rate_in_vphpl")==0)
