@@ -109,9 +109,9 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
         double maxflow = Double.POSITIVE_INFINITY;
         switch(color){
             case GREEN:
-            case YELLOW:
                 maxflow = Double.POSITIVE_INFINITY;
                 break;
+            case YELLOW:
             case RED:
             case DARK:
                 maxflow = 0d;
