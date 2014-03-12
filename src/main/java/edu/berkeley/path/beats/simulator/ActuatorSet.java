@@ -2,8 +2,8 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
-import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
 import edu.berkeley.path.beats.jaxb.ActuatorType;
+import edu.berkeley.path.beats.jaxb.Signal;
 
 public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 
@@ -47,6 +47,16 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 				}		    	
 			}
 		}
+
+        // construct actuators from signals
+        if(myScenario.getSignalSet()!=null){
+            for(Signal jaxba : myScenario.getSignalSet().getSignal()){
+                Actuator A = ObjectFactory.createActuatorSignalFromJaxb(myScenario,jaxba);
+                if(A!=null)
+                    actuators.add(A);
+            }
+        }
+
 	}
 
 	protected void validate() {
@@ -59,7 +69,7 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 			actuator.reset();
 	}
 
-	protected void deploy(double current_time_in_seconds) throws BeatsException {
+    protected void deploy(double current_time_in_seconds) throws BeatsException {
         for(Actuator actuator : actuators){
             if(actuator.myController==null)
                 continue;

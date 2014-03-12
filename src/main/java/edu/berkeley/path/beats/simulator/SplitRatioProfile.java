@@ -110,12 +110,12 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 	protected void validate() {
 
 		if(getSplitratio().isEmpty()){
-			BeatsErrorLog.addWarning("Split ratio id=" + this.getId()  + " has no data.");
+			BeatsErrorLog.addWarning("Split ratio ID=" + this.getId()  + " has no data.");
 			return;
 		}
 		
 		if(myNode==null){
-			BeatsErrorLog.addWarning("Unknown node with id=" + getNodeId() + " in split ratio profile.");
+			BeatsErrorLog.addWarning("Unknown node with ID=" + getNodeId() + " in split ratio profile.");
 			return; // this profile will be skipped but does not cause invalidation.
 		}
 		
@@ -124,11 +124,11 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 		for(edu.berkeley.path.beats.jaxb.Splitratio sr : getSplitratio()){
 			index = myNode.getInputLinkIndex(sr.getLinkIn());
 			if(index<0)
-				BeatsErrorLog.addError("Bad input link id=" + sr.getLinkIn() + " in split ratio profile with node id=" + getNodeId());
+				BeatsErrorLog.addError("Bad input link ID=" + sr.getLinkIn() + " in split ratio profile with node ID=" + getNodeId());
 
 			index = myNode.getOutputLinkIndex(sr.getLinkOut());
 			if(index<0)
-				BeatsErrorLog.addError("Bad output link id=" + sr.getLinkOut() + " in split ratio profile with node id=" + getNodeId());
+				BeatsErrorLog.addError("Bad output link ID=" + sr.getLinkOut() + " in split ratio profile with node ID=" + getNodeId());
 
 		}
 
@@ -145,11 +145,11 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 		if(!all_scalar){
 			// dtinseconds must be positive if any profile has >1 element
 			if(dtinseconds<=0)
-				BeatsErrorLog.addError("Invalid time step =" + getDt() +  " in split ratio profile for node id=" + getNodeId());
+				BeatsErrorLog.addError("Invalid time step =" + getDt() +  " in split ratio profile for node ID=" + getNodeId());
 
 			// dtinseconds must be multiple of simdt if any profile has >1 element
 			if( !BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
-				BeatsErrorLog.addError("Time step = " + getDt() + " for split ratio profile of node id=" + getNodeId() + " is not a multiple of the simulation time step (" + myScenario.getSimdtinseconds() + ")"); 
+				BeatsErrorLog.addError("Time step = " + getDt() + " for split ratio profile of node ID=" + getNodeId() + " is not a multiple of the simulation time step (" + myScenario.getSimdtinseconds() + ")");
 		}
 		
 //		// check split ratio dimensions and values
@@ -160,13 +160,13 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 //
 //						// check dimensions
 //						if(profile[i][j].getnVTypes()!=myScenario.getNumVehicleTypes())
-//							BeatsErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " does not contain values for all vehicle types: ");
+//							BeatsErrorLog.addError("Split ratio profile for node ID=" + getNodeId() + " does not contain values for all vehicle types: ");
 //
 //						// check values
 //						for(k=0;k<profile[i][j].getnTime();k++)
 //							for(v=0;v<profile[i][j].getnVTypes();v++)
 //								if( BeatsMath.greaterthan( profile[i][j].get(k,v) , 1.0 ) | BeatsMath.lessthan( profile[i][j].get(k,v) , 0.0 ) )
-//									BeatsErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " is out of range.");
+//									BeatsErrorLog.addError("Split ratio profile for node ID=" + getNodeId() + " is out of range.");
 //					}		
 	}
 

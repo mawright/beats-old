@@ -1551,7 +1551,7 @@
 		</foreign-key>
 <!--
 		<foreign-key foreignTable="dest_networks">
-			<reference local="dest_network_id" foreign="id"/>
+			<reference local="dest_network_id" foreign="ID"/>
 		</foreign-key>
 -->
 		<foreign-key foreignTable="veh_types">
@@ -1675,7 +1675,7 @@
 
 
 
-	<!-- Signal Data -->
+	<!-- ActuatorSignal Data -->
 
 	<table name="signal_data">
 		<column name="network_id" primaryKey="true" domain="ID"/>
@@ -1709,7 +1709,7 @@
 
 
 
-	<!-- Signal Performance -->
+	<!-- ActuatorSignal Performance -->
 
 	<table name="signal_phase_performance">
 		<column name="network_id" primaryKey="true" domain="ID"/>

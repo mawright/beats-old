@@ -9,13 +9,13 @@
    </VehicleTypeSet>  
    
   <!--
-  <ControllerSet project_id="-1" id="-1">
-    <controller dt="300" type="IRM_ALINEA" id="-1" enabled="true">
+  <ControllerSet project_id="-1" ID="-1">
+    <controller dt="300" type="IRM_ALINEA" ID="-1" enabled="true">
       <targetElements>
-        <scenarioElement id="-289" type="link"/>
+        <scenarioElement ID="-289" type="link"/>
       </targetElements>
       <feedbackElements>
-        <scenarioElement id="-1" type="link" usage="mainline"/>
+        <scenarioElement ID="-1" type="link" usage="mainline"/>
       </feedbackElements>
     </controller>
   </ControllerSet>

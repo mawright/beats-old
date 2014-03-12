@@ -26,11 +26,6 @@
 
 package edu.berkeley.path.beats.simulator.output;
 
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.List;
-
-import org.apache.log4j.Logger;
 //import org.apache.torque.NoRowsException;
 //import org.apache.torque.TooManyRowsException;
 //import org.apache.torque.TorqueException;
@@ -38,14 +33,9 @@ import org.apache.log4j.Logger;
 
 //import edu.berkeley.path.beats.db.BaseTypes;
 //import edu.berkeley.path.beats.om.*;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.LinkCumulativeData;
-import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.Signal;
-import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.simulator.BeatsMath;
+        import edu.berkeley.path.beats.simulator.BeatsException;
 
 //import com.workingdogs.village.DataSetException;
 
@@ -98,8 +88,8 @@ public class OutputWriterDB extends OutputWriterBase {
 //	private AggregationTypes db_aggregation_type_raw = null;
 //	private QuantityTypes db_quantity_type_mean = null;
 //
-//	private Long str2id(String id) {
-//		return Long.parseLong(id, 10);
+//	private Long str2id(String ID) {
+//		return Long.parseLong(ID, 10);
 //	}
 //
 //	boolean success = false;
@@ -232,9 +222,9 @@ public class OutputWriterDB extends OutputWriterBase {
 //					throw new BeatsException(exc);
 //				}
 //			}
-//			List<edu.berkeley.path.beats.jaxb.Signal> sigl = ((Network) network).getListOfSignals();
+//			List<edu.berkeley.path.beats.jaxb.ActuatorSignal> sigl = ((Network) network).getListOfSignals();
 //			if (null != sigl) {
-//				for (edu.berkeley.path.beats.jaxb.Signal signal : sigl)
+//				for (edu.berkeley.path.beats.jaxb.ActuatorSignal signal : sigl)
 //					try {
 //						fill_signal_data(network, signal);
 //					} catch (Exception exc) {
@@ -358,9 +348,9 @@ public class OutputWriterDB extends OutputWriterBase {
 //		}
 //	}
 //
-//	private void fill_signal_data(edu.berkeley.path.beats.jaxb.Network network, edu.berkeley.path.beats.jaxb.Signal signal) throws Exception {
-//		List<Signal.PhaseData> phdata = getCompletedPhases(signal).getPhaseList();
-//		for (Signal.PhaseData ph : phdata) {
+//	private void fill_signal_data(edu.berkeley.path.beats.jaxb.Network network, edu.berkeley.path.beats.jaxb.ActuatorSignal signal) throws Exception {
+//		List<ActuatorSignal.PhaseData> phdata = getCompletedPhases(signal).getPhaseList();
+//		for (ActuatorSignal.PhaseData ph : phdata) {
 //			SignalData db_sd = new SignalData();
 //			db_sd.setNetworkId(network.getId());
 //			db_sd.setSignalId(signal.getId());

@@ -183,7 +183,7 @@ public class Controller {
 
 		// check that type was read correctly
 		if(myType==null)
-			BeatsErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
+			BeatsErrorLog.addError("Controller with ID=" + getId() + " has the wrong type.");
 
         // validations below this make sense only in the context of a scenario
         if(myScenario==null)
@@ -191,7 +191,7 @@ public class Controller {
 
 		// check that sample dt is an integer multiple of network dt
 		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
-			BeatsErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
+			BeatsErrorLog.addError("Time step for controller ID=" +getId() + " is not a multiple of the simulation time step.");
 
 		// check that activation times are valid.
 		for (int i=0; i<activationTimes.size(); i++ ){
@@ -233,7 +233,7 @@ public class Controller {
 	 * @return <code>true</code> if the controller successfully registered with all of its targets; 
 	 * <code>false</code> otherwise.
 	 */
-	protected boolean register() {
+	public boolean register() {
         for(Actuator act : actuators)
             if(!act.register())
                 return false;

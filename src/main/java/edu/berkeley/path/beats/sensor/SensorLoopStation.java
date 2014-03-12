@@ -103,7 +103,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	@Override
 	protected void validate() {
 		if(getMyLink()==null)
-			BeatsErrorLog.addWarning("Loop sensor with id=" + getId() +" is not attached.");
+			BeatsErrorLog.addWarning("Loop sensor with ID=" + getId() +" is not attached.");
 	}
 
 	@Override

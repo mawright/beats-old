@@ -33,20 +33,12 @@ package edu.berkeley.path.beats.simulator;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 public final class ScenarioElement extends edu.berkeley.path.beats.jaxb.ScenarioElement {
-	
+
+    public static enum Type {link,node,controller,sensor,event}
+
 	private Scenario myScenario;
 	private ScenarioElement.Type myType;
 	private Object reference;
-
-	/** Type of scenario element. */
-	public static enum Type {  
-	/** see {@link Link} 		*/ link,
-	/** see {@link Node} 		*/ node,
-	/** see {@link Controller} */ controller,
-	/** see {@link Sensor} 	*/ sensor,
-	/** see {@link Event} 		*/ event,
-	/** see {@link Signal} 	*/ signal }
-			
 
 	/////////////////////////////////////////////////////////////////////
 	// public constructor
@@ -67,9 +59,6 @@ public final class ScenarioElement extends edu.berkeley.path.beats.jaxb.Scenario
 			break;
 		case sensor:
 			this.reference = myScenario.getSensorWithId(id);
-			break;
-		case signal:
-			this.reference = myScenario.getSignalWithId(id);
 			break;
 		case controller:
 			this.reference = myScenario.getControllerWithId(id);

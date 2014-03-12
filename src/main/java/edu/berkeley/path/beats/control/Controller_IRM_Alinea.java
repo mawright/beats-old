@@ -145,7 +145,7 @@ public class Controller_IRM_Alinea extends Controller {
 		if(ramp_meter==null)
 			BeatsErrorLog.addError("Bad actuator.");
 		if(onramp_link==null)
-			BeatsErrorLog.addError("Actuator link id is incorrect.");
+			BeatsErrorLog.addError("Actuator link ID is incorrect.");
 	}
 
 	@Override

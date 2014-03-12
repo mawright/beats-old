@@ -103,15 +103,15 @@ public class Controller_IRM_Time_of_Day extends Controller {
 		
 		// must have exactly one actuator
 		if(getNumActuators()!=1)
-			BeatsErrorLog.addError("Numnber of targets for TOD controller id=" + getId()+ " does not equal one.");
+			BeatsErrorLog.addError("Numnber of targets for TOD controller ID=" + getId()+ " does not equal one.");
 		
-		// bad queue sensor id
+		// bad queue sensor ID
 		if(hasqueuesensor && queuesensor==null)
-			BeatsErrorLog.addError("Bad queue sensor id in TOD controller id=" + getId()+".");
+			BeatsErrorLog.addError("Bad queue sensor ID in TOD controller ID=" + getId()+".");
 		
-		// Target link id not found, or number of targets not 1.
+		// Target link ID not found, or number of targets not 1.
 		if(onramplink==null)
-			BeatsErrorLog.addError("Invalid onramp link for TOD controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid onramp link for TOD controller ID=" + getId()+ ".");
 			
 		// has valid tables	
 		if(!istablevalid)

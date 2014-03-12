@@ -176,35 +176,35 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		
 		// must have exactly one actuator
 		if(getNumActuators()!=1)
-			BeatsErrorLog.addError("Numnber of targets for traffic responsive controller id=" + getId()+ " does not equal one.");
+			BeatsErrorLog.addError("Numnber of targets for traffic responsive controller ID=" + getId()+ " does not equal one.");
 
-		// bad mainline sensor id
+		// bad mainline sensor ID
 		if(hasmainlinesensor && mainlinesensor==null)
-			BeatsErrorLog.addError("Bad mainline sensor id in traffic responsive controller id=" + getId()+".");
+			BeatsErrorLog.addError("Bad mainline sensor ID in traffic responsive controller ID=" + getId()+".");
 		
-		// bad queue sensor id
+		// bad queue sensor ID
 		if(hasqueuesensor && queuesensor==null)
-			BeatsErrorLog.addError("Bad queue sensor id in traffic responsive controller id=" + getId()+".");
+			BeatsErrorLog.addError("Bad queue sensor ID in traffic responsive controller ID=" + getId()+".");
 		
-		// Target link id not found, or number of targets not 1.
+		// Target link ID not found, or number of targets not 1.
 		if(onramplink==null)
-			BeatsErrorLog.addError("Invalid onramp link for traffic responsive controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid onramp link for traffic responsive controller ID=" + getId()+ ".");
 
 		// both link and sensor feedback
 //		if(hasmainlinelink && hasmainlinesensor)
-//			BeatsErrorLog.addError("Both mainline link and mainline sensor are not allowed in traffic responsive controller id=" + getId()+".");
+//			BeatsErrorLog.addError("Both mainline link and mainline sensor are not allowed in traffic responsive controller ID=" + getId()+".");
 
 		// sensor is disconnected
 		if(mainlinesensor.getMyLink()==null)
-			BeatsErrorLog.addError("Mainline sensor is not connected to a link in traffic responsive controller id=" + getId()+ " ");
+			BeatsErrorLog.addError("Mainline sensor is not connected to a link in traffic responsive controller ID=" + getId()+ " ");
 
 		// no feedback
 		if(mainlinelink==null)
-			BeatsErrorLog.addError("Invalid mainline link for traffic responsive controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid mainline link for traffic responsive controller ID=" + getId()+ ".");
 
-		// Target link id not found, or number of targets not 1.
+		// Target link ID not found, or number of targets not 1.
 		if(onramplink==null)
-			BeatsErrorLog.addError("Invalid onramp link for traffic responsive controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid onramp link for traffic responsive controller ID=" + getId()+ ".");
 			
 		// invalid table
 		if(!istablevalid)
@@ -272,19 +272,19 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 			return;
 		
 		
-		// read table, initialize values. 
-		if (hasflowthres)
-			trFlowThresh=new double[table.getNoRows()];
-		
-		if (hasoccthres)
-			trOccThresh=new double[table.getNoRows()];
-		
-		if (hasspeedthres)
-			trSpeedThresh=new double[table.getNoRows()];
-		
-		
-		trMeteringRates_normalized=new double[table.getNoRows()];			
-		trlevelindex = 0;
+//		// read table, initialize values.
+//		if (hasflowthres)
+//			trFlowThresh=new double[table.getNoRows()];
+//
+//		if (hasoccthres)
+//			trOccThresh=new double[table.getNoRows()];
+//
+//		if (hasspeedthres)
+//			trSpeedThresh=new double[table.getNoRows()];
+//
+//
+//		trMeteringRates_normalized=new double[table.getNoRows()];
+//		trlevelindex = 0;
 		// extract data from the table and populate
 //		for (int i=0;i<table.getNoRows();i++){
 //			trMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * getMyScenario().getSimdtinseconds(); // in veh per sim step

@@ -117,7 +117,7 @@ final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 			// disallow pairs of events with equal time stamp, target, and type.
 			if(previousevent!=null)
 				if(event.equals(previousevent))
-					BeatsErrorLog.addError("Events id=" + previousevent.getId() + " and id=" + event.getId() + " are identical.");
+					BeatsErrorLog.addError("Events ID=" + previousevent.getId() + " and ID=" + event.getId() + " are identical.");
 			previousevent = event;
 		}
 	}

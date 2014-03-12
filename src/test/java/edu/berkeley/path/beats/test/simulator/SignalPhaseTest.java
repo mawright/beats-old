@@ -2,6 +2,7 @@ package edu.berkeley.path.beats.test.simulator;
 
 import static org.junit.Assert.*;
 
+import edu.berkeley.path.beats.actuator.NEMA;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -9,8 +10,7 @@ import org.junit.Test;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.Signal.NEMA;
-import edu.berkeley.path.beats.simulator.SignalPhase;
+import edu.berkeley.path.beats.actuator.ActuatorSignal.SignalPhase;
 
 @Ignore("redo signals")
 public class SignalPhaseTest {
@@ -21,17 +21,17 @@ public class SignalPhaseTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
-		if(scenario==null)
-			fail("scenario did not load");
-		
-		// initialize
-		double timestep = Defaults.getTimestepFor(config_file);
-		double starttime = 0;
-		double endtime = 300;
-		int numEnsemble = 1;
-		scenario.initialize(timestep,starttime,endtime,numEnsemble);
-		signalphase = scenario.getSignalWithId(-12).getPhaseByNEMA(NEMA._2);
+//		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+//		if(scenario==null)
+//			fail("scenario did not load");
+//
+//		// initialize
+//		double timestep = Defaults.getTimestepFor(config_file);
+//		double starttime = 0;
+//		double endtime = 300;
+//		int numEnsemble = 1;
+//		scenario.initialize(timestep,starttime,endtime,numEnsemble);
+//		signalphase = scenario.getSignalWithId(-12).getPhaseByNEMA(NEMA._2);
 	}
 	
 	@Test
@@ -51,7 +51,7 @@ public class SignalPhaseTest {
 
 	@Test
 	public void test_getMyNEMA() {
-		assertEquals(signalphase.getNEMA().compareTo(NEMA._2),0);
+		assertEquals(signalphase.getNEMA().compareTo(NEMA.ID._2),0);
 	}
 
 	@Test

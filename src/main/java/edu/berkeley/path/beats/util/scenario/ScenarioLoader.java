@@ -81,23 +81,23 @@ public class ScenarioLoader {
 //
 //	/**
 //	 * Loads a raw scenario from the database
-//	 * @param id the scenario ID in the database
+//	 * @param ID the scenario ID in the database
 //	 * @return the raw scenario
 //	 * @throws BeatsException
 //	 */
-//	public static edu.berkeley.path.beats.jaxb.Scenario loadRaw(Long id) throws BeatsException {
-//		return new DBScenarioLoader(id).loadRaw();
+//	public static edu.berkeley.path.beats.jaxb.Scenario loadRaw(Long ID) throws BeatsException {
+//		return new DBScenarioLoader(ID).loadRaw();
 //	}
 //
 //	/**
 //	 * Loads a scenario from the database
 //	 * and prepares it for a simulation
-//	 * @param id the scenario ID in the database
+//	 * @param ID the scenario ID in the database
 //	 * @return the processed scenario
 //	 * @throws BeatsException
 //	 */
-//	public static edu.berkeley.path.beats.simulator.Scenario load(Long id) throws BeatsException {
-//		return new DBScenarioLoader(id).load();
+//	public static edu.berkeley.path.beats.simulator.Scenario load(Long ID) throws BeatsException {
+//		return new DBScenarioLoader(ID).load();
 //	}
 
 

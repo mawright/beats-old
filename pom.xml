@@ -91,7 +91,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>om</id>
+						<ID>om</ID>
 						<phase>generate-sources</phase>
 						<configuration>
 							<targetPackage>edu.berkeley.path.beats.om</targetPackage>
@@ -101,7 +101,7 @@
 						</goals>
 					</execution>
 					<execution>
-						<id>sql-derby</id>
+						<ID>sql-derby</ID>
 						<phase>generate-resources</phase>
 						<configuration>
 							<targetDatabase>derby</targetDatabase>
@@ -112,7 +112,7 @@
 						</goals>
 					</execution>
 					<execution>
-						<id>sql-postgres</id>
+						<ID>sql-postgres</ID>
 						<phase>generate-resources</phase>
 						<configuration>
 							<targetDatabase>postgresql</targetDatabase>
@@ -123,7 +123,7 @@
 						</goals>
 					</execution>
 					<execution>
-						<id>sql-oracle</id>
+						<ID>sql-oracle</ID>
 						<phase>generate-resources</phase>
 						<configuration>
 							<targetDatabase>oracle</targetDatabase>
@@ -134,7 +134,7 @@
 						</goals>
 					</execution>
 					<execution>
-						<id>doc</id>
+						<ID>doc</ID>
 						<phase>site</phase>
 						<goals>
 							<goal>documentation</goal>

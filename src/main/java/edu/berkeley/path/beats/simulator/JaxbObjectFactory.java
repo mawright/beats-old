@@ -26,8 +26,6 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.jaxb.*;
-
 public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.ObjectFactory {
 
     @Override
@@ -95,10 +93,10 @@ public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.Object
 //		return new ScenarioElement();
 //	}
 	
-	@Override
-	public edu.berkeley.path.beats.jaxb.Signal createSignal() {
-		return new Signal();
-	}
+//	@Override
+//	public edu.berkeley.path.beats.jaxb.Signal createSignal() {
+//		return new ActuatorSignal();
+//	}
 
 	@Override
 	public edu.berkeley.path.beats.jaxb.SplitRatioProfile createSplitRatioProfile() {

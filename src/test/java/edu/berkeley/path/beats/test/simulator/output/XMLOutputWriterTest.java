@@ -30,6 +30,7 @@ import static org.junit.Assert.*;
 
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -112,6 +113,7 @@ public class XMLOutputWriterTest {
 	 * @throws FactoryConfigurationError
 	 * @throws BeatsException
 	 */
+    @Ignore
 	@Test
 	public void testOutputWriter() throws IOException, SAXException, XMLStreamException, FactoryConfigurationError, BeatsException {
 		logger.info("CONFIG: " + conffile.getPath());

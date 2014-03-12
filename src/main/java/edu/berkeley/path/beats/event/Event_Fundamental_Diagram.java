@@ -121,12 +121,12 @@ public class Event_Fundamental_Diagram extends Event {
 		super.validate();
 		
 		if(FD==null)
-			BeatsErrorLog.addError("Event id=" +getId() +" does not define a fundamental diagram.");
+			BeatsErrorLog.addError("Event ID=" +getId() +" does not define a fundamental diagram.");
 		
 		// check each target is valid
 		for(ScenarioElement s : getTargets())
 			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0)
-				BeatsErrorLog.addError("Wrong target type for event id=" +getId() +".");
+				BeatsErrorLog.addError("Wrong target type for event ID=" +getId() +".");
 		
 		// check that new fundamental diagram does not invalidate current state
 		

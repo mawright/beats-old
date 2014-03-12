@@ -93,7 +93,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBound
 	protected void validate() {
 
 		if(isOrphan){
-			BeatsErrorLog.addWarning("Bad origin link id=" + getLinkId() + " in capacity profile.");
+			BeatsErrorLog.addWarning("Bad origin link ID=" + getLinkId() + " in capacity profile.");
 			return;
 		}
 		
@@ -102,14 +102,14 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBound
 
 		// check dtinseconds
 		if( dtinseconds<=0  && capacity.getNumTime()>1)
-			BeatsErrorLog.addError("Non-positive time step in capacity profile for link id=" + getLinkId());
+			BeatsErrorLog.addError("Non-positive time step in capacity profile for link ID=" + getLinkId());
 
 		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && capacity.getNumTime()>1)
-			BeatsErrorLog.addError("Time step for capacity profile of link id=" + getLinkId() + " is not a multiple of simulation time step.");
+			BeatsErrorLog.addError("Time step for capacity profile of link ID=" + getLinkId() + " is not a multiple of simulation time step.");
 		
 		// check non-negative
 		if(capacity.hasNaN())
-			BeatsErrorLog.addError("Capacity profile for link id=" +getLinkId()+ " has illegal values.");
+			BeatsErrorLog.addError("Capacity profile for link ID=" +getLinkId()+ " has illegal values.");
 
 	}
 

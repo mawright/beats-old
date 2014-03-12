@@ -150,37 +150,37 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		int i;
 		
 		if(demand_nominal==null || demand_nominal.length==0){
-			BeatsErrorLog.addWarning("Demand profile id=" + getId() + " has no data.");
+			BeatsErrorLog.addWarning("Demand profile ID=" + getId() + " has no data.");
 			return;
 		}
 		
 		if(isOrphan){
-			BeatsErrorLog.addWarning("Bad origin link id=" + getLinkIdOrg() + " in demand profile.");
+			BeatsErrorLog.addWarning("Bad origin link ID=" + getLinkIdOrg() + " in demand profile.");
 			return;
 		}
 		
 		// check all demands have same length
 		for(BeatsTimeProfile d : demand_nominal)
 			if(d!=null && d.getNumTime()!=profile_length){
-				BeatsErrorLog.addError("In demand profile for link id=" + getLinkIdOrg() + ", not all demands have the same length.");
+				BeatsErrorLog.addError("In demand profile for link ID=" + getLinkIdOrg() + ", not all demands have the same length.");
 				break;
 			}
 		
 		for(i=0;i<demand_nominal.length;i++)
 			if(vehicle_type_index[i]<0)
-				BeatsErrorLog.addError("Bad vehicle type id " + getDemand().get(i).getVehicleTypeId() + " in demand profile for link id=" + getLinkIdOrg());
+				BeatsErrorLog.addError("Bad vehicle type ID " + getDemand().get(i).getVehicleTypeId() + " in demand profile for link ID=" + getLinkIdOrg());
 		
 		// check dtinseconds
 		if( dtinseconds<=0 && !all_demands_scalar )
-			BeatsErrorLog.addError("Non-positive time step in demand profile for link id=" + getLinkIdOrg());
+			BeatsErrorLog.addError("Non-positive time step in demand profile for link ID=" + getLinkIdOrg());
 		
 		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && !all_demands_scalar )
-			BeatsErrorLog.addError("Demand time step in demand profile for link id=" + getLinkIdOrg() + " is not a multiple of simulation time step.");
+			BeatsErrorLog.addError("Demand time step in demand profile for link ID=" + getLinkIdOrg() + " is not a multiple of simulation time step.");
 		
 		// check non-negative
 		for(i=0;i<demand_nominal.length;i++)
 			if(demand_nominal[i]!=null && demand_nominal[i].hasNaN())
-				BeatsErrorLog.addError("Illegal values in demand profile for link id=" + getLinkIdOrg() + ", vehicle type id " + getDemand().get(i).getVehicleTypeId());
+				BeatsErrorLog.addError("Illegal values in demand profile for link ID=" + getLinkIdOrg() + ", vehicle type ID " + getDemand().get(i).getVehicleTypeId());
 
 	}
 

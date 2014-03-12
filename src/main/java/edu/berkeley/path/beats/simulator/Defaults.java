@@ -45,10 +45,10 @@ final public class Defaults {
 	public static double capacityDrop 		= 0.0;					// [veh/sec/lane]
 	public static double capacity 			= 2400.0 / 3600.0;		// [veh/sec/lane]
 	
-	// signal phase
-	public static float mingreen			= 10f;		// [sec]
-	public static float redcleartime		= 5f;		// [sec]
-	public static float yellowtime			= 5f;		// [sec]
+//	// signal phase
+//	public static float mingreen			= 10f;		// [sec]
+//	public static float redcleartime		= 5f;		// [sec]
+//	public static float yellowtime			= 5f;		// [sec]
 	
 	// dt
 	public static final Map<String, Double> dt_map;

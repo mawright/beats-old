@@ -71,18 +71,18 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 		
 //		// check that all vehicle types are accounted for
 //		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
-//			BeatsErrorLog.addError("List of vehicle types in initial density profile id=" + getId() + " does not match that of settings.");
+//			BeatsErrorLog.addError("List of vehicle types in initial density profile ID=" + getId() + " does not match that of settings.");
 //		
 //		// check that vehicle types are valid
 //		for(i=0;i<vehicletypeindex.length;i++)
 //			if(vehicletypeindex[i]<0)
-//				BeatsErrorLog.addError("Bad vehicle type name in initial density profile id=" + getId());
+//				BeatsErrorLog.addError("Bad vehicle type name in initial density profile ID=" + getId());
 //		
 //		// check size of data
 //		if(link!=null)
 //			for(i=0;i<link.length;i++)
 //				if(initial_density[i].length!=vehicletypeindex.length)
-//					BeatsErrorLog.addError("Number of density values does not match number of vehicle types in initial density profile id=" + getId());
+//					BeatsErrorLog.addError("Number of density values does not match number of vehicle types in initial density profile ID=" + getId());
 
 		// check that values are between 0 and jam density
 		int j;
@@ -91,7 +91,7 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 		for(i=0;i<initial_density.length;i++){
 			
 			if(link[i]==null){
-				BeatsErrorLog.addWarning("Unknown link id in initial density profile");
+				BeatsErrorLog.addWarning("Unknown link ID in initial density profile");
 				continue;
 			}
 			
@@ -102,9 +102,9 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 //			for(j=0;j<vehicletypeindex.length;j++){
 //				x = initial_density[i][j];
 //				if(x<0)
-//					BeatsErrorLog.addError("Negative value found in initial density profile for link id=" + link[i].getId());
+//					BeatsErrorLog.addError("Negative value found in initial density profile for link ID=" + link[i].getId());
 //				if( x.isNaN())
-//					BeatsErrorLog.addError("Invalid value found in initial density profile for link id=" + link[i].getId());
+//					BeatsErrorLog.addError("Invalid value found in initial density profile for link ID=" + link[i].getId());
 //				sum += x;
 //			}
 			
@@ -126,10 +126,10 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 	// public API
 	/////////////////////////////////////////////////////////////////////
 	
-	/** Get the initial density for a link identified by network and link id.
+	/** Get the initial density for a link identified by network and link ID.
 	 * 
-	 * @param network_id String id of the network
-	 * @param linkid String id of the link
+	 * @param network_id String ID of the network
+	 * @param linkid String ID of the link
 	 * @return array of intitial densities in [veh/link]
 	 */
 	public double [] getDensityForLinkIdInVeh(long network_id,long linkid){

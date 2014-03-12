@@ -39,7 +39,6 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 	private double _densityJam;     	// [veh] 
 	private double _capacity;   		// [veh] 
 	private double _capacityDrop;     	// [veh] 
-	private double density_critical;	// [veh]
 
     private double conv_spd;
     private double conv_dty;
@@ -59,7 +58,6 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 	    _vf 			  = Double.NaN; 
 	    _w 				  = Double.NaN; 
 	    std_dev_capacity  = Double.NaN;
-	    density_critical  = Double.NaN;
 	}
 	
 	// fundamental diagram created from jaxb objects must have all values filled in. 
@@ -72,8 +70,6 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 	    _vf 			  = Double.NaN; 
 	    _w 				  = Double.NaN; 
 	    std_dev_capacity  = Double.NaN;
-	    density_critical  = Double.NaN;
-
 
         this.setOrder(jaxbfd.getOrder());
         this.setCapacity(jaxbfd.getCapacity());
@@ -197,9 +193,6 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 			_capacityDrop = jaxbfd.getCapacityDrop() * conv_flw;
 		else
 			_capacityDrop = Defaults.capacityDrop * conv_flw;
-
-		// set critical density
-		density_critical = _capacity/_vf;
 	}
 	
 	// fundamental diagrams created from other fundamental diagrams copy all values. 
@@ -214,8 +207,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 	    _vf 			  = Double.NaN; 
 	    _w 				  = Double.NaN; 
 	    std_dev_capacity  = Double.NaN;
-	    density_critical  = Double.NaN;
-	    
+
 	    this.copyfrom(fd);		// copy and normalize
 	}
 	
@@ -245,15 +237,15 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 	}
 
 	protected double getVfNormalized() {
-		return _vf;
+        return myLink.is_queue_link ? 1.0 : _vf;
 	}
 
 	protected double getWNormalized() {
-		return _w;
+        return myLink.is_queue_link ? 1.0 : _w;
 	}
 
 	protected double getDensityCriticalInVeh() {
-		return density_critical;
+		return _capacity/_vf;
 	}
 
 	protected void setLanes(double newlanes){
@@ -265,7 +257,6 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		_densityJam 	  *= alpha; 
 		_capacity  		  *= alpha; 
 		_capacityDrop 	  *= alpha; 
-		density_critical  *= alpha;
 		lanes = newlanes;
 	}
 	
@@ -284,7 +275,6 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		_capacityDrop 	  = Defaults.capacityDrop	* lanes * simDtInSeconds;
 		_vf = Defaults.vf * simDtInSeconds / lengthInMeters;
 		_w  = Defaults.w  * simDtInSeconds / lengthInMeters;
-		density_critical = _capacity / _vf;
 	}
 
  	// copy per lane parameters from jaxb and normalize
@@ -328,8 +318,6 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 			_w = value * simDtInSeconds / myLink.getLengthInMeters();
 		}
 
-		density_critical =  _capacity / _vf;
-        
 	}
 
  	// clone a fd
@@ -342,7 +330,6 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		this._densityJam = that._densityJam;
 		this._vf = that._vf;
 		this._w = that._w;
-		this.density_critical = that.density_critical;
 		this.lanes = that.lanes;
 		this.std_dev_capacity = that.std_dev_capacity;
 
@@ -393,10 +380,11 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		samp._capacity = Math.max(samp._capacity,0.0);
 		
 		// density_critical no greater than dens_crit_congestion
+        double dens_critical = samp._capacity / samp._vf;
 		double dens_crit_congestion = samp._densityJam-samp._capacity/samp._w;	// [veh]
-		if(BeatsMath.greaterthan(samp.density_critical,dens_crit_congestion)){
-			samp.density_critical = dens_crit_congestion;
-			samp._capacity = samp._vf * samp.density_critical;
+		if(BeatsMath.greaterthan(dens_critical,dens_crit_congestion)){
+//			samp.density_critical = dens_crit_congestion;
+			samp._capacity = samp._vf * dens_critical;
 		}
 
 		return samp;
@@ -408,12 +396,12 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 			return;
 				
 		if(_vf<0 || _w<0 || _densityJam<0 || _capacity<0 || _capacityDrop<0)
-			BeatsErrorLog.addError("Negative fundamental diagram parameters for link id=" + myLink.getId());
+			BeatsErrorLog.addError("Negative fundamental diagram parameters for link ID=" + myLink.getId());
 
-		double dens_crit_congestion = _densityJam-_capacity/_w;	// [veh]
-			
-		if(BeatsMath.greaterthan(density_critical,dens_crit_congestion))
-			BeatsErrorLog.addError("Maximum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion + "(current="+density_critical+")");
+        double dens_critical = _capacity / _vf;
+        double dens_crit_congestion = _densityJam-_capacity/_w;	// [veh]
+		if(BeatsMath.greaterthan(dens_critical,dens_crit_congestion))
+			BeatsErrorLog.addError("Maximum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion + "(current="+dens_critical+")");
 		
 		if(_vf>1 && !myLink.isSource())
 			BeatsErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has vf=" + _vf);
@@ -421,45 +409,5 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		if(_w>1 && !myLink.isSource())
 			BeatsErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has w=" + _w);
 	}
-
-
-    /////////////////////////////////////////////////////////////////////
-    // JAXB overrides
-    /////////////////////////////////////////////////////////////////////
-
-
-
-//    @Override
-//    public double getCapacity() {
-//        if(_capacity>0)
-//            return _capacity / (conv_spd*conv_dty);  		// [veh]
-//        else
-//            return capacity;
-//    }
-//
-//    @Override
-//    public double getCapacityDrop() {
-//        return _capacityDrop / (conv_spd*conv_dty);    // [veh]
-//    }
-//
-//    @Override
-//    public Double getStdDevCapacity() {
-//        return std_dev_capacity / (conv_spd*conv_dty);    // [veh]
-//    }
-//
-//    @Override
-//    public double getFreeFlowSpeed() {
-//        return _vf / conv_spd;    // [-]
-//    }
-//
-//    @Override
-//    public double getCongestionSpeed() {
-//        return _w / conv_spd;    // [-]
-//    }
-//
-//    @Override
-//    public Double getJamDensity() {
-//        return _densityJam / conv_dty;    // [veh]
-//    }
 
 }
