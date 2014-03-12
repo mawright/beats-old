@@ -55,7 +55,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
     }
 
 
-    private static double[] computePolicy(Network netBeATS,
+    public static double[] computePolicy(Network netBeATS,
                                          FundamentalDiagramSet fdBeATS,
                                          DemandSet demandSetBeATS,
                                          SplitRatioSet splitRatiosBeATS,
@@ -280,7 +280,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 }
                 Path newpath = new Path((int) tmpRoute.getId(), routeList);
                 mutable_graph.addPath(newpath);
-                Iterator<Integer> pathList_iterator = mutable_graph.getPaths().get((int) tmpRoute.getId()-1).iterator();
+                Iterator<Integer> pathList_iterator = mutable_graph.getPaths().get((int) tmpRoute.getId()).iterator();
                 System.out.print(tmpRoute.getId() + ": ");
                 while (pathList_iterator.hasNext()) {
                     System.out.print(pathList_iterator.next().intValue() + " ");
@@ -430,8 +430,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
             System.out.println(simulator.splits.toString());
 
 			/* Checking the requirements on the network */
-            System.out
-                    .print("Checking that the network respect needed requirements...");
+            System.out.print("Checking that the network respect needed requirements...");
             lwr_network.checkConstraints(delta_t);
             System.out.println("Done");
 
@@ -444,7 +443,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
             int maxIter = 10;
             SOPC_Optimizer optimizer = new SOPC_Optimizer(simulator);
 
-            GradientDescent descentMethod = new GradientDescent(maxIter);
+            GradientDescent descentMethod = new GradientDescent(maxIter,"RProp");
             descentMethod.setGradient_condition(10E-9);
             result = descentMethod.solve(optimizer);
             System.out.println("Final control");
