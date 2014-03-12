@@ -4,12 +4,10 @@ import edu.berkeley.path.beats.control.adjoint_glue.AdjointReroutesPolicyMaker;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.fail;
 
-@Ignore
 public class DTA_test {
 
     private static String configfilename = "data/config/Rerouting_sent_newxsd_v3.xml";

@@ -471,42 +471,42 @@
 		<fundamentalDiagramProfile id="-1" dt="300"
 			link_id="465" start_time="0">
 			<fundamentalDiagram id="-1" capacity="0.5000"
-				congestion_speed="3.0492" free_flow_speed="13.89" />
+				congestion_speed="3.0492" free_flow_speed="13.8889" />
 		</fundamentalDiagramProfile>
 		<fundamentalDiagramProfile id="-1" dt="300"
 			link_id="468" start_time="0">
 			<fundamentalDiagram id="-1" capacity="0.5000"
-				congestion_speed="2.9412" free_flow_speed="16.667" />
+				congestion_speed="2.9412" free_flow_speed="16.6667" />
 		</fundamentalDiagramProfile>
 		<fundamentalDiagramProfile id="-1" dt="300"
 			link_id="352" start_time="0">
 			<fundamentalDiagram id="-1" capacity="2.3333"
-				congestion_speed="17.9483" free_flow_speed="33.33" />
+				congestion_speed="17.9483" free_flow_speed="33.3333" />
 		</fundamentalDiagramProfile>
 		<fundamentalDiagramProfile id="-1" dt="300"
 			link_id="358" start_time="0">
 			<fundamentalDiagram id="-1" capacity="0.2500"
-				congestion_speed="2.9412" free_flow_speed="16.667" />
+				congestion_speed="2.9412" free_flow_speed="16.6667" />
 		</fundamentalDiagramProfile>
 		<fundamentalDiagramProfile id="-1" dt="300"
 			link_id="387" start_time="0">
 			<fundamentalDiagram id="-1" capacity="0.5000"
-				congestion_speed="3.0492" free_flow_speed="13.89" />
+				congestion_speed="3.0492" free_flow_speed="13.8889" />
 		</fundamentalDiagramProfile>
 		<fundamentalDiagramProfile id="-1" dt="300"
 			link_id="359" start_time="0">
 			<fundamentalDiagram id="-1" capacity="0.5000"
-				congestion_speed="3.0492" free_flow_speed="13.89" />
+				congestion_speed="3.0492" free_flow_speed="13.8889" />
 		</fundamentalDiagramProfile>
 		<fundamentalDiagramProfile id="-1" dt="300"
 			link_id="355" start_time="0">
 			<fundamentalDiagram id="-1" capacity="2.3333"
-				congestion_speed="17.9483" free_flow_speed="33.33" />
+				congestion_speed="17.9483" free_flow_speed="33.3333" />
 		</fundamentalDiagramProfile>
 		<fundamentalDiagramProfile id="-1" dt="300"
 			link_id="327" start_time="0">
 			<fundamentalDiagram id="-1" capacity="2.3333"
-				congestion_speed="17.9483" free_flow_speed="33.33" />
+				congestion_speed="17.9483" free_flow_speed="33.3333" />
 		</fundamentalDiagramProfile>
 	</FundamentalDiagramSet>
 	<RouteSet id="-1" project_id="-1">
