@@ -1,12 +1,29 @@
 package edu.berkeley.path.beats.simulator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by gomes on 3/12/14.
  */
 public class LinkBehaviorTravelTime extends LinkBehavior {
 
+    protected List<CellArray> cell_arrrays;     // ensemble of cell arrays
+
     public LinkBehaviorTravelTime(Link link){
         super(link);
+
+        Scenario scenario = link.myScenario;
+        int num_ensemble = scenario.getNumEnsemble();
+
+        double L = link.getLengthInMeters();
+        double vf = link.getVfInMPS(0);
+        double dt = link.getMyNetwork().getMyScenario().getSimdtinseconds();
+
+        int num_cells = (int) Math.ceil(L/(vf*dt));
+        cell_arrrays = new ArrayList<CellArray>();
+        for(int e=0;e<num_ensemble;e++)
+            cell_arrrays.add(new CellArray(num_cells,scenario.getNumVehicleTypes()));
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -224,6 +241,22 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
 //                spaceSupply[e] = Math.min( spaceSupply[e] , FD._getDensityJamInVeh() - totaldensity);
 //            }
 //        }
+    }
+
+    private class CellArray{
+        public ArrayList<Cell> cell_array;
+        public CellArray(int numcell,int num_veh_types){
+            cell_array = new ArrayList<Cell>();
+            for(int i=0;i<numcell;i++)
+                cell_array.add(new Cell(num_veh_types));
+        }
+    }
+
+    private class Cell {
+        public double [] n;        // [ve] for each vehicle type
+        public Cell(int num_veh_types){
+            n=BeatsMath.zeros(num_veh_types);
+        }
     }
 
 }
