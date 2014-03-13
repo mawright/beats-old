@@ -165,6 +165,18 @@ public final class BeatsMath {
 				return false;
 		return true;
 	}
+
+    public static boolean all_non_negative (double [] x){
+        if(x==null)
+            return false;
+        if(x.length==0)
+            return true;
+        for(int i=0;i<x.length;i++)
+            if(x[i]<0)
+                return false;
+        return true;
+    }
+
 	
 	public static boolean[] not(boolean [] x){
 		if(x==null)

@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class LinkBehaviorTravelTime extends LinkBehavior {
 
-    protected List<CellArray> cell_arrrays;     // ensemble of cell arrays
+    protected List<CellArray> ensemble;     // ensemble of cell arrays
 
     public LinkBehaviorTravelTime(Link link){
         super(link);
@@ -21,28 +21,52 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
         double dt = link.getMyNetwork().getMyScenario().getSimdtinseconds();
 
         int num_cells = (int) Math.ceil(L/(vf*dt));
-        cell_arrrays = new ArrayList<CellArray>();
+        ensemble = new ArrayList<CellArray>();
         for(int e=0;e<num_ensemble;e++)
-            cell_arrrays.add(new CellArray(num_cells,scenario.getNumVehicleTypes()));
+            ensemble.add(new CellArray(num_cells,scenario.getNumVehicleTypes()));
     }
 
     /////////////////////////////////////////////////////////////////////
     // LinkBehaviorInterface
     /////////////////////////////////////////////////////////////////////
 
-    @Override
-    public void overrideDensityWithVeh(double[] x,int ensemble){
-//        if(ensemble<0 || ensemble>=density.length)
-//            return;
-//        if(x.length!=density[0].length)
-//            return;
+//    @Override
+//    public void initialize_density(double [] initial_density) {
+//        int n1 = myScenario.getNumEnsemble();
+//        int n2 = myScenario.getNumVehicleTypes();
+//        density = BeatsMath.zeros(n1,n2);
 //
-//        int i;
-//        for(i=0;i<x.length;i++)
-//            if(x[i]<0)
-//                return;
-//        for(i=0;i<x.length;i++)
-//            density[ensemble][i] = x[i];
+//        // copy initial density to density
+//        int e,v;
+//        for(e=0;e<n1;e++)
+//            for(v=0;v<n2;v++)
+//                density[e][v] = initial_density[v];
+//    }
+
+
+    @Override
+    public boolean overrideDensityWithVeh(double[] x,int e){
+        if(e<0 || e>=ensemble.size())
+            return false;
+        if(x.length!=ensemble.get(e).cell_array.size())
+            return false;
+        if(!BeatsMath.all_non_negative(x))
+            return false;
+        return ensemble.get(e).set_density_in_veh(x);
+    }
+
+    @Override
+    public boolean set_density_in_veh(int ensemble,double [] d){
+//        if(myScenario.getNumVehicleTypes()!=1)
+//            return false;
+//        if(density==null)
+//            return false; //density = new double[d.length][1];
+//        if(density.length!=d.length)
+//            return false;
+//        for(int e=0;e<d.length;e++)
+//            density[e][0] = d[e];
+//        return true;
+        return false;
     }
 
     @Override
@@ -60,20 +84,6 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
 //            return Double.NaN;
 //        }
         return 0;
-    }
-
-    @Override
-    public boolean set_density(double [] d){
-//        if(myScenario.getNumVehicleTypes()!=1)
-//            return false;
-//        if(density==null)
-//            return false; //density = new double[d.length][1];
-//        if(density.length!=d.length)
-//            return false;
-//        for(int e=0;e<d.length;e++)
-//            density[e][0] = d[e];
-//        return true;
-        return false;
     }
 
     @Override
@@ -117,19 +127,6 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
     }
 
     @Override
-    public void initialize_density(double [] initial_density) {
-//        int n1 = myScenario.getNumEnsemble();
-//        int n2 = myScenario.getNumVehicleTypes();
-//        density = BeatsMath.zeros(n1,n2);
-//
-//        // copy initial density to density
-//        int e,v;
-//        for(e=0;e<n1;e++)
-//            for(v=0;v<n2;v++)
-//                density[e][v] = initial_density[v];
-    }
-
-    @Override
     public double computeTotalDelayInVeh(int ensemble){
 //        double n = getTotalDensityInVeh(ensemble);
 //        double f = myLink.getTotalOutflowInVeh(ensemble);
@@ -145,6 +142,11 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
 //        double vf = myLink.getNormalizedVf(ensemble);
 //        return Math.max(0d,vf*n-f);
         return 0;
+    }
+
+    @Override
+    public void reset_density() {
+
     }
 
     @Override
@@ -250,12 +252,24 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
             for(int i=0;i<numcell;i++)
                 cell_array.add(new Cell(num_veh_types));
         }
+        public boolean set_density_in_veh(double [] x){
+            if(cell_array.isEmpty())
+                return false;
+            double [] x_per_cell = BeatsMath.times(x,1/cell_array.size());
+            for(Cell cell : cell_array)
+                cell.set_vehicles(x_per_cell);
+            return true;
+        }
     }
 
     private class Cell {
         public double [] n;        // [ve] for each vehicle type
         public Cell(int num_veh_types){
             n=BeatsMath.zeros(num_veh_types);
+        }
+        protected void set_vehicles(double [] x){
+            for(int i=0;i<x.length;i++)
+                n[i]=x[i];
         }
     }
 

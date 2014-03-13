@@ -16,18 +16,16 @@ public class LinkBehaviorCTM extends LinkBehavior {
     /////////////////////////////////////////////////////////////////////
 
     @Override
-    public void overrideDensityWithVeh(double[] x,int ensemble){
+    public boolean overrideDensityWithVeh(double[] x,int ensemble){
         if(ensemble<0 || ensemble>=density.length)
-            return;
+            return false;
         if(x.length!=density[0].length)
-            return;
-
-        int i;
-        for(i=0;i<x.length;i++)
-            if(x[i]<0)
-                return;
-        for(i=0;i<x.length;i++)
+            return false;
+        if(!BeatsMath.all_non_negative(x))
+            return false;
+        for(int i=0;i<x.length;i++)
             density[ensemble][i] = x[i];
+        return true;
     }
 
     @Override
@@ -47,15 +45,13 @@ public class LinkBehaviorCTM extends LinkBehavior {
     }
 
     @Override
-    public boolean set_density(double [] d){
-        if(myScenario.getNumVehicleTypes()!=1)
+    public boolean set_density_in_veh(int ensemble,double [] d){
+        if(d.length!=myScenario.getNumVehicleTypes())
             return false;
         if(density==null)
-            return false; //density = new double[d.length][1];
-        if(density.length!=d.length)
             return false;
-        for(int e=0;e<d.length;e++)
-            density[e][0] = d[e];
+        for(int v=0;v<d.length;v++)
+            density[ensemble][v] = d[v];
         return true;
     }
 
@@ -97,17 +93,21 @@ public class LinkBehaviorCTM extends LinkBehavior {
     }
 
     @Override
-    public void initialize_density(double [] initial_density) {
+    public void reset_density(){
         int n1 = myScenario.getNumEnsemble();
         int n2 = myScenario.getNumVehicleTypes();
         density = BeatsMath.zeros(n1,n2);
-
-        // copy initial density to density
-        int e,v;
-        for(e=0;e<n1;e++)
-            for(v=0;v<n2;v++)
-                density[e][v] = initial_density[v];
     }
+
+//    @Override
+//    public void initialize_density(double [] initial_density) {
+//
+//        // copy initial density to density
+//        int e,v;
+//        for(e=0;e<n1;e++)
+//            for(v=0;v<n2;v++)
+//                density[e][v] = initial_density[v];
+//    }
 
     @Override
     public double computeTotalDelayInVeh(int ensemble){

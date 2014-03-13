@@ -24,7 +24,15 @@ public abstract class LinkBehavior implements LinkBehaviorInterface {
         int n2 = myScenario.getNumVehicleTypes();
         outflowDemand 	= BeatsMath.zeros(n1,n2);
         spaceSupply 	= BeatsMath.zeros(n1);
-        initialize_density(initial_density);
+        reset_density();
+        set_density_in_veh(initial_density);
+    }
+
+    public boolean set_density_in_veh(double [] d){
+        for(int e=0;e<myLink.myScenario.getNumEnsemble();e++)
+            if(!set_density_in_veh(e,d))
+                return false;
+        return true;
     }
 
     protected double getTotalDensityInVPMeter(int ensemble) {

@@ -5,15 +5,15 @@ package edu.berkeley.path.beats.simulator;
  */
 public interface LinkBehaviorInterface {
 
+    // UPDATE
+
+    public void update_state(double [][] inflow,double [][] outflow);
+
     public void updateOutflowDemand(double external_max_speed,double external_max_flow);
 
     public void updateSpaceSupply();
 
-    public void overrideDensityWithVeh(double[] x,int ensemble);
-
-    public double computeSpeedInMPS(int ensemble);
-
-    public boolean set_density(double [] d);
+    // GET
 
     public double[] getDensityInVeh(int ensemble);
 
@@ -21,11 +21,22 @@ public interface LinkBehaviorInterface {
 
     public double getTotalDensityInVeh(int ensemble);
 
-    public void update_state(double [][] inflow,double [][] outflow);
+    // COMPUTE
 
-    public void initialize_density(double [] initial_density);
+    public double computeSpeedInMPS(int ensemble);
 
     public double computeTotalDelayInVeh(int ensemble);
 
     public double computeDelayInVeh(int ensemble,int vt_index);
+
+    // SET
+
+    public void reset_density();
+
+    public boolean overrideDensityWithVeh(double[] x,int ensemble);
+
+    public boolean set_density_in_veh(int ensemble,double [] d);
+
+//    public void initialize_density(double [] initial_density);
+
 }
