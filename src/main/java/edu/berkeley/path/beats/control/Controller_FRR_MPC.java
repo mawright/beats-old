@@ -171,30 +171,22 @@ public class Controller_FRR_MPC extends Controller {
 			time_last_opt = time_current;
 		}
 
-        // .....
+        // send policy to actuators
         if(policy!=null){
-
-        }
-
-        send_policy_to_actuators(time_current);
-	}
-
-    public void send_policy_to_actuators(double time_current){
-        if(policy==null)
-            return;
-        double time_since_last_pm_call = time_current-time_last_opt;
-        int time_index = (int) (time_since_last_pm_call/pm_dt);
-        for(ReroutePolicyProfile rrprofile : policy.profiles){
-            ActuatorCMS act = (ActuatorCMS) node_actuator_map.get(rrprofile.actuatorNode.getId());
-            if(act!=null){
-                int clipped_time_index = Math.min(time_index,rrprofile.reroutePolicy.size()-1);
-                double sr = rrprofile.reroutePolicy.get(clipped_time_index);
-                long in_link_id = 0;
-                long out_link_id = 0;
-                long vehicle_type_id = 0;
-                act.set_split (in_link_id,out_link_id,vehicle_type_id,sr);
+            double time_since_last_pm_call = time_current-time_last_opt;
+            int time_index = (int) (time_since_last_pm_call/pm_dt);
+            for(ReroutePolicyProfile rrprofile : policy.profiles){
+                ActuatorCMS act = (ActuatorCMS) node_actuator_map.get(rrprofile.actuatorNode.getId());
+                if(act!=null){
+                    int clipped_time_index = Math.min(time_index,rrprofile.reroutePolicy.size()-1);
+                    act.set_split(  rrprofile.in_link_id,
+                            rrprofile.out_link_id,
+                            rrprofile.vehicle_type_id,
+                            rrprofile.reroutePolicy.get(clipped_time_index) );
+                }
             }
         }
-    }
+
+	}
 
 }

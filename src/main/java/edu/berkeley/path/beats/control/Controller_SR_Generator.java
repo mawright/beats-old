@@ -157,17 +157,14 @@ public class Controller_SR_Generator extends Controller {
             nd.update_info();
 
             // OR->FR => beta = 0;
-            for(int i=0;i<nd.ind_or.size();i++){
-                for(int j=0;j<nd.ind_fr.size();j++){
-                    for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType()){
+            for(int i=0;i<nd.ind_or.size();i++)
+                for(int j=0;j<nd.ind_fr.size();j++)
+                    for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType())
                         ((ActuatorCMS)actuators.get(n)).set_split(
                                 nd.link_or.get(i).getId(),
                                 nd.link_fr.get(j).getId(),
                                 vt.getId(),
                                 0d);
-                    }
-                }
-            }
 
             // !OR->FR, compute beta
             double beta = nd.offramp_flow_demand_ratio;
@@ -175,17 +172,14 @@ public class Controller_SR_Generator extends Controller {
                 beta = Math.max(beta,nd.non_offramp_xi[j]);
             beta = Math.min(beta,1d);
 
-            for(int i=0;i<nd.ind_not_or.size();i++){
-                for(int j=0;j<nd.ind_fr.size();j++){
-                    for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType()){
+            for(int i=0;i<nd.ind_not_or.size();i++)
+                for(int j=0;j<nd.ind_fr.size();j++)
+                    for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType())
                         ((ActuatorCMS)actuators.get(n)).set_split(
                                 nd.link_not_or.get(i).getId() ,
                                 nd.link_fr.get(j).getId() ,
                                 vt.getId() ,
                                 beta );
-                    }
-                }
-            }
 
             // !OR->!FR, adjust
             for(int i=0;i<nd.ind_not_or.size();i++){
