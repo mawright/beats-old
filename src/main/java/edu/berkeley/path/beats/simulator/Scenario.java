@@ -1455,6 +1455,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
             // set values
             fdp.setLinkId(L.getId());
+            //fdp.setDt(-1d);
             FundamentalDiagram fd = (FundamentalDiagram) factory.createFundamentalDiagram();
             fd.copyfrom(L.getFundamentalDiagramProfile().getFDforTime(time_current));
             fd.setOrder(0);

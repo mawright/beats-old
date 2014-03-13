@@ -29,12 +29,12 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
 
     static boolean verbose = true;
 
-    public ReroutePolicySet givePolicy(Network net,
-                                       FundamentalDiagramSet fd,
-                                       DemandSet demand,
-                                       SplitRatioSet splitRatios,
-                                       InitialDensitySet ics,
-                                       RouteSet routes,
+    public ReroutePolicySet givePolicy(edu.berkeley.path.beats.jaxb.Network net,
+                                       edu.berkeley.path.beats.jaxb.FundamentalDiagramSet fd,
+                                       edu.berkeley.path.beats.jaxb.DemandSet demand,
+                                       edu.berkeley.path.beats.jaxb.SplitRatioSet splitRatios,
+                                       edu.berkeley.path.beats.jaxb.InitialDensitySet ics,
+                                       edu.berkeley.path.beats.jaxb.RouteSet routes,
                                        Double dt) {
 
         double[] policy = computePolicy(net,
@@ -252,7 +252,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 Mutable_link.F_max = tmp_fd.getCapacity();
                 Mutable_link.v = tmp_fd.getFreeFlowSpeed();
                 Mutable_link.w = tmp_fd.getCongestionSpeed();
-                Mutable_link.dt = fundamentalDiagramProfiles.get((int) tmp.getId()).getDt();
+                //Mutable_link.dt = fundamentalDiagramProfiles.get((int) tmp.getId()).getDt();
                 Mutable_link.jam_density = Mutable_link.F_max/Mutable_link.v + Mutable_link.F_max/Mutable_link.w;
                 System.out.print("link: " + Mutable_link.getUnique_id());
                 System.out.print(" F_max: " + Mutable_link.F_max);

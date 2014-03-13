@@ -1,6 +1,8 @@
 package edu.berkeley.path.beats.control;
 
 //import edu.berkeley.path.beats.control.adjoint_glue.AdjointReroutesPolicyMaker;
+import edu.berkeley.path.beats.actuator.ActuatorCMS;
+import edu.berkeley.path.beats.control.adjoint_glue.AdjointReroutesPolicyMaker;
 import edu.berkeley.path.beats.jaxb.ScenarioElement;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
@@ -15,7 +17,7 @@ public class Controller_FRR_MPC extends Controller {
     // policy maker
     private ReroutePolicyMaker policy_maker;
     private ReroutePolicySet policy;
-    private HashMap<Long,Actuator> link_actuator_map;
+    private HashMap<Long,Actuator> node_actuator_map;
 
     private edu.berkeley.path.beats.simulator.Network network;
 
@@ -60,9 +62,9 @@ public class Controller_FRR_MPC extends Controller {
 			}
 
 			switch(myPMType){
-//				case adjoint:
-//					policy_maker = new AdjointReroutesPolicyMaker();
-//					break;
+				case adjoint:
+					policy_maker = new AdjointReroutesPolicyMaker();
+					break;
 				case NULL:
 					break;
 			}
@@ -70,11 +72,11 @@ public class Controller_FRR_MPC extends Controller {
 
 
         // link->actuator map
-        link_actuator_map = new HashMap<Long,Actuator>();
+        node_actuator_map = new HashMap<Long,Actuator>();
         for(Actuator act : actuators){
             ScenarioElement se = act.getScenarioElement();
-            if(se.getType().compareTo("link")==0)
-                link_actuator_map.put(new Long(se.getId()),act);
+            if(se.getType().compareTo("node")==0)
+                node_actuator_map.put(new Long(se.getId()),act);
         }
 
 		// read timing parameters
@@ -170,22 +172,29 @@ public class Controller_FRR_MPC extends Controller {
 		}
 
         // .....
-        send_policy_to_actuators(time_current);
+        if(policy!=null){
 
+        }
+
+        send_policy_to_actuators(time_current);
 	}
 
     public void send_policy_to_actuators(double time_current){
         if(policy==null)
             return;
-//        double time_since_last_pm_call = time_current-time_last_opt;
-//        int time_index = (int) (time_since_last_pm_call/pm_dt);
-//        for(ReroutePolicyProfile rmprofile : policy.profiles){
-//            ActuatorRampMeter act = (ActuatorRampMeter) link_actuator_map.get(rmprofile.sensorLink.getId());
-//            if(act!=null){
-//                int clipped_time_index = Math.min(time_index,rmprofile.rampMeteringPolicy.size()-1);
-//                act.setMeteringRateInVPH( rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d);
-//            }
-//        }
+        double time_since_last_pm_call = time_current-time_last_opt;
+        int time_index = (int) (time_since_last_pm_call/pm_dt);
+        for(ReroutePolicyProfile rrprofile : policy.profiles){
+            ActuatorCMS act = (ActuatorCMS) node_actuator_map.get(rrprofile.actuatorNode.getId());
+            if(act!=null){
+                int clipped_time_index = Math.min(time_index,rrprofile.reroutePolicy.size()-1);
+                double sr = rrprofile.reroutePolicy.get(clipped_time_index);
+                long in_link_id = 0;
+                long out_link_id = 0;
+                long vehicle_type_id = 0;
+                act.set_split (in_link_id,out_link_id,vehicle_type_id,sr);
+            }
+        }
     }
 
 }

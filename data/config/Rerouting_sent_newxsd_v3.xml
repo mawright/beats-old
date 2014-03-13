@@ -511,18 +511,18 @@
 	</FundamentalDiagramSet>
 	<RouteSet id="-1" project_id="-1">
 		<route id="0">
-			<route_link id="1" link_order="1" link_id="327" />
+			<route_link id="1" link_order="0" link_id="327" />
 			<route_link id="1" link_order="1" link_id="358" />
-			<route_link id="1" link_order="1" link_id="387" />
-			<route_link id="1" link_order="1" link_id="359" />
-			<route_link id="1" link_order="1" link_id="465" />
-			<route_link id="1" link_order="1" link_id="468" />
-			<route_link id="1" link_order="1" link_id="355" />
+			<route_link id="1" link_order="2" link_id="387" />
+			<route_link id="1" link_order="3" link_id="359" />
+			<route_link id="1" link_order="4" link_id="465" />
+			<route_link id="1" link_order="5" link_id="468" />
+			<route_link id="1" link_order="6" link_id="355" />
 		</route>
 		<route id="1">
-			<route_link id="1" link_order="1" link_id="327" />
+			<route_link id="1" link_order="0" link_id="327" />
 			<route_link id="1" link_order="1" link_id="352" />
-			<route_link id="1" link_order="1" link_id="355" />
+			<route_link id="1" link_order="2" link_id="355" />
 		</route>
 	</RouteSet>
 </scenario>
