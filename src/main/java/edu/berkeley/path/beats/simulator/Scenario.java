@@ -597,6 +597,17 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		this.global_demand_knob = global_demand_knob;
 	}
 
+    protected edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile getFDprofileForLinkId(long link_id){
+        if(getFundamentalDiagramSet()==null)
+            return null;
+        if(getFundamentalDiagramSet().getFundamentalDiagramProfile()==null)
+            return null;
+        for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdp : getFundamentalDiagramSet().getFundamentalDiagramProfile())
+            if(fdp.getLinkId()==link_id)
+                return fdp;
+        return null;
+    }
+
 	/////////////////////////////////////////////////////////////////////
 	// protected complex getters
 	/////////////////////////////////////////////////////////////////////

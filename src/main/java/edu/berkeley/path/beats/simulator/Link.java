@@ -95,15 +95,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         this.myNetwork = myNetwork;
         this.myScenario = myNetwork.getMyScenario();
 
-        if(linkType.getName().compareTo("Intersection Approach")==0)
-            link_behavior = new LinkBehaviorQueue(this);
-
-        else if (linkType.getName().compareTo("Street")==0)
-            link_behavior = new LinkBehaviorTravelTime(this);
-
-        else
-            link_behavior = new LinkBehaviorCTM(this);
-
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
 		end_node = myNetwork.getNodeWithId(getEnd().getNodeId());
@@ -121,6 +112,15 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         has_flow_controller = false;
         has_speed_controller = false;
 
+        // link behavior
+        if(linkType.getName().compareTo("Intersection Approach")==0)
+            link_behavior = new LinkBehaviorQueue(this);
+
+        else if (linkType.getName().compareTo("Street")==0)
+            link_behavior = new LinkBehaviorQueueAndTravelTime(this);
+
+        else
+            link_behavior = new LinkBehaviorCTM(this);
 	}
 
 	protected void validate() {

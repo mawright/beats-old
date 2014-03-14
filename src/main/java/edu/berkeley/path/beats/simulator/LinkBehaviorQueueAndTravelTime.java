@@ -16,7 +16,9 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehavior {
         int num_ensemble = myScenario.getNumEnsemble();
 
         double L = myLink.getLengthInMeters();
-        double vf = myLink.getVfInMPS(0);
+
+        edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdp = myScenario.getFDprofileForLinkId(myLink.getId());
+        double vf = fdp==null ? Defaults.vf : fdp.getFundamentalDiagram().get(0).getFreeFlowSpeed();
         double dt = myLink.getMyNetwork().getMyScenario().getSimdtinseconds();
 
         int num_cells = (int) Math.ceil(L/(vf*dt));
