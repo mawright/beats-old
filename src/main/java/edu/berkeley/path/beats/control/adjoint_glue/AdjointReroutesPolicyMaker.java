@@ -443,7 +443,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
             int maxIter = 10;
             SOPC_Optimizer optimizer = new SOPC_Optimizer(simulator);
 
-            GradientDescent descentMethod = new GradientDescent(maxIter,"RProp");
+            GradientDescent descentMethod = new GradientDescent(maxIter); //,"RProp");
             descentMethod.setGradient_condition(10E-9);
             result = descentMethod.solve(optimizer);
             System.out.println("Final control");

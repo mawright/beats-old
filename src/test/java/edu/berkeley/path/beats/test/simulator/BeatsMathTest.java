@@ -331,14 +331,14 @@ public class BeatsMathTest {
 	@Test
 	public void test_makecoy() {
 		Double [][] x = {{1d,2d},{3d,4d},{5d,6d}};
-		Double [][] y = BeatsMath.makecopy(x);
+		Double [][] y = BeatsMath.copy(x);
 
 		assertEquals(x.length,y.length);
 		for(int i=0;i<x.length;i++)
 			assertTrue(Arrays.equals(x[i],y[i]));
 		
 		// edge cases
-		assertNull(BeatsMath.makecopy(null));
+		assertNull(BeatsMath.copy(null));
 	}
 
 }

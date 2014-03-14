@@ -13,19 +13,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
     // LinkBehaviorInterface
     /////////////////////////////////////////////////////////////////////
 
-    @Override
-    public double compute_speed_in_mps(int ensemble){
-        try{
-            if(myScenario.getClock().getRelativeTimeStep()==0)
-                return Double.NaN;
-            double totaldensity = BeatsMath.sum(density[ensemble]);
-            double speed = BeatsMath.greaterthan(totaldensity,0d) ?
-                           BeatsMath.sum(myLink.outflow[ensemble])/totaldensity : 1d;
-            return speed * myLink._length / myScenario.getSimdtinseconds();
-        } catch(Exception e){
-            return Double.NaN;
-        }
-    }
+    // UPDATE
 
     @Override
     public void update_outflow_demand(double external_max_speed, double external_max_flow){
@@ -114,6 +102,29 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
                 spaceSupply[e] = Math.min( spaceSupply[e] , FD._getDensityJamInVeh() - totaldensity);
             }
         }
+    }
+
+    // COMPUTE
+
+    @Override
+    public double compute_speed_in_mps(int ensemble){
+        try{
+            if(myScenario.getClock().getRelativeTimeStep()==0)
+                return Double.NaN;
+            double totaldensity = BeatsMath.sum(density[ensemble]);
+            double speed = BeatsMath.greaterthan(totaldensity,0d) ?
+                           BeatsMath.sum(myLink.outflow[ensemble])/totaldensity : 1d;
+            return speed * myLink._length / myScenario.getSimdtinseconds();
+        } catch(Exception e){
+            return Double.NaN;
+        }
+    }
+
+    @Override
+    public double compute_delay_in_veh(int ensemble, int vt_index){
+        double n = get_density_in_veh(ensemble, vt_index);
+        double f = myLink.getOutflowInVeh(ensemble, vt_index);
+        return Math.max(0d,n-f);
     }
 
 }

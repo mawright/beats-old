@@ -62,8 +62,8 @@ public class LinkBehaviorCTM extends LinkBehavior {
             // flow controller
             totaloutflow = Math.min( totaloutflow , external_max_flow );
 
-            // flow uncertainty model
-            if(myScenario.isHas_flow_unceratinty()){
+            // flow uncertainty model (unless controller wants zero flow)
+            if(myScenario.isHas_flow_unceratinty() && BeatsMath.greaterthan(external_max_flow,0d) ){
 
                 double delta_flow=0.0;
                 double std_dev_flow = myScenario.getStd_dev_flow();

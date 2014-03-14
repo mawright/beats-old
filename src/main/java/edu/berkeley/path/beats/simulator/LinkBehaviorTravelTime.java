@@ -34,77 +34,14 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
 
     @Override
     public void update_state(double [][] inflow,double [][] outflow){
-//        int e,j;
-//        for(e=0;e<myScenario.getNumEnsemble();e++)
-//            for(j=0;j<myScenario.getNumVehicleTypes();j++)
-//                density[e][j] += inflow[e][j] - outflow[e][j];
+        for(int e=0;e<ensemble.size();e++)
+            ensemble.get(e).update_state(inflow[e]);
     }
 
     @Override
     public void update_outflow_demand(double external_max_speed, double external_max_flow){
-//
-//        int numVehicleTypes = myScenario.getNumVehicleTypes();
-//
-//        double totaldensity;
-//        double totaloutflow;
-//        FundamentalDiagram FD;
-//
-//        for(int e=0;e<myScenario.getNumEnsemble();e++){
-//
-//            FD = myLink.currentFD(e);
-//
-//            totaldensity = getTotalDensityInVeh(e);
-//
-//            // case empty link
-//            if( BeatsMath.lessorequalthan(totaldensity,0d) ){
-//                outflowDemand[e] =  BeatsMath.zeros(numVehicleTypes);
-//                continue;
-//            }
-//
-//            // compute total flow leaving the link in the absence of flow control
-//            if( totaldensity < FD.getDensityCriticalInVeh() ){
-//                totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),external_max_speed);
-//            }
-//            else{
-//                totaloutflow = Math.max(FD._getCapacityInVeh()-FD._getCapacityDropInVeh(),0d);
-//                totaloutflow = Math.min(totaloutflow,external_max_speed*FD.getDensityCriticalInVeh());
-//            }
-//
-//            // capacity profile
-//            if(myLink.myCapacityProfile!=null)
-//                totaloutflow = Math.min( totaloutflow , myLink.myCapacityProfile.getCurrentValue() );
-//
-//            // flow controller
-//            totaloutflow = Math.min( totaloutflow , external_max_flow );
-//
-//            // flow uncertainty model
-//            if(myScenario.isHas_flow_unceratinty()){
-//
-//                double delta_flow=0.0;
-//                double std_dev_flow = myScenario.getStd_dev_flow();
-//
-//                switch(myScenario.getUncertaintyModel()){
-//                    case uniform:
-//                        delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
-//                        break;
-//
-//                    case gaussian:
-//                        delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
-//                        break;
-//                }
-//
-//                totaloutflow = Math.max( 0d , totaloutflow + delta_flow );
-//                totaloutflow = Math.min( totaloutflow , totaldensity );
-//            }
-//
-//            // split among types
-//            double alpha = totaloutflow/totaldensity;
-//            for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-//                outflowDemand[e][j] = get_density_in_veh(e,j)*alpha;
-//
-//        }
-//
-//        return;
+        for(int e=0;e<myScenario.getNumEnsemble();e++)
+            outflowDemand[e] = ensemble.get(e).cell_array.get(0).n;
     }
 
     @Override
@@ -166,34 +103,19 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
 
     @Override
     public double compute_speed_in_mps(int ensemble){
-//        try{
-//            if(myScenario.getClock().getRelativeTimeStep()==0)
-//                return Double.NaN;
-//
-//            double totaldensity = BeatsMath.sum(density[ensemble]);
-//            double speed = BeatsMath.greaterthan(totaldensity,0d) ?
-//                    BeatsMath.sum(myLink.outflow[ensemble])/totaldensity :
-//                    myLink.currentFD(ensemble).getVfNormalized();
-//            return speed * myLink._length / myScenario.getSimdtinseconds();
-//        } catch(Exception e){
-//            return Double.NaN;
-//        }
-        return 0;
+        return myLink.getVfInMPS(ensemble);
     }
 
     @Override
     public double compute_delay_in_veh(int e, int vt_index){
-//        double n = get_density_in_veh(ensemble, vt_index);
-//        double f = myLink.getOutflowInVeh(ensemble, vt_index);
-//        double vf = myLink.getNormalizedVf(ensemble);
-//        return Math.max(0d,vf*n-f);
-        return 0;
+        return 0d;
     }
 
     /////////////////////////////////////////////////////////////////////
     // Cell Array class
     /////////////////////////////////////////////////////////////////////
 
+    // vehicles travel from the end of the cell_array to the begining
     private class CellArray{
         public ArrayList<Cell> cell_array;
         public CellArray(int numcell,int num_veh_types){
@@ -221,6 +143,11 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
             for(Cell cell : cell_array)
                 cell.reset();
         }
+        protected void update_state(double [] inflow){
+            cell_array.add(new Cell(inflow));
+            cell_array.remove(0);
+        }
+
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -231,6 +158,11 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
         public double [] n;        // [ve] for each vehicle type
         public Cell(int nVT){
             n=BeatsMath.zeros(nVT);
+        }
+        public Cell(double [] no){
+            n = new double[no.length];
+            for(int v=0;v<no.length;v++)
+                n[v]=no[v];
         }
         protected void set_vehicles(double [] x){
             for(int i=0;i<x.length;i++)

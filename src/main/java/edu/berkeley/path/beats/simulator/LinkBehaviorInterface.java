@@ -7,6 +7,7 @@ public interface LinkBehaviorInterface {
 
     // UPDATE
 
+    // inflow, outflow are in veh units and index with [ensemble][vehicle_type]
     public void update_state(double [][] inflow,double [][] outflow);
 
     public void update_outflow_demand(double external_max_speed, double external_max_flow);
