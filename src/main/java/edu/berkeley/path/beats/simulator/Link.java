@@ -182,11 +182,11 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 
     protected void updateOutflowDemand(){
-        link_behavior.updateOutflowDemand(external_max_speed,external_max_flow);
+        link_behavior.update_outflow_demand(external_max_speed, external_max_flow);
     }
 
     protected void updateSpaceSupply(){
-        link_behavior.updateSpaceSupply();
+        link_behavior.update_space_supply();
     }
 
 	/////////////////////////////////////////////////////////////////////
@@ -392,7 +392,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
     public double getDensityInVeh(int ensemble,int vehicletype) {
-        return link_behavior.getDensityInVeh(ensemble,vehicletype);
+        return link_behavior.get_density_in_veh(ensemble, vehicletype);
     }
 
     public double getTotalDensityInVeh(int ensemble) {
@@ -481,20 +481,18 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
     public double computeDelayInVeh(int ensemble,int vt_index){
-        return link_behavior.computeDelayInVeh(ensemble,vt_index);
+        return link_behavior.compute_delay_in_veh(ensemble, vt_index);
     }
 
     public double computeSpeedInMPS(int ensemble){
-        return link_behavior.computeSpeedInMPS(ensemble);
+        return link_behavior.compute_speed_in_mps(ensemble);
     }
 
     public void overrideDensityWithVeh(double[] x,int ensemble){
-        link_behavior.overrideDensityWithVeh(x,ensemble);
+        link_behavior.set_density_in_veh(ensemble, x);
     }
 
-
-
-        // Fundamental diagram ....................
+    // Fundamental diagram ....................
 
 	/** Jam density in vehicle/link. */
 	public double getDensityJamInVeh(int ensemble) {

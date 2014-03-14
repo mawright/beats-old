@@ -35,17 +35,36 @@ public abstract class LinkBehavior implements LinkBehaviorInterface {
         return true;
     }
 
-    protected double getTotalDensityInVPMeter(int ensemble) {
-        return getTotalDensityInVeh(ensemble)/myLink._length;
+    public double getTotalDensityInVPMeter(int e) {
+        return getTotalDensityInVeh(e)/myLink._length;
     }
 
-    protected double[] get_out_demand_in_veh(int ensemble) {
-        return outflowDemand[ensemble];
+    public double[] get_out_demand_in_veh(int e) {
+        return outflowDemand[e];
     }
 
-    protected double get_space_supply_in_veh(int ensemble) {
-        return spaceSupply[ensemble];
+    public double get_space_supply_in_veh(int e) {
+        return spaceSupply[e];
     }
 
+    public double[] getDensityInVeh(int e) {
+        int nVT = myLink.myScenario.getNumVehicleTypes();
+        double [] d = new double[nVT];
+        for(int v=0;v<nVT;v++)
+            d[v] = get_density_in_veh(e, v);
+        return d;
+
+    }
+
+    public double getTotalDensityInVeh(int e) {
+        return BeatsMath.sum(getDensityInVeh(e));
+    }
+
+    public double computeTotalDelayInVeh(int e){
+        double val=0d;
+        for(int v=0;v<myLink.myScenario.getNumVehicleTypes();v++)
+            val += compute_delay_in_veh(e, v);
+        return val;
+    }
 
 }

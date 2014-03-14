@@ -9,34 +9,22 @@ public interface LinkBehaviorInterface {
 
     public void update_state(double [][] inflow,double [][] outflow);
 
-    public void updateOutflowDemand(double external_max_speed,double external_max_flow);
+    public void update_outflow_demand(double external_max_speed, double external_max_flow);
 
-    public void updateSpaceSupply();
+    public void update_space_supply();
 
-    // GET
+    // GET / SET / RESET DENSITY
 
-    public double[] getDensityInVeh(int ensemble);
-
-    public double getDensityInVeh(int ensemble,int vehicletype);
-
-    public double getTotalDensityInVeh(int ensemble);
-
-    // COMPUTE
-
-    public double computeSpeedInMPS(int ensemble);
-
-    public double computeTotalDelayInVeh(int ensemble);
-
-    public double computeDelayInVeh(int ensemble,int vt_index);
-
-    // SET
-
-    public void reset_density();
-
-    public boolean overrideDensityWithVeh(double[] x,int ensemble);
+    public double get_density_in_veh(int ensemble_index, int vehicletype_index) throws IndexOutOfBoundsException;
 
     public boolean set_density_in_veh(int ensemble,double [] d);
 
-//    public void initialize_density(double [] initial_density);
+    public void reset_density();
+
+    // COMPUTE
+
+    public double compute_speed_in_mps(int ensemble);
+
+    public double compute_delay_in_veh(int ensemble, int vt_index);
 
 }

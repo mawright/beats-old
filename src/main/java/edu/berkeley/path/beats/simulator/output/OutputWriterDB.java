@@ -254,7 +254,7 @@ public class OutputWriterDB extends OutputWriterBase {
 //
 //		LinkCumulativeData link_cum_data = getCumulatives(link);
 //		// mean density, vehicles
-//		double density = exportflows ? link_cum_data.getMeanTotalDensityInVeh(0) : BeatsMath.sum(link.getDensityInVeh(0));
+//		double density = exportflows ? link_cum_data.getMeanTotalDensityInVeh(0) : BeatsMath.sum(link.get_density_in_veh(0));
 //		db_ldt.setDensity(double2decimal(density));
 //
 //		if (exportflows) {
@@ -318,7 +318,7 @@ public class OutputWriterDB extends OutputWriterBase {
 //			db_ldd.setAggregationTypes(db_aggregation_type_raw);
 //			db_ldd.setQuantityTypes(db_quantity_type_mean);
 //			// mean density, vehicles
-//			double density = exportflows ? link_cum_data.getMeanDensityInVeh(0, vt_ind) : link.getDensityInVeh(0)[vt_ind];
+//			double density = exportflows ? link_cum_data.getMeanDensityInVeh(0, vt_ind) : link.get_density_in_veh(0)[vt_ind];
 //			db_ldd.setDensity(double2decimal(density));
 //			if (exportflows) {
 //				// input flow, vehicles

@@ -30,93 +30,7 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
     // LinkBehaviorInterface
     /////////////////////////////////////////////////////////////////////
 
-//    @Override
-//    public void initialize_density(double [] initial_density) {
-//        int n1 = myScenario.getNumEnsemble();
-//        int n2 = myScenario.getNumVehicleTypes();
-//        density = BeatsMath.zeros(n1,n2);
-//
-//        // copy initial density to density
-//        int e,v;
-//        for(e=0;e<n1;e++)
-//            for(v=0;v<n2;v++)
-//                density[e][v] = initial_density[v];
-//    }
-
-
-    @Override
-    public boolean overrideDensityWithVeh(double[] x,int e){
-        if(e<0 || e>=ensemble.size())
-            return false;
-        if(x.length!=ensemble.get(e).cell_array.size())
-            return false;
-        if(!BeatsMath.all_non_negative(x))
-            return false;
-        return ensemble.get(e).set_density_in_veh(x);
-    }
-
-    @Override
-    public boolean set_density_in_veh(int ensemble,double [] d){
-//        if(myScenario.getNumVehicleTypes()!=1)
-//            return false;
-//        if(density==null)
-//            return false; //density = new double[d.length][1];
-//        if(density.length!=d.length)
-//            return false;
-//        for(int e=0;e<d.length;e++)
-//            density[e][0] = d[e];
-//        return true;
-        return false;
-    }
-
-    @Override
-    public double computeSpeedInMPS(int ensemble){
-//        try{
-//            if(myScenario.getClock().getRelativeTimeStep()==0)
-//                return Double.NaN;
-//
-//            double totaldensity = BeatsMath.sum(density[ensemble]);
-//            double speed = BeatsMath.greaterthan(totaldensity,0d) ?
-//                    BeatsMath.sum(myLink.outflow[ensemble])/totaldensity :
-//                    myLink.currentFD(ensemble).getVfNormalized();
-//            return speed * myLink._length / myScenario.getSimdtinseconds();
-//        } catch(Exception e){
-//            return Double.NaN;
-//        }
-        return 0;
-    }
-
-    @Override
-    public double[] getDensityInVeh(int ensemble) {
-//        try{
-//            return density[ensemble].clone();
-//        } catch(Exception e){
-//            return null;
-//        }
-        return null;
-    }
-
-    @Override
-    public double getDensityInVeh(int ensemble,int vehicletype) {
-//        try{
-//            return density[ensemble][vehicletype];
-//        } catch(Exception e){
-//            return Double.NaN;
-//        }
-        return 0;
-    }
-
-    @Override
-    public double getTotalDensityInVeh(int ensemble) {
-//        try{
-//            if(density!=null)
-//                return BeatsMath.sum(density[ensemble]);
-//            return 0d;
-//        } catch(Exception e){
-//            return Double.NaN;
-//        }
-        return 0;
-    }
+    // UPDATE
 
     @Override
     public void update_state(double [][] inflow,double [][] outflow){
@@ -127,30 +41,7 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
     }
 
     @Override
-    public double computeTotalDelayInVeh(int ensemble){
-//        double n = getTotalDensityInVeh(ensemble);
-//        double f = myLink.getTotalOutflowInVeh(ensemble);
-//        double vf = myLink.getNormalizedVf(ensemble);
-//        return Math.max(0d,vf*n-f);
-        return 0;
-    }
-
-    @Override
-    public double computeDelayInVeh(int ensemble,int vt_index){
-//        double n = getDensityInVeh(ensemble, vt_index);
-//        double f = myLink.getOutflowInVeh(ensemble, vt_index);
-//        double vf = myLink.getNormalizedVf(ensemble);
-//        return Math.max(0d,vf*n-f);
-        return 0;
-    }
-
-    @Override
-    public void reset_density() {
-
-    }
-
-    @Override
-    public void updateOutflowDemand(double external_max_speed,double external_max_flow){
+    public void update_outflow_demand(double external_max_speed, double external_max_flow){
 //
 //        int numVehicleTypes = myScenario.getNumVehicleTypes();
 //
@@ -209,7 +100,7 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
 //            // split among types
 //            double alpha = totaloutflow/totaldensity;
 //            for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-//                outflowDemand[e][j] = getDensityInVeh(e,j)*alpha;
+//                outflowDemand[e][j] = get_density_in_veh(e,j)*alpha;
 //
 //        }
 //
@@ -217,7 +108,7 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
     }
 
     @Override
-    public void updateSpaceSupply(){
+    public void update_space_supply(){
 //        double totaldensity;
 //        FundamentalDiagram FD;
 //        for(int e=0;e<myScenario.getNumEnsemble();e++){
@@ -245,6 +136,64 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
 //        }
     }
 
+    // GET / SET / RESET DENSITY
+
+    @Override
+    public double get_density_in_veh(int ensemble_index, int vehicletype_index) throws IndexOutOfBoundsException {
+        return ensemble.get(ensemble_index).get_density_for_vehicletype_in_veh(vehicletype_index);
+    }
+
+    @Override
+    public boolean set_density_in_veh(int e,double [] d){
+        if(e<0 || e>=ensemble.size())
+            return false;
+        if(d.length!=myScenario.getNumVehicleTypes())
+            return false;
+        if(!BeatsMath.all_non_negative(d))
+            return false;
+        for(int v=0;v<d.length;v++)
+            ensemble.get(e).set_density_in_veh(d);
+        return true;
+    }
+
+    @Override
+    public void reset_density() {
+        for(CellArray ca : ensemble)
+            ca.reset();
+    }
+
+    // COMPUTE
+
+    @Override
+    public double compute_speed_in_mps(int ensemble){
+//        try{
+//            if(myScenario.getClock().getRelativeTimeStep()==0)
+//                return Double.NaN;
+//
+//            double totaldensity = BeatsMath.sum(density[ensemble]);
+//            double speed = BeatsMath.greaterthan(totaldensity,0d) ?
+//                    BeatsMath.sum(myLink.outflow[ensemble])/totaldensity :
+//                    myLink.currentFD(ensemble).getVfNormalized();
+//            return speed * myLink._length / myScenario.getSimdtinseconds();
+//        } catch(Exception e){
+//            return Double.NaN;
+//        }
+        return 0;
+    }
+
+    @Override
+    public double compute_delay_in_veh(int e, int vt_index){
+//        double n = get_density_in_veh(ensemble, vt_index);
+//        double f = myLink.getOutflowInVeh(ensemble, vt_index);
+//        double vf = myLink.getNormalizedVf(ensemble);
+//        return Math.max(0d,vf*n-f);
+        return 0;
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // Cell Array class
+    /////////////////////////////////////////////////////////////////////
+
     private class CellArray{
         public ArrayList<Cell> cell_array;
         public CellArray(int numcell,int num_veh_types){
@@ -252,6 +201,8 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
             for(int i=0;i<numcell;i++)
                 cell_array.add(new Cell(num_veh_types));
         }
+
+        // x is an array over vehicle types
         public boolean set_density_in_veh(double [] x){
             if(cell_array.isEmpty())
                 return false;
@@ -260,16 +211,37 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
                 cell.set_vehicles(x_per_cell);
             return true;
         }
+        protected double get_density_for_vehicletype_in_veh(int vtind){
+            double val = 0d;
+            for(Cell cell : cell_array)
+                val += cell.get_density_for_vehicletype_in_veh(vtind);
+            return val;
+        }
+        protected void reset(){
+            for(Cell cell : cell_array)
+                cell.reset();
+        }
     }
+
+    /////////////////////////////////////////////////////////////////////
+    // Cell class
+    /////////////////////////////////////////////////////////////////////
 
     private class Cell {
         public double [] n;        // [ve] for each vehicle type
-        public Cell(int num_veh_types){
-            n=BeatsMath.zeros(num_veh_types);
+        public Cell(int nVT){
+            n=BeatsMath.zeros(nVT);
         }
         protected void set_vehicles(double [] x){
             for(int i=0;i<x.length;i++)
                 n[i]=x[i];
+        }
+        protected double get_density_for_vehicletype_in_veh(int vtind){
+            return n[vtind];
+        }
+        protected void reset(){
+            int nVT = n.length;
+            n = BeatsMath.zeros(nVT);
         }
     }
 

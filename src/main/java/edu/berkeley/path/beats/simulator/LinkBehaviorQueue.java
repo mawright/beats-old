@@ -14,7 +14,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
     /////////////////////////////////////////////////////////////////////
 
     @Override
-    public double computeSpeedInMPS(int ensemble){
+    public double compute_speed_in_mps(int ensemble){
         try{
             if(myScenario.getClock().getRelativeTimeStep()==0)
                 return Double.NaN;
@@ -28,7 +28,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
     }
 
     @Override
-    public void updateOutflowDemand(double external_max_speed,double external_max_flow){
+    public void update_outflow_demand(double external_max_speed, double external_max_flow){
 
         int numVehicleTypes = myScenario.getNumVehicleTypes();
 
@@ -81,7 +81,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
             // split among types
             double alpha = totaloutflow/totaldensity;
             for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-                outflowDemand[e][j] = getDensityInVeh(e,j)*alpha;
+                outflowDemand[e][j] = get_density_in_veh(e, j)*alpha;
 
         }
 
@@ -89,7 +89,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
     }
 
     @Override
-    public void updateSpaceSupply(){
+    public void update_space_supply(){
         double totaldensity;
         FundamentalDiagram FD;
         for(int e=0;e<myScenario.getNumEnsemble();e++){
