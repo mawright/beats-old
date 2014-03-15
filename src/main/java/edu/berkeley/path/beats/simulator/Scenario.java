@@ -1499,7 +1499,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 dp.setLinkIdOrg(L.getId());
                 dp.setDt(sample_dt);
                 for(int v=0;v<getNumVehicleTypes();v++){
-                    edu.berkeley.path.beats.jaxb.Demand dem = factory.createDemand();
+                    Demand dem = factory.createDemand();
                     dp.getDemand().add(dem);
 
                     // set values

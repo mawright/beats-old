@@ -1,8 +1,8 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
-//import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker;
-import edu.berkeley.path.beats.jaxb.ScenarioElement;
+import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker;
+import edu.berkeley.path.beats.simulator.ScenarioElement;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;
@@ -67,9 +67,9 @@ public class Controller_CRM_MPC extends Controller {
                 case tester:
                     policy_maker = new PolicyMaker_Tester();
                     break;
-//				case adjoint:
-//					policy_maker = new AdjointRampMeteringPolicyMaker();
-//					break;
+				case adjoint:
+					policy_maker = new AdjointRampMeteringPolicyMaker();
+					break;
 //				case actm_lp:
 //                    policy_maker = new PolicyMaker_CRM_ACTM_LP();
 //					break;
@@ -82,8 +82,8 @@ public class Controller_CRM_MPC extends Controller {
         // link->actuator map
         link_actuator_map = new HashMap<Long,Actuator>();
         for(Actuator act : actuators){
-            ScenarioElement se = act.getScenarioElement();
-            if(se.getType().compareTo("link")==0)
+            ScenarioElement se = (ScenarioElement) act.getScenarioElement();
+            if(se.getMyType() == ScenarioElement.Type.link)
                 link_actuator_map.put(new Long(se.getId()),act);
         }
 
