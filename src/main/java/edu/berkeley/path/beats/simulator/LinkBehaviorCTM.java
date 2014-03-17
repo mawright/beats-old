@@ -23,6 +23,9 @@ public class LinkBehaviorCTM extends LinkBehavior {
         for(e=0;e<myScenario.getNumEnsemble();e++)
             for(j=0;j<myScenario.getNumVehicleTypes();j++)
                 density[e][j] += inflow[e][j] - outflow[e][j];
+
+        if(this.myLink.getId()==13)
+            System.out.println("\t"+density[0][0]);
     }
 
     @Override

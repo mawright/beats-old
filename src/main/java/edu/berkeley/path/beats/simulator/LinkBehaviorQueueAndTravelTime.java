@@ -89,11 +89,10 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehavior {
             // split among types
             double alpha = totaloutflow/queue_length;
             for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-                outflowDemand[e][j] = get_density_in_veh(e, j)*alpha;
+                outflowDemand[e][j] = caq.get_queue_for_vehicletype_in_veh(j)*alpha;
 
         }
 
-        return;
     }
 
     // identical to simple queueing code
@@ -223,7 +222,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehavior {
 
             // update the queue
             double [] flow_into_queue = cell_array.get(0).n;
-           for(int j=0;j<queue.length;j++)
+            for(int j=0;j<queue.length;j++)
                queue[j] += flow_into_queue[j] - outflow[j];
 
             // shift the cell array
@@ -235,6 +234,13 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehavior {
             return BeatsMath.sum(queue);
         }
 
+        @Override
+        public String toString() {
+            String str = String.format("%.2f",queue[0]);
+            for(Cell cell:cell_array)
+                str += String.format("\t%.2f",cell.n[0]);
+            return str;
+        }
     }
 
     /////////////////////////////////////////////////////////////////////
