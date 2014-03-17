@@ -23,10 +23,10 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 
         // copy jaxb data
         setId(jaxbA.getId());
-        //setScenarioElement(new ScenarioElement(myScenario,jaxbA.getScenarioElement()));
-        //setParameters(jaxbA.getParameters());
-        //setActuatorType(jaxbA.getActuatorType());
-        //setTable(jaxbA.getTable());
+        setScenarioElement(new ScenarioElement(myScenario,jaxbA.getScenarioElement()));
+        setParameters(jaxbA.getParameters());
+        setActuatorType(jaxbA.getActuatorType());
+        setTable(jaxbA.getTable());
 	}
 
     public Actuator (ActuatorImplementation act_implementor,Actuator.Type myType){
