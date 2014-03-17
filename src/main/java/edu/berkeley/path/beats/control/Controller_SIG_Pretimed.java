@@ -146,7 +146,7 @@ public class Controller_SIG_Pretimed extends Controller {
 
 		// all targets are signals
 		for(Actuator actuator: actuators)
-            if(actuator.get_type().compareTo(Actuator.Type.signal)!=0)
+            if(actuator.get_type()!=Actuator.Type.signal)
                 BeatsErrorLog.addError("Bad actuator type in pretimed controller.");
 
         // verify plans
@@ -386,8 +386,8 @@ public class Controller_SIG_Pretimed extends Controller {
 
             for(Stage stage : stages){
 
-                boolean have_movA = stage.movA.compareTo(NEMA.ID.NULL)!=0;
-                boolean have_movB = stage.movB.compareTo(NEMA.ID.NULL)!=0;
+                boolean have_movA = stage.movA!=NEMA.ID.NULL;
+                boolean have_movB = stage.movB!=NEMA.ID.NULL;
 
                 // holds
                 if(have_movA)
@@ -471,7 +471,7 @@ public class Controller_SIG_Pretimed extends Controller {
                     BeatsErrorLog.addError("Stage movements are incompatible.");
         }
         public boolean has_movement(NEMA.ID m){
-            return m.compareTo(movA)==0 || m.compareTo(movB)==0;
+            return m==movA || m==movB;
         }
         public double get_length(){
             return green_time+yellow_time+red_time;

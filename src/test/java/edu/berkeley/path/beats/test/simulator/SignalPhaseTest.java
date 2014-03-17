@@ -51,7 +51,7 @@ public class SignalPhaseTest {
 
 	@Test
 	public void test_getMyNEMA() {
-		assertEquals(signalphase.getNEMA().compareTo(NEMA.ID._2),0);
+		assertTrue(signalphase.getNEMA()==NEMA.ID._2);
 	}
 
 	@Test

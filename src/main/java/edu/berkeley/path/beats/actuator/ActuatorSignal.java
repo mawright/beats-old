@@ -212,7 +212,7 @@ public final class ActuatorSignal extends Actuator {
 
 //		// No transition if green time < mingreen
 //        for(SignalPhase phase : phases)
-//            if( phase.bulbcolor.compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phase.bulbtimer.getT(),phase.mingreen) )
+//            if( phase.bulbcolor==BulbColor.GREEN  && BeatsMath.lessthan(phase.bulbtimer.getT(),phase.mingreen) )
 //				phase.forceoff_approved = false;
 
 		// collect updated bulb indications
@@ -400,7 +400,7 @@ public final class ActuatorSignal extends Actuator {
 //					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getNEMA() + " in signal ID=" + signal.getId());
 
             // myNEMA is valid
-            if(myNEMA.compareTo(NEMA.ID.NULL)==0)
+            if(myNEMA==NEMA.ID.NULL)
                 BeatsErrorLog.addError("Invalid NEMA code in phase NEMA=" + myNEMA + " in signal ID=" + mySignal.getId());
 
             // numbers are positive
@@ -530,15 +530,15 @@ public final class ActuatorSignal extends Actuator {
         /////////////////////////////////////////////////////////////////////
 
         public boolean is_green(){
-            return bulbcolor.compareTo(BulbColor.GREEN)==0;
+            return bulbcolor==BulbColor.GREEN;
         }
 
         public boolean is_yellow(){
-            return bulbcolor.compareTo(BulbColor.YELLOW)==0;
+            return bulbcolor==BulbColor.YELLOW;
         }
 
         public boolean is_red(){
-            return bulbcolor.compareTo(BulbColor.RED)==0;
+            return bulbcolor==BulbColor.RED;
         }
 
         public double getYellowtime() {

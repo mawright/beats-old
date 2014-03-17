@@ -34,7 +34,7 @@ public class SensorTest {
 
 	@Test
 	public void test_getMyType() {
-		assertTrue(sensor.getMyType().compareTo(Sensor.Type.loop)==0);
+		assertTrue(sensor.getMyType()==Sensor.Type.loop);
 	}
 
 	@Test
