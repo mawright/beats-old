@@ -914,7 +914,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         if(actuatorset==null)
             return null;
         for(Actuator actuator : actuatorset.getActuators()){
-            if(actuator.myType.compareTo(Actuator.Type.signal)==0){
+            if(actuator.myType==Actuator.Type.signal){
                 ActuatorSignal signal = (ActuatorSignal) actuator;
                 Long signal_node_id = signal.get_node_id();
                 if(signal_node_id!=null && node_id==signal_node_id)
@@ -1016,7 +1016,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		// construct list of stations to extract from datafile 
 		for(Sensor sensor : sensorset.getSensors()){
-			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
+			if(sensor.getMyType()!=Sensor.Type.loop)
 				continue;
 			SensorLoopStation S = (SensorLoopStation) sensor;
 			int myVDS = S.getVDS();				
@@ -1043,7 +1043,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// distribute data to sensors
 		for(Sensor sensor : sensorset.getSensors()){
 			
-			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
+			if(sensor.getMyType()!=Sensor.Type.loop)
 				continue;
 
 			SensorLoopStation S = (SensorLoopStation) sensor;
@@ -1100,7 +1100,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 				
 		// copy InitialDensityState to initial_state if starting from or to the right of InitialDensitySet time stamp
-		if(simulationMode.compareTo(ModeType.left_of_init_dens)!=0 && getInitialDensitySet()!=null){
+		if(simulationMode!=ModeType.left_of_init_dens && getInitialDensitySet()!=null){
 			for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
 				for(edu.berkeley.path.beats.jaxb.Link jlink:network.getLinkList().getLink()){
 					double [] density = ((InitialDensitySet)getInitialDensitySet()).getDensityForLinkIdInVeh(network.getId(),jlink.getId());

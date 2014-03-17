@@ -138,7 +138,7 @@ public class PerformanceCalculator {
             vt_index = vehicle_type_index;
 
             // special for speed contour
-            if(pm.compareTo(PerformanceMeasure.speed_contour)==0){
+            if(pm==PerformanceMeasure.speed_contour){
                 agg_time = false;
                 agg_links = false;
                 agg_ensemble = false;
@@ -185,7 +185,7 @@ public class PerformanceCalculator {
                 BeatsErrorLog.addError("Performance calculator: Please specify a vehicle type.");
 
             // speed contours require a route
-            if(pm.compareTo(PerformanceMeasure.speed_contour)==0 && !isroute)
+            if(pm==PerformanceMeasure.speed_contour && !isroute)
                 BeatsErrorLog.addError("Performance calculator: Please specify a route for the speed contour.");
 
         }

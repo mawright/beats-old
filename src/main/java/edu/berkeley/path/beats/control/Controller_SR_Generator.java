@@ -101,7 +101,7 @@ public class Controller_SR_Generator extends Controller {
         node_data = new ArrayList<NodeData>();
         for(Actuator act:actuators){
             ScenarioElement se = (ScenarioElement) act.getScenarioElement();
-            if(se.getMyType().compareTo(ScenarioElement.Type.node)!=0)
+            if(se.getMyType()!=ScenarioElement.Type.node)
                 continue;
             node_data.add(new NodeData(demand_set,(Node) se.getReference()));
         }
@@ -124,7 +124,7 @@ public class Controller_SR_Generator extends Controller {
         // check node data
         for(Actuator act:actuators){
             ScenarioElement se = (ScenarioElement) act.getScenarioElement();
-            if(se.getMyType().compareTo(ScenarioElement.Type.node)!=0)
+            if(se.getMyType()!=ScenarioElement.Type.node)
                 BeatsErrorLog.addError("In Controller_SR_Generator, all actuators must be on nodes.");
         }
 

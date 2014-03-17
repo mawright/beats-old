@@ -82,7 +82,7 @@ public class Event_Link_Demand_Knob extends Event {
 		
 		// check each target is valid
 		for(ScenarioElement s : getTargets()){
-			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0)
+			if(s.getMyType()!=ScenarioElement.Type.link)
 				BeatsErrorLog.addError("Wrong target type for event ID=" +getId() +".");
 			if(!((Link)s.getReference()).isSource())
 				BeatsErrorLog.addError("Demand event ID=" +getId()+ " attached to non-source link.");

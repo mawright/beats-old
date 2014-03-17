@@ -81,7 +81,7 @@ public class Event_Control_Toggle extends Event {
 		// check each target is valid
 		if(getTargets()!=null)
 			for(ScenarioElement s : getTargets())
-				if(s.getMyType().compareTo(ScenarioElement.Type.controller)!=0)
+				if(s.getMyType()!=ScenarioElement.Type.controller)
 					BeatsErrorLog.addError("Wrong target type for event ID=" +getId() +".");
 
 	}

@@ -3,7 +3,6 @@ package edu.berkeley.path.beats.control;
 import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
 //import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker;
 import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker;
-import edu.berkeley.path.beats.jaxb.ScenarioElement;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;
@@ -82,8 +81,8 @@ public class Controller_CRM_MPC extends Controller {
         // link->actuator map
         link_actuator_map = new HashMap<Long,Actuator>();
         for(Actuator act : actuators){
-            edu.berkeley.path.beats.simulator.ScenarioElement se =  (edu.berkeley.path.beats.simulator.ScenarioElement) act.getScenarioElement();
-            if(se.getMyType().compareTo(edu.berkeley.path.beats.simulator.ScenarioElement.Type.link)==0)
+            ScenarioElement se =  (ScenarioElement) act.getScenarioElement();
+            if(se.getMyType()==ScenarioElement.Type.link)
                 link_actuator_map.put(new Long(se.getId()),act);
         }
 

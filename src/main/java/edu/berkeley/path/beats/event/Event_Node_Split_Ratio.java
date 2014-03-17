@@ -142,7 +142,7 @@ public class Event_Node_Split_Ratio extends Event {
 //			BeatsErrorLog.addError("Multiple targets assigned to split ratio event ID="+this.getId()+".");
 //		
 //		// check each target is valid
-//		if(getTargets().get(0).getMyType().compareTo(ScenarioElement.Type.node)!=0)
+//		if(getTargets().get(0).getMyType()!=ScenarioElement.Type.node)
 //			BeatsErrorLog.addError("Wrong target type for event ID="+getId()+".");
 //		
 //		if(myNode==null)
