@@ -8,10 +8,12 @@ import edu.berkeley.path.beats.simulator.Scenario;
 
 public class ActuatorRampMeter extends Actuator {
 
+    public enum QueueOverrideStrategy {none,max_rate,proportional,proportional_integral};
     private double metering_rate_in_veh;
     private Link myLink;
 	private double max_rate_in_veh;
 	private double min_rate_in_veh;
+    private QueueOverride queue_override;
 
     /////////////////////////////////////////////////////////////////////
     // actuation command
@@ -72,6 +74,10 @@ public class ActuatorRampMeter extends Actuator {
         double dt_in_hours = myScenario.getSimdtinseconds()/3600d;
         this.max_rate_in_veh = max_rate_in_vph*dt_in_hours;
         this.min_rate_in_veh = min_rate_in_vph*dt_in_hours;
+
+        // queue override
+        if(jaxbA.getQueueOverride()!=null)
+            queue_override = new QueueOverride(jaxbA.getQueueOverride());
 	}
 
 	@Override
@@ -88,6 +94,8 @@ public class ActuatorRampMeter extends Actuator {
 
 	@Override
 	public void deploy(double current_time_in_seconds) {
+        if(queue_override!=null)
+            metering_rate_in_veh = Math.max(metering_rate_in_veh,queue_override.compute_rate_in_veh());
 		this.implementor.deploy_metering_rate_in_veh(metering_rate_in_veh);
 	}
 
@@ -99,5 +107,39 @@ public class ActuatorRampMeter extends Actuator {
 	public Link getLink(){
 		return myLink;
 	}
+
+
+    public class QueueOverride {
+
+        public QueueOverrideStrategy strategy;
+        public double max_vehicles;
+
+        public QueueOverride(edu.berkeley.path.beats.jaxb.QueueOverride jaxbQ){
+            this.strategy = QueueOverrideStrategy.valueOf(jaxbQ.getStrategy());
+            this.max_vehicles = jaxbQ.getMaxQueueVehicles();
+        }
+
+        public double compute_rate_in_veh(){
+
+            double current_veh = myLink.getTotalDensityInVeh(0);
+
+            switch(strategy){
+                case none:
+                    return Double.NEGATIVE_INFINITY;
+                case max_rate:
+                    if(BeatsMath.greaterorequalthan(current_veh,max_vehicles))
+                        return max_rate_in_veh;
+                    else
+                        return Double.NEGATIVE_INFINITY;
+                case proportional:
+                case proportional_integral:
+                    System.err.println("Not implemented.");
+                    return Double.NaN;
+                default:
+                    return Double.NaN;
+            }
+        }
+
+    }
 
 }
