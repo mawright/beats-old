@@ -23,6 +23,8 @@ public class ActuatorRampMeter extends Actuator {
         metering_rate_in_veh = rate_in_veh;
         metering_rate_in_veh = Math.max(metering_rate_in_veh,min_rate_in_veh);
         metering_rate_in_veh = Math.min(metering_rate_in_veh,max_rate_in_veh);
+
+        System.out.println(metering_rate_in_veh);
 	}
 
 	public void setMeteringRateInVPH(Double rate_in_vph){
@@ -96,7 +98,10 @@ public class ActuatorRampMeter extends Actuator {
 	public void deploy(double current_time_in_seconds) {
         if(queue_override!=null)
             metering_rate_in_veh = Math.max(metering_rate_in_veh,queue_override.compute_rate_in_veh());
-		this.implementor.deploy_metering_rate_in_veh(metering_rate_in_veh);
+
+        System.out.println(metering_rate_in_veh);
+
+        this.implementor.deploy_metering_rate_in_veh(metering_rate_in_veh);
 	}
 
     @Override
