@@ -38,7 +38,7 @@ public class LinkBehaviorCTM extends LinkBehavior {
 
             FD = myLink.currentFD(e);
 
-            totaldensity = getTotalDensityInVeh(e);
+            totaldensity = myLink.getTotalDensityInVeh(e);
 
             // case empty link
             if( BeatsMath.lessorequalthan(totaldensity,0d) ){
@@ -98,7 +98,7 @@ public class LinkBehaviorCTM extends LinkBehavior {
         FundamentalDiagram FD;
         for(int e=0;e<myScenario.getNumEnsemble();e++){
             FD = myLink.currentFD(e);
-            totaldensity = getTotalDensityInVeh(e);
+            totaldensity = myLink.getTotalDensityInVeh(e);
             spaceSupply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
             spaceSupply[e] = Math.min(spaceSupply[e],FD._getCapacityInVeh());
 

@@ -28,43 +28,19 @@ public abstract class LinkBehavior implements LinkBehaviorInterface {
         set_density_in_veh(initial_density);
     }
 
-    public boolean set_density_in_veh(double [] d){
+    protected boolean set_density_in_veh(double [] d){
         for(int e=0;e<myLink.myScenario.getNumEnsemble();e++)
             if(!set_density_in_veh(e,d))
                 return false;
         return true;
     }
 
-    public double getTotalDensityInVPMeter(int e) {
-        return getTotalDensityInVeh(e)/myLink._length;
-    }
-
-    public double[] get_out_demand_in_veh(int e) {
+    protected double[] get_out_demand_in_veh(int e) {
         return outflowDemand[e];
     }
 
-    public double get_space_supply_in_veh(int e) {
+    protected double get_space_supply_in_veh(int e) {
         return spaceSupply[e];
-    }
-
-    public double[] getDensityInVeh(int e) {
-        int nVT = myLink.myScenario.getNumVehicleTypes();
-        double [] d = new double[nVT];
-        for(int v=0;v<nVT;v++)
-            d[v] = get_density_in_veh(e, v);
-        return d;
-
-    }
-
-    public double getTotalDensityInVeh(int e) {
-        return BeatsMath.sum(getDensityInVeh(e));
-    }
-
-    public double computeTotalDelayInVeh(int e){
-        double val=0d;
-        for(int v=0;v<myLink.myScenario.getNumVehicleTypes();v++)
-            val += compute_delay_in_veh(e, v);
-        return val;
     }
 
 }

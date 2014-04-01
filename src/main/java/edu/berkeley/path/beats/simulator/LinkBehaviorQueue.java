@@ -28,7 +28,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
 
             FD = myLink.currentFD(e);
 
-            totaldensity = getTotalDensityInVeh(e);
+            totaldensity = myLink.getTotalDensityInVeh(e);
 
             // case empty link
             if( BeatsMath.lessorequalthan(totaldensity,0d) ){
@@ -82,7 +82,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
         FundamentalDiagram FD;
         for(int e=0;e<myScenario.getNumEnsemble();e++){
             FD = myLink.currentFD(e);
-            totaldensity = getTotalDensityInVeh(e);
+            totaldensity = myLink.getTotalDensityInVeh(e);
             spaceSupply[e] = Math.min(FD._getDensityJamInVeh()-totaldensity,FD._getCapacityInVeh());
 
             // flow uncertainty model

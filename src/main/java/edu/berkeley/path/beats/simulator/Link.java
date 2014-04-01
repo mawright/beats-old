@@ -113,10 +113,10 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         has_speed_controller = false;
 
         // link behavior
-        if(linkType.getName().compareTo("Intersection Approach")==0)
+        if(linkType!=null && linkType.getName().compareTo("Intersection Approach")==0)
             link_behavior = new LinkBehaviorQueue(this);
 
-        else if (linkType.getName().compareTo("Street")==0)
+        else if (linkType!=null && linkType.getName().compareTo("Street")==0)
             link_behavior = new LinkBehaviorQueueAndTravelTime(this);
 
         else
@@ -233,7 +233,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// used by Event.setLinkLanes
 	protected void set_Lanes(double newlanes) throws BeatsException{
 		for(int e=0;e<myScenario.getNumEnsemble();e++)
-			if(getDensityJamInVeh(e)*newlanes/get_Lanes() < link_behavior.getTotalDensityInVeh(e))
+			if(getDensityJamInVeh(e)*newlanes/get_Lanes() < getTotalDensityInVeh(e))
 				throw new BeatsException("ERROR: Lanes could not be set.");
 
 		if(myFDprofile!=null)
@@ -299,7 +299,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	// initial condition ..................................................
 	protected void copy_state_to_initial_state(){
-		initial_density = link_behavior.getDensityInVeh(0);
+		initial_density = getDensityInVeh(0).clone();
 	}
 	
 	protected void set_initial_state(double [] d){
@@ -341,7 +341,15 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		return name==null ? null : name.compareToIgnoreCase("Freeway")==0;
 	}
 
-	// Link geometry ....................
+    public double computeTotalDelayInVeh(int e){
+        double val=0d;
+        for(int v=0;v<myScenario.getNumVehicleTypes();v++)
+            val += link_behavior.compute_delay_in_veh(e, v);
+        return val;
+    }
+
+
+    // Link geometry ....................
 
 	/** network that contains this link */
 //	public Network getMyNetwork() {
@@ -388,15 +396,33 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// Link state .......................
 
     public double[] getDensityInVeh(int ensemble) {
-        return link_behavior.getDensityInVeh(ensemble);
+        try{
+            int nVT = myScenario.getNumVehicleTypes();
+            double [] d = new double[nVT];
+            for(int v=0;v<nVT;v++)
+                d[v] = link_behavior.get_density_in_veh(ensemble, v);
+            return d;
+        }
+        catch(IndexOutOfBoundsException excp){
+            return null;
+        }
     }
 
     public double getDensityInVeh(int ensemble,int vehicletype) {
-        return link_behavior.get_density_in_veh(ensemble, vehicletype);
+        try{
+            return link_behavior.get_density_in_veh(ensemble, vehicletype);
+        }
+        catch(IndexOutOfBoundsException excp){
+            return Double.NaN;
+        }
     }
 
     public double getTotalDensityInVeh(int ensemble) {
-        return link_behavior.getTotalDensityInVeh(ensemble);
+        return BeatsMath.sum(getDensityInVeh(ensemble));
+    }
+
+    public double getTotalDensityInVPMeter(int e) {
+        return getTotalDensityInVeh(e)/_length;
     }
 
     public boolean set_density_in_veh(double [] d){
@@ -470,14 +496,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         } catch(Exception e){
             return Double.NaN;
         }
-    }
-
-    public double getTotalDensityInVPMeter(int ensemble) {
-        return link_behavior.getTotalDensityInVPMeter(ensemble);
-    }
-
-    public double computeTotalDelayInVeh(int ensemble){
-        return link_behavior.computeTotalDelayInVeh(ensemble);
     }
 
     public double computeDelayInVeh(int ensemble,int vt_index){
