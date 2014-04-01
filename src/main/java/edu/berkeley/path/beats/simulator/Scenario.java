@@ -517,6 +517,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                             throw new BeatsException(e.getMessage());
                         }
                 }
+                DebugLogger.close_all();
 			}
 		}
         scenario_locked = false;

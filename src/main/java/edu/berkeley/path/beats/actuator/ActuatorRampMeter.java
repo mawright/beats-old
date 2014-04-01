@@ -6,6 +6,11 @@ import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+
 public class ActuatorRampMeter extends Actuator {
 
     public enum QueueOverrideStrategy {none,max_rate,proportional,proportional_integral};
@@ -15,6 +20,8 @@ public class ActuatorRampMeter extends Actuator {
 	private double min_rate_in_veh;
     private QueueOverride queue_override;
 
+    private int logger_id;
+
     /////////////////////////////////////////////////////////////////////
     // actuation command
     /////////////////////////////////////////////////////////////////////
@@ -23,8 +30,6 @@ public class ActuatorRampMeter extends Actuator {
         metering_rate_in_veh = rate_in_veh;
         metering_rate_in_veh = Math.max(metering_rate_in_veh,min_rate_in_veh);
         metering_rate_in_veh = Math.min(metering_rate_in_veh,max_rate_in_veh);
-
-        System.out.println(metering_rate_in_veh);
 	}
 
 	public void setMeteringRateInVPH(Double rate_in_vph){
@@ -80,7 +85,12 @@ public class ActuatorRampMeter extends Actuator {
         // queue override
         if(jaxbA.getQueueOverride()!=null)
             queue_override = new QueueOverride(jaxbA.getQueueOverride());
-	}
+
+
+        // logger
+        logger_id = DebugLogger.add_writer("C:\\Users\\gomes\\Dropbox\\_work_dynamic\\qoverride\\actuator.txt");
+
+    }
 
 	@Override
 	protected void validate() {
@@ -98,10 +108,10 @@ public class ActuatorRampMeter extends Actuator {
 	public void deploy(double current_time_in_seconds) {
         if(queue_override!=null)
             metering_rate_in_veh = Math.max(metering_rate_in_veh,queue_override.compute_rate_in_veh());
+        implementor.deploy_metering_rate_in_veh(metering_rate_in_veh);
 
-        System.out.println(metering_rate_in_veh);
+        DebugLogger.write(logger_id,getLink().getMyNetwork().getMyScenario().getCurrentTimeInSeconds() +"\t" + metering_rate_in_veh+"\n");
 
-        this.implementor.deploy_metering_rate_in_veh(metering_rate_in_veh);
 	}
 
     @Override
