@@ -20,8 +20,6 @@ public class ActuatorRampMeter extends Actuator {
 	private double min_rate_in_veh;
     private QueueOverride queue_override;
 
-    private int logger_id;
-
     /////////////////////////////////////////////////////////////////////
     // actuation command
     /////////////////////////////////////////////////////////////////////
@@ -86,10 +84,6 @@ public class ActuatorRampMeter extends Actuator {
         if(jaxbA.getQueueOverride()!=null)
             queue_override = new QueueOverride(jaxbA.getQueueOverride());
 
-
-        // logger
-        logger_id = DebugLogger.add_writer("C:\\Users\\gomes\\Dropbox\\_work_dynamic\\qoverride\\actuator.txt");
-
     }
 
 	@Override
@@ -109,9 +103,6 @@ public class ActuatorRampMeter extends Actuator {
         if(queue_override!=null)
             metering_rate_in_veh = Math.max(metering_rate_in_veh,queue_override.compute_rate_in_veh());
         implementor.deploy_metering_rate_in_veh(metering_rate_in_veh);
-
-        DebugLogger.write(logger_id,getLink().getMyNetwork().getMyScenario().getCurrentTimeInSeconds() +"\t" + metering_rate_in_veh+"\n");
-
 	}
 
     @Override
