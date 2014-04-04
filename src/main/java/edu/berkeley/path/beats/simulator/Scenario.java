@@ -507,8 +507,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                     outputwriter.close();
                 if(perf_calc!=null)
                     perf_calc.close_output();
-                if(controllerset!=null)
-                    controllerset.close_output();
                 for(edu.berkeley.path.beats.jaxb.Node jnode : this.getNetworkSet().getNetwork().get(0).getNodeList().getNode()){
                     Node node = (Node) jnode;
                     if(node.split_ratio_logger !=null)

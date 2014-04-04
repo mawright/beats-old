@@ -29,7 +29,6 @@ import java.util.List;
  */
 public class Controller_SR_Generator_simple extends Controller {
 
-    protected BufferedWriter writer = null;
     protected List<NodeData> node_data;
 
     /////////////////////////////////////////////////////////////////////
@@ -104,16 +103,6 @@ public class Controller_SR_Generator_simple extends Controller {
             node_data.add(new NodeData(demand_set,(Node) se.getReference()));
         }
 
-
-        // output file
-        String out_file_name = param.get("out_file");
-        try {
-            writer = new BufferedWriter(new FileWriter(out_file_name));
-        } catch (Exception e) {
-            System.err.print(e);
-            writer=null;
-        }
-
     }
 
     @Override
@@ -134,10 +123,6 @@ public class Controller_SR_Generator_simple extends Controller {
             if(nd.link_fr.size()<1)
                 BeatsErrorLog.addError("In Controller_SR_Generator, must have at least one offramp link.");
         }
-
-        if(writer==null)
-            BeatsErrorLog.addError("In Controller_SR_Generator, could not create output file.");
-
     }
 
     @Override
@@ -170,29 +155,19 @@ public class Controller_SR_Generator_simple extends Controller {
                 else
                     beta = Math.min( fr_flow_vph[j] / ml_up_flow_vph , 1d );
 
-                for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType()){
-                    ((ActuatorCMS)actuators.get(i)).set_split( nd.fw_dn_id(0) , nd.fr_id(j) , vt.getId() , beta );
-                    try{
-                        writer.write(String.format("%.1f\t%d\t%d\t%d\t%d\t%f\t%f\t%f\n",myScenario.getCurrentTimeInSeconds(),nd.getId(),nd.fw_up_id(0),nd.fr_id(j),vt.getId(),fr_flow_vph[j],ml_up_flow_vph,beta));
-                    }
-                    catch(IOException e){
-                        System.err.print(e);
-                    }
-                }
+//                for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType()){
+//                    ((ActuatorCMS)actuators.get(i)).set_split( nd.fw_dn_id(0) , nd.fr_id(j) , vt.getId() , beta );
+//                    try{
+//                        writer.write(String.format("%.1f\t%d\t%d\t%d\t%d\t%f\t%f\t%f\n",myScenario.getCurrentTimeInSeconds(),nd.getId(),nd.fw_up_id(0),nd.fr_id(j),vt.getId(),fr_flow_vph[j],ml_up_flow_vph,beta));
+//                    }
+//                    catch(IOException e){
+//                        System.err.print(e);
+//                    }
+//                }
             }
         }
     }
 
-    @Override
-    protected void close_output() {
-        if(writer==null)
-            return;
-        try{
-            writer.close();
-        } catch (IOException e){
-            System.err.print(e);
-        }
-    }
 
     class NodeData {
 

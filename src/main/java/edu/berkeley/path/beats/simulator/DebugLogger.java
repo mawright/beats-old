@@ -18,10 +18,10 @@ public class DebugLogger {
             writers = new HashMap<Integer,Writer>();
         int id;
         try {
-            id = (int)(Math.random() *100000);
+            id = (int)(Math.random() *100000)+1;
             writers.put(id,new FileWriter(new File(filename)));
         } catch (IOException e) {
-            id = -1;
+            id = 0;
         }
         return id;
     }

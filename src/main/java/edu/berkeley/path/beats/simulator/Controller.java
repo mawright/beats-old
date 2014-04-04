@@ -214,10 +214,6 @@ public class Controller {
 		if (activationTimes==null || activationTimes.isEmpty())
 			ison = true;
 	}
-
-    protected void close_output(){
-
-    }
 		
 	/////////////////////////////////////////////////////////////////////
 	// registration / deregistration
