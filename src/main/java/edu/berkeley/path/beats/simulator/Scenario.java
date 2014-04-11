@@ -1533,8 +1533,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         int i,e;
         boolean success = true;
         for(i=0;i<numLinks;i++)
-            for(e=0;e<getNumEnsemble();e++)
-                success &= ((Link)network.getLinkList().getLink().get(i)).set_density_in_veh(d[i]);
+            success &= ((Link)network.getLinkList().getLink().get(i)).set_density_in_veh(d[i]);
         return success;
     }
 
