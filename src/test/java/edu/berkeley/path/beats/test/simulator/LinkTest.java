@@ -375,7 +375,7 @@ public class LinkTest {
 		double [] newdensity = link.getDensityInVeh(0);
 		newdensity[0] *= 2d;
 		link.overrideDensityWithVeh(newdensity,0);
-		
+
 		assertEquals(link.getDensityInVeh(0,0) , olddensity[0]*2d , 1e-4 );
 
 		link.overrideDensityWithVeh(olddensity,0);

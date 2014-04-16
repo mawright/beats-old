@@ -165,6 +165,18 @@ public final class BeatsMath {
 				return false;
 		return true;
 	}
+
+    public static boolean all_non_negative (double [] x){
+        if(x==null)
+            return false;
+        if(x.length==0)
+            return true;
+        for(int i=0;i<x.length;i++)
+            if(x[i]<0)
+                return false;
+        return true;
+    }
+
 	
 	public static boolean[] not(boolean [] x){
 		if(x==null)
@@ -282,8 +294,20 @@ public final class BeatsMath {
 		return gcd(q, p % q);
 	}
 
+    // deep copy a double array
+    public static double[] copy(double[] x){
+        if(x==null)
+            return null;
+        if(x.length==0)
+            return null;
+        double [] y = new double[x.length];
+        for(int i=0;i<x.length;i++)
+            y[i]=x[i];
+        return y;
+    }
+
 	// deep copy a double array
-	public static Double[][] makecopy(Double [][]x){
+	public static Double[][] copy(Double[][] x){
 		if(x==null)
 			return null;
 		if(x.length==0)

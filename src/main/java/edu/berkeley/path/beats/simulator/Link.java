@@ -33,16 +33,21 @@ import java.math.BigDecimal;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 public class Link extends edu.berkeley.path.beats.jaxb.Link {
-	
+
+    protected Scenario myScenario;
+    protected Network myNetwork;
+
 	// does not change ....................................
-	protected Network myNetwork;
     protected Node begin_node;
     protected Node end_node;
 
-	// link geometry
+    // in/out flows (from node model or demand profiles)
+    protected double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
+    protected double [][] outflow;    				    // [veh]	numEnsemble x numVehTypes
+
+    // link geometry
     protected double _lanes;							// [-]
-    protected boolean is_queue_link;                    // true if this is a queue-type link
-	
+
 	// source/sink indicators
     protected boolean issource; 						// [boolean]
     protected boolean issink;     					    // [boolean]
@@ -68,19 +73,13 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	
 	// Events
     protected boolean activeFDevent;					// true if an FD event is active on this link,
-		
-	// input to node model
-    protected double [] spaceSupply;        			// [veh]	numEnsemble
-    protected double [][] outflowDemand;   			    // [veh] 	numEnsemble x numVehTypes
-	
-	// in/out flows (from node model or demand profiles)
-    protected double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
-    protected double [][] outflow;    				    // [veh]	numEnsemble x numVehTypes
-	
+
 	// link state
-    protected double [][] density;    				    // [veh]	numEnsemble x numVehTypes
-    protected double   [] initial_density;			    // [veh]  	numVehTypes
-	
+    protected double [] initial_density;			    // [veh]  	numVehTypes
+
+    // link behavior
+    protected LinkBehavior link_behavior;
+
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
@@ -93,7 +92,8 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	protected void populate(Network myNetwork) {
 
-		this.myNetwork = myNetwork;
+        this.myNetwork = myNetwork;
+        this.myScenario = myNetwork.getMyScenario();
 
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
@@ -112,8 +112,15 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         has_flow_controller = false;
         has_speed_controller = false;
 
-        is_queue_link = getLinkType()==null ? false : getLinkType().getName().compareToIgnoreCase("Intersection Approach")==0;
-				
+        // link behavior
+        if(linkType!=null && linkType.getName().compareTo("Intersection Approach")==0)
+            link_behavior = new LinkBehaviorQueue(this);
+
+        else if (linkType!=null && linkType.getName().compareTo("Street")==0)
+            link_behavior = new LinkBehaviorQueueAndTravelTime(this);
+
+        else
+            link_behavior = new LinkBehaviorCTM(this);
 	}
 
 	protected void validate() {
@@ -133,42 +140,24 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	protected void reset(){
 		resetLanes();		
-		resetState();
 		resetFD();
-		
+        link_behavior.reset(initial_density);
+
+        int n1 = myScenario.getNumEnsemble();
+        int n2 = myScenario.getNumVehicleTypes();
+        inflow = BeatsMath.zeros(n1,n2);
+        outflow = BeatsMath.zeros(n1,n2);
+
 		this.external_max_flow = Double.POSITIVE_INFINITY;
 		this.external_max_speed = Double.POSITIVE_INFINITY;
-	}
-	
-	private void resetState() {
-
-		Scenario myScenario = myNetwork.getMyScenario();
-		int n1 = myScenario.getNumEnsemble();
-		int n2 = myScenario.getNumVehicleTypes();
-		
-		density = new double[n1][n2];
-		
-		// copy initial density to density
-		int e,v;
-		for(e=0;e<n1;e++)
-			for(v=0;v<n2;v++)
-				density[e][v] = initial_density[v];
-
-		// reset other quantities
-		inflow 				= BeatsMath.zeros(n1,n2);
-		outflow 			= BeatsMath.zeros(n1,n2);
-		outflowDemand 		= BeatsMath.zeros(n1,n2);
-		spaceSupply 		= BeatsMath.zeros(n1);
-
-		return;
-	}
+    }
 
 	private void resetLanes(){
 		_lanes = getLanes();
 	}
 
 	private void resetFD(){
-		FDfromProfile = new FundamentalDiagram [myNetwork.getMyScenario().getNumEnsemble()];
+		FDfromProfile = new FundamentalDiagram [myScenario.getNumEnsemble()];
 		for(int i=0;i<FDfromProfile.length;i++){
 			FDfromProfile[i] = new FundamentalDiagram(this);
 			FDfromProfile[i].settoDefault();
@@ -179,136 +168,27 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	protected void update() {
 
-		int e,j;
-		
-		if(issink)
-			outflow = outflowDemand;
+        // behavior for all sink links
+        if(issink)
+            outflow = link_behavior.outflowDemand;
 
-		if(issource && myDemandProfile!=null)
-			for(e=0;e<this.myNetwork.getMyScenario().getNumEnsemble();e++)
-				inflow[e] = myDemandProfile.getCurrentValue();
+        // behavior for all source links
+        if(issource && myDemandProfile!=null)
+            for(int e=0;e<myScenario.getNumEnsemble();e++)
+                inflow[e] = myDemandProfile.getCurrentValue();
 
-		for(e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++)
-			for(j=0;j<myNetwork.getMyScenario().getNumVehicleTypes();j++)
-				density[e][j] += inflow[e][j] - outflow[e][j];
 
+        link_behavior.update_state(inflow,outflow);
 	}
 
-	/////////////////////////////////////////////////////////////////////
-	// supply and demand calculation
-	/////////////////////////////////////////////////////////////////////
+    protected void updateOutflowDemand(){
+        link_behavior.update_outflow_demand(external_max_speed, external_max_flow);
+    }
 
-	protected void updateOutflowDemand(){
+    protected void updateSpaceSupply(){
+        link_behavior.update_space_supply();
+    }
 
-		int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
-
-		double totaldensity;
-		double totaloutflow;
-		FundamentalDiagram FD;
-
-		for(int e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++){
-
-			FD = currentFD(e);
-
-			totaldensity = BeatsMath.sum(density[e]);
-
-			// case empty link
-			if( BeatsMath.lessorequalthan(totaldensity,0d) ){
-				outflowDemand[e] =  BeatsMath.zeros(numVehicleTypes);        		
-				continue;
-			}
-
-			// compute total flow leaving the link in the absence of flow control
-			if( totaldensity < FD.getDensityCriticalInVeh() ){
-				totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),external_max_speed);	
-			}
-			else{
-				totaloutflow = Math.max(FD._getCapacityInVeh()-FD._getCapacityDropInVeh(),0d);
-				totaloutflow = Math.min(totaloutflow,external_max_speed*FD.getDensityCriticalInVeh());
-			}
-
-			// capacity profile
-			if(myCapacityProfile!=null)
-				totaloutflow = Math.min( totaloutflow , myCapacityProfile.getCurrentValue() );
-
-			// flow controller
-			totaloutflow = Math.min( totaloutflow , external_max_flow );
-
-			// flow uncertainty model
-			if(myNetwork.getMyScenario().isHas_flow_unceratinty()){
-
-				double delta_flow=0.0;
-				double std_dev_flow = myNetwork.getMyScenario().getStd_dev_flow();
-
-				switch(myNetwork.getMyScenario().getUncertaintyModel()){
-				case uniform:
-					delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
-					break;
-
-				case gaussian:
-					delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
-					break;
-				}
-
-				totaloutflow = Math.max( 0d , totaloutflow + delta_flow );
-				totaloutflow = Math.min( totaloutflow , totaldensity );
-			}
-
-			// split among types
-			outflowDemand[e] = BeatsMath.times(density[e],totaloutflow/totaldensity);
-		}
-
-		return;
-	}
-
-	protected void updateSpaceSupply(){
-		double totaldensity;
-		FundamentalDiagram FD;
-		for(int e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++){
-			FD = currentFD(e);
-			totaldensity = BeatsMath.sum(density[e]);
-			spaceSupply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
-			spaceSupply[e] = Math.min(spaceSupply[e],FD._getCapacityInVeh());
-
-			// flow uncertainty model
-			if(myNetwork.getMyScenario().isHas_flow_unceratinty()){
-				double delta_flow=0.0;
-				double std_dev_flow = myNetwork.getMyScenario().getStd_dev_flow();
-				switch(myNetwork.getMyScenario().getUncertaintyModel()){
-				case uniform:
-					delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
-					break;
-
-				case gaussian:
-					delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
-					break;
-				}
-				spaceSupply[e] = Math.max( 0d , spaceSupply[e] + delta_flow );
-				spaceSupply[e] = Math.min( spaceSupply[e] , FD._getDensityJamInVeh() - totaldensity);
-			}
-		}
-	}
-
-	public double[] get_out_demand_in_veh(int ensemble) {
-		return outflowDemand[ensemble];
-	}
-
-	public double get_space_supply_in_veh(int ensemble) {
-		return spaceSupply[ensemble];
-	}
-
-	/////////////////////////////////////////////////////////////////////
-	// interface for node model
-	/////////////////////////////////////////////////////////////////////
-
-	protected void setInflow(int ensemble,double[] inflow) {
-		this.inflow[ensemble] = inflow;
-	}
-
-	protected void setOutflow(int ensemble,double[] outflow) {
-		this.outflow[ensemble] = outflow;
-	}
-	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
@@ -352,13 +232,13 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	// used by Event.setLinkLanes
 	protected void set_Lanes(double newlanes) throws BeatsException{
-		for(int e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++)
+		for(int e=0;e<myScenario.getNumEnsemble();e++)
 			if(getDensityJamInVeh(e)*newlanes/get_Lanes() < getTotalDensityInVeh(e))
 				throw new BeatsException("ERROR: Lanes could not be set.");
 
 		if(myFDprofile!=null)
 			myFDprofile.set_Lanes(newlanes);	// adjust present and future fd's
-		for(int e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++)
+		for(int e=0;e<myScenario.getNumEnsemble();e++)
 			FDfromProfile[e].setLanes(newlanes);
 		_lanes = newlanes;					// adjust local copy of lane count
 	}
@@ -378,7 +258,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return;
 
 		// sample the fundamental digram
-		for(int e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++)
+		for(int e=0;e<myScenario.getNumEnsemble();e++)
 			FDfromProfile[e] = fd.perturb();
 	}
 
@@ -405,7 +285,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	public void set_external_max_flow_in_vph(double value_in_vph){
         if(has_flow_controller)
-            external_max_flow = value_in_vph*getMyNetwork().getMyScenario().getSimdtinseconds()/3600d;
+            external_max_flow = value_in_vph*myScenario.getSimdtinseconds()/3600d;
 	}
 	
     public void set_external_max_speed(double value){
@@ -413,26 +293,17 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
             external_max_speed = value;
     }
 
+    public Network getMyNetwork(){
+        return myNetwork;
+    }
+
 	// initial condition ..................................................
 	protected void copy_state_to_initial_state(){
-		initial_density = density[0].clone();
+		initial_density = getDensityInVeh(0).clone();
 	}
 	
 	protected void set_initial_state(double [] d){
-		initial_density  = d==null ? BeatsMath.zeros(myNetwork.getMyScenario().getNumVehicleTypes()) : d.clone();
-	}
-
-	// override density ..................................................
-	protected boolean set_density(double [] d){
-        if(myNetwork.getMyScenario().getNumVehicleTypes()!=1)
-            return false;
-		if(density==null)
-			return false; //density = new double[d.length][1];
-        if(density.length!=d.length)
-            return false;
-		for(int e=0;e<d.length;e++)
-	        density[e][0] = d[e];
-        return true;
+		initial_density  = d==null ? BeatsMath.zeros(myScenario.getNumVehicleTypes()) : d.clone();
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -470,12 +341,20 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		return name==null ? null : name.compareToIgnoreCase("Freeway")==0;
 	}
 
-	// Link geometry ....................
+    public double computeTotalDelayInVeh(int e){
+        double val=0d;
+        for(int v=0;v<myScenario.getNumVehicleTypes();v++)
+            val += link_behavior.compute_delay_in_veh(e, v);
+        return val;
+    }
+
+
+    // Link geometry ....................
 
 	/** network that contains this link */
-	public Network getMyNetwork() {
-		return myNetwork;
-	}
+//	public Network getMyNetwork() {
+//		return myNetwork;
+//	}
 
 	/** upstream node of this link  */
 	public Node getBegin_node() {
@@ -516,87 +395,76 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	
 	// Link state .......................
 
-	/** Density of vehicles per vehicle type in normalized units (vehicles/link/type). 
-	 * The return array is indexed by vehicle type in the order given in the 
-	 * <code>settings</code> portion of the input file.
-	 * @param ensemble Ensemble number 
-	 * @return number of vehicles of each type in the link. <code>null</code> if something goes wrong.
-	 */
-	public double[] getDensityInVeh(int ensemble) {
-		try{
-			return density[ensemble].clone();
-		} catch(Exception e){
-			return null;
-		}
-	}
-
-	/** Number of vehicles for a given vehicle type in normalized units (vehicles/link).
-	 * @return Number of vehicles of a given vehicle type in the link. 0 if something goes wrong.
-	 */
-	public double getDensityInVeh(int ensemble,int vehicletype) {
-		try{
-			return density[ensemble][vehicletype];
-		} catch(Exception e){
-			return Double.NaN;
-		}
-	}
-
-	/** Total of vehicles in normalized units (vehicles/link). 
-	 * The return value equals the sum of {@link Link#getDensityInVeh}.
-	 * @return total number of vehicles in the link. 0 if something goes wrong.
-	 */
-	public double getTotalDensityInVeh(int ensemble) {
-		try{
-			if(density!=null)
-				return BeatsMath.sum(density[ensemble]);
-			return 0d;
-		} catch(Exception e){
-			return Double.NaN;
-		}
-	}
-
-	/** Total of vehicles in (vehicles/meter).
-	 * @return total density of vehicles in the link. 0 if something goes wrong.
-	 */
-	public double getTotalDensityInVPMeter(int ensemble) {
-		return getTotalDensityInVeh(ensemble)/_length;
-	}
-
-    public double getOutflowInVeh(int ensemble,int vehicletype) {
+    public double[] getDensityInVeh(int ensemble) {
         try{
-            return outflow[ensemble][vehicletype];
-        } catch(Exception e){
+            int nVT = myScenario.getNumVehicleTypes();
+            double [] d = new double[nVT];
+            for(int v=0;v<nVT;v++)
+                d[v] = link_behavior.get_density_in_veh(ensemble, v);
+            return d;
+        }
+        catch(IndexOutOfBoundsException excp){
+            return null;
+        }
+    }
+
+    public double getDensityInVeh(int ensemble,int vehicletype) {
+        try{
+            return link_behavior.get_density_in_veh(ensemble, vehicletype);
+        }
+        catch(IndexOutOfBoundsException excp){
             return Double.NaN;
         }
     }
 
-	/** Number of vehicles per vehicle type exiting the link 
-	 * during the current time step. The return array is indexed by 
-	 * vehicle type in the order given in the <code>settings</code> 
-	 * portion of the input file. 
-	 * @return array of exiting flows per vehicle type. <code>null</code> if something goes wrong.
-	 */
-	public double[] getOutflowInVeh(int ensemble) {
-		try{
-			return outflow[ensemble].clone();
-		} catch(Exception e){
-			return null;
-		}
-	}
+    public double getTotalDensityInVeh(int ensemble) {
+        return BeatsMath.sum(getDensityInVeh(ensemble));
+    }
 
-	/** Total number of vehicles exiting the link during the current
-	 * time step.  The return value equals the sum of 
-	 * {@link Link#getOutflowInVeh}.
-	 * @return total number of vehicles exiting the link in one time step. 0 if something goes wrong.
-	 * 
-	 */
-	public double getTotalOutflowInVeh(int ensemble) {
-		try{
-			return BeatsMath.sum(outflow[ensemble]);
-		} catch(Exception e){
-			return Double.NaN;
-		}
-	}
+    public double getTotalDensityInVPMeter(int e) {
+        return getTotalDensityInVeh(e)/_length;
+    }
+
+    public boolean set_density_in_veh(double [] d){
+        return link_behavior.set_density_in_veh(d);
+    }
+
+    public double[] get_out_demand_in_veh(int ensemble) {
+        return link_behavior.get_out_demand_in_veh(ensemble);
+    }
+
+    public double get_space_supply_in_veh(int ensemble) {
+        return link_behavior.get_space_supply_in_veh(ensemble);
+    }
+
+
+    /////////////////////////////////////////////////////////////////////
+    // interface for node model
+    /////////////////////////////////////////////////////////////////////
+
+    public void setInflow(int ensemble,double[] inflow) {
+        this.inflow[ensemble] = inflow;
+    }
+
+    public void setOutflow(int ensemble,double[] outflow) {
+        this.outflow[ensemble] = outflow;
+    }
+
+    public double[] getOutflowInVeh(int ensemble) {
+        try{
+            return outflow[ensemble].clone();
+        } catch(Exception e){
+            return null;
+        }
+    }
+
+    public double getTotalOutflowInVeh(int ensemble) {
+        try{
+            return BeatsMath.sum(outflow[ensemble]);
+        } catch(Exception e){
+            return Double.NaN;
+        }
+    }
 
     public double getInflowInVeh(int ensemble,int vehicletype) {
         try{
@@ -606,72 +474,43 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         }
     }
 
-	/** Number of vehicles per vehicle type entering the link 
-	 * during the current time step. The return array is indexed by 
-	 * vehicle type in the order given in the <code>settings</code> 
-	 * portion of the input file. 
-	 * @return array of entering flows per vehicle type. <code>null</code> if something goes wrong.
-	 */
-	public double[] getInflowInVeh(int ensemble) {
-		try{
-			return inflow[ensemble].clone();
-		} catch(Exception e){
-			return null;
-		}
-	}
+    public double[] getInflowInVeh(int ensemble) {
+        try{
+            return inflow[ensemble].clone();
+        } catch(Exception e){
+            return null;
+        }
+    }
 
-	/** Total number of vehicles entering the link during the current
-	 * time step.  The return value equals the sum of 
-	 * {@link Link#getInflowInVeh}.
-	 * @return total number of vehicles entering the link in one time step. 0 if something goes wrong.
-	 * 
-	 */
-	public double getTotalInlowInVeh(int ensemble) {
-		try{
-			return BeatsMath.sum(inflow[ensemble]);
-		} catch(Exception e){
-			return Double.NaN;
-		}
-	}
+    public double getTotalInlowInVeh(int ensemble) {
+        try{
+            return BeatsMath.sum(inflow[ensemble]);
+        } catch(Exception e){
+            return Double.NaN;
+        }
+    }
 
-	/** Average speed of traffic in the link in meters/second.
-	 * The return value is computed by dividing the total outgoing 
-	 * link flow by the total link density. 
-	 * @return average link speed. 0  if something goes wrong.
-	 */
-	public double computeSpeedInMPS(int ensemble){
-		try{
-
-			if(myNetwork.getMyScenario().getClock().getRelativeTimeStep()==0)
-				return Double.NaN;
-
-			double totaldensity = BeatsMath.sum(density[ensemble]);
-			double speed;
-			if( BeatsMath.greaterthan(totaldensity,0d) )
-				speed = BeatsMath.sum(outflow[ensemble])/totaldensity;
-			else
-				speed = currentFD(ensemble).getVfNormalized();
-			return speed * _length / myNetwork.getMyScenario().getSimdtinseconds();
-		} catch(Exception e){
-			return Double.NaN;
-		}
-	}
-
-    public double computeTotalDelayInVeh(int ensemble){
-        double n = getTotalDensityInVeh(ensemble);
-        double f = getTotalOutflowInVeh(ensemble);
-        double vf = getNormalizedVf(ensemble);
-        return Math.max(0d,vf*n-f);
+    public double getOutflowInVeh(int ensemble,int vehicletype) {
+        try{
+            return outflow[ensemble][vehicletype];
+        } catch(Exception e){
+            return Double.NaN;
+        }
     }
 
     public double computeDelayInVeh(int ensemble,int vt_index){
-        double n = getDensityInVeh(ensemble, vt_index);
-        double f = getOutflowInVeh(ensemble, vt_index);
-        double vf = getNormalizedVf(ensemble);
-        return Math.max(0d,vf*n-f);
+        return link_behavior.compute_delay_in_veh(ensemble, vt_index);
     }
 
-	// Fundamental diagram ....................
+    public double computeSpeedInMPS(int ensemble){
+        return link_behavior.compute_speed_in_mps(ensemble);
+    }
+
+    public void overrideDensityWithVeh(double[] x,int ensemble){
+        link_behavior.set_density_in_veh(ensemble, x);
+    }
+
+    // Fundamental diagram ....................
 
 	/** Jam density in vehicle/link. */
 	public double getDensityJamInVeh(int ensemble) {
@@ -751,7 +590,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD._getCapacityDropInVeh() / myNetwork.getMyScenario().getSimdtinseconds() / _lanes;
+			return FD._getCapacityDropInVeh() / myScenario.getSimdtinseconds() / _lanes;
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -763,7 +602,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD._getCapacityInVeh() / myNetwork.getMyScenario().getSimdtinseconds();
+			return FD._getCapacityInVeh() / myScenario.getSimdtinseconds();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -775,7 +614,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD._getCapacityInVeh() / myNetwork.getMyScenario().getSimdtinseconds() / _lanes;
+			return FD._getCapacityInVeh() / myScenario.getSimdtinseconds() / _lanes;
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -799,7 +638,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD.getVfNormalized() * getLengthInMeters() / myNetwork.getMyScenario().getSimdtinseconds();
+			return FD.getVfNormalized() * getLengthInMeters() / myScenario.getSimdtinseconds();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -838,29 +677,13 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD.getWNormalized() * getLengthInMeters() / myNetwork.getMyScenario().getSimdtinseconds();
+			return FD.getWNormalized() * getLengthInMeters() / myScenario.getSimdtinseconds();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
 	}
 
-	/** Replace link density with given values.
-	 *  [This is API call is being made available for implementation of particle filtering.
-	 *  Use with caution.]
-	 */
-	public void overrideDensityWithVeh(double[] x,int ensemble){
-		if(ensemble<0 || ensemble>=density.length)
-			return;
-		if(x.length!=density[0].length)
-			return;
 
-		int i;
-		for(i=0;i<x.length;i++)
-			if(x[i]<0)
-				return;
-		for(i=0;i<x.length;i++)
-			density[ensemble][i] = x[i];
-	}
 
     public DemandProfile getDemandProfile(){
         return myDemandProfile;
@@ -876,7 +699,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 
 	// getter for the currently active fundamental diagram
-	private FundamentalDiagram currentFD(int ensemble){
+	protected FundamentalDiagram currentFD(int ensemble){
 		if(activeFDevent)
 			return FDfromEvent;
 		return FDfromProfile==null ? null : FDfromProfile[ensemble];

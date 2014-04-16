@@ -36,7 +36,7 @@ public abstract class NEMA {
 
     public static boolean is_compatible(ID nemaA, ID nemaB){
 
-        if(nemaA.compareTo(nemaB)==0)
+        if(nemaA==nemaB)
             return true;
 
         if( NEMA.isNULL(nemaA) || NEMA.isNULL(nemaB) )
@@ -45,25 +45,25 @@ public abstract class NEMA {
         switch(nemaA){
             case _1:
             case _2:
-                if(nemaB.compareTo(ID._5)==0 || nemaB.compareTo(ID._6)==0)
+                if(nemaB==ID._5 || nemaB==ID._6)
                     return true;
                 else
                     return false;
             case _3:
             case _4:
-                if(nemaB.compareTo(ID._7)==0 || nemaB.compareTo(ID._8)==0 )
+                if(nemaB==ID._7 || nemaB==ID._8 )
                     return true;
                 else
                     return false;
             case _5:
             case _6:
-                if(nemaB.compareTo(ID._1)==0 || nemaB.compareTo(ID._2)==0 )
+                if(nemaB==ID._1 || nemaB==ID._2 )
                     return true;
                 else
                     return false;
             case _7:
             case _8:
-                if(nemaB.compareTo(ID._3)==0 || nemaB.compareTo(ID._4)==0 )
+                if(nemaB==ID._3 || nemaB==ID._4 )
                     return true;
                 else
                     return false;
@@ -119,7 +119,7 @@ public abstract class NEMA {
     }
 
     public static boolean isNULL(ID nema){
-        return nema.compareTo(ID.NULL)==0;
+        return nema==ID.NULL;
     }
 
     public static NEMA.ID get_opposing(NEMA.ID x){

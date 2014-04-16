@@ -84,7 +84,7 @@ public class Event_Link_Lanes extends Event {
 		
 		// check each target is valid
 		for(ScenarioElement s : getTargets()){
-			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0)
+			if(s.getMyType()!=ScenarioElement.Type.link)
 				BeatsErrorLog.addError("wrong target type for event ID=" +getId() +".");
 		}
 	}

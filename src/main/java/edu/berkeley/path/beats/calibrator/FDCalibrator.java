@@ -57,7 +57,7 @@ public class FDCalibrator {
 		// run calibration routine
 		for(edu.berkeley.path.beats.jaxb.Sensor sensor : scenario.getSensorSet().getSensor()){
 			SensorLoopStation S = (SensorLoopStation) sensor;
-			if(S.getMyType().compareTo(Sensor.Type.loop)!=0)
+			if(S.getMyType()!=Sensor.Type.loop)
 				continue;
 			sensorFD.put(S,calibrate_sensor(S));
 		}

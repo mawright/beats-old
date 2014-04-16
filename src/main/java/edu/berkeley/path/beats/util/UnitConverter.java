@@ -393,16 +393,16 @@ public class UnitConverter {
 		if (null == cset) return;
 		for (Controller controller : cset.getController()) {
 			process(controller.getParameters());
-			process(controller.getQueueController());
+//			process(controller.getQueueController());
 			for (Table table : controller.getTable())
 				process(table);
 		}
 	}
 
-	private void process(QueueController qcontroller) {
-		if (null == qcontroller) return;
-		process(qcontroller.getParameters());
-	}
+//	private void process(QueueController qcontroller) {
+//		if (null == qcontroller) return;
+//		process(qcontroller.getParameters());
+//	}
 
 	private void process(FundamentalDiagramSet fdpset) {
 		if (null == fdpset) return;

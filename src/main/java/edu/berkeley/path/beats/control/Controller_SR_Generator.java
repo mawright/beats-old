@@ -30,9 +30,10 @@ import java.util.List;
  */
 public class Controller_SR_Generator extends Controller {
 
-//    protected BufferedWriter writer = null;
-    protected List<NodeData> node_data;
-    double dt_in_hr;
+    private List<NodeData> node_data;
+    private double dt_in_hr;
+    private int logger_id;
+    private int dt_log = 300;   // sec
 
     /////////////////////////////////////////////////////////////////////
     // Construction
@@ -101,21 +102,17 @@ public class Controller_SR_Generator extends Controller {
         node_data = new ArrayList<NodeData>();
         for(Actuator act:actuators){
             ScenarioElement se = (ScenarioElement) act.getScenarioElement();
-            if(se.getMyType().compareTo(ScenarioElement.Type.node)!=0)
+            if(se.getMyType()!=ScenarioElement.Type.node)
                 continue;
             node_data.add(new NodeData(demand_set,(Node) se.getReference()));
         }
 
         dt_in_hr = myScenario.getSimdtinseconds()/3600d;
-        // output file
-//        String out_file_name = param.get("out_file");
-//        try {
-//            writer = new BufferedWriter(new FileWriter(out_file_name));
-//        } catch (Exception e) {
-//            System.err.print(e);
-//            writer=null;
-//        }
 
+        // logger
+        String log_file = param.get("log_file");
+        if(log_file!=null)
+            logger_id = DebugLogger.add_writer(log_file);
     }
 
     @Override
@@ -124,7 +121,7 @@ public class Controller_SR_Generator extends Controller {
         // check node data
         for(Actuator act:actuators){
             ScenarioElement se = (ScenarioElement) act.getScenarioElement();
-            if(se.getMyType().compareTo(ScenarioElement.Type.node)!=0)
+            if(se.getMyType()!=ScenarioElement.Type.node)
                 BeatsErrorLog.addError("In Controller_SR_Generator, all actuators must be on nodes.");
         }
 
@@ -136,10 +133,6 @@ public class Controller_SR_Generator extends Controller {
 //            if(nd.link_fr.size()<1)
 //                BeatsErrorLog.addError("In Controller_SR_Generator, must have at least one offramp link.");
 //        }
-
-//        if(writer==null)
-//            BeatsErrorLog.addError("In Controller_SR_Generator, could not create output file.");
-
     }
 
     @Override
@@ -160,6 +153,16 @@ public class Controller_SR_Generator extends Controller {
             for(int i=0;i<nd.ind_or.size();i++)
                 for(int j=0;j<nd.ind_fr.size();j++)
                     for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType())
+
+                        if(getMyScenario().getCurrentTimeInSeconds()%dt_log==0)
+                            DebugLogger.write(logger_id,String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
+                                    getMyScenario().getCurrentTimeInSeconds(),
+                                    nd.getId(),
+                                    nd.link_or.get(i).getId(),
+                                    nd.link_fr.get(j).getId(),
+                                    vt.getId(),
+                                    0d));
+
                         ((ActuatorCMS)actuators.get(n)).set_split(
                                 nd.link_or.get(i).getId(),
                                 nd.link_fr.get(j).getId(),
@@ -175,6 +178,16 @@ public class Controller_SR_Generator extends Controller {
             for(int i=0;i<nd.ind_not_or.size();i++)
                 for(int j=0;j<nd.ind_fr.size();j++)
                     for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType())
+
+                        if(getMyScenario().getCurrentTimeInSeconds()%dt_log==0)
+                            DebugLogger.write(logger_id,String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
+                                    getMyScenario().getCurrentTimeInSeconds(),
+                                    nd.getId(),
+                                    nd.link_not_or.get(i).getId(),
+                                    nd.link_fr.get(j).getId(),
+                                    vt.getId(),
+                                    beta ));
+
                         ((ActuatorCMS)actuators.get(n)).set_split(
                                 nd.link_not_or.get(i).getId() ,
                                 nd.link_fr.get(j).getId() ,
@@ -189,6 +202,16 @@ public class Controller_SR_Generator extends Controller {
                     for(int k=0;k<myScenario.getNumVehicleTypes();k++){
                         double alpha = nd.get_sr(ii,jj,k);
                         double r = (1d-beta)/nd.non_onramp_splits[i][k];
+
+                        if(getMyScenario().getCurrentTimeInSeconds()%dt_log==0)
+                            DebugLogger.write(logger_id,String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
+                                    getMyScenario().getCurrentTimeInSeconds(),
+                                    nd.getId(),
+                                    nd.link_not_or.get(i).getId() ,
+                                    nd.link_not_fr.get(j).getId() ,
+                                    myScenario.getVehicleTypeIdForIndex(k) ,
+                                    r*alpha ));
+
                         ((ActuatorCMS)actuators.get(n)).set_split(
                                 nd.link_not_or.get(i).getId() ,
                                 nd.link_not_fr.get(j).getId() ,
@@ -198,17 +221,6 @@ public class Controller_SR_Generator extends Controller {
                 }
             }
         }
-    }
-
-    @Override
-    protected void close_output() {
-//        if(writer==null)
-//            return;
-//        try{
-//            writer.close();
-//        } catch (IOException e){
-//            System.err.print(e);
-//        }
     }
 
     class NodeData {

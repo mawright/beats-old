@@ -34,7 +34,7 @@
   <xs:element name="description" type="xs:string" />  
    
   <!-- parameters .................................................................. -->
-  <!-- used by sensor, controller, queue_controller, etc. -->
+  <!-- used by sensor, controller, etc. -->
   
 	<xs:element name="parameters">   
 		<xs:complexType>
@@ -787,11 +787,8 @@
 	   name=gain, value in mile/hour
     controller type = CRM_hero
 	   name=gainAlinea, value [???]
-	   name=gainQueueController, value [???]
-	   name=gainMinQueueController, value [???]
 	   name=targetDensity, value [???]
 	   name=possibleSlave, value [???]
-	   name=queueMax, value [???]
 	   name=actThresholdQ, value [???]
 	   name=deactThresholdQ, value [???]
 	   name=actThresholdM, value [???]
@@ -834,7 +831,6 @@
 					<xs:element ref="display_position" minOccurs="0" />
 					<xs:element ref="target_actuators" minOccurs="0" />
 					<xs:element ref="feedback_sensors" minOccurs="0" />
-					<xs:element ref="queue_controller" minOccurs="0" />
 					<xs:element ref="ActivationIntervals" minOccurs="0" />
 					<xs:element ref="table" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
@@ -853,22 +849,6 @@
 				<xs:attribute name="java_class" type="xs:string" use="optional" />
 			</xs:complexType>
 		</xs:element>
-
-			<xs:element name="queue_controller">
-				<xs:complexType>
-          <xs:sequence>
-            <xs:element ref="parameters" minOccurs="0" />
-          </xs:sequence>
-					<xs:attribute name="type" use="required">
-						<xs:simpleType>
-							<xs:restriction base="xs:string">
-								<xs:pattern value="none|queue_override|proportional|proportional_integral"/>
-							</xs:restriction>
-						</xs:simpleType>
-					</xs:attribute>
-					<xs:attribute name="java_class" type="xs:string" use="optional" />
-				</xs:complexType>
-			</xs:element>
 
 			<xs:element name="ActivationIntervals">
 				<xs:complexType>
@@ -1111,6 +1091,7 @@
 					<xs:element ref="parameters" minOccurs="0" />
 					<xs:element ref="table" minOccurs="0" />
 					<xs:element ref="actuator_type" minOccurs="0" maxOccurs="1"/>
+					<xs:element ref="queue_override" minOccurs="0" maxOccurs="1"/>
 				</xs:all>
 				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
 				<xs:attribute name="id" type="xs:long" use="required"/>
@@ -1134,6 +1115,21 @@
 					<xs:attribute name="description" type="xs:string" use="optional"/>
 				</xs:complexType>
 			</xs:element>
+			
+			<!-- Actuator Type -->
+			<xs:element name="queue_override">
+				<xs:complexType>
+					<xs:attribute name="strategy" use="required">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:pattern value="none|max_rate|proportional|proportional_integral"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+					<xs:attribute name="max_queue_vehicles" type="xs:double" use="required"/>	
+				</xs:complexType>
+			</xs:element>
+
 	
 </xs:schema>
 

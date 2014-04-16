@@ -26,14 +26,14 @@
 
 package edu.berkeley.path.beats.control;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 
 import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
-import edu.berkeley.path.beats.simulator.Controller;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.Sensor;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.*;
 
 public class Controller_IRM_Alinea extends Controller {
 
@@ -51,8 +51,10 @@ public class Controller_IRM_Alinea extends Controller {
 											// In this case the this value is used and kept constant
 											// Otherwise it is assigned the critical density, which may change with fd profile.  
 	private double target_vehicles;			// [veh/meter/lane]
-	
-	/////////////////////////////////////////////////////////////////////
+
+    private int logger_id;
+
+    /////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
@@ -132,7 +134,12 @@ public class Controller_IRM_Alinea extends Controller {
 		// normalize the gain
 		if(mainline_link!=null)
 			gain_normalized = gain_in_mps * getMyScenario().getSimdtinseconds() / mainline_link.getLengthInMeters();
-	}
+
+
+        // logger
+        logger_id = DebugLogger.add_writer("C:\\Users\\gomes\\Dropbox\\_work_dynamic\\qoverride\\alinea.txt");
+
+    }
 	
 	@Override
 	protected void validate() {
@@ -159,9 +166,15 @@ public class Controller_IRM_Alinea extends Controller {
 			target_vehicles = mainline_link.getDensityCriticalInVeh(0);
 		
 		// metering rate
-        double metering_rate_veh = Math.max(onramp_link.getTotalOutflowInVeh(0) + gain_normalized*(target_vehicles-mainlinevehicles),0);
+
+        double onramp_flow = onramp_link.getTotalOutflowInVeh(0);
+        double alinea_rate = onramp_flow + gain_normalized*(target_vehicles-mainlinevehicles);
+        double metering_rate_veh = Math.max(alinea_rate,0);
+
 		ramp_meter.setMeteringRateInVeh(metering_rate_veh);
-				
-	}
+
+        DebugLogger.write(logger_id,getMyScenario().getCurrentTimeInSeconds()+"\t"+metering_rate_veh+"\n");
+
+    }
 
 }

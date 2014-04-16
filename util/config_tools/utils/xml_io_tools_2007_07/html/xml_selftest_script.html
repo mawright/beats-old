@@ -681,8 +681,8 @@ tree.Boolean = (1==2);
 tree.Struct.Parent.Child1 = 1;
 tree.Struct.Parent.Child2 = 2;
 tree.EmptyStruct = struct([]);
-tree.StructArray(1).CellArray = {'John', 3.14, 0:0.11:1, [], '', {'cell', 1, 'of cells'}};
-tree.StructArray(2).CellArray = {1:5, 'Jack', sparse(eye(3)), 1+sqrt(-(5:7)), {}};
+tree.StructArray(1).CellArrayAndQueue = {'John', 3.14, 0:0.11:1, [], '', {'cell', 1, 'of cells'}};
+tree.StructArray(2).CellArrayAndQueue = {1:5, 'Jack', sparse(eye(3)), 1+sqrt(-(5:7)), {}};
 fprintf('Original Structure:\n');
 gen_object_display(tree) % function by Ohad Gal with some minor corrections
 
@@ -741,8 +741,8 @@ tree.Struct.Parent.ATTRIBUTE.foo = 'foo';
 tree.Struct.ATTRIBUTE.foo = 'foo';
 tree.EmptyStruct.CONTENT = struct([]);
 tree.EmptyStruct.ATTRIBUTE.foo = 'foo';
-tree.StructArray(1).CellArray.CONTENT = {'John', 3.14, 0:0.11:1, [], '', {'cell', 1, 'of cells'}};
-tree.StructArray(2).CellArray = {1:5, 'Jack', sparse(eye(3)), 1+sqrt(-(5:7)), {}};
+tree.StructArray(1).CellArrayAndQueue.CONTENT = {'John', 3.14, 0:0.11:1, [], '', {'cell', 1, 'of cells'}};
+tree.StructArray(2).CellArrayAndQueue = {1:5, 'Jack', sparse(eye(3)), 1+sqrt(-(5:7)), {}};
 fprintf('Original Structure:\n');
 gen_object_display(tree) % function by Ohad Gal with some minor corrections
 %%
@@ -769,9 +769,9 @@ end
 % *Create data struct*
 tree = [];
 tree.StructArray(1).ATTRIBUTE.Num = 1;
-tree.StructArray(1).CellArray.CONTENT = {'John', 3.14};
-tree.StructArray(1).CellArray.ATTRIBUTE.foo = 'foo';
-tree.StructArray(2).CellArray = {1:5, 'Jack'};
+tree.StructArray(1).CellArrayAndQueue.CONTENT = {'John', 3.14};
+tree.StructArray(1).CellArrayAndQueue.ATTRIBUTE.foo = 'foo';
+tree.StructArray(2).CellArrayAndQueue = {1:5, 'Jack'};
 tree.StructArray(2).ATTRIBUTE.Num = 2;
 tree.StructArray(3).CONTENT = {'Jim', 123};
 tree.StructArray(3).ATTRIBUTE.Num = 3;

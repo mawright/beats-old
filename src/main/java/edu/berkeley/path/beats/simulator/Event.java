@@ -122,7 +122,7 @@ public class Event implements Comparable {
 			
 		// check that there are targets assigned to non-global events
 		if(myType!=null)
-			if(myType.compareTo(Event.Type.global_control_toggle)!=0 && myType.compareTo(Event.Type.global_demand_knob)!=0)
+			if(myType!=Event.Type.global_control_toggle && myType!=Event.Type.global_demand_knob)
 				if(targets.isEmpty())
 					BeatsErrorLog.addError("No targets assigned in event with ID=" + getId() + ".");
 		

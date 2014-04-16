@@ -507,8 +507,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                     outputwriter.close();
                 if(perf_calc!=null)
                     perf_calc.close_output();
-                if(controllerset!=null)
-                    controllerset.close_output();
                 for(edu.berkeley.path.beats.jaxb.Node jnode : this.getNetworkSet().getNetwork().get(0).getNodeList().getNode()){
                     Node node = (Node) jnode;
                     if(node.split_ratio_logger !=null)
@@ -517,6 +515,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                             throw new BeatsException(e.getMessage());
                         }
                 }
+                DebugLogger.close_all();
 			}
 		}
         scenario_locked = false;
@@ -596,6 +595,17 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	protected void setGlobal_demand_knob(double global_demand_knob) {
 		this.global_demand_knob = global_demand_knob;
 	}
+
+    protected edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile getFDprofileForLinkId(long link_id){
+        if(getFundamentalDiagramSet()==null)
+            return null;
+        if(getFundamentalDiagramSet().getFundamentalDiagramProfile()==null)
+            return null;
+        for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdp : getFundamentalDiagramSet().getFundamentalDiagramProfile())
+            if(fdp.getLinkId()==link_id)
+                return fdp;
+        return null;
+    }
 
 	/////////////////////////////////////////////////////////////////////
 	// protected complex getters
@@ -914,7 +924,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         if(actuatorset==null)
             return null;
         for(Actuator actuator : actuatorset.getActuators()){
-            if(actuator.myType.compareTo(Actuator.Type.signal)==0){
+            if(actuator.myType==Actuator.Type.signal){
                 ActuatorSignal signal = (ActuatorSignal) actuator;
                 Long signal_node_id = signal.get_node_id();
                 if(signal_node_id!=null && node_id==signal_node_id)
@@ -1016,7 +1026,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		// construct list of stations to extract from datafile 
 		for(Sensor sensor : sensorset.getSensors()){
-			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
+			if(sensor.getMyType()!=Sensor.Type.loop)
 				continue;
 			SensorLoopStation S = (SensorLoopStation) sensor;
 			int myVDS = S.getVDS();				
@@ -1043,7 +1053,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// distribute data to sensors
 		for(Sensor sensor : sensorset.getSensors()){
 			
-			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
+			if(sensor.getMyType()!=Sensor.Type.loop)
 				continue;
 
 			SensorLoopStation S = (SensorLoopStation) sensor;
@@ -1100,7 +1110,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 				
 		// copy InitialDensityState to initial_state if starting from or to the right of InitialDensitySet time stamp
-		if(simulationMode.compareTo(ModeType.left_of_init_dens)!=0 && getInitialDensitySet()!=null){
+		if(simulationMode!=ModeType.left_of_init_dens && getInitialDensitySet()!=null){
 			for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
 				for(edu.berkeley.path.beats.jaxb.Link jlink:network.getLinkList().getLink()){
 					double [] density = ((InitialDensitySet)getInitialDensitySet()).getDensityForLinkIdInVeh(network.getId(),jlink.getId());
@@ -1146,9 +1156,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	private boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter) throws BeatsException{
-
-        if(BeatsMath.isintegermultipleof(clock.getTElapsed(),1d))
-            System.out.println(clock.getT());
 
 		// advance n steps
 		for(int k=0;k<n;k++){
@@ -1527,8 +1534,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         int i,e;
         boolean success = true;
         for(i=0;i<numLinks;i++)
-            for(e=0;e<getNumEnsemble();e++)
-                success &= ((Link)network.getLinkList().getLink().get(i)).set_density(d[i]);
+            success &= ((Link)network.getLinkList().getLink().get(i)).set_density_in_veh(d[i]);
         return success;
     }
 

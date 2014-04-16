@@ -216,7 +216,7 @@ import edu.berkeley.path.beats.simulator.*;
 ////					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getNEMA() + " in signal ID=" + signal.getId());
 //
 //		// myNEMA is valid
-//		if(myNEMA.compareTo(NEMA.ID.NULL)==0)
+//		if(myNEMA==NEMA.ID.NULL)
 //			BeatsErrorLog.addError("Invalid NEMA code in phase NEMA=" + getNEMA() + " in signal ID=" + mySignal.getId());
 //
 //		// numbers are positive

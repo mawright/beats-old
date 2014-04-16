@@ -73,7 +73,7 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
         for(Actuator actuator : actuators){
             if(actuator.myController==null)
                 continue;
-            if(myScenario.getClock().is_time_to_sample_abs(actuator.myController.getSamplesteps(),0))
+//            if(myScenario.getClock().is_time_to_sample_abs(actuator.myController.getSamplesteps(),0))
                 actuator.deploy(current_time_in_seconds);
         }
 	}
