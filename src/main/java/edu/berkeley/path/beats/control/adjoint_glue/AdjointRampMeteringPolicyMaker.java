@@ -30,7 +30,7 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
         private Map<Link, Link> mainlineSourceMap = new HashMap<Link, Link>();
         private Map<Link, Link> mainlineOfframpMap = new HashMap<Link, Link>();
         private Network network;
-        public int nLinks = 0;
+        public int nLinks  = 0;
 
         public MainlineStructure(Network network) {
             super();
