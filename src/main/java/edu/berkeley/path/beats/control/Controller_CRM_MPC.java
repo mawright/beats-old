@@ -11,12 +11,14 @@ import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 import java.util.HashMap;
+import java.util.Properties;
 
 public class Controller_CRM_MPC extends Controller {
 
 
     // policy maker
     private RampMeteringPolicyMaker policy_maker;
+    private Properties policy_maker_properties;
     private RampMeteringPolicySet policy;
     private RampMeteringControlSet controller_parameters;
     private HashMap<Long,Actuator> link_actuator_map;
@@ -117,6 +119,9 @@ public class Controller_CRM_MPC extends Controller {
             }
         }
 
+        // policy maker parameters
+        policy_maker_properties = null;     // NOTE READ THIS FROM A PROPOERTIES FILE!!!
+
     }
 
 	@Override
@@ -177,7 +182,8 @@ public class Controller_CRM_MPC extends Controller {
                                               myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon_steps),
                                               myScenario.gather_current_densities(),
                                               controller_parameters,
-                                              pm_dt);
+                                              pm_dt,
+                                              policy_maker_properties);
 
             // update time keeper
 			time_last_opt = time_current;

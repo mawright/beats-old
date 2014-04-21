@@ -7,10 +7,7 @@ import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.FundamentalDiagram;
 import edu.berkeley.path.ramp_metering.*;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -181,7 +178,7 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
     }
 
     @Override
-    public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt) {
+    public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt,Properties props) {
         ScenarioMainlinePair pair = convertScenario(net, fd, demand, splitRatios, ics, control, dt);
         FreewayScenario scenario = pair.scenario;
         MainlineStructure mainlineStructure = pair.mainlineStructure;
@@ -192,7 +189,7 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
             simstate = FreewaySimulator.simpleSim(scenario);
         }
         AdjointRampMetering metering = new AdjointRampMetering(scenario);
-        // metering.setProperties(I need props!);
+        metering.setProperties(props);
         double[][] controlValue = metering.givePolicy();
         simstate = FreewaySimulator.simpleSim(scenario, flatten(controlValue));
         RampMeteringPolicySet policySet = new RampMeteringPolicySet();
