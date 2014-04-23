@@ -189,7 +189,10 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
             simstate = FreewaySimulator.simpleSim(scenario);
         }
         AdjointRampMetering metering = new AdjointRampMetering(scenario);
-        metering.setProperties(props);
+        if (props != null) {
+            metering.setProperties(props);
+            System.out.println("max evals: " + StandardOptimizer$.MODULE$.maxEvaluations());
+        }
         double[][] controlValue = metering.givePolicy();
         simstate = FreewaySimulator.simpleSim(scenario, flatten(controlValue));
         RampMeteringPolicySet policySet = new RampMeteringPolicySet();
