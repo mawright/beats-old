@@ -102,12 +102,6 @@ public class Controller_CRM_MPC extends Controller {
                 policy_maker_properties = new Properties();
                 try {
                     policy_maker_properties.load(new FileInputStream(pm_properties_fn));
-                    Enumeration<Object> keys = policy_maker_properties.keys();
-                    while (keys.hasMoreElements()) {
-                        Object next = keys.nextElement();
-                        System.out.println(next + ": " + policy_maker_properties.get(next));
-                    }
-
                 } catch (IOException e){
                     System.err.print(e);
                 }
