@@ -182,49 +182,50 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
 
     @Override
     public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt) {
-        ScenarioMainlinePair pair = convertScenario(net, fd, demand, splitRatios, ics, control, dt);
-        FreewayScenario scenario = pair.scenario;
-        MainlineStructure mainlineStructure = pair.mainlineStructure;
-        int origT = scenario.simParams().numTimesteps();
-        SimulationOutput simstate = FreewaySimulator.simpleSim(scenario);
-        while (!networkSufficientlyCleared(scenario, simstate)) {
-            scenario = scenario.expandSimTime(.3);
-            simstate = FreewaySimulator.simpleSim(scenario);
-        }
-        Adjoint$.MODULE$.optimizer_$eq(new ChainedOptimizer());
-        double[][] controlValue = new AdjointRampMetering(scenario.fw()).givePolicy(scenario.simParams(), scenario.policyParams());
-        simstate = FreewaySimulator.simpleSim(scenario, flatten(controlValue));
-        RampMeteringPolicySet policySet = new RampMeteringPolicySet();
-
-        // Start from 1 because we don't think of the first onramp as controllable
-        List<Integer> onrampIndices = mainlineStructure.onrampIndices();
-        for (int i = 1; i <  onrampIndices.size(); ++i) {
-            int rampIndex = onrampIndices.get(i);
-            RampMeteringPolicyProfile policy = new RampMeteringPolicyProfile();
-            policySet.profiles.add(policy);
-            policy.sensorLink = mainlineStructure.mainlineOnrampMap.get(mainlineStructure.links.get(onrampIndices.get(i)));
-            double maxFlux = (Double) (scenario.fw().rMaxs().apply(rampIndex));
-            double lowerLimitFlux = 0.0;
-            double upperLimitFlux = Double.MAX_VALUE;
-            for (RampMeteringControl limit : control.control) {
-                if (limit.link.equals(policy.sensorLink)) {
-                    lowerLimitFlux = limit.min_rate;
-                    upperLimitFlux = limit.max_rate;
-                    break;
-                }
-            }
-            for (int t = 0; t < origT; ++t) {
-                double uValue = controlValue[t][i - 1];
-                double rampFlux = simstate.fluxRamp()[t][rampIndex];
-                double maxQueueFlux = simstate.queue()[t][rampIndex] / scenario.policyParams().deltaTimeSeconds();
-                if (uValue >= 1.0 || rampFlux >= maxQueueFlux || maxQueueFlux <= 0.1 * maxFlux || rampFlux >= .95 * maxFlux) {
-                    policy.rampMeteringPolicy.add(Math.max(maxFlux, lowerLimitFlux));
-                    continue;
-                }
-                policy.rampMeteringPolicy.add(Math.min(upperLimitFlux, Math.max(rampFlux, lowerLimitFlux)));
-            }
-        }
-        return policySet;
+//        ScenarioMainlinePair pair = convertScenario(net, fd, demand, splitRatios, ics, control, dt);
+//        FreewayScenario scenario = pair.scenario;
+//        MainlineStructure mainlineStructure = pair.mainlineStructure;
+//        int origT = scenario.simParams().numTimesteps();
+//        SimulationOutput simstate = FreewaySimulator.simpleSim(scenario);
+//        while (!networkSufficientlyCleared(scenario, simstate)) {
+//            scenario = scenario.expandSimTime(.3);
+//            simstate = FreewaySimulator.simpleSim(scenario);
+//        }
+//        Adjoint$.MODULE$.optimizer_$eq(new ChainedOptimizer());
+//        double[][] controlValue = new AdjointRampMetering(scenario.fw()).givePolicy(scenario.simParams(), scenario.policyParams());
+//        simstate = FreewaySimulator.simpleSim(scenario, flatten(controlValue));
+//        RampMeteringPolicySet policySet = new RampMeteringPolicySet();
+//
+//        // Start from 1 because we don't think of the first onramp as controllable
+//        List<Integer> onrampIndices = mainlineStructure.onrampIndices();
+//        for (int i = 1; i <  onrampIndices.size(); ++i) {
+//            int rampIndex = onrampIndices.get(i);
+//            RampMeteringPolicyProfile policy = new RampMeteringPolicyProfile();
+//            policySet.profiles.add(policy);
+//            policy.sensorLink = mainlineStructure.mainlineOnrampMap.get(mainlineStructure.links.get(onrampIndices.get(i)));
+//            double maxFlux = (Double) (scenario.fw().rMaxs().apply(rampIndex));
+//            double lowerLimitFlux = 0.0;
+//            double upperLimitFlux = Double.MAX_VALUE;
+//            for (RampMeteringControl limit : control.control) {
+//                if (limit.link.equals(policy.sensorLink)) {
+//                    lowerLimitFlux = limit.min_rate;
+//                    upperLimitFlux = limit.max_rate;
+//                    break;
+//                }
+//            }
+//            for (int t = 0; t < origT; ++t) {
+//                double uValue = controlValue[t][i - 1];
+//                double rampFlux = simstate.fluxRamp()[t][rampIndex];
+//                double maxQueueFlux = simstate.queue()[t][rampIndex] / scenario.policyParams().deltaTimeSeconds();
+//                if (uValue >= 1.0 || rampFlux >= maxQueueFlux || maxQueueFlux <= 0.1 * maxFlux || rampFlux >= .95 * maxFlux) {
+//                    policy.rampMeteringPolicy.add(Math.max(maxFlux, lowerLimitFlux));
+//                    continue;
+//                }
+//                policy.rampMeteringPolicy.add(Math.min(upperLimitFlux, Math.max(rampFlux, lowerLimitFlux)));
+//            }
+//        }
+//        return policySet;
+        return null;
     }
 
     private double[] flatten(double[][] controlValue) {
@@ -248,125 +249,127 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
     }
 
     static public ScenarioMainlinePair convertScenario(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt) {
-        MainlineStructure mainline = new MainlineStructure(net);
-        Map<Link, FundamentalDiagram> fdMap = new HashMap<Link, FundamentalDiagram>();
-        for (edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile f : fd.getFundamentalDiagramProfile()) {
-            fdMap.put(net.getLinkWithId(f.getLinkId()), (FundamentalDiagram) (f.getFundamentalDiagram().get(0)));
-        }
-        FreewayLink[] freewayLinks = new FreewayLink[mainline.nLinks];
-        int linkIndex = 0;
-        for (Link link : mainline.links) {
-            double length = link.getLength();
-            double p = 4.0;
-            FundamentalDiagram f = fdMap.get(link);
-            double rMax = 0.0;
-            if (linkIndex == 0) {
-                Link source = mainline.mainlineSourceMap.get(mainline.links.get(0));
-                rMax = fdMap.get(source).getCapacity() * source.getLanes();
-            }
-            if (mainline.mainlineOnrampMap.containsKey(link)) {
-                Link onramp = mainline.mainlineOnrampMap.get(link);
-                rMax = fdMap.get(onramp).getCapacity() * onramp.getLanes();
-            }
-            freewayLinks[linkIndex] = new FreewayLink(new edu.berkeley.path.ramp_metering.FundamentalDiagram(f.getFreeFlowSpeed(), f.getCapacity() * link.getLanes(), f.getJamDensity() * link.getLanes()), length, rMax, p);
-            ++linkIndex;
-        }
-        List<Integer> onrampList = mainline.onrampIndices();
-        List<Integer> offrampList = mainline.offrampIndices();
-        int[] onramps = new int[onrampList.size()];
-        int[] offramps = new int[offrampList.size()];
-        for (int i = 0; i < onrampList.size(); ++i) {
-            onramps[i] = onrampList.get(i);
-        }
-        for (int i = 0; i < offrampList.size(); ++i) {
-            offramps[i] = offrampList.get(i);
-        }
-        Freeway freeway = Freeway.fromArrays(freewayLinks, onramps, offramps);
-        PolicyParameters policyParameters = new PolicyParameters(dt, -1);
-        assert demand.getDemandProfile().get(0).getDt() % Math.floor(dt) == 0;
-        int bcDtFactor = (int) (Math.floor(demand.getDemandProfile().get(0).getDt())) / (int) Math.floor(dt);
-        Map<Link, double[]> indexedDemand = new HashMap<Link, double[]>();
-        for (edu.berkeley.path.beats.jaxb.DemandProfile d : demand.getDemandProfile()) {
-            String[] splits = d.getDemand().get(0).getContent().split(",");
-            double[] dem = new double[splits.length * bcDtFactor];
-            int iter = 0;
-            for (int i = 0; i < splits.length; ++i) {
-                double v = Double.parseDouble(splits[i]);
-                for (int j = 0; j < bcDtFactor; ++j) {
-                    dem[iter] = v;
-                    ++iter;
-                }
-            }
-            indexedDemand.put(net.getLinkWithId(d.getLinkIdOrg()), dem);
-        }
-        Map<Link, double[]> indexedRatios = new HashMap<Link, double[]>();
-        for (edu.berkeley.path.beats.jaxb.SplitRatioProfile d : splitRatios.getSplitRatioProfile()) {
-            for (edu.berkeley.path.beats.jaxb.Splitratio split : d.getSplitratio()) {
-                String[] splits = split.getContent().split(",");
-                double[] dem = new double[splits.length * bcDtFactor];
-                int iter = 0;
-                for (int i = 0; i < splits.length; ++i) {
-                    double v = 1 - Double.parseDouble(splits[i]);
-                    for (int j = 0; j < bcDtFactor; ++j) {
-                        dem[iter] = v;
-                        ++iter;
-                    }
-                }
-                indexedRatios.put(net.getLinkWithId(split.getLinkOut()), dem);
-            }
-        }
-        int t = indexedDemand.values().iterator().next().length;
-        double[][] splits = new double[offramps.length][t];
-        for (int i = 0; i < offramps.length; ++i) {
-            splits[i] = indexedRatios.get(mainline.mainlineOfframpMap.get(mainline.links.get(offramps[i])));
-        }
-        double[][] dems = new double[onramps.length][t];
-        for (int i = 0; i < onramps.length; ++i) {
-            dems[i] = indexedDemand.get(mainline.mainlineSourceMap.get(mainline.links.get(onramps[i])));
-        }
-        double[] densityIC = new double[mainline.nLinks];
-        double[] queueIC = new double[mainline.nLinks];
-        for ( Density d : ics.getDensity()) {
-            double value = Double.parseDouble(d.getContent());
-            Link link = net.getLinkWithId(d.getLinkId());
-            if (mainline.links.contains(link)) {
-                densityIC[mainline.links.indexOf(link)] = value;
-                continue;
-            }
-            if (mainline.mainlineOnrampMap.containsValue(link)) {
-                for (int i = 0; i < mainline.nLinks; ++i) {
-                    if (mainline.mainlineOnrampMap.containsKey(mainline.links.get(i)) && mainline.mainlineOnrampMap.get(mainline.links.get(i)).equals(link)) {
-                        queueIC[i] = value;
-                        continue;
-                    }
-                }
-                continue;
-            }
-        }
-        for ( Density d : ics.getDensity()) {
-            double value = Double.parseDouble(d.getContent());
-            Link link = net.getLinkWithId(d.getLinkId());
-            if (mainline.mainlineSourceMap.containsValue(link)) {
-                for (int i = 0; i < mainline.nLinks; ++i) {
-                    if (mainline.mainlineSourceMap.containsKey(mainline.links.get(i)) && mainline.mainlineSourceMap.get(mainline.links.get(i)).equals(link)) {
-                        queueIC[i] = value;
-                        break;
-                    }
-                }
-            }
-        }
-        double[] minRates = new double[onramps.length - 1];
-        double[] maxRates = new double[onramps.length - 1];
-        List<Link> orderedOnramps = mainline.orderedOnramps();
-        for (RampMeteringControl c : control.control) {
-            Link l = c.link;
-            int index = orderedOnramps.indexOf(l);
-            minRates[index] = c.min_rate;
-            maxRates[index] = c.max_rate;
-        }
+//        MainlineStructure mainline = new MainlineStructure(net);
+//        Map<Link, FundamentalDiagram> fdMap = new HashMap<Link, FundamentalDiagram>();
+//        for (edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile f : fd.getFundamentalDiagramProfile()) {
+//            fdMap.put(net.getLinkWithId(f.getLinkId()), (FundamentalDiagram) (f.getFundamentalDiagram().get(0)));
+//        }
+//        FreewayLink[] freewayLinks = new FreewayLink[mainline.nLinks];
+//        int linkIndex = 0;
+//        for (Link link : mainline.links) {
+//            double length = link.getLength();
+//            double p = 4.0;
+//            FundamentalDiagram f = fdMap.get(link);
+//            double rMax = 0.0;
+//            if (linkIndex == 0) {
+//                Link source = mainline.mainlineSourceMap.get(mainline.links.get(0));
+//                rMax = fdMap.get(source).getCapacity() * source.getLanes();
+//            }
+//            if (mainline.mainlineOnrampMap.containsKey(link)) {
+//                Link onramp = mainline.mainlineOnrampMap.get(link);
+//                rMax = fdMap.get(onramp).getCapacity() * onramp.getLanes();
+//            }
+//            freewayLinks[linkIndex] = new FreewayLink(new edu.berkeley.path.ramp_metering.FundamentalDiagram(f.getFreeFlowSpeed(), f.getCapacity() * link.getLanes(), f.getJamDensity() * link.getLanes()), length, rMax, p);
+//            ++linkIndex;
+//        }
+//        List<Integer> onrampList = mainline.onrampIndices();
+//        List<Integer> offrampList = mainline.offrampIndices();
+//        int[] onramps = new int[onrampList.size()];
+//        int[] offramps = new int[offrampList.size()];
+//        for (int i = 0; i < onrampList.size(); ++i) {
+//            onramps[i] = onrampList.get(i);
+//        }
+//        for (int i = 0; i < offrampList.size(); ++i) {
+//            offramps[i] = offrampList.get(i);
+//        }
+//        Freeway freeway = Freeway.fromArrays(freewayLinks, onramps, offramps);
+//        PolicyParameters policyParameters = new PolicyParameters(dt, -1);
+//        assert demand.getDemandProfile().get(0).getDt() % Math.floor(dt) == 0;
+//        int bcDtFactor = (int) (Math.floor(demand.getDemandProfile().get(0).getDt())) / (int) Math.floor(dt);
+//        Map<Link, double[]> indexedDemand = new HashMap<Link, double[]>();
+//        for (edu.berkeley.path.beats.jaxb.DemandProfile d : demand.getDemandProfile()) {
+//            String[] splits = d.getDemand().get(0).getContent().split(",");
+//            double[] dem = new double[splits.length * bcDtFactor];
+//            int iter = 0;
+//            for (int i = 0; i < splits.length; ++i) {
+//                double v = Double.parseDouble(splits[i]);
+//                for (int j = 0; j < bcDtFactor; ++j) {
+//                    dem[iter] = v;
+//                    ++iter;
+//                }
+//            }
+//            indexedDemand.put(net.getLinkWithId(d.getLinkIdOrg()), dem);
+//        }
+//        Map<Link, double[]> indexedRatios = new HashMap<Link, double[]>();
+//        for (edu.berkeley.path.beats.jaxb.SplitRatioProfile d : splitRatios.getSplitRatioProfile()) {
+//            for (edu.berkeley.path.beats.jaxb.Splitratio split : d.getSplitratio()) {
+//                String[] splits = split.getContent().split(",");
+//                double[] dem = new double[splits.length * bcDtFactor];
+//                int iter = 0;
+//                for (int i = 0; i < splits.length; ++i) {
+//                    double v = 1 - Double.parseDouble(splits[i]);
+//                    for (int j = 0; j < bcDtFactor; ++j) {
+//                        dem[iter] = v;
+//                        ++iter;
+//                    }
+//                }
+//                indexedRatios.put(net.getLinkWithId(split.getLinkOut()), dem);
+//            }
+//        }
+//        int t = indexedDemand.values().iterator().next().length;
+//        double[][] splits = new double[offramps.length][t];
+//        for (int i = 0; i < offramps.length; ++i) {
+//            splits[i] = indexedRatios.get(mainline.mainlineOfframpMap.get(mainline.links.get(offramps[i])));
+//        }
+//        double[][] dems = new double[onramps.length][t];
+//        for (int i = 0; i < onramps.length; ++i) {
+//            dems[i] = indexedDemand.get(mainline.mainlineSourceMap.get(mainline.links.get(onramps[i])));
+//        }
+//        double[] densityIC = new double[mainline.nLinks];
+//        double[] queueIC = new double[mainline.nLinks];
+//        for ( Density d : ics.getDensity()) {
+//            double value = Double.parseDouble(d.getContent());
+//            Link link = net.getLinkWithId(d.getLinkId());
+//            if (mainline.links.contains(link)) {
+//                densityIC[mainline.links.indexOf(link)] = value;
+//                continue;
+//            }
+//            if (mainline.mainlineOnrampMap.containsValue(link)) {
+//                for (int i = 0; i < mainline.nLinks; ++i) {
+//                    if (mainline.mainlineOnrampMap.containsKey(mainline.links.get(i)) && mainline.mainlineOnrampMap.get(mainline.links.get(i)).equals(link)) {
+//                        queueIC[i] = value;
+//                        continue;
+//                    }
+//                }
+//                continue;
+//            }
+//        }
+//        for ( Density d : ics.getDensity()) {
+//            double value = Double.parseDouble(d.getContent());
+//            Link link = net.getLinkWithId(d.getLinkId());
+//            if (mainline.mainlineSourceMap.containsValue(link)) {
+//                for (int i = 0; i < mainline.nLinks; ++i) {
+//                    if (mainline.mainlineSourceMap.containsKey(mainline.links.get(i)) && mainline.mainlineSourceMap.get(mainline.links.get(i)).equals(link)) {
+//                        queueIC[i] = value;
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//        double[] minRates = new double[onramps.length - 1];
+//        double[] maxRates = new double[onramps.length - 1];
+//        List<Link> orderedOnramps = mainline.orderedOnramps();
+//        for (RampMeteringControl c : control.control) {
+//            Link l = c.link;
+//            int index = orderedOnramps.indexOf(l);
+//            minRates[index] = c.min_rate;
+//            maxRates[index] = c.max_rate;
+//        }
+//
+//        SimulationParameters simParams = SimulationParameters.fromJava(BoundaryConditions.fromArrays(dems, splits), InitialConditions.fromArrays(densityIC, queueIC), minRates, maxRates);
+//        return new ScenarioMainlinePair(new FreewayScenario(freeway, simParams, policyParameters), mainline);
 
-        SimulationParameters simParams = SimulationParameters.fromJava(BoundaryConditions.fromArrays(dems, splits), InitialConditions.fromArrays(densityIC, queueIC), minRates, maxRates);
-        return new ScenarioMainlinePair(new FreewayScenario(freeway, simParams, policyParameters), mainline);
+           return null;
     }
 
 

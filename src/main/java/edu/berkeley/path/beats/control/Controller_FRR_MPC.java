@@ -1,6 +1,5 @@
 package edu.berkeley.path.beats.control;
 
-//import edu.berkeley.path.beats.control.adjoint_glue.AdjointReroutesPolicyMaker;
 import edu.berkeley.path.beats.actuator.ActuatorCMS;
 import edu.berkeley.path.beats.control.adjoint_glue.AdjointReroutesPolicyMaker;
 import edu.berkeley.path.beats.simulator.*;
@@ -73,8 +72,8 @@ public class Controller_FRR_MPC extends Controller {
         // link->actuator map
         node_actuator_map = new HashMap<Long,Actuator>();
         for(Actuator act : actuators){
-            ScenarioElement se = act.getScenarioElement();
-            if(se.getType().compareTo("node")==0)
+            ScenarioElement se = (ScenarioElement) act.getScenarioElement();
+            if(se.getMyType()==ScenarioElement.Type.node)
                 node_actuator_map.put(new Long(se.getId()),act);
         }
 

@@ -2,7 +2,7 @@ package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
 //import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker;
-import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker;
+//import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;
@@ -67,9 +67,9 @@ public class Controller_CRM_MPC extends Controller {
                 case tester:
                     policy_maker = new PolicyMaker_Tester();
                     break;
-				case adjoint:
-					policy_maker = new AdjointRampMeteringPolicyMaker();
-					break;
+//				case adjoint:
+//					policy_maker = new AdjointRampMeteringPolicyMaker();
+//					break;
 //				case actm_lp:
 //                    policy_maker = new PolicyMaker_CRM_ACTM_LP();
 //					break;
