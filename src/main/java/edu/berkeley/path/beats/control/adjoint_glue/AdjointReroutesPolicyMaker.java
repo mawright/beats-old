@@ -8,6 +8,7 @@ import edu.berkeley.path.beats.jaxb.Node;
 import edu.berkeley.path.dtapc.dataStructures.HashMapPairCellsDouble;
 import edu.berkeley.path.dtapc.dataStructures.PairCells;
 import edu.berkeley.path.dtapc.dta_solver.SOPC_Optimizer;
+import edu.berkeley.path.dtapc.dta_solver.SO_OptimizerByFiniteDifferences;
 import edu.berkeley.path.dtapc.dta_solver.Simulator;
 import edu.berkeley.path.dtapc.generalLWRNetwork.DiscretizedGraph;
 import edu.berkeley.path.dtapc.generalLWRNetwork.LWR_network;
@@ -28,6 +29,7 @@ import java.util.*;
 public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
 
     static boolean verbose = true;
+    static enum optimizer_types {FINITE_DIFFERENCE,ADJOINT};
 
     public ReroutePolicySet givePolicy(edu.berkeley.path.beats.jaxb.Network net,
                                        edu.berkeley.path.beats.jaxb.FundamentalDiagramSet fd,
@@ -35,7 +37,9 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                                        edu.berkeley.path.beats.jaxb.SplitRatioSet splitRatios,
                                        edu.berkeley.path.beats.jaxb.InitialDensitySet ics,
                                        edu.berkeley.path.beats.jaxb.RouteSet routes,
-                                       Double dt) {
+                                       Double dt,
+                                       Double optimizationHorizon ,
+                                       Properties properties) {
 
         double[] policy = computePolicy(net,
                 fd,
@@ -43,7 +47,9 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 splitRatios,
                 ics,
                 routes,
-                dt);
+                dt,
+                optimizationHorizon ,
+                properties);
 
         ReroutePolicySet reroutePolicySet = new ReroutePolicySet();
         Double[] policyDouble = ArrayUtils.toObject(policy);
@@ -61,8 +67,12 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                                          SplitRatioSet splitRatiosBeATS,
                                          InitialDensitySet idsBeATS,
                                          RouteSet rsBeATS,
-                                         Double dtBeATS) {
-        // TODO Auto-generated method stub
+                                         Double dtBeATS ,
+                                         Double optimizationHorizon ,
+                                         Properties properties ) {
+
+        boolean debug_on = properties.getProperty("DEBUG").compareToIgnoreCase("ON")==0;
+
         double[] result = null;
         try {
 
@@ -291,8 +301,8 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
             Graph graph = new Graph(mutable_graph);
 
 			/* This needs to NOT be hard coded */
-            int delta_t = 60;
-            int time_steps = 80;
+            int delta_t = dtBeATS.intValue();
+            int time_steps = 800;
 
             DiscretizedGraph discretized_graph = new DiscretizedGraph(graph, delta_t,
                     time_steps);
@@ -372,7 +382,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
             LWR_network lwr_network = new LWR_network(discretized_graph);
 
             // Creating the simulator
-            double alpha = 0.15; // Fraction of compliant flow
+            double alpha = 0.5; // Fraction of compliant flow
             Simulator simulator = new Simulator(delta_t, time_steps, alpha);
             simulator.discretized_graph = discretized_graph;
             simulator.lwr_network = lwr_network;
@@ -384,18 +394,18 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
             assert demandSetBeATS.getDemandProfile().size() == 1;
 
             DemandProfile tmp_demandProfile;
-            JsonDemand[][] demandArray = new JsonDemand[1][time_steps];
             double[] totalDemand = new double[time_steps];
             for (int i = 0; i < time_steps; i++){
                 totalDemand[i] = 0;
             }
+            double profile_dt = Double.NaN;
             while (demandProfile_iterator.hasNext()) { // There is only one for now
                 tmp_demandProfile = demandProfile_iterator.next();
 
                 Iterator<Demand> demand_iterator = tmp_demandProfile.getDemand().iterator();
                 Demand tmp_demand;
                 // We have the discretization
-                //		      double dt = tmp_demandProfile.getDt();
+                profile_dt = tmp_demandProfile.getDt();
                 int origin_id = (int) tmp_demandProfile.getLinkIdOrg();
 
                 System.out.println("Demand for origin " + origin_id + " dt = " + dtBeATS);
@@ -411,17 +421,13 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                         history_table[i] = Double.parseDouble(history.get(i));
                         totalDemand[i] = totalDemand[i] + history_table[i];
                     }
-
-                    demandArray[0][(int) tmp_demand.getVehicleTypeId()] =
-                            new JsonDemand((int) mutable_graph.getLink((int) BeATS_link_to_Mutable_link.get((int) tmp_demandProfile.getLinkIdOrg()).from.getUnique_id()).getUnique_id(),
-                                    history_table);
                 }
             }
 
             JsonDemand[] json_demands = new JsonDemand[1];
             json_demands[0] = new JsonDemand((int) mutable_graph.getLink((int) BeATS_link_to_Mutable_link.get((int) demandSetBeATS.getDemandProfile().
                     get(0).getLinkIdOrg()).from.getUnique_id()).getUnique_id(), totalDemand);
-            simulator.origin_demands = new DemandsFactory(simulator.time_discretization, delta_t, json_demands, discretized_graph.node_to_origin).buildDemands();
+            simulator.origin_demands = new DemandsFactory(simulator.time_discretization, profile_dt, json_demands, discretized_graph.node_to_origin).buildDemands();
             System.out.println(simulator.origin_demands.toString());
             System.out.println();
             simulator.initializSplitRatios();
@@ -432,6 +438,11 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
 			/* Checking the requirements on the network */
             System.out.print("Checking that the network respect needed requirements...");
             lwr_network.checkConstraints(delta_t);
+
+
+            lwr_network.print();
+
+
             System.out.println("Done");
 
 
@@ -440,11 +451,26 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                         + simulator.objective() + "\n");
             }
 
-            int maxIter = 10;
-            SOPC_Optimizer optimizer = new SOPC_Optimizer(simulator);
 
-            GradientDescent descentMethod = new GradientDescent(maxIter,"RProp");
-            descentMethod.setGradient_condition(10E-9);
+            SOPC_Optimizer optimizer = null;
+
+            switch(AdjointReroutesPolicyMaker.optimizer_types.valueOf(properties.getProperty("OPTIMIZER_TYPE"))){
+                case FINITE_DIFFERENCE:
+                    optimizer = new SO_OptimizerByFiniteDifferences(simulator);
+                    break;
+                case ADJOINT:
+                    optimizer = new SOPC_Optimizer(simulator);
+                    break;
+                default:
+                    // ERROR OUT
+                    break;
+            }
+
+            int maxIter = Integer.parseInt(properties.getProperty("MAX_ITERATIONS"));
+            GradientDescent descentMethod = new GradientDescent(maxIter,properties.getProperty("DESCENT_METHOD"));
+
+
+            descentMethod.setGradient_condition(Double.parseDouble(properties.getProperty("STOPPING_CRITERIA")));
             result = descentMethod.solve(optimizer);
             System.out.println("Final control");
             for (int i = 0; i < result.length; i++)

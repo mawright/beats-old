@@ -35,7 +35,7 @@ public class Controller_CRM_MPC extends Controller {
 
 
     // derived
-    private int pm_horizon_steps;     // pm_horizon/pm_dt
+//    private int pm_horizon_steps;     // pm_horizon/pm_dt
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -98,7 +98,7 @@ public class Controller_CRM_MPC extends Controller {
             pm_horizon = Double.NaN;
         }
 
-        pm_horizon_steps = BeatsMath.round(pm_horizon/pm_dt);
+//        pm_horizon_steps = BeatsMath.round(pm_horizon/pm_dt);
 
         // assign network (it will already be assigned if controller is scenario-less)
         if(network==null && myScenario!=null)
@@ -173,8 +173,8 @@ public class Controller_CRM_MPC extends Controller {
 			// call policy maker (everything in SI units)
             policy = policy_maker.givePolicy( network,
                                               myScenario.gather_current_fds(time_current),
-                                              myScenario.predict_demands(time_current,pm_dt,pm_horizon_steps),
-                                              myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon_steps),
+                                              myScenario.predict_demands(time_current,pm_dt,pm_horizon),
+                                              myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon),
                                               myScenario.gather_current_densities(),
                                               controller_parameters,
                                               pm_dt);

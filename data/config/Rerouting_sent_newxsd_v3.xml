@@ -11,8 +11,8 @@
 			<parameters>
 				<parameter name="policy" value="adjoint" />
 				<parameter name="dt_optimize" value="600" />
-				<parameter name="policy_maker_timestep" value="60" />
-				<parameter name="policy_maker_horizon" value="600" />
+				<parameter name="policy_maker_timestep" value="10" />
+				<parameter name="policy_maker_horizon" value="3600" />
 			</parameters>
 			<display_position>
 				<point lat="37.8491120765346" lng="-122.298152446747" />
