@@ -887,12 +887,22 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
+    public Sensor getSensorWithLinkId(long link_id){
+        if(sensorset==null)
+            return null;
+        for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
+            if(sensor.getMyLink()!=null && sensor.getMyLink().getId()==link_id)
+                return sensor;
+        }
+        return null;
+    }
+
 	public Sensor getSensorWithId(long id) {
 		if(sensorset==null)
 			return null;
 		for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
 			if(sensor.getId()==id)
-				return (Sensor) sensor;
+				return sensor;
 		}
 		return null;
 	}
