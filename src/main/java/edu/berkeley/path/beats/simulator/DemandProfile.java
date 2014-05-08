@@ -269,7 +269,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		
 		// add noise
 		if(!isdeterministic)
-			addNoise(demandvalue);
+			demandvalue = addNoise(demandvalue);
 
 		// apply the knob 
 		demandvalue = applyKnob(demandvalue);
