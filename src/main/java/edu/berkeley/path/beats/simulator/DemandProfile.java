@@ -130,7 +130,8 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			std_dev_add = Double.POSITIVE_INFINITY;		// so that the other will always win the min
 		
 		if(getStdDevMult()!=null)
-			std_dev_mult = getStdDevMult().doubleValue() * myScenario.getSimdtinseconds();
+//			std_dev_mult = getStdDevMult().doubleValue() * myScenario.getSimdtinseconds();
+			std_dev_mult = getStdDevMult().doubleValue();
 		else
 			std_dev_mult = Double.POSITIVE_INFINITY;	// so that the other will always win the min
 		
