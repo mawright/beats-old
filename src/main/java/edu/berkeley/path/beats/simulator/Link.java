@@ -483,7 +483,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         }
     }
 
-    public double getTotalInlowInVeh(int ensemble) {
+    public double getTotalInflowInVeh(int ensemble) {
         try{
             return BeatsMath.sum(inflow[ensemble]);
         } catch(Exception e){
