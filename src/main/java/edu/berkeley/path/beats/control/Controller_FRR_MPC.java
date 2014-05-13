@@ -7,8 +7,10 @@ import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.ScenarioElement;
 
 import java.util.HashMap;
+import java.util.Properties;
 
 public class Controller_FRR_MPC extends Controller {
 
@@ -163,7 +165,9 @@ public class Controller_FRR_MPC extends Controller {
                                               myScenario.predict_split_ratios(time_current,Double.NaN,pm_horizon),
                                               myScenario.gather_current_densities(),
                                               myScenario.getRouteSet(),
-                                              pm_dt);
+                                              pm_dt,
+                                              pm_horizon,
+                                              policy_maker_properties );
 
             // update time keeper
 			time_last_opt = time_current;

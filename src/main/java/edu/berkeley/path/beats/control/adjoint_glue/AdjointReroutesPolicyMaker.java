@@ -71,13 +71,12 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                                          Double optimizationHorizon ,
                                          Properties properties ) {
 
-        boolean debug_on = properties.getProperty("DEBUG").compareToIgnoreCase("ON")==0;
+        boolean debug_on = properties.getProperty("REROUTES_ADJOINT.DEBUG").compareToIgnoreCase("ON")==0;
 
         double[] result = null;
         try {
 
-
-            System.out.println("Converting BeATS network to a DTAPC network...");
+            print(debug_on, "Converting BeATS network to a DTAPC network...");
             // Translate the network
             edu.berkeley.path.beats.jaxb.Network network = netBeATS;
 
@@ -88,14 +87,16 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                     new HashMap<Integer, edu.berkeley.path.beats.jaxb.Node>(
                             network.getNodeList().getNode().size());
             edu.berkeley.path.beats.jaxb.Node tmp_node;
-            System.out.println();
-            System.out.println("BeATS Nodes:");
+
+
+            print(debug_on, "");
+            print(debug_on, "BeATS Nodes:");
             while (node_iterator.hasNext()) {
                 tmp_node = node_iterator.next();
                 BeATS_nodes.put((int) tmp_node.getId(), tmp_node);
-                System.out.println(BeATS_nodes.get((int) tmp_node.getId()).getId());
+                print(debug_on, BeATS_nodes.get((int) tmp_node.getId()).getId());
             }
-            System.out.println();
+            print(debug_on, "");
 
             // Read the links
             Iterator<edu.berkeley.path.beats.jaxb.Link> link_iterator =
@@ -104,13 +105,13 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                     new HashMap<Integer, edu.berkeley.path.beats.jaxb.Link>(
                             network.getLinkList().getLink().size());
             edu.berkeley.path.beats.jaxb.Link tmp_link;
-            System.out.println("BeATS links:");
+            print(debug_on,"BeATS links:");
             while (link_iterator.hasNext()) {
                 tmp_link = link_iterator.next();
                 BeATS_links.put((Integer) (int) tmp_link.getId(), tmp_link);
-                System.out.println(BeATS_links.get((int) tmp_link.getId()).getId());
+                print(debug_on,BeATS_links.get((int) tmp_link.getId()).getId());
             }
-            System.out.println();
+            print(debug_on,"");
 
             // Read the Fundamental Diagram profiles
             Iterator<FundamentalDiagramProfile> fdp_iterator =
@@ -121,15 +122,15 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                     new HashMap<Integer, FundamentalDiagramProfile>(
                             fdBeATS.getFundamentalDiagramProfile().size());
 
-            System.out.println("BeATS FD params:");
+            print(debug_on,"BeATS FD params:");
             FundamentalDiagramProfile tmp_fdp;
             while (fdp_iterator.hasNext()) {
                 tmp_fdp = fdp_iterator.next();
                 fundamentalDiagramProfiles.put((int) tmp_fdp.getLinkId(), tmp_fdp);
-                System.out.print(fundamentalDiagramProfiles.get((int) tmp_fdp.getLinkId()).getFundamentalDiagram().get(0).getCapacity() + ", ");
-                System.out.print(fundamentalDiagramProfiles.get((int) tmp_fdp.getLinkId()).getFundamentalDiagram().get(0).getCapacity() + ", ");
-                System.out.print(fundamentalDiagramProfiles.get((int) tmp_fdp.getLinkId()).getFundamentalDiagram().get(0).getCapacity());
-                System.out.println();
+                print(debug_on,fundamentalDiagramProfiles.get((int) tmp_fdp.getLinkId()).getFundamentalDiagram().get(0).getCapacity() + ", ");
+                print(debug_on,fundamentalDiagramProfiles.get((int) tmp_fdp.getLinkId()).getFundamentalDiagram().get(0).getCapacity() + ", ");
+                print(debug_on,fundamentalDiagramProfiles.get((int) tmp_fdp.getLinkId()).getFundamentalDiagram().get(0).getCapacity());
+                print(debug_on,"");
             }
 
 			/*
@@ -140,8 +141,8 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
 			 */
             MutableGraph mutable_graph = new MutableGraph();
 
-            System.out.println();
-            System.out.println("Mutable graph nodes");
+            print(debug_on,"");
+            print(debug_on,"Mutable graph nodes");
 			/* We first add the nodes */
             Iterator<Node> BeATS_nodes_iterator = BeATS_nodes.values().iterator();
             HashMap<Integer, edu.berkeley.path.dtapc.generalNetwork.graph.Node> BeATS_node_to_Mutable_node =
@@ -152,11 +153,11 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 mutable_graph.addNode(0, 0);
                 BeATS_node_to_Mutable_node.put((int) tmp_node.getId(),
                         mutable_graph.getLastAddedNode());
-                System.out.println(mutable_graph.getLastAddedNode().getUnique_id());
+                print(debug_on,mutable_graph.getLastAddedNode().getUnique_id());
             }
-            System.out.println();
+            print(debug_on,"");
 
-            System.out.println("Mutable graph links");
+            print(debug_on,"Mutable graph links");
 			/* We then add the links */
             Iterator<edu.berkeley.path.beats.jaxb.Link> BeATS_links_iterator = BeATS_links.values().iterator();
             HashMap<Integer, edu.berkeley.path.dtapc.generalNetwork.graph.Link> BeATS_link_to_Mutable_link =
@@ -173,10 +174,10 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 to = BeATS_node_to_Mutable_node.get((int) tmp_link.getEnd().getNodeId());
                 assert to != null;
                 mutable_graph.addLink(from, to);
-                System.out.print(mutable_graph.getLastAddedLink().getUnique_id() + " from node: ");
-                System.out.print(mutable_graph.getLastAddedLink().from.getUnique_id() + " to: ");
-                System.out.print(mutable_graph.getLastAddedLink().to.getUnique_id());
-                System.out.println();
+                print(debug_on,mutable_graph.getLastAddedLink().getUnique_id() + " from node: ");
+                print(debug_on,mutable_graph.getLastAddedLink().from.getUnique_id() + " to: ");
+                print(debug_on,mutable_graph.getLastAddedLink().to.getUnique_id());
+                print(debug_on,"");
 
                 BeATS_link_to_Mutable_link.put((int) tmp_link.getId(),
                         mutable_graph.getLastAddedLink());
@@ -186,7 +187,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 edu.berkeley.path.dtapc.generalNetwork.graph.Link tmp = mutable_graph.getLastAddedLink();
                 tmp.l = tmp_link.getLength();
             }
-            System.out.println();
+            print(debug_on,"");
 
             assert mutable_graph.check() : "We should have nodes[i].id = i and links[i].id = i";
 
@@ -197,7 +198,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
 			 * - Add origins and destinations
 			 */
 
-            System.out.println("Origins and destinations");
+            print(debug_on,"Origins and destinations");
             // Add origins and destinations
             for (int i = 0; i < mutable_graph.sizeNode(); i++) {
                 edu.berkeley.path.dtapc.generalNetwork.graph.Node tmp = mutable_graph.getNode(i);
@@ -220,16 +221,16 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 }
                 if (tmp.incoming_links.isEmpty()) {
                     mutable_graph.addSingleBufferSource(tmp);
-                    System.out.println("Origin: " + tmp.getUnique_id());
+                    print(debug_on,"Origin: " + tmp.getUnique_id());
                 }
                 if (tmp.outgoing_links.isEmpty()) {
                     mutable_graph.addSingleBufferDestination(tmp);
-                    System.out.println("Destination: " + tmp.getUnique_id());
+                    print(debug_on,"Destination: " + tmp.getUnique_id());
                 }
             }
 
-            System.out.println();
-            System.out.println("Initial densities");
+            print(debug_on,"");
+            print(debug_on,"Initial densities");
             // We get the initial densities and put them into the Mutable links
             Iterator<Density> BeATS_densities_iterator = idsBeATS.getDensity().iterator();
 
@@ -241,13 +242,13 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 assert l != null;
                 l.initial_density =
                         Double.parseDouble(tmp_density.getContent());
-                System.out.println(l.getUnique_id() + ": " + l.initial_density);
+                print(debug_on,l.getUnique_id() + ": " + l.initial_density);
             }
 
             BeATS_links_iterator = BeATS_links.values().iterator();
 
-            System.out.println();
-            System.out.println("Mutable graph FD params");
+            print(debug_on,"");
+            print(debug_on,"Mutable graph FD params");
 			/* We update the fundamental triangular diagram in the links */
 			/* The rest of the code currently only handles a single FD values across time */
             while (BeATS_links_iterator.hasNext()) {
@@ -264,20 +265,20 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 Mutable_link.w = tmp_fd.getCongestionSpeed();
                 //Mutable_link.dt = fundamentalDiagramProfiles.get((int) tmp.getId()).getDt();
                 Mutable_link.jam_density = Mutable_link.F_max/Mutable_link.v + Mutable_link.F_max/Mutable_link.w;
-                System.out.print("link: " + Mutable_link.getUnique_id());
-                System.out.print(" F_max: " + Mutable_link.F_max);
-                System.out.print(" v: " + Mutable_link.v);
-                System.out.print(" w: " + Mutable_link.w);
-                System.out.print(" dt: " + Mutable_link.dt);
-                System.out.print(" jam_density: " + Mutable_link.jam_density);
-                System.out.println();
+                print(debug_on,"link: " + Mutable_link.getUnique_id());
+                print(debug_on," F_max: " + Mutable_link.F_max);
+                print(debug_on," v: " + Mutable_link.v);
+                print(debug_on," w: " + Mutable_link.w);
+                print(debug_on," dt: " + Mutable_link.dt);
+                print(debug_on," jam_density: " + Mutable_link.jam_density);
+                print(debug_on,"");
 
             }
 
-            System.out.println();
-            System.out.println(mutable_graph.toString());
+            print(debug_on,"");
+            print(debug_on,mutable_graph.toString());
 
-            System.out.println("Mutable graph paths ");
+            print(debug_on,"Mutable graph paths ");
             // Add paths
             RouteSet BeATS_routeSet = rsBeATS;
             Iterator<Route> BeATS_routes_iterator = BeATS_routeSet.getRoute().iterator();
@@ -291,11 +292,11 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 Path newpath = new Path((int) tmpRoute.getId(), routeList);
                 mutable_graph.addPath(newpath);
                 Iterator<Integer> pathList_iterator = mutable_graph.getPaths().get((int) tmpRoute.getId()).iterator();
-                System.out.print(tmpRoute.getId() + ": ");
+                print(debug_on,tmpRoute.getId() + ": ");
                 while (pathList_iterator.hasNext()) {
-                    System.out.print(pathList_iterator.next().intValue() + " ");
+                    print(debug_on,pathList_iterator.next().intValue() + " ");
                 }
-                System.out.println();
+                print(debug_on,"");
             }
 
             Graph graph = new Graph(mutable_graph);
@@ -308,8 +309,8 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                     time_steps);
 
             // Add internal split ratios
-            System.out.println();
-            System.out.println("Discretized graph split ratios");
+            print(debug_on,"");
+            print(debug_on,"Discretized graph split ratios");
             // We get the non-compliant split ratios
             //		    assert scenario.getSplitRatioSet().getSplitRatioProfile().size() == ? :
             //		    	"Number of split ratio profiles should be equal to total commodities, which is
@@ -317,7 +318,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
             double split_ratios_dt = splitRatiosBeATS
                     .getSplitRatioProfile()
                     .get(0).getDt();
-            System.out.println("dt =" + split_ratios_dt);
+            print(debug_on,"dt =" + split_ratios_dt);
 
             LinkedList<HashMapPairCellsDouble> SR_list =
                     new LinkedList<HashMapPairCellsDouble>();
@@ -334,7 +335,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
             while (non_compliant_SR_iterator.hasNext()) {
                 tmp_SR = non_compliant_SR_iterator.next();
                 if (tmp_SR.getVehicleTypeId() == 0) {
-                    System.out.println("Non-compliant split ratios:");
+                    print(debug_on,"Non-compliant split ratios:");
                     HashMapPairCellsDouble non_compliant_split_ratios;
                     List<String> history =
                             new ArrayList<String>(Arrays.asList(tmp_SR.getContent().split(",")));
@@ -357,20 +358,20 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                         non_compliant_split_ratios.put(
                                 new PairCells((int) BeATS_link_to_Mutable_link.get( (int)tmp_SR.getLinkIn()).getUnique_id(), BeATS_link_to_Mutable_link.get( (int) tmp_SR.getLinkOut()).getUnique_id()),
                                 history_table[k]);
-                        System.out.print("beta: " + NC_split_ratios[k].beta + " ");
-                        System.out.print("c: " + NC_split_ratios[k].c + " ");
-                        System.out.print("in_id: " + NC_split_ratios[k].in_id + " ");
-                        System.out.print("out_id: " + NC_split_ratios[k].out_id + " ");
-                        System.out.print("k: " + NC_split_ratios[k].k + " ");
-                        System.out.println();
+                        print(debug_on,"beta: " + NC_split_ratios[k].beta + " ");
+                        print(debug_on,"c: " + NC_split_ratios[k].c + " ");
+                        print(debug_on,"in_id: " + NC_split_ratios[k].in_id + " ");
+                        print(debug_on,"out_id: " + NC_split_ratios[k].out_id + " ");
+                        print(debug_on,"k: " + NC_split_ratios[k].k + " ");
+                        print(debug_on,"");
                     }
-                    System.out.println();
+                    print(debug_on,"");
                     Json_SR[0] = new JsonSplitRatios((int) BeATS_node_to_Mutable_node.get((int) splitRatiosBeATS
                             .getSplitRatioProfile().get(0).getNodeId()).getUnique_id(), NC_split_ratios);
-                    System.out.println("Non-compliant split ratio node id:" + Json_SR[0].node_id);
+                    print(debug_on,"Non-compliant split ratio node id:" + Json_SR[0].node_id);
                 }
             }
-            System.out.println();
+            print(debug_on,"");
             HashMapPairCellsDouble[] SR_array =
                     new HashMapPairCellsDouble[SR_list.size()];
             SR_list.toArray(SR_array);
@@ -408,7 +409,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 profile_dt = tmp_demandProfile.getDt();
                 int origin_id = (int) tmp_demandProfile.getLinkIdOrg();
 
-                System.out.println("Demand for origin " + origin_id + " dt = " + dtBeATS);
+                print(debug_on,"Demand for origin " + origin_id + " dt = " + dtBeATS);
 
                 while (demand_iterator.hasNext()) {
                     tmp_demand = demand_iterator.next();
@@ -428,33 +429,33 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
             json_demands[0] = new JsonDemand((int) mutable_graph.getLink((int) BeATS_link_to_Mutable_link.get((int) demandSetBeATS.getDemandProfile().
                     get(0).getLinkIdOrg()).from.getUnique_id()).getUnique_id(), totalDemand);
             simulator.origin_demands = new DemandsFactory(simulator.time_discretization, profile_dt, json_demands, discretized_graph.node_to_origin).buildDemands();
-            System.out.println(simulator.origin_demands.toString());
-            System.out.println();
+            print(debug_on,simulator.origin_demands.toString());
+            print(debug_on,"");
             simulator.initializSplitRatios();
 
-            System.out.println();
-            System.out.println(simulator.splits.toString());
+            print(debug_on,"");
+            print(debug_on,simulator.splits.toString());
 
 			/* Checking the requirements on the network */
-            System.out.print("Checking that the network respect needed requirements...");
+            print(debug_on,"Checking that the network respect needed requirements...");
             lwr_network.checkConstraints(delta_t);
 
 
             lwr_network.print();
 
 
-            System.out.println("Done");
+            print(debug_on,"Done");
 
 
             if (verbose) {
-                System.out.print("No control cost: "
+                print(debug_on,"No control cost: "
                         + simulator.objective() + "\n");
             }
 
 
             SOPC_Optimizer optimizer = null;
 
-            switch(AdjointReroutesPolicyMaker.optimizer_types.valueOf(properties.getProperty("OPTIMIZER_TYPE"))){
+            switch(AdjointReroutesPolicyMaker.optimizer_types.valueOf(properties.getProperty("REROUTES_ADJOINT.OPTIMIZER_TYPE"))){
                 case FINITE_DIFFERENCE:
                     optimizer = new SO_OptimizerByFiniteDifferences(simulator);
                     break;
@@ -466,17 +467,17 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                     break;
             }
 
-            int maxIter = Integer.parseInt(properties.getProperty("MAX_ITERATIONS"));
-            GradientDescent descentMethod = new GradientDescent(maxIter,properties.getProperty("DESCENT_METHOD"));
+            int maxIter = Integer.parseInt(properties.getProperty("REROUTES_ADJOINT.MAX_ITERATIONS"));
+            GradientDescent descentMethod = new GradientDescent(maxIter,properties.getProperty("REROUTES_ADJOINT.DESCENT_METHOD"));
 
 
-            descentMethod.setGradient_condition(Double.parseDouble(properties.getProperty("STOPPING_CRITERIA")));
+            descentMethod.setGradient_condition(Double.parseDouble(properties.getProperty("REROUTES_ADJOINT.STOPPING_CRITERIA")));
             result = descentMethod.solve(optimizer);
-            System.out.println("Final control");
+            print(debug_on,"Final control");
             for (int i = 0; i < result.length; i++)
-                System.out.println(result[i]);
+                print(debug_on,result[i]);
 
-            System.out.println("Test done!");
+            print(debug_on,"Test done!");
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -485,4 +486,10 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
         return result;
     }
 
+
+
+    private static void print(boolean debug,Object x){
+        if(debug)
+            print(debug,x.toString());
+    }
 }
