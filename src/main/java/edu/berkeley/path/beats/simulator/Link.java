@@ -425,8 +425,9 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         return getTotalDensityInVeh(e)/_length;
     }
 
-    public boolean set_density_in_veh(double [] d){
-        return link_behavior.set_density_in_veh(d);
+    // dimension of d is # vehicle types
+    public boolean set_density_in_veh(int e,double [] d){
+        return link_behavior.set_density_in_veh(e,d);
     }
 
     public double[] get_out_demand_in_veh(int ensemble) {
