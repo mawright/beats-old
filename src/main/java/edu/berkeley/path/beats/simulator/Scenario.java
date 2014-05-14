@@ -91,6 +91,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private boolean initialized = true;
 	private boolean scenario_locked=false;				// true when the simulation is running
 
+    // auxiliary properties, used by control algorithms
+    private HashMap<String,Properties> aux_props;
+
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
@@ -345,14 +348,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 "A",
                 "",
                 "normal",
-                "",Double.NaN);
+                "",
+                Double.NaN,
+                null);
 	}
 
     public void initialize(double timestep,double starttime,double endtime,int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver) throws BeatsException {
         initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble,uncertaintymodel,nodeflowsolver,nodesrsolver,
                 "",
                 "normal",
-                "",Double.NaN);
+                "",
+                Double.NaN,
+                null);
     }
 
     public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble) throws BeatsException {
@@ -362,12 +369,15 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 "A",
                 "",
                 "normal",
-                "",Double.NaN);
+                "",
+                Double.NaN,
+                null);
     }
 
     public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix,
                            int numReps, int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver,
-                           String performance_config, String run_mode,String split_logger_prefix,Double split_logger_dt) throws BeatsException {
+                           String performance_config, String run_mode,String split_logger_prefix,Double split_logger_dt ,
+                           HashMap<String,Properties> aux_props) throws BeatsException {
 
         // set stuff
         setUncertaintyModel(uncertaintymodel);
@@ -376,6 +386,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         setRunMode(run_mode);
         setSplitLoggerPrefix(split_logger_prefix);
         setSplitLoggerDt(split_logger_dt);
+        this.aux_props = aux_props;
 
         // create performance calculator
         if(!performance_config.isEmpty())
@@ -559,6 +570,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 	// protected simple getters and setters
 	/////////////////////////////////////////////////////////////////////
+
+    public Properties get_auxiliary_properties(String group_name){
+        return aux_props.get(group_name);
+    }
 
 	protected edu.berkeley.path.beats.simulator.ControllerSet getControllerset() {
 		return controllerset;

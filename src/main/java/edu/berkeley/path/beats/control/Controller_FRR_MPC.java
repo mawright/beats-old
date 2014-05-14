@@ -16,6 +16,7 @@ public class Controller_FRR_MPC extends Controller {
 
     // policy maker
     private ReroutePolicyMaker policy_maker;
+    private Properties policy_maker_properties;
     private ReroutePolicySet policy;
     private HashMap<Long,Actuator> node_actuator_map;
 
@@ -53,6 +54,7 @@ public class Controller_FRR_MPC extends Controller {
 		// generate the policy maker
 		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) getJaxbController().getParameters();
 		policy_maker = null;
+        policy_maker_properties = null;
 		if (null != params && params.has("policy")){
             PolicyMakerType myPMType;
 	    	try {
@@ -64,6 +66,7 @@ public class Controller_FRR_MPC extends Controller {
 			switch(myPMType){
 				case adjoint:
 					policy_maker = new AdjointReroutesPolicyMaker();
+                    policy_maker_properties = myScenario.get_auxiliary_properties("REROUTES_ADJOINT");
 					break;
 				case NULL:
 					break;
@@ -166,7 +169,6 @@ public class Controller_FRR_MPC extends Controller {
                                               myScenario.gather_current_densities(),
                                               myScenario.getRouteSet(),
                                               pm_dt,
-                                              pm_horizon,
                                               policy_maker_properties );
 
             // update time keeper

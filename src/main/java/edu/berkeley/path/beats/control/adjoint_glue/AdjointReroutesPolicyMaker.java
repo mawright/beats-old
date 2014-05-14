@@ -28,7 +28,6 @@ import java.util.*;
  */
 public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
 
-    static boolean verbose = true;
     static enum optimizer_types {FINITE_DIFFERENCE,ADJOINT};
 
     public ReroutePolicySet givePolicy(edu.berkeley.path.beats.jaxb.Network net,
@@ -38,7 +37,6 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                                        edu.berkeley.path.beats.jaxb.InitialDensitySet ics,
                                        edu.berkeley.path.beats.jaxb.RouteSet routes,
                                        Double dt,
-                                       Double optimizationHorizon ,
                                        Properties properties) {
 
         double[] policy = computePolicy(net,
@@ -48,7 +46,6 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 ics,
                 routes,
                 dt,
-                optimizationHorizon ,
                 properties);
 
         ReroutePolicySet reroutePolicySet = new ReroutePolicySet();
@@ -60,7 +57,6 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
         return reroutePolicySet;
     }
 
-
     public static double[] computePolicy(Network netBeATS,
                                          FundamentalDiagramSet fdBeATS,
                                          DemandSet demandSetBeATS,
@@ -68,10 +64,13 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                                          InitialDensitySet idsBeATS,
                                          RouteSet rsBeATS,
                                          Double dtBeATS ,
-                                         Double optimizationHorizon ,
                                          Properties properties ) {
 
-        boolean debug_on = properties.getProperty("REROUTES_ADJOINT.DEBUG").compareToIgnoreCase("ON")==0;
+	    /* This needs to NOT be hard coded */
+        int delta_t = dtBeATS.intValue();
+        int time_steps = 800;
+
+        boolean debug_on = properties.getProperty("DEBUG").compareToIgnoreCase("ON")==0;
 
         double[] result = null;
         try {
@@ -301,12 +300,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
 
             Graph graph = new Graph(mutable_graph);
 
-			/* This needs to NOT be hard coded */
-            int delta_t = dtBeATS.intValue();
-            int time_steps = 800;
-
-            DiscretizedGraph discretized_graph = new DiscretizedGraph(graph, delta_t,
-                    time_steps);
+            DiscretizedGraph discretized_graph = new DiscretizedGraph(graph, delta_t,time_steps);
 
             // Add internal split ratios
             print(debug_on,"");
@@ -440,22 +434,14 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
             print(debug_on,"Checking that the network respect needed requirements...");
             lwr_network.checkConstraints(delta_t);
 
-
-            lwr_network.print();
-
-
+            if(debug_on)
+                lwr_network.print();
             print(debug_on,"Done");
-
-
-            if (verbose) {
-                print(debug_on,"No control cost: "
-                        + simulator.objective() + "\n");
-            }
-
+            print(debug_on,"No control cost: " + simulator.objective() + "\n");
 
             SOPC_Optimizer optimizer = null;
 
-            switch(AdjointReroutesPolicyMaker.optimizer_types.valueOf(properties.getProperty("REROUTES_ADJOINT.OPTIMIZER_TYPE"))){
+            switch(AdjointReroutesPolicyMaker.optimizer_types.valueOf(properties.getProperty("OPTIMIZER_TYPE"))){
                 case FINITE_DIFFERENCE:
                     optimizer = new SO_OptimizerByFiniteDifferences(simulator);
                     break;
@@ -467,12 +453,13 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                     break;
             }
 
-            int maxIter = Integer.parseInt(properties.getProperty("REROUTES_ADJOINT.MAX_ITERATIONS"));
-            GradientDescent descentMethod = new GradientDescent(maxIter,properties.getProperty("REROUTES_ADJOINT.DESCENT_METHOD"));
-
-
-            descentMethod.setGradient_condition(Double.parseDouble(properties.getProperty("REROUTES_ADJOINT.STOPPING_CRITERIA")));
+            GradientDescent descentMethod = new GradientDescent(
+                    Integer.parseInt(properties.getProperty("MAX_ITERATIONS")) ,
+                    properties.getProperty("DESCENT_METHOD"));
+            descentMethod.setGradient_condition(
+                    Double.parseDouble(properties.getProperty("STOPPING_CRITERIA")) );
             result = descentMethod.solve(optimizer);
+
             print(debug_on,"Final control");
             for (int i = 0; i < result.length; i++)
                 print(debug_on,result[i]);
@@ -486,10 +473,8 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
         return result;
     }
 
-
-
     private static void print(boolean debug,Object x){
         if(debug)
-            print(debug,x.toString());
+            System.out.println(x.toString());
     }
 }
