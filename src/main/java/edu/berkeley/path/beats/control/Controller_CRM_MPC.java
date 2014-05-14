@@ -1,7 +1,7 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
-import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker;
+//import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
@@ -40,7 +40,7 @@ public class Controller_CRM_MPC extends Controller {
 
 
     // derived
-    private int pm_horizon_steps;     // pm_horizon/pm_dt
+//    private int pm_horizon_steps;     // pm_horizon/pm_dt
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -72,9 +72,9 @@ public class Controller_CRM_MPC extends Controller {
                 case tester:
                     policy_maker = new PolicyMaker_Tester();
                     break;
-				case adjoint:
-					policy_maker = new AdjointRampMeteringPolicyMaker();
-					break;
+//				case adjoint:
+//					policy_maker = new AdjointRampMeteringPolicyMaker();
+//					break;
 //				case actm_lp:
 //                    policy_maker = new PolicyMaker_CRM_ACTM_LP();
 //					break;
@@ -113,7 +113,7 @@ public class Controller_CRM_MPC extends Controller {
             pm_horizon = Double.NaN;
         }
 
-        pm_horizon_steps = BeatsMath.round(pm_horizon/pm_dt);
+//        pm_horizon_steps = BeatsMath.round(pm_horizon/pm_dt);
 
         // assign network (it will already be assigned if controller is scenario-less)
         if(network==null && myScenario!=null)
@@ -190,8 +190,8 @@ public class Controller_CRM_MPC extends Controller {
 			// call policy maker (everything in SI units)
             policy = policy_maker.givePolicy( network,
                                               myScenario.gather_current_fds(time_current),
-                                              myScenario.predict_demands(time_current,pm_dt,pm_horizon_steps),
-                                              myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon_steps),
+                                              myScenario.predict_demands(time_current,pm_dt,pm_horizon),
+                                              myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon),
                                               myScenario.gather_current_densities(),
                                               controller_parameters,
                                               pm_dt,
