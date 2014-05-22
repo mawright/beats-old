@@ -77,7 +77,7 @@ public class Controller_SIG_Pretimed extends Controller {
         for(Table.Row row : getTables().get("Cycle Length").getRows()){
             int plan_id = Integer.parseInt(row.get_value_for_column_name("Plan ID"));
             double cycle = Double.parseDouble(row.get_value_for_column_name("Cycle Length"));
-            PretimedPlan pp = new PretimedPlan(plan_id,cycle);
+            PretimedPlan pp = new PretimedPlan(plan_id,cycle,this);
             plan_map.put(plan_id,pp);
         }
 
@@ -88,7 +88,7 @@ public class Controller_SIG_Pretimed extends Controller {
             int signal_id = Integer.parseInt(row.get_value_for_column_name("Signal"));
             ActuatorSignal signal = (ActuatorSignal) myScenario.getActuatorWithId(signal_id);
             double offset = Double.parseDouble(row.get_value_for_column_name("Offset"));
-            pp.add_signal_with_offset(signal_id,signal,offset);
+            pp.add_signal_with_offset(signal_id, signal, offset);
         }
 
         // read phases/green times
@@ -101,7 +101,7 @@ public class Controller_SIG_Pretimed extends Controller {
             String str_movB = row.get_value_for_column_name("Movement B");
             int movB = str_movB!=null ? Integer.parseInt(str_movB) : -1;
             double green_time = Integer.parseInt(row.get_value_for_column_name("Green Time"));
-            pp.add_signal_stage(signal_id,movA,movB,green_time);
+            pp.add_signal_stage(signal_id, movA, movB, green_time);
         }
 
         // process stage information, generate command lists
@@ -210,7 +210,10 @@ public class Controller_SIG_Pretimed extends Controller {
         protected int id;
         protected double cycle;
         protected HashMap<Integer,IntersectionPlan> intersection_plans;
-        public PretimedPlan(int id,double cycle){
+        protected Controller_SIG_Pretimed my_controller;
+
+        public PretimedPlan(int id,double cycle,Controller_SIG_Pretimed my_controller){
+            this.my_controller = my_controller;
             this.cycle = cycle;
             this.id = id;
             this.intersection_plans = new HashMap<Integer,IntersectionPlan>();
@@ -333,8 +336,11 @@ public class Controller_SIG_Pretimed extends Controller {
             double total_length = 0d;
             for(Stage stage : stages)
                 total_length += stage.get_length();
-            if(!BeatsMath.equals(total_length,my_plan.cycle))
-                BeatsErrorLog.addError("Total length of stages must equal cycle.");
+            if(!BeatsMath.equals(total_length,my_plan.cycle)){
+                BeatsErrorLog.addError(
+                    String.format("For signal %d in plan %d of controller %d, the sum of stages (%.1f) does not equal the cycle time (%.1f).",
+                            my_signal.getId(),my_plan.id,my_plan.my_controller.getId(),total_length,my_plan.cycle));
+            }
         }
 
         public void add_stage(int movA,int movB,double green_time){

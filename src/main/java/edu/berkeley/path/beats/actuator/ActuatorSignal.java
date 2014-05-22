@@ -100,16 +100,15 @@ public final class ActuatorSignal extends Actuator {
         // make list of phases and map
 		phases = new ArrayList<SignalPhase>();
 		nema2phase = new HashMap<NEMA.ID,SignalPhase>();
-        HashMap<NEMA.ID,List<Link>> nema_to_linklist = (HashMap<NEMA.ID,List<Link>>) implementor.get_target();
+        //HashMap<NEMA.ID,List<Link>> nema_to_linklist = (HashMap<NEMA.ID,List<Link>>) implementor.get_target();
         for(Phase jphase : jaxbSignal.getPhase() ){
             NEMA.ID nema = NEMA.int_to_nema(jphase.getNema().intValue());
-            List<Link> link_list = nema_to_linklist.get( nema );
-            if(link_list!=null){
-                SignalPhase sp = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
-                sp.populateFromJaxb(myScenario,jphase);
-                phases.add(sp);
-                nema2phase.put(nema,sp);
-            }
+            //List<Link> link_list = nema_to_linklist.get( nema );
+
+            SignalPhase sp = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
+            sp.populateFromJaxb(myScenario,jphase);
+            phases.add(sp);
+            nema2phase.put(nema,sp);
         }
 
 //        // get reference to opposing phase
