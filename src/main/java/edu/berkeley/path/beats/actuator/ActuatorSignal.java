@@ -438,7 +438,7 @@ public final class ActuatorSignal extends Actuator {
 
         protected ActuatorSignal.BulbColor get_new_bulb_color(boolean hold_approved,boolean forceoff_approved){
 
-            ActuatorSignal.BulbColor next_color = null;
+            ActuatorSignal.BulbColor next_color = bulbcolor;
             double bulbt = bulbtimer.getT();
 
             if(!protectd)
@@ -448,9 +448,10 @@ public final class ActuatorSignal extends Actuator {
             // some state has zero holding time (eg yellowtime=0)
             boolean done=false;
 
+
             while(!done){
 
-                switch(bulbcolor){
+                switch(next_color){
 
                     // .............................................................................................
                     case GREEN:
