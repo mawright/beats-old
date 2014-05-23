@@ -943,6 +943,17 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         }
         return null;
     }
+
+    public List<Actuator> get_signal_actuators(){
+        List<Actuator> x = new ArrayList<Actuator>();
+        if(actuatorset==null)
+            return x;
+        for(Actuator actuator : actuatorset.getActuators()){
+            if(actuator.myType==Actuator.Type.signal)
+                x.add(actuator);
+        }
+        return x;
+    }
 		
 	/** Get a reference to a controller by its ID.
 	 * @param id Id of the controller.

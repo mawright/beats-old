@@ -42,6 +42,7 @@ public final class ActuatorSignal extends Actuator {
 	private HashMap<NEMA.ID,SignalPhase> nema2phase;
 	private Node myNode;
 	private ArrayList<SignalPhase> phases;
+    private PerformanceCalculator.SignalLogger signal_logger;
 
     /////////////////////////////////////////////////////////////////////
     // construction
@@ -219,8 +220,13 @@ public final class ActuatorSignal extends Actuator {
             ActuatorSignal.BulbColor new_bulb_color = phase.get_new_bulb_color(phase.hold_approved,phase.forceoff_approved);
 
             // set phase color if changed
-            if(new_bulb_color!=null){
+            if(new_bulb_color!=phase.bulbcolor){
+
                 phase.bulbcolor = new_bulb_color;
+
+                // log
+                if(signal_logger!=null)
+                    signal_logger.send_event(getId(),phase.myNEMA,phase.bulbcolor);
 
                 // deploy to dynamics
                 implementor.deploy_bulb_color(phase.myNEMA,phase.bulbcolor);
@@ -286,6 +292,25 @@ public final class ActuatorSignal extends Actuator {
         return myNode==null ? null : myNode.getId();
     }
 
+    public void register_event_logger(PerformanceCalculator.SignalLogger logger){
+        if(signal_logger==null)
+            signal_logger = logger;
+    }
+
+    public static int color_to_int(BulbColor x){
+        switch(x){
+            case GREEN:
+                return 1;
+            case YELLOW:
+                return 2;
+            case RED:
+                return 3;
+            case DARK:
+                return 4;
+            default:
+                return 0;
+        }
+    }
     /////////////////////////////////////////////////////////////////////
     // SignalPhase class
     /////////////////////////////////////////////////////////////////////
