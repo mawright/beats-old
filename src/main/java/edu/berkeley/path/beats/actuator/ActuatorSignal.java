@@ -221,6 +221,13 @@ public final class ActuatorSignal extends Actuator {
 
                 phase.bulbcolor = new_bulb_color;
 
+                if(DebugFlags.signal_events)
+                    System.out.println(
+                            myNode.getMyNetwork().getMyScenario().getCurrentTimeInSeconds() + "\t" +
+                            "signal=" + getId() + "\t" +
+                            "phase=" + phase.myNEMA + "\t" +
+                            "color=" + phase.bulbcolor );
+
                 // log
                 if(signal_logger!=null)
                     signal_logger.send_event(getId(),phase.myNEMA,phase.bulbcolor);
