@@ -661,6 +661,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	// getters ........................................................
 
+    public String getOutputPrefix(){ return runParam.outprefix; }
+
 	public UncertaintyType getUncertaintyModel() {
 		return uncertaintyModel;
 	}

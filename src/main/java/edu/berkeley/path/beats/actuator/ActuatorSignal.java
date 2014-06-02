@@ -62,9 +62,6 @@ public final class ActuatorSignal extends Actuator {
 
     public void set_command(ArrayList<SignalCommand> command){
 
-        if(!command.isEmpty())
-            System.out.println(command);
-
         for(SignalCommand c : command){
             SignalPhase p = nema2phase.get(c.nema);
             if(p==null)
