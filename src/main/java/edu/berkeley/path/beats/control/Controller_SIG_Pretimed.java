@@ -125,6 +125,24 @@ public class Controller_SIG_Pretimed extends Controller {
         done = plan_schedule.size()==1;
 	}
 
+    @Override
+    protected void initialize_actuators(){
+
+        PretimedPlan current_plan = plan_schedule.get(cplan_index).plan;
+
+        // mimic a 1 cycle run
+        double init_time = myScenario.getCurrentTimeInSeconds();
+        for(double sim_time=init_time;sim_time<init_time+current_plan.cycle;sim_time+=myScenario.getSimdtinseconds()){
+
+            // controller "update"
+            current_plan.send_commands_to_signal(sim_time, false);
+
+            // actuator "deploy"
+            for (IntersectionPlan int_plan : current_plan.intersection_plans.values())
+                int_plan.my_signal.deploy(sim_time,this);
+        }
+    }
+
 	@Override
 	protected void validate() {
 
@@ -322,18 +340,7 @@ public class Controller_SIG_Pretimed extends Controller {
         }
 
         protected void reset(){
-
-            double rel_time = (getMyScenario().getCurrentTimeInSeconds()-offset) % my_plan.cycle;
-            rel_time +=  rel_time<0 ? my_plan.cycle : 0;
-
             command_ptr = new CircularIterator(command_sequence);
-
-            // put the ptr at the last command before rel_time
-            while(command_ptr.current().time<rel_time && command_ptr.next().time<rel_time){
-                command_ptr.advance();
-                if(command_ptr.at_end())
-                    break;
-            }
         }
 
         protected void validate() {

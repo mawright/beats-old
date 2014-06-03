@@ -260,6 +260,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// reset controllers
 		controllerset.reset();
 
+        // controllers may initialize their actuators
+        for(Controller controller : controllerset.get_Controllers())
+            if(controller.ison)
+                controller.initialize_actuators();
+
 		// reset events
 		eventset.reset();
 

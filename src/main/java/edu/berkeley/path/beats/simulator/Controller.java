@@ -161,7 +161,10 @@ public class Controller {
 	protected void populate(Object jaxbobject) {
 	}
 
-	/** Update the state of the component.
+    protected void initialize_actuators(){
+    }
+
+    /** Update the state of the component.
 	 * 
 	 * <p> Called by {@link Scenario#run} at each simulation time step.
 	 * This function updates the internal state of the component.

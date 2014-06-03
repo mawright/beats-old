@@ -282,11 +282,24 @@ public final class ActuatorSignal extends Actuator {
 	// public methods
 	/////////////////////////////////////////////////////////////////////
 
+    // hack for call to deploy by Controller.initialize_actuators
+    public void deploy(double current_time_in_seconds,Controller caller){
+        if(caller==myController)
+            deploy(current_time_in_seconds);
+    }
+
 	public SignalPhase get_phase_with_nema(NEMA.ID nema){
 		if(nema==null)
 			return null;
 		return nema2phase.get(nema);
 	}
+
+    public void set_phase_state(NEMA.ID nema,BulbColor bulb_color){
+        SignalPhase phase = nema2phase.get(nema);
+        if(phase==null)
+            return;
+        phase.set_bulb_color(bulb_color);
+    }
 
     public Long get_node_id(){
         return myNode==null ? null : myNode.getId();
@@ -442,6 +455,10 @@ public final class ActuatorSignal extends Actuator {
         // protected
         /////////////////////////////////////////////////////////////////////
 
+        protected void set_bulb_color(BulbColor b){
+            this.bulbcolor = b;
+        }
+
 //        protected void updatePermitOpposingHold(){
 //            switch(bulbcolor){
 //                case GREEN:
@@ -564,6 +581,10 @@ public final class ActuatorSignal extends Actuator {
 
         public boolean is_red(){
             return bulbcolor==BulbColor.RED;
+        }
+
+        public BulbColor get_bulb_color(){
+            return bulbcolor;
         }
 
         public double getYellowtime() {
