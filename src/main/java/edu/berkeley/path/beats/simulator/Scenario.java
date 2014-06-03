@@ -403,6 +403,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// create the clock
 		clock = new Clock(runParam.t_start_output,runParam.t_end_output,runParam.dt_sim);
 
+        // reset the simulation
+        reset();
+
 		// it's initialized
         initialized = true;
 
@@ -489,8 +492,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			}
 
             try{
-				// reset the simulation
-				reset();
 
 				// advance to end of simulation
 				while( advanceNSteps_internal(1,runParam.writefiles,outputwriter) ){}
