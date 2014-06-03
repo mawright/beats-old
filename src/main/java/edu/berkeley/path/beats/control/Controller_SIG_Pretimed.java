@@ -49,7 +49,7 @@ public class Controller_SIG_Pretimed extends Controller {
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
-	/////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////tr////////////////////
 
 	public Controller_SIG_Pretimed(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c) {
 		super(myScenario,c,Algorithm.SIG_Pretimed);
@@ -322,7 +322,18 @@ public class Controller_SIG_Pretimed extends Controller {
         }
 
         protected void reset(){
+
+            double rel_time = (getMyScenario().getCurrentTimeInSeconds()-offset) % my_plan.cycle;
+            rel_time +=  rel_time<0 ? my_plan.cycle : 0;
+
             command_ptr = new CircularIterator(command_sequence);
+
+            // put the ptr at the last command before rel_time
+            while(command_ptr.current().time<rel_time && command_ptr.next().time<rel_time){
+                command_ptr.advance();
+                if(command_ptr.at_end())
+                    break;
+            }
         }
 
         protected void validate() {
@@ -515,6 +526,9 @@ public class Controller_SIG_Pretimed extends Controller {
         }
         public T prev(){
             return coll.get((cur-1)%coll.size());
+        }
+        public boolean at_end(){
+            return cur==coll.size()-1;
         }
     }
 }

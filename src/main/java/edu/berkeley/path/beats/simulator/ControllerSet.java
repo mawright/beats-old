@@ -74,7 +74,7 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 					if(C!=null){
 						controllers.add(tempindex,C);									
 						for (Controller.ActivationTimes acttimes : C.getActivationTimes()){
-							if (acttimes!=null){								
+							if (acttimes!=null){
 								activations.add(new ActivationCommand(tempindex,acttimes.getBegintime(),OperationType.Activate));
 								activations.add(new ActivationCommand(tempindex,acttimes.getEndtime(),OperationType.Deactivate));
 							}
@@ -115,25 +115,25 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 			if (activecmd!=null){
 				if (activecmd.getOperation().equals(OperationType.Activate)){
 					validated = controllers.get(activecmd.getIndex()).register();
-					activeControllerIndex.add((Integer) activecmd.getIndex());				
+					activeControllerIndex.add((Integer) activecmd.getIndex());
 				}
 				else{
 					validated = controllers.get(activecmd.getIndex()).deregister();
 					controllers.get(activecmd.getIndex()).setIson(false);
-					activeControllerIndex.remove(activeControllerIndex.indexOf((Integer) activecmd.getIndex()));					
+					activeControllerIndex.remove(activeControllerIndex.indexOf((Integer) activecmd.getIndex()));
 				}
 				if (!validated){
 					BeatsErrorLog.addError("Multiple controllers accessing the same link at the same time. Controller registration failure, controller " + controllers.get(activecmd.getIndex()).getId());
 					return false;
 				}
-			}	
+			}
 		}
 		
 		// However, you need to deregister the last set of registered controllers
 		for(Integer controllerindex : activeControllerIndex)
 			if(controllerindex!=null)
 				controllers.get(controllerindex).deregister();
-		
+
 		activeControllerIndex.clear();
 		
 		return true;
@@ -148,39 +148,43 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 		for(Integer controllerindex : activeControllerIndex)
 			if(controllerindex!=null)
 				controllers.get(controllerindex).deregister();
-		
+
 		// Set activation index to zero, and process all events upto the starttime.
 		activationindex = 0;
-		processActivations(myScenario.getClock().getStartTime());  	
+		processActivations(myScenario.getClock().getStartTime());
 		
 	}
 
 	// Process all events upto time t, starting from the activationindex
 	protected void processActivations(double t){
-		
+
 		while (activationindex<activations.size() && activations.get(activationindex).getTime()<=t){
 			ActivationCommand activecmd=activations.get(activationindex);
-			
+
 			if (activecmd!=null){
 				if (activecmd.getOperation().equals(OperationType.Activate)){
 					controllers.get(activecmd.getIndex()).register();
 					controllers.get(activecmd.getIndex()).setIson(true);
 					controllers.get(activecmd.getIndex()).reset();
-					activeControllerIndex.add((Integer) activecmd.getIndex()); 
+					activeControllerIndex.add((Integer) activecmd.getIndex());
 				}
 				else{
 					controllers.get(activecmd.getIndex()).deregister();
-					controllers.get(activecmd.getIndex()).setIson(false);					
-					activeControllerIndex.remove(activeControllerIndex.indexOf((Integer) activecmd.getIndex())); 
+					controllers.get(activecmd.getIndex()).setIson(false);
+					activeControllerIndex.remove(activeControllerIndex.indexOf((Integer) activecmd.getIndex()));
 				}
 			}
 			activationindex++;
 		}
-	
+
 	}
 	
 	protected void update() throws BeatsException {
-		processActivations(myScenario.getClock().getT());			
+
+        // turn active controllers on
+		processActivations(myScenario.getClock().getT());
+
+        // update
     	for(Controller controller : controllers){
     		if(controller.isIson() && myScenario.getClock().is_time_to_sample_abs(controller.getSamplesteps(),0))
     			controller.update();

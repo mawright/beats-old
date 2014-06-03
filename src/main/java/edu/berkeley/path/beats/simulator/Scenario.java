@@ -248,11 +248,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// reset actuators
 		actuatorset.reset();
 
-//		// signal list
-//		if(signalSet!=null)
-//			for (edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
-//				((ActuatorSignal) signal).reset();
-
 		// reset demand profiles
 		if(demandSet!=null)
 			((DemandSet)demandSet).reset();
