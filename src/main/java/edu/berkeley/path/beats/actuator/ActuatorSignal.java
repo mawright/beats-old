@@ -471,7 +471,7 @@ public final class ActuatorSignal extends Actuator {
             double bulbt = bulbtimer.getT();
 
             if(!protectd)
-                return permissive ? null : ActuatorSignal.BulbColor.RED;
+                return permissive ? ActuatorSignal.BulbColor.DARK : ActuatorSignal.BulbColor.RED;
 
             // execute this state machine until "done". May be more than once if
             // some state has zero holding time (eg yellowtime=0)
