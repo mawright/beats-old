@@ -248,11 +248,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// reset actuators
 		actuatorset.reset();
 
-//		// signal list
-//		if(signalSet!=null)
-//			for (edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
-//				((ActuatorSignal) signal).reset();
-
 		// reset demand profiles
 		if(demandSet!=null)
 			((DemandSet)demandSet).reset();
@@ -264,6 +259,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// reset controllers
 		controllerset.reset();
+
+        // controllers may initialize their actuators
+        for(Controller controller : controllerset.get_Controllers())
+            if(controller.ison)
+                controller.initialize_actuators();
 
 		// reset events
 		eventset.reset();
@@ -408,6 +408,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// create the clock
 		clock = new Clock(runParam.t_start_output,runParam.t_end_output,runParam.dt_sim);
 
+        // reset the simulation
+        reset();
+
 		// it's initialized
         initialized = true;
 
@@ -494,8 +497,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			}
 
             try{
-				// reset the simulation
-				reset();
 
 				// advance to end of simulation
 				while( advanceNSteps_internal(1,runParam.writefiles,outputwriter) ){}
