@@ -5,7 +5,8 @@ import edu.berkeley.path.beats.simulator.Node_FlowSolver.SupplyDemand;
 public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 	
 	/* Fields */
-	
+	private double treshold = 33.4544 ;//TODO Remove hardcoded value
+    private double scalingFactor = 0.0004; //TODO Remove hardcoded value
 	
 	/* Constructor */
 	public Node_SplitRatioSolver_ForIncidents(Node myNode) {
