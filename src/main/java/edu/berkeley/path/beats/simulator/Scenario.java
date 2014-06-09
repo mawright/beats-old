@@ -1568,4 +1568,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return success;
     }
 
+    public boolean set_demand_profile(long link_id,double start_time,double dt,HashMap<Long,Double []> demands){
+        DemandSet ds = (DemandSet) demandSet;
+        DemandProfile dp = ds.get_demand_profile_for_link_id(link_id);
+
+        if(dp==null) {
+            System.err.println("Attempted to set demand profile on bad link id.");
+            return false;
+        }
+
+        XXXXX
+
+        return true;
+    }
+
 }
