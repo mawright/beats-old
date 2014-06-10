@@ -17,10 +17,12 @@ public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 		// Find diverging link
 		for (int n = 0 ; n < myNode.output_link.length ; n++)
 		{
+			// Check for link type Freeway (id == 1)
 			if (myNode.output_link[n].getLinkType().getId() == 1)
 			{
 				fwy_id = n;
 			}
+			// Check for link type Off-ramp (id == 4) or Interconnect (id == 5)
 			else if (myNode.output_link[n].getLinkType().getId() == 4 || myNode.output_link[n].getLinkType().getId() == 5)
 			{
 				off_ramp_id = n;
@@ -35,13 +37,30 @@ public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 		
 		Double3DMatrix splitratio_new = new Double3DMatrix(splitratio_selected.getData());
 		
-		int vehicle_index = myNode.myNetwork.getMyScenario().getVehicleTypeIndexForId(1); //TODO - Generalize this!
-		double mainline_density = myNode.output_link[fwy_id].getDensityInVeh(ensemble_index, vehicle_index);  //TODO - Generalize this!
+		// Get index for general vehicle type.
+		int vehicle_index = myNode.myNetwork.getMyScenario().getVehicleTypeIndexForId(1);
+		
+		// Get downstream mainline density and local split ratio for the off-ramp
+		double mainline_density = myNode.output_link[fwy_id].getDensityInVeh(ensemble_index, vehicle_index);
 		double sr_local_avg = splitratio_selected.get(0, off_ramp_id, vehicle_index);
+		
+		// Adjusts the split ratio and
 		for	(int v = 0 ; v < splitratio_selected.getnVTypes();v++)
 		{
 			// sr_predict = sr_local_avg + K * max(density - threshold, 0)
 			double diverging_ratio = sr_local_avg + scaling_factor * Math.max(mainline_density - treshold, 0);
+			
+			// Handles illegal split ratios by round them to a leagal one and sends a warning.
+			if (diverging_ratio < 0)
+			{
+				BeatsErrorLog.addWarning("Split ratio at node ID = " + myNode.getId() + " has been adjusted to an illegal ratio (" + diverging_ratio +") it has been ceiled to 0.");
+				diverging_ratio = 0;
+			}
+			else if (diverging_ratio > 1)
+			{
+				BeatsErrorLog.addWarning("Split ratio at node ID = " + myNode.getId() + " has been adjusted to an illegal ratio (" + diverging_ratio +") it has been floored to 1.");
+				diverging_ratio = 1;
+			}
 			
 			splitratio_new.set(0, off_ramp_id, v,  + diverging_ratio);
 			splitratio_new.set(0, fwy_id, v,1 - diverging_ratio);
