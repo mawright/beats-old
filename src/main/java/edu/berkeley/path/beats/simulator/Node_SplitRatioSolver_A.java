@@ -12,6 +12,11 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 	}
 
 	@Override
+	protected void validate() {
+		// TODO Auto-generated method stu
+	}
+	
+	@Override
 	protected void reset() {
     	int numEnsemble = myNode.getMyNetwork().getMyScenario().getNumEnsemble();	
 		dsratio 		= new double[numEnsemble][myNode.nOut];
@@ -185,6 +190,8 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
     	return splitratio_new;
 
 	}
+
+
 
 
 }
