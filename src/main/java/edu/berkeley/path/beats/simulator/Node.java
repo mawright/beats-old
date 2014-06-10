@@ -205,7 +205,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
 
             // compute applied split ratio matrix
-            Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected,demand_supply);
+            Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected,demand_supply,e);
 
             /////////////////////////////////////////////////
             // write first to logger

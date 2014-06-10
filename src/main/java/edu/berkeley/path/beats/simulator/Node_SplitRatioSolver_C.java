@@ -11,7 +11,7 @@ public class Node_SplitRatioSolver_C extends Node_SplitRatioSolver {
 
 	@Override
 	protected Double3DMatrix computeAppliedSplitRatio(
-			Double3DMatrix splitratio_selected, SupplyDemand demand_supply) {
+			Double3DMatrix splitratio_selected, SupplyDemand demand_supply,final int ensemble_index) {
 		// TODO Auto-generated method stub
 		return null;
 	}

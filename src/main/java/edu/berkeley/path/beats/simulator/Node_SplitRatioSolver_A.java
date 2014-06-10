@@ -18,7 +18,7 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 	}
 	
 	@Override
-	protected Double3DMatrix computeAppliedSplitRatio(final Double3DMatrix splitratio_selected,final Node_FlowSolver.SupplyDemand demand_supply) {
+	protected Double3DMatrix computeAppliedSplitRatio(final Double3DMatrix splitratio_selected,final Node_FlowSolver.SupplyDemand demand_supply,final int ensemble_index) {
 
     	int i,j,k;
     	int numunknown;	
