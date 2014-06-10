@@ -33,11 +33,22 @@ public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 	@Override
 	protected Double3DMatrix computeAppliedSplitRatio(Double3DMatrix splitratio_selected, SupplyDemand demand_supply,final int ensemble_index) {
 		
-		// sr_predict = sr_local_avg + K * max(density - thresh, 0)
+		Double3DMatrix splitratio_new = new Double3DMatrix(splitratio_selected.getData());
 		
+		int vehicle_index = myNode.myNetwork.getMyScenario().getVehicleTypeIndexForId(1); //TODO - Generalize this!
+		double mainline_density = myNode.output_link[fwy_id].getDensityInVeh(ensemble_index, vehicle_index);  //TODO - Generalize this!
+		double sr_local_avg = splitratio_selected.get(0, off_ramp_id, vehicle_index);
+		for	(int v = 0 ; v < splitratio_selected.getnVTypes();v++)
+		{
+			// sr_predict = sr_local_avg + K * max(density - threshold, 0)
+			double diverging_ratio = sr_local_avg + scaling_factor * Math.max(mainline_density - treshold, 0);
+			
+			splitratio_new.set(0, off_ramp_id, v,  + diverging_ratio);
+			splitratio_new.set(0, fwy_id, v,1 - diverging_ratio);
+		}
 		
-		// TODO Auto-generated method stub
-		return null;
+
+		return splitratio_new;
 	}
 
 	// Reset method
