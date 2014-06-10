@@ -162,6 +162,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 				if(link==null)
 					BeatsErrorLog.addError("Incorrect input link ID in node ID=" + getId());
 		
+		if(node_sr_solver!=null)
+			node_sr_solver.validate();
+				
+		
 	}
 	
 	protected void reset() {
