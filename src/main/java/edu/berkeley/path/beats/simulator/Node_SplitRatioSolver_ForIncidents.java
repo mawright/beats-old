@@ -31,7 +31,7 @@ public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 	/* Methods */
 	// Method for adjust the split ratio
 	@Override
-	protected Double3DMatrix computeAppliedSplitRatio(Double3DMatrix splitratio_selected, SupplyDemand demand_supply) {
+	protected Double3DMatrix computeAppliedSplitRatio(Double3DMatrix splitratio_selected, SupplyDemand demand_supply,final int ensemble_index) {
 		
 		// sr_predict = sr_local_avg + K * max(density - thresh, 0)
 		
