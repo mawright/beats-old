@@ -27,11 +27,7 @@
 package edu.berkeley.path.beats.simulator;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -1568,17 +1564,20 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return success;
     }
 
-    public boolean set_demand_profile(long link_id,double start_time,double dt,HashMap<Long,Double []> demands){
-        DemandSet ds = (DemandSet) demandSet;
-        DemandProfile dp = ds.get_demand_profile_for_link_id(link_id);
+    public DemandProfile get_current_demand_for_link(long link_id){
+        return ((DemandSet) demandSet).get_demand_profile_for_link_id(link_id);
+    }
 
-        if(dp==null) {
+    /* override the demand profile on a given link.
+       Demand profiles are provided in a hash map with vehicle type id as the key.
+       Units must be SI.
+     */
+    public boolean set_demand_for_link_si(long link_id, double dt, HashMap<Long, double[]> demands){
+        DemandSet ds = (DemandSet) demandSet;
+        if(!ds.override_profile_for_link(link_id,dt,demands)){
             System.err.println("Attempted to set demand profile on bad link id.");
             return false;
         }
-
-        XXXXX
-
         return true;
     }
 

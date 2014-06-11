@@ -1,15 +1,12 @@
 package edu.berkeley.path.beats.test.simulator;
 
-import edu.berkeley.path.beats.jaxb.Demand;
-import edu.berkeley.path.beats.jaxb.DemandProfile;
 import edu.berkeley.path.beats.simulator.Defaults;
-import edu.berkeley.path.beats.simulator.JaxbObjectFactory;
+import edu.berkeley.path.beats.simulator.DemandProfile;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertTrue;
@@ -41,19 +38,45 @@ public class SetProfileTest {
 
     @Test
     public void test_setDemandProfile() {
-        long link_id = 0;
-        double start_time = 100;
-        double dt = 300;
-        HashMap<Long,Double []> demands = new HashMap<Long,Double []>();
 
-        Double [] d = new Double[4];
-        d[0] = 100d;
-        d[1] = 200d;
-        d[2] = 300d;
-        d[3] = 400d;
-        demands.put(0L,d);
+        long link_id = 1;
+        long vt_id = 0;
+        double sim_dt = scenario.getSimdtinseconds();
 
-        scenario.set_demand_profile(link_id,start_time,dt,demands);
+        try {
+
+            // get existing profile
+            DemandProfile dp = scenario.get_current_demand_for_link(link_id);
+
+            // get current value
+            double current_demand = dp.getCurrentValue(0)[0]/sim_dt;
+            double [] override = {current_demand*2};
+
+            System.out.println("Current: " + 3600*current_demand + " vph");
+            System.out.println("Override: " + 3600*override[0] + " vph");
+
+            HashMap<Long,double []> X = new HashMap<Long,double []>();
+            X.put(vt_id,override);
+
+            scenario.set_demand_for_link_si(link_id, dp.getDt().doubleValue(), X);
+
+            scenario.advanceNSeconds(sim_dt);
+
+            dp = scenario.get_current_demand_for_link(link_id);
+            current_demand = dp.getCurrentValue(0)[0]/sim_dt;
+
+
+            System.out.println("New current: " + 3600*current_demand + " vph");
+
+            scenario.advanceNSeconds(50*sim_dt);
+            current_demand = dp.getCurrentValue(0)[0]/sim_dt;
+            System.out.println("After 50 dts: " + 3600*current_demand + " vph");
+
+        } catch ( Exception exp){
+
+        }
+
+//        scenario.set_demand_for_link_si(link_id,start_time,dt,demands);
     }
 
     @Test
