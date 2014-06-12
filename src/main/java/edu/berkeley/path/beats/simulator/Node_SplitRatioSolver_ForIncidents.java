@@ -41,7 +41,7 @@ public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 		int vehicle_index = myNode.myNetwork.getMyScenario().getVehicleTypeIndexForId(1);
 		
 		// Get downstream mainline density and local split ratio for the off-ramp
-		double mainline_density = myNode.output_link[fwy_id].getDensityInVeh(ensemble_index, vehicle_index);
+		double mainline_density = myNode.output_link[fwy_id].getDensityInVeh(ensemble_index, vehicle_index); // TODO - Dela upp!
 		double sr_local_avg = splitratio_selected.get(0, off_ramp_id, vehicle_index);
 		
 		// Adjusts the split ratio and
@@ -50,7 +50,7 @@ public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 			// sr_predict = sr_local_avg + K * max(density - threshold, 0)
 			double diverging_ratio = sr_local_avg + scaling_factor * Math.max(mainline_density - treshold, 0);
 			
-			// Handles illegal split ratios by round them to a leagal one and sends a warning.
+			// Handles illegal split ratios by round them to a legal one and sends a warning.
 			if (diverging_ratio < 0)
 			{
 				BeatsErrorLog.addWarning("Split ratio at node ID = " + myNode.getId() + " has been adjusted to an illegal ratio (" + diverging_ratio +") it has been ceiled to 0.");
@@ -73,7 +73,7 @@ public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 	// Reset method
 	@Override
 	protected void reset() {
-		// TODO Auto-generated method stub
+		// Nothing to reset.
 
 	}
 	
@@ -83,23 +83,23 @@ public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 		// Validation of incoming links
 		if(myNode.input_link.length != 1)
 		{
-			BeatsErrorLog.addError("Incorrect number of incomming links at node ID=" + myNode.getId() + " , total number of incomming links are " + myNode.input_link.length + " it must be 1.");
+			BeatsErrorLog.addError("Incorrect number of incomming links at node ID = " + myNode.getId() + " , total number of incomming links are " + myNode.input_link.length + " it must be 1.");
 		}
 		
 		// Validation of outgoing links
 		if(myNode.output_link.length != 2)
 		{
-			BeatsErrorLog.addError("Incorrect number of incomming links at node ID=" + myNode.getId() + " , total number of incomming links are " + myNode.output_link.length + " it must be 2.");
+			BeatsErrorLog.addError("Incorrect number of outgoing links at node ID = " + myNode.getId() + " , total number of outgoing links are " + myNode.output_link.length + " it must be 2.");
 		}
 		
 		if(fwy_id == -1)
 		{
-			BeatsErrorLog.addError("Missing downstream link of type Freeway at node ID=" + myNode.getId() + " ,  it must be exactly one link downstream of type Freeway.");
+			BeatsErrorLog.addError("Missing downstream link of type Freeway at node ID = " + myNode.getId() + " ,  it must be exactly one link downstream of type Freeway.");
 		}
 		
-		if( off_ramp_id == -1)
+		if(off_ramp_id == -1)
 		{
-			BeatsErrorLog.addError("Missing diverging link of type Off-ramp/Interconnect at node ID=" + myNode.getId() + " ,  it must be exactly one diverging link of type Off-ramp or Interconnect.");
+			BeatsErrorLog.addError("Missing diverging link of type Off-ramp/Interconnect at node ID = " + myNode.getId() + " ,  it must be exactly one diverging link of type Off-ramp or Interconnect.");
 		}
 	}
 
