@@ -133,7 +133,7 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	}
 	
 	// Test: validation number of output links (high)
-	@Ignore
+	@Test
 	public void test_outputLinkConditionHigh() throws Exception {
 			
 		String test_configuration = "Test: validation number of output links (high).";
@@ -147,7 +147,8 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		// Evaluating test
 		validateCondition = split_ratio_solver.getClass().getDeclaredMethod("validate", null);
 		validateCondition.setAccessible(true);
-			
+		validateCondition.invoke(split_ratio_solver);
+		
 		assertTrue(test_configuration, description.get(log.get(0)).equals("Incorrect number of outgoing links at node ID = 0 , total number of outgoing links are 3 it must be 2."));
 
 	}
@@ -297,6 +298,19 @@ public class NodeSplitRatioSolverForIncidentsTest {
         	// Adding output links
         	output = new Link[1];
         	output[0] = linkBuilder(0,"Freeway");
+        		
+        }
+        else if (configuration.equals("Test: validation number of output links (high)."))
+        {
+        	// Adding input links
+        	input = new Link[1];
+        	input[0] = linkBuilder(0,"Freeway");
+        	
+        	// Adding output links
+        	output = new Link[3];
+        	output[0] = linkBuilder(0,"Freeway");
+        	output[1] = linkBuilder(1,"Freeway");
+        	output[2] = linkBuilder(2,"Freeway");
         		
         }
         else 
