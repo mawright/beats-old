@@ -97,15 +97,7 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		String test_configuration = "Test: validation number of input links.";
 		
 		// Build test environment
-		Node node = buildEnvironment(test_configuration);
-		
-		// Creating Node_SplitRatioSolver 
-		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(node);
-		
-		// Evaluating test
-		validateCondition = split_ratio_solver.getClass().getDeclaredMethod("validate", null);
-		validateCondition.setAccessible(true);
-		validateCondition.invoke(split_ratio_solver);
+		buildValidationEnvironment(test_configuration);
 		
 		assertTrue(test_configuration, description.get(log.get(0)).equals("Incorrect number of incomming links at node ID = 0 , total number of incomming links are 2 it must be 1."));
 
@@ -118,15 +110,7 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		String test_configuration = "Test: validation number of output links (low).";
 		
 		// Build test environment
-		Node node = buildEnvironment(test_configuration);
-		
-		// Creating Node_SplitRatioSolver 
-		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(node);
-		
-		// Evaluating test
-		validateCondition = split_ratio_solver.getClass().getDeclaredMethod("validate", null);
-		validateCondition.setAccessible(true);
-		validateCondition.invoke(split_ratio_solver);
+		buildValidationEnvironment(test_configuration);
 		
 		assertTrue(test_configuration, description.get(log.get(0)).equals("Incorrect number of outgoing links at node ID = 0 , total number of outgoing links are 1 it must be 2."));
 
@@ -139,15 +123,7 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		String test_configuration = "Test: validation number of output links (high).";
 			
 		// Build test environment
-		Node node = buildEnvironment(test_configuration);
-			
-		// Creating Node_SplitRatioSolver 
-		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(node);
-			
-		// Evaluating test
-		validateCondition = split_ratio_solver.getClass().getDeclaredMethod("validate", null);
-		validateCondition.setAccessible(true);
-		validateCondition.invoke(split_ratio_solver);
+		buildValidationEnvironment(test_configuration);
 		
 		assertTrue(test_configuration, description.get(log.get(0)).equals("Incorrect number of outgoing links at node ID = 0 , total number of outgoing links are 3 it must be 2."));
 
@@ -160,15 +136,7 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		String test_configuration = "Test: validation of link type on the downstream link.";
 		
 		// Build test environment
-		Node node = buildEnvironment(test_configuration);
-			
-		// Creating Node_SplitRatioSolver 
-		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(node);
-			
-		// Evaluating test
-		validateCondition = split_ratio_solver.getClass().getDeclaredMethod("validate", null);
-		validateCondition.setAccessible(true);
-		validateCondition.invoke(split_ratio_solver);
+		buildValidationEnvironment(test_configuration);
 		
 		assertTrue(test_configuration, description.get(log.get(0)).equals("Missing downstream link of type Freeway at node ID = 0 ,  it must be exactly one link downstream of type Freeway."));
 	}
@@ -180,15 +148,7 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		String test_configuration = "Test: validation of link type on the diverging link.";
 		
 		// Build test environment
-		Node node = buildEnvironment(test_configuration);
-			
-		// Creating Node_SplitRatioSolver 
-		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(node);
-			
-		// Evaluating test
-		validateCondition = split_ratio_solver.getClass().getDeclaredMethod("validate", null);
-		validateCondition.setAccessible(true);
-		validateCondition.invoke(split_ratio_solver);
+		buildValidationEnvironment(test_configuration);
 		
 		assertTrue(test_configuration, description.get(log.get(0)).equals("Missing diverging link of type Off-ramp/Interconnect at node ID = 0 ,  it must be exactly one diverging link of type Off-ramp or Interconnect."));
 	}
@@ -238,8 +198,23 @@ public class NodeSplitRatioSolverForIncidentsTest {
 
 	/* Utility methods */
 	
+	private void buildValidationEnvironment(String configuration) throws Exception
+	{
+		// Building network
+		Node node = buildNode(configuration);
+		
+		// Creating Node_SplitRatioSolver 
+		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(node);
+		
+		// Invoke validation
+		validateCondition = split_ratio_solver.getClass().getDeclaredMethod("validate", null);
+		validateCondition.setAccessible(true);
+		validateCondition.invoke(split_ratio_solver);
+	}
+	
+	
 	// Builds a network based on a configuration
-	private Node buildEnvironment(String configuration) throws Exception 
+	private Node buildNode(String configuration) throws Exception 
 	{
 		// Access the Node constructor.
 		Constructor<Node> constructANode= Node.class.getDeclaredConstructor(null);
