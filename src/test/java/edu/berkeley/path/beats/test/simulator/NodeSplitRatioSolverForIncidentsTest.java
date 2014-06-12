@@ -153,32 +153,24 @@ public class NodeSplitRatioSolverForIncidentsTest {
 
 	}
 	
-	// Validation of link type on the downstream link
-	@Ignore
+	// Test: validation of link type on the downstream link
+	@Test
 	public void test_freewayTypeCondition() throws Exception {
 		
-		// Loading scenario
-		config_file = "incident_split_ratio_test_two_to_two.xml";
-		scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
-		if(scenario==null)
-			fail("scenario did not load");	
-
-		double timestep = Defaults.getTimestepFor(config_file);
-		double starttime = 300d;
-		double endtime = Double.POSITIVE_INFINITY;
-		int numEnsemble = 1;
-		scenario.initialize(timestep,starttime,endtime,numEnsemble);
-		scenario.reset();
+		String test_configuration = "Test: validation of link type on the downstream link.";
 		
+		// Build test environment
+		Node node = buildEnvironment(test_configuration);
+			
 		// Creating Node_SplitRatioSolver 
-		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(scenario.getNodeWithId(0));
-		
+		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(node);
+			
 		// Evaluating test
 		validateCondition = split_ratio_solver.getClass().getDeclaredMethod("validate", null);
 		validateCondition.setAccessible(true);
 		validateCondition.invoke(split_ratio_solver);
 		
-		assertTrue("validation of link type on the downstream link.", description.get(log.get(0)).equals("Missing downstream link of type Freeway at node ID = 0 ,  it must be exactly one link downstream of type Freeway."));
+		assertTrue(test_configuration, description.get(log.get(0)).equals("Missing downstream link of type Freeway at node ID = 0 ,  it must be exactly one link downstream of type Freeway."));
 	}
 	
 	// Validation of link type on the diverging link
@@ -311,6 +303,18 @@ public class NodeSplitRatioSolverForIncidentsTest {
         	output[0] = linkBuilder(0,"Freeway");
         	output[1] = linkBuilder(1,"Freeway");
         	output[2] = linkBuilder(2,"Freeway");
+        		
+        }
+        else if (configuration.equals("Test: validation of link type on the downstream link."))
+        {
+        	// Adding input links
+        	input = new Link[1];
+        	input[0] = linkBuilder(0,"Freeway");
+        	
+        	// Adding output links
+        	output = new Link[2];
+        	output[0] = linkBuilder(0,"Interconnect");
+        	output[1] = linkBuilder(1,"Off-ramp");
         		
         }
         else 
