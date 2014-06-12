@@ -18,12 +18,12 @@ public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 		for (int n = 0 ; n < myNode.output_link.length ; n++)
 		{
 			// Check for link type Freeway (id == 1)
-			if (myNode.output_link[n].getLinkType().getId() == 1)
+			if (myNode.output_link[n].getLinkType().getName().equals("Freeway"))
 			{
 				fwy_id = n;
 			}
-			// Check for link type Off-ramp (id == 4) or Interconnect (id == 5)
-			else if (myNode.output_link[n].getLinkType().getId() == 4 || myNode.output_link[n].getLinkType().getId() == 5)
+
+			else if (myNode.output_link[n].getLinkType().getName().equals("Off-ramp") || myNode.output_link[n].getLinkType().getName().equals("Interconnect"))
 			{
 				off_ramp_id = n;
 			}
