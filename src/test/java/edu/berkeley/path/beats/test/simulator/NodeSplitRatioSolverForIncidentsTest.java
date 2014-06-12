@@ -12,11 +12,13 @@ import java.util.ArrayList;
 
 
 
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import edu.berkeley.path.beats.jaxb.LinkType;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Link;
@@ -32,15 +34,22 @@ import edu.berkeley.path.beats.simulator.BeatsErrorLog.BeatsError;
 
 public class NodeSplitRatioSolverForIncidentsTest {
 
-	private Node node;
-	private Node_SplitRatioSolver_ForIncidents split_ratio_solver;
+	// Evaluation fields
 	private static ArrayList<BeatsError> log;
 	private Method validateCondition;
 	private static Field description;
 	private static Field errorLog;
+	
+	// Scenario loading fields
 	private Scenario scenario;
 	private static String config_folder = "data/config/";
 	private String config_file;
+	
+	// Test environment fields
+	Node node = null;
+	private Node_SplitRatioSolver_ForIncidents split_ratio_solver;
+	
+	
 	
 	/* Initiation */
 	@BeforeClass 
@@ -68,13 +77,12 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		config_file = null;
 		
 		// Clearing Error log
+		validateCondition = null;
 		BeatsErrorLog.clearErrorMessage();
 		
-		// Reset Node_SplitRatioSolver
-		validateCondition = null;
-		
-		
-		
+		// Reset environmental fields
+		node = null;
+		split_ratio_solver = null;	
 
 	}
 	
@@ -83,16 +91,16 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	/* Test of the validation method */
 								 
 	// Test: validation number of input links
-	@Ignore
+	@Test
 	public void test_inputLinkCondition() throws Exception {
 		
 		String test_configuration = "Test: validation number of input links.";
 		// Build test environment
 		
-		node = buildEnvironment(test_configuration);
+		Node node = buildEnvironment(test_configuration);
 		
 		// Creating Node_SplitRatioSolver 
-		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(scenario.getNodeWithId(0));
+		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(node);
 		
 		// Evaluating test
 		validateCondition = split_ratio_solver.getClass().getDeclaredMethod("validate", null);
@@ -242,13 +250,41 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		Constructor<Node> constructANode= Node.class.getDeclaredConstructor(null);
         constructANode.setAccessible(true);
         
-        // Access Node fields.
-        
+        // Access fields
+        Field input_links = Node.class.getDeclaredField("input_link");
+		input_links.setAccessible(true);
+		
+		Field output_link = Node.class.getDeclaredField("output_link");
+		output_link.setAccessible(true);
+
         // Construct a Node.
-        Node node = constructANode.newInstance(null);
+        node = constructANode.newInstance(null);
+        
+        node.setId(0);
         
         // Add links to the Node.
+        Link[] input = null;
+        Link[] output = null;
+        if (configuration.equals("Test: validation number of input links."))
+        {
+        	// Adding input links
+        	input = new Link[2];
+        	input[0] = linkBuilder(0,"Freeway");
+        	input[1] = linkBuilder(1,"Freeway");
+        	
+        	// Adding output links
+        	output = new Link[2];
+        	output[0] = linkBuilder(0,"Freeway");
+        	output[1] = linkBuilder(1,"Freeway");
+        		
+        }
+        else 
+        {
+        	throw new Exception("Failed to construct test enviroment.");
+        }
         
+        input_links.set(node, input);
+        output_link.set(node, output);
         
         return node;
 	}
@@ -260,12 +296,15 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		Constructor<Link> constructALink= Link.class.getDeclaredConstructor(null);
         constructALink.setAccessible(true);
         
-        // Access the Link fields.
-        
         // Construct a Link.
-        Link link = constructALink.newInstance(null);
+        Link link = constructALink.newInstance(null);		
 		
         // Set fields.
+        link.setId(link_id);
+        
+        LinkType type = new LinkType();
+        type.setName(link_type);
+        link.setLinkType(type);
         
 		return link;
 	}
