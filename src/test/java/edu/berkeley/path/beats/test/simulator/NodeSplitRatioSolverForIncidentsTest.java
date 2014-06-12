@@ -70,7 +70,7 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	
 	/* Preparing for test */
 	@Before
-	public void setUpBeforeClass() throws Exception {
+	public void resetTest() throws Exception {
 		
 		// Reset scenario
 		scenario = null;
@@ -95,8 +95,8 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	public void test_inputLinkCondition() throws Exception {
 		
 		String test_configuration = "Test: validation number of input links.";
-		// Build test environment
 		
+		// Build test environment
 		Node node = buildEnvironment(test_configuration);
 		
 		// Creating Node_SplitRatioSolver 
@@ -111,35 +111,45 @@ public class NodeSplitRatioSolverForIncidentsTest {
 
 	}
 	
-	// Test: validation number of output links
-	@Ignore
-	public void test_outputLinkCondition() throws Exception {
+	// Test: validation number of output links (low)
+	@Test
+	public void test_outputLinkConditionLow() throws Exception {
 		
+		String test_configuration = "Test: validation number of output links (low).";
 		
-		// Loading scenario
-		
-		config_file = "incident_split_ratio_test_two_to_two.xml";
-		scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
-		if(scenario==null)
-			fail("scenario did not load");	
-
-		double timestep = Defaults.getTimestepFor(config_file);
-		double starttime = 300d;
-		double endtime = Double.POSITIVE_INFINITY;
-		int numEnsemble = 1;
-		scenario.initialize(timestep,starttime,endtime,numEnsemble);
-		scenario.reset();
+		// Build test environment
+		Node node = buildEnvironment(test_configuration);
 		
 		// Creating Node_SplitRatioSolver 
-		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(scenario.getNodeWithId(0));
+		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(node);
 		
 		// Evaluating test
 		validateCondition = split_ratio_solver.getClass().getDeclaredMethod("validate", null);
 		validateCondition.setAccessible(true);
 		validateCondition.invoke(split_ratio_solver);
 		
-		//assertTrue("Test: validation number of output links.", description.get(log.get(0)).equals("Incorrect number of outgoing links at node ID = 0 , total number of outgoing links are 1 it must be 2."));
-		
+		assertTrue(test_configuration, description.get(log.get(0)).equals("Incorrect number of outgoing links at node ID = 0 , total number of outgoing links are 1 it must be 2."));
+
+	}
+	
+	// Test: validation number of output links (high)
+	@Ignore
+	public void test_outputLinkConditionHigh() throws Exception {
+			
+		String test_configuration = "Test: validation number of output links (high).";
+			
+		// Build test environment
+		Node node = buildEnvironment(test_configuration);
+			
+		// Creating Node_SplitRatioSolver 
+		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(node);
+			
+		// Evaluating test
+		validateCondition = split_ratio_solver.getClass().getDeclaredMethod("validate", null);
+		validateCondition.setAccessible(true);
+			
+		assertTrue(test_configuration, description.get(log.get(0)).equals("Incorrect number of outgoing links at node ID = 0 , total number of outgoing links are 3 it must be 2."));
+
 	}
 	
 	// Validation of link type on the downstream link
@@ -276,6 +286,17 @@ public class NodeSplitRatioSolverForIncidentsTest {
         	output = new Link[2];
         	output[0] = linkBuilder(0,"Freeway");
         	output[1] = linkBuilder(1,"Freeway");
+        		
+        }
+        else if (configuration.equals("Test: validation number of output links (low)."))
+        {
+        	// Adding input links
+        	input = new Link[1];
+        	input[0] = linkBuilder(0,"Freeway");
+        	
+        	// Adding output links
+        	output = new Link[1];
+        	output[0] = linkBuilder(0,"Freeway");
         		
         }
         else 
