@@ -41,7 +41,7 @@ public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 		int vehicle_index = myNode.myNetwork.getMyScenario().getVehicleTypeIndexForId(1);
 		
 		// Get downstream mainline density and local split ratio for the off-ramp
-		double mainline_density = getMainlineDensity(ensemble_index, vehicle_index);
+		double mainline_density = getMainlineDensity(ensemble_index);
 		
 		double sr_local_avg = getLocalSR(splitratio_selected, vehicle_index);
 		
@@ -73,9 +73,9 @@ public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 	}
 	
 	// Method for getting mainline density
-	private double getMainlineDensity(int ensemble_index, int vehicle_index)
+	private double getMainlineDensity(int ensemble_index)
 	{
-		double mainline_density = myNode.output_link[fwy_id].getDensityInVeh(ensemble_index, vehicle_index);
+		double mainline_density = myNode.output_link[fwy_id].getTotalDensityInVPMeter(ensemble_index)*myNode.output_link[fwy_id].get_Lanes();
 		
 		return mainline_density;
 	}
