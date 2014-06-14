@@ -215,7 +215,10 @@
 
 			<xs:element name="node_type">
 				<xs:complexType>
-					<xs:attribute name="id" type="xs:long" use="required" />
+                    <xs:all>
+                        <xs:element ref="parameters" minOccurs="0" />
+                    </xs:all>
+                    <xs:attribute name="id" type="xs:long" use="required" />
 					<xs:attribute name="name" type="xs:string" use="required"/>
 				</xs:complexType>
 			</xs:element> 
