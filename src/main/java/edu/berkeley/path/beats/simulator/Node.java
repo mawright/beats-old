@@ -155,11 +155,11 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 				{
 					for (int p = 0 ; p < this.getNodeType().getParameters().getParameter().size() ; p++)
 					{
-						if(this.getNodeType().getParameters().getParameter().get(p).equals("threshold"))
+						if(this.getNodeType().getParameters().getParameter().get(p).getName().equals("threshold"))
 						{
 							does_threshold_exist = true;
 						}
-						else if(this.getNodeType().getParameters().getParameter().get(p).equals("scaling_factor"))
+						if(this.getNodeType().getParameters().getParameter().get(p).getName().equals("scaling_factor"))
 						{
 							does_scaling_factor_exist = true;
 						}
