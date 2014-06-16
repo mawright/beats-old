@@ -9,11 +9,14 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import edu.berkeley.path.beats.jaxb.LinkType;
+import edu.berkeley.path.beats.jaxb.NodeType;
 import edu.berkeley.path.beats.jaxb.VehicleType;
 import edu.berkeley.path.beats.jaxb.VehicleTypeSet;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
@@ -22,6 +25,7 @@ import edu.berkeley.path.beats.simulator.LinkBehaviorCTM;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_HAMBURGER;
+import edu.berkeley.path.beats.simulator.Parameters;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog.BeatsError;
 
@@ -558,13 +562,25 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 				
 		Field network_field = Node.class.getDeclaredField("myNetwork");
 		network_field.setAccessible(true);
+		
+		Field nodeType_field = Node.class.getSuperclass().getDeclaredField("nodeType");
+		nodeType_field.setAccessible(true);
 
 		// Construct a Node.
 		node = constructANode.newInstance(null);
 		node.setId(0);
 		
-		// Assign network
+		// Construct parameters
+		NodeType nodeType = new NodeType();
+		Parameters parameters = new Parameters();
+		parameters.addParameter("threshold", "0.02321");
+		parameters.addParameter("scaling_factor", "0.2321");
+		nodeType.setParameters(parameters);
+		
+		// Assign fields
 		network_field.set(node, network);
+		node.setNodeType(nodeType);
+		
 		
 		// Add links to the Node.
 		Link[] input = null;
@@ -615,7 +631,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 			// Adding output links
 			output = new Link[2];
 			output[0] = linkBuilder(0,"Interconnect", network.getMyScenario(), density);
-			output[1] = linkBuilder(1,"Off-ramp", network.getMyScenario(), density);
+			output[1] = linkBuilder(1,"Off-Ramp", network.getMyScenario(), density);
 		        		
 		}
 		else if (configuration.equals("Test: validation of link type on the diverging link."))
