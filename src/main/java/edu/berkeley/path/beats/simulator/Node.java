@@ -143,6 +143,37 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 			case C:
 				node_sr_solver = new Node_SplitRatioSolver_C(this);
 				break;
+			case HAMBURGER:
+				boolean does_threshold_exist = false;
+				boolean does_scaling_factor_exist = false;
+				
+				if(this.getNodeType().getParameters() == null)
+				{
+					node_sr_solver = new Node_SplitRatioSolver_A(this);
+				}
+				else
+				{
+					for (int p = 0 ; p < this.getNodeType().getParameters().getParameter().size() ; p++)
+					{
+						if(this.getNodeType().getParameters().getParameter().get(p).equals("threshold"))
+						{
+							does_threshold_exist = true;
+						}
+						else if(this.getNodeType().getParameters().getParameter().get(p).equals("scaling_factor"))
+						{
+							does_scaling_factor_exist = true;
+						}
+					}
+				}
+				
+				if(does_threshold_exist && does_scaling_factor_exist)
+				{
+					node_sr_solver = new Node_SplitRatioSolver_HAMBURGER(this);
+				}
+				else
+				{
+					node_sr_solver = new Node_SplitRatioSolver_A(this);
+				}
 		}
 		
 	}
