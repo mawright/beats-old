@@ -2,18 +2,32 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.Node_FlowSolver.SupplyDemand;
 
-public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
+public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 	
 	/* Fields */
-	private double treshold = 33.4544 ;//TODO Remove hardcoded value
-    private double scaling_factor = 0.0004; //TODO Remove hardcoded value
+	private double threshold;
+    private double scaling_factor;
     private int fwy_id = -1;
     private int off_ramp_id = -1;
 
 	/* Constructor */
-	public Node_SplitRatioSolver_ForIncidents(Node myNode) {
+	public Node_SplitRatioSolver_HAMBURGER(Node myNode) {
 		super(myNode);
 		
+		for (int p = 0 ; p < myNode.getNodeType().getParameters().getParameter().size() ; p++)
+		{
+			// Assign threshold value.
+			if (myNode.getNodeType().getParameters().getParameter().get(p).getName().equals("threshold"))
+			{
+				this.threshold = Double.parseDouble(myNode.getNodeType().getParameters().getParameter().get(p).getValue());
+			}
+			
+			// Assign scaling_factor.
+			if (myNode.getNodeType().getParameters().getParameter().get(p).getName().equals("scaling_factor"))
+			{
+				this.scaling_factor = Double.parseDouble(myNode.getNodeType().getParameters().getParameter().get(p).getValue());
+			}
+		}
 		// Find diverging link
 		for (int n = 0 ; n < myNode.output_link.length ; n++)
 		{
@@ -50,7 +64,7 @@ public class Node_SplitRatioSolver_ForIncidents extends Node_SplitRatioSolver {
 		for	(int v = 0 ; v < splitratio_selected.getnVTypes();v++)
 		{
 			// sr_predict = sr_local_avg + K * max(density - threshold, 0)
-			double diverging_ratio = sr_local_avg + scaling_factor * Math.max(mainline_density - treshold, 0);
+			double diverging_ratio = sr_local_avg + scaling_factor * Math.max(mainline_density - threshold, 0);
 			
 			// Handles illegal split ratios by round them to a legal one and sends a warning.
 			if (diverging_ratio < 0)
