@@ -21,11 +21,11 @@ import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkBehaviorCTM;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_ForIncidents;
+import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_HAMBURGER;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog.BeatsError;
 
-public class NodeSplitRatioSolverForIncidentsTest {
+public class Node_SplitRatioSolver_HAMBURGER_Test {
 
 	// Evaluation fields.
 	private static ArrayList<BeatsError> log;
@@ -42,7 +42,7 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	private Object expected_output;
 	private int nr_of_ensembles;	
 	private Node node = null;
-	private Node_SplitRatioSolver_ForIncidents split_ratio_solver;
+	private Node_SplitRatioSolver_HAMBURGER split_ratio_solver;
 	
 	/* Initiation */
 	@BeforeClass 
@@ -78,7 +78,7 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	}
 
 	/* Test of the validation method */							 
-	// Test: validation number of input links (2-to-2)
+	// Test: validation number of input links (2-to-2).
 	@Test
 	public void test_validation_of_nr_of_inputLinks_2to2() throws Exception 
 	{
@@ -91,7 +91,7 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		assertTrue(test_configuration, description.get(log.get(0)).equals("Incorrect number of incomming links at node ID = 0 , total number of incomming links are 2 it must be 1."));
 	}
 	
-	// Test: validation number of output links (1-to-1)
+	// Test: validation number of output links (1-to-1).
 	@Test
 	public void test_validation_of_nr_of_outputLinks_1to1() throws Exception 
 	{
@@ -118,8 +118,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	}
 	
 	// Test: validation of link type on the downstream link.
-	
-	// Test: validation of link type on the downstream link
 	@Test
 	public void test_validation_of_downstream_link_type() throws Exception 
 	{
@@ -133,8 +131,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	}
 	
 	// Test: validation of link type on the diverging link.
-	
-	// Test: validation of link type on the diverging link
 	@Test
 	public void test_validation_of_diverging_link_type() throws Exception 
 	{
@@ -146,7 +142,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		// Evaluate output.
 		assertTrue(test_configuration, description.get(log.get(0)).equals("Missing diverging link of type Off-ramp/Interconnect at node ID = 0 ,  it must be exactly one diverging link of type Off-ramp or Interconnect."));
 	}
-	
 	
 	
 	/* Test of calculation */	
@@ -207,7 +202,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	}
 	
 	// Test: calculation diversion.
-	
 	@Ignore
 	public void test_calculation_diversion() throws Exception
 	{
@@ -236,7 +230,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	}
 	
 	// Test: calculation no diversion.
-	
 	@Ignore
 	public void test_calculation_no_diversion() throws Exception
 	{
@@ -265,7 +258,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	}
 	
 	// Test: calculation with two ensembles.
-	
 	@Ignore
 	public void test_calculation_two_Ensembles() throws Exception
 	{
@@ -295,8 +287,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 
 
 	/* Utility methods */
-	
-	
 	// Generates validation environment and calls the validation method.
 	private void generateValidationEnvironment(String configuration) throws Exception
 	{
@@ -319,17 +309,15 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		Node node = generateNode(configuration, network, density);
 		
 		// Creating Node_SplitRatioSolver 
-		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(node);
+		split_ratio_solver = new Node_SplitRatioSolver_HAMBURGER(node);
 		
 		// Invoke validation
 		validateCondition = split_ratio_solver.getClass().getDeclaredMethod("validate", null);
 		validateCondition.setAccessible(true);
 		validateCondition.invoke(split_ratio_solver);
 	}
-	
-	// Generate test environment and calculate actual output. 
-	// Generates the test environment and performs calculations.
-	
+
+	// Generates the test environment and performs calculations.	
 	private Object generateCalculationEnvironment(String configuration) throws Exception
 	{
 		// Generate local split ratio.
@@ -352,7 +340,7 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		Node node = generateNode(configuration, network, density);
 				
 		// Creating Node_SplitRatioSolver 
-		split_ratio_solver = new Node_SplitRatioSolver_ForIncidents(node);
+		split_ratio_solver = new Node_SplitRatioSolver_HAMBURGER(node);
 		Object[] arguments = new Object[3];
 		arguments[0] = sr_local_avg;
 		arguments[1] = null;
@@ -377,7 +365,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	}
 	
 	// Builds Links
-	// Builds Link
 	private Link linkBuilder(int link_id, String link_type, Scenario scenario, HashMap<String, double[]> density) throws Exception
 	{
 		// Access the Link constructor.
@@ -424,7 +411,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 	}
 	
 	// Constructs Double3DMatrix objects
-	//Builds Double3DMatrix
 	private Object constructDouble3DMatrix(double[][][] data) throws Exception
 	{
 		// Initiation
@@ -477,9 +463,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		return double3DMatrix;
 	}
 	
-	// Generate VehicleTypes.
-
-
 	// Generate Scenario
 	private Scenario generateScenario(String configuration,List<VehicleType> list, int nr_of_ensembles) throws Exception
 	{
@@ -543,8 +526,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		return scenario;	
 	}
 	
-	// Generates a Network.
-	
 	// Generate Network
 	private Network generateNetwork(String configuration,Scenario scenario) throws Exception
 	{
@@ -560,8 +541,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		
 		return network;
 	}
-	
-	// Generates a Node
 	
 	// Generate Node
 	private Node generateNode(String configuration, Network network, HashMap<String, double[]> density) throws Exception
@@ -672,9 +651,7 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		        
 		return node;
 	}
-	
-	// Builds expected output
-	
+
 	// Builds local split ratio
 	private double[][][] buildLocalSR(String configuration)
 	{
@@ -766,7 +743,6 @@ public class NodeSplitRatioSolverForIncidentsTest {
 		return density_map;
 	}
 		
-	// Build expected output
 	// Builds expected output as a double
 	private double[][][] buildExpectedOutput(String configuration)
 	{
