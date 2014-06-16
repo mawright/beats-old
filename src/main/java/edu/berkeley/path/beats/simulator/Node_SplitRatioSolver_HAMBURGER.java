@@ -37,7 +37,7 @@ public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 				fwy_id = n;
 			}
 
-			else if (myNode.output_link[n].getLinkType().getName().equals("Off-ramp") || myNode.output_link[n].getLinkType().getName().equals("Interconnect"))
+			else if (myNode.output_link[n].getLinkType().getName().equals("Off-Ramp") || myNode.output_link[n].getLinkType().getName().equals("Interconnect"))
 			{
 				off_ramp_id = n;
 			}
