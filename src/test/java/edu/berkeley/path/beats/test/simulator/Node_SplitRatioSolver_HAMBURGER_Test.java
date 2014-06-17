@@ -144,7 +144,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		generateValidationEnvironment(test_configuration);
 		
 		// Evaluate output.
-		assertTrue(test_configuration, description.get(log.get(0)).equals("Missing diverging link of type Off-ramp/Interconnect at node ID = 0 ,  it must be exactly one diverging link of type Off-ramp or Interconnect."));
+		assertTrue(test_configuration, description.get(log.get(0)).equals("Missing diverging link of type Off-Ramp/Interconnect at node ID = 0 ,  it must be exactly one diverging link of type Off-Ramp or Interconnect."));
 	}
 	
 	
@@ -171,7 +171,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 			{
 				for(int vt = 0 ; vt < actual_output_double[i][o].length ; vt++)
 				{
-					assertEquals("test", expected_output_double[i][o][vt], actual_output_double[i][o][vt], 3);
+					assertEquals("test", expected_output_double[i][o][vt], actual_output_double[i][o][vt], 0);
 				}
 			}			
 		}
@@ -199,7 +199,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 			{
 				for(int vt = 0 ; vt < actual_output_double[i][o].length ; vt++)
 				{
-					assertEquals("test", expected_output_double[i][o][vt], actual_output_double[i][o][vt], 3);
+					assertEquals("test", expected_output_double[i][o][vt], actual_output_double[i][o][vt], 0);
 				}
 			}		
 		}
@@ -227,14 +227,14 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 			{
 				for(int vt = 0 ; vt < actual_output_double[i][o].length ; vt++)
 				{
-					assertEquals("test", expected_output_double[i][o][vt], actual_output_double[i][o][vt], 3);
+					assertEquals("test", expected_output_double[i][o][vt], actual_output_double[i][o][vt], 0);
 				}
 			}			
 		}
 	}
 	
 	// Test: calculation no diversion.
-	@Ignore
+	@Test
 	public void test_calculation_no_diversion() throws Exception
 	{
 		String configuration = "Test: calculation no diversion.";
@@ -245,9 +245,12 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		// Generate test environment and calculate actual output.
 		Object actual_output = generateCalculationEnvironment(configuration);
 	
+		// Access expected data
+		Method getExpectedValue = expected_output.getClass().getDeclaredMethod("getData", null);
+		getExpectedValue.setAccessible(true);
 		// Evaluate output.
-		double[][][] actual_output_double = (double[][][]) getActualValue.invoke(expected_output,null);
-		double[][][] expected_output_double = (double[][][]) getActualValue.invoke(actual_output,null);
+		double[][][] actual_output_double = (double[][][]) getActualValue.invoke(actual_output,null);
+		double[][][] expected_output_double = (double[][][]) getExpectedValue.invoke(expected_output,null);
 		
 		for(int i = 0; i < actual_output_double.length; i++) 
 		{
@@ -255,7 +258,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 			{
 				for(int vt = 0 ; vt < actual_output_double[i][o].length ; vt++)
 				{
-					assertEquals("test", expected_output_double[i][o][vt], actual_output_double[i][o][vt], 3);
+					assertEquals("test", expected_output_double[i][o][vt], actual_output_double[i][o][vt], 0);
 				}
 			}			
 		}
@@ -283,7 +286,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 			{
 				for(int vt = 0 ; vt < actual_output_double[i][o].length ; vt++)
 				{
-					assertEquals("test", expected_output_double[i][o][vt], actual_output_double[i][o][vt], 3);
+					assertEquals("test", expected_output_double[i][o][vt], actual_output_double[i][o][vt], 0);
 				}
 			}			
 		}
@@ -295,7 +298,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	private void generateValidationEnvironment(String configuration) throws Exception
 	{
 		// Generate density.
-		HashMap<String, double[]> density = null;
+		HashMap<Integer, double[][]> density = generateDensity(configuration);
 		
 		// Generate expected output.
 		Object exp_out = buildExpectedOutput(configuration);
@@ -332,7 +335,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		List<VehicleType> list = generateVehicleTypes(configuration);
 		
 		// Generate density.
-		HashMap<String, double[]> density = generateDensity(configuration);
+		HashMap<Integer, double[][]> density = generateDensity(configuration);
 		
 		// Generate Scenario
 		Scenario scenario = generateScenario(configuration, list, nr_of_ensembles);
@@ -348,7 +351,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		Object[] arguments = new Object[3];
 		arguments[0] = sr_local_avg;
 		arguments[1] = null;
-		arguments[2] = new Integer(1);
+		arguments[2] = new Integer(0);
 		
 		// Generate input parameters for computeAppliedSplitRatio
 		Class[] parameterType =new Class[3];
@@ -369,7 +372,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	}
 	
 	// Builds Links
-	private Link linkBuilder(int link_id, String link_type, Scenario scenario, HashMap<String, double[]> density) throws Exception
+	private Link linkBuilder(int link_id, String link_type, Scenario scenario, HashMap<Integer, double[][]> density) throws Exception
 	{
 		// Access the Link constructor.
 		Constructor<Link> constructALink= Link.class.getDeclaredConstructor(null);
@@ -384,6 +387,8 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
         
         Field length = Link.class.getDeclaredField("_length");
         length.setAccessible(true);
+        Field lanes_field = Link.class.getDeclaredField("_lanes");
+        lanes_field.setAccessible(true);
         
         // Construct a Link.
         Link link = constructALink.newInstance(null);		
@@ -392,7 +397,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
         link.setId(link_id);
         link.setLanes(1);
         length.set(link, 1);
-        
+        lanes_field.set(link, 1);
         // Set Scenario field.
         scenario_field.set(link, scenario);
         
@@ -401,10 +406,10 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
         linkBehavior_field.set(link, linkBehavior);
         
         // Set density.
-        for (int ensemble = 0 ; ensemble < scenario.getNumEnsemble() ; ensemble++)
-        {
-        	link.set_density_in_veh(ensemble, density.get(new String(""+ link_id + ensemble)));   
-        }
+        Field density_field = LinkBehaviorCTM.class.getDeclaredField("density");
+        density_field.setAccessible(true);
+        density_field.set(linkBehavior, density.get(link_id));
+        
         
         // Set LinkType.
         LinkType type = new LinkType();
@@ -503,7 +508,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		parameters[6] = new String();
 		parameters[7] = new String();
 		parameters[8] = new Integer(nr_of_ensembles);
-		parameters[9] = new Integer(0);	
+		parameters[9] = new Integer(1);	 // Number of lanes.
 		
 		// Creates a RunParameter object
 		Object runParameters = runParameterConstructor.newInstance(parameters);
@@ -526,7 +531,12 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 				
 		// Assign VehicleTypeSet to the Scenario.
 		scenario.setVehicleTypeSet(vehicleSet);
-				
+		
+		// Access numVehicleTypes field
+		Field numVehicleTypes_field = Scenario.class.getDeclaredField("numVehicleTypes");
+		numVehicleTypes_field.setAccessible(true);
+		numVehicleTypes_field.set(scenario, list.size());
+		
 		return scenario;	
 	}
 	
@@ -547,7 +557,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	}
 	
 	// Generate Node
-	private Node generateNode(String configuration, Network network, HashMap<String, double[]> density) throws Exception
+	private Node generateNode(String configuration, Network network, HashMap<Integer, double[][]> density) throws Exception
 	{
 		// Access the Node constructor.
 		Constructor<Node> constructANode= Node.class.getDeclaredConstructor(null);
@@ -573,8 +583,16 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		// Construct parameters
 		NodeType nodeType = new NodeType();
 		Parameters parameters = new Parameters();
-		parameters.addParameter("threshold", "0.02321");
-		parameters.addParameter("scaling_factor", "0.2321");
+		if(configuration.equals("Test: calculation no diversion."))
+		{
+			parameters.addParameter("threshold", "0.062136995");
+			parameters.addParameter("scaling_factor", "1.609347219");
+		}
+		else
+		{
+			parameters.addParameter("threshold", "0.02321");
+			parameters.addParameter("scaling_factor", "0.2321");
+		}
 		nodeType.setParameters(parameters);
 		
 		// Assign fields
@@ -589,61 +607,61 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		{
 			// Adding input links
 		    input = new Link[2];
-		    input[0] = linkBuilder(0,"Freeway", network.getMyScenario(), density);
-		    input[1] = linkBuilder(1,"Freeway", network.getMyScenario(), density);
+		    input[0] = linkBuilder(1,"Freeway", network.getMyScenario(), density);
+		    input[1] = linkBuilder(2,"Freeway", network.getMyScenario(), density);
 		    
 		    // Adding output links
 		    output = new Link[2];
-		    output[0] = linkBuilder(0,"Freeway", network.getMyScenario(), density);
-		    output[1] = linkBuilder(1,"Freeway", network.getMyScenario(), density);
+		    output[0] = linkBuilder(1,"Freeway", network.getMyScenario(), density);
+		    output[1] = linkBuilder(2,"Freeway", network.getMyScenario(), density);
 		    
 		}
 		else if (configuration.equals("Test: validation number of output links (1-to-1)."))
 		{
 			// Adding input links
 			input = new Link[1];
-			input[0] = linkBuilder(0,"Freeway", network.getMyScenario(), density);
+			input[0] = linkBuilder(1,"Freeway", network.getMyScenario(), density);
 		        	
 			// Adding output links
 			output = new Link[1];
-			output[0] = linkBuilder(0,"Freeway", network.getMyScenario(), density);
+			output[0] = linkBuilder(2,"Freeway", network.getMyScenario(), density);
 		        		
 		}
 		else if (configuration.equals("Test: validation number of output links (1-to-3)."))
 		{
 			// Adding input links
 			input = new Link[1];
-			input[0] = linkBuilder(0,"Freeway", network.getMyScenario(), density);
+			input[0] = linkBuilder(1,"Freeway", network.getMyScenario(), density);
 			
 			// Adding output links
 			output = new Link[3];
-			output[0] = linkBuilder(0,"Freeway", network.getMyScenario(), density);
-			output[1] = linkBuilder(1,"Freeway", network.getMyScenario(), density);
-			output[2] = linkBuilder(2,"Freeway", network.getMyScenario(), density);
+			output[0] = linkBuilder(2,"Freeway", network.getMyScenario(), density);
+			output[1] = linkBuilder(3,"Freeway", network.getMyScenario(), density);
+			output[2] = linkBuilder(4,"Freeway", network.getMyScenario(), density);
 			
 		}
 		else if (configuration.equals("Test: validation of link type on the downstream link."))
 		{
 			// Adding input links
 			input = new Link[1];
-			input[0] = linkBuilder(0,"Freeway", network.getMyScenario(), density);
+			input[0] = linkBuilder(1,"Freeway", network.getMyScenario(), density);
 			
 			// Adding output links
 			output = new Link[2];
-			output[0] = linkBuilder(0,"Interconnect", network.getMyScenario(), density);
-			output[1] = linkBuilder(1,"Off-Ramp", network.getMyScenario(), density);
+			output[0] = linkBuilder(2,"Interconnect", network.getMyScenario(), density);
+			output[1] = linkBuilder(3,"Off-Ramp", network.getMyScenario(), density);
 		        		
 		}
 		else if (configuration.equals("Test: validation of link type on the diverging link."))
 		{
 			// Adding input links
 			input = new Link[1];
-			input[0] = linkBuilder(0,"Freeway", network.getMyScenario(), density);
+			input[0] = linkBuilder(1,"Freeway", network.getMyScenario(), density);
 			
 			// Adding output links
 			output = new Link[2];
-			output[0] = linkBuilder(0,"Freeway", network.getMyScenario(), density);
-			output[1] = linkBuilder(1,"Freeway", network.getMyScenario(), density);
+			output[0] = linkBuilder(2,"Freeway", network.getMyScenario(), density);
+			output[1] = linkBuilder(3,"Freeway", network.getMyScenario(), density);
 			
 		}
 		// Build a working node
@@ -652,12 +670,12 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 			
 			// Adding input links
 			input = new Link[1];
-			input[0] = linkBuilder(0,"Freeway", network.getMyScenario(), density);
+			input[0] = linkBuilder(1,"Freeway", network.getMyScenario(), density);
 			
 			// Adding output links
 			output = new Link[2];
-			output[0] = linkBuilder(0,"Freeway", network.getMyScenario(), density);
-			output[1] = linkBuilder(1,"Off-ramp", network.getMyScenario(), density);
+			output[0] = linkBuilder(2,"Freeway", network.getMyScenario(), density);
+			output[1] = linkBuilder(3,"Off-Ramp", network.getMyScenario(), density);
 				
 		}
 		
@@ -678,12 +696,12 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		
 		double[][][] local_sr = new double[nr_in][nr_out][nr_types];
 			
-		if(configuration.equals(""))
+		if(configuration.equals("Test: calculation no diversion."))
 		{
 			for (int vt = 0; vt < nr_types ; vt++)
 			{
-				local_sr[0][0][vt] = 0.5;
-				local_sr[0][1][vt] = 0.5;
+				local_sr[0][0][vt] = 0.8;
+				local_sr[0][1][vt] = 0.2;
 			}
 		}
 		// Default split ratio.
@@ -721,39 +739,51 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	}
 		
 	// Build input density
-	private HashMap<String, double[]> generateDensity(String configuration)
+	private HashMap<Integer, double[][]> generateDensity(String configuration)
 	{
 		// Initiation
-		double[] density = null;
-		HashMap<String, double[]> density_map = new HashMap<String, double[]>();
+		double[][] density = null;
+		HashMap<Integer, double[][]> density_map = new HashMap<Integer, double[][]>();
 			
 			
-		if(configuration.equals(""))
+		if(configuration.equals("Test: calculation no diversion."))
 		{
-
-			density = new double[1];
-			density[0] = 0.5;
+			// Link 1 Ensemble 1
+			density = new double[1][1];
+			density[0][0] = 0.037282197;
+			density_map.put(1, density.clone());
+				
+			// Link 2 Ensemble 1
+			density[0][0] = 0.037282197;
+			density_map.put(2, density.clone());
 			
+			// Link 3 Ensemble 1
+			density[0][0] = 0.037282197;
+			density_map.put(3, density.clone());
+			
+			// Link 4 Ensemble 1
+			density[0][0] = 0.037282197;
+			density_map.put(4, density.clone());
 		}
 		// Default split ratio.
 		else
 		{
 			// Link 1 Ensemble 1
-			density = new double[1];
-			density[0] = 0.1;
-			density_map.put("11", density.clone());
+			density = new double[1][1];
+			density[0][0] = 0.1;
+			density_map.put(1, density.clone());
 			
 			// Link 2 Ensemble 1
-			density[0] = 0.1;
-			density_map.put("21", density.clone());
+			density[0][0] = 0.1;
+			density_map.put(2, density.clone());
 				
 			// Link 3 Ensemble 1
-			density[0] = 0.1;
-			density_map.put("31", density.clone());
+			density[0][0] = 0.1;
+			density_map.put(3, density.clone());
 			
 			// Link 4 Ensemble 1
-			density[0] = 0.1;
-			density_map.put("41", density.clone());
+			density[0][0] = 0.1;
+			density_map.put(4, density.clone());
 		}
 			
 		return density_map;
@@ -769,6 +799,12 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 			exp_output = new double[1][2][1];
 			exp_output[0][0][0] = 0.75;
 			exp_output[0][1][0] = 0.25;
+		}
+		else if(configuration.equals("Test: calculation no diversion."));
+		{
+			exp_output = new double[1][2][1];
+			exp_output[0][0][0] = 0.8;
+			exp_output[0][1][0] = 0.2;
 		}
 
 		return exp_output;
