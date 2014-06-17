@@ -274,6 +274,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	@Test
 	public void test_load_real_scenario() throws Exception
 	{
+		// Load scenario
 		String config_folder = "data/config/";
 		String config_file = "_largetest_Hamburger_SplitRatioSolver(I210W).xml";
 		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
@@ -288,6 +289,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		String nodeflowsolver = "proportional";
 		String nodesrsolver = "HAMBURGER";
 
+		// Initiate and advance the simulation 120 seconds.
 		scenario.initialize(timestep, starttime, endtime, numEnsemble, uncertaintymodel,nodeflowsolver,nodesrsolver);
 		scenario.advanceNSeconds(60*timestep);
 		
@@ -295,6 +297,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		Field split_ratio_solver_field = Node.class.getDeclaredField("node_sr_solver");
 		split_ratio_solver_field.setAccessible(true);
 		
+		// Assertion of the Hamburger node.
 		if(scenario.getNetworkSet()==null)
 		{
 			fail("Failed to find the network");
@@ -309,6 +312,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 					boolean does_threshold_exist = false;
 					boolean does_scaling_factor_exist = false;
 				
+					// Check if nodes without parameters has solver A.
 					if(node.getNodeType().getParameters() == null)
 					{
 						assertEquals("Test: Load real scenario. - verify right SplitRatioSolver",Node_SplitRatioSolver_A.class,split_ratio_solver_field.get(node).getClass());
@@ -327,17 +331,20 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 							}
 						}
 					}
-					
+					// Check that the split ratio solver is of type Hamburger
 					if(does_threshold_exist && does_scaling_factor_exist)
 					{
 						assertEquals("Test: Load real scenario. - verify right SplitRatioSolver",Node_SplitRatioSolver_HAMBURGER.class,split_ratio_solver_field.get(node).getClass());
 						
+						// Get split ratio solver
 						split_ratio_solver = (Node_SplitRatioSolver_HAMBURGER) split_ratio_solver_field.get(node);
 						
+						// Access update function in Node and invoke it.
 						Method updateNode = Node.class.getDeclaredMethod("update", null);
 						updateNode.setAccessible(true);
 						updateNode.invoke(node, null);
 						
+						// Find Off-Ramp index.
 						int off_ramp_idx = -1;
 						for (int i = 0 ; i < node.getOutput_link().length ; i++)
 						{
@@ -352,6 +359,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 							fail("Error getting Off-Ramp link.");
 						}
 						
+						// Access the split_ratio profile.
 						Field sr_local_avg = Node.class.getDeclaredField("splitratio_selected");
 						sr_local_avg.setAccessible(true);
 						
@@ -374,8 +382,10 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 						getActualValue = actual_output.getClass().getDeclaredMethod("getData", null);
 						getActualValue.setAccessible(true);
 						
+						// Get the new split ratio as a double.
 						double[][][] actual_output_double = (double[][][]) getActualValue.invoke(actual_output, null);
 						
+						// Check if the the new split ratios are calculated corrected with a precision of 8 digits after decimal.
 						if(node.getId() == 7L)
 						{
 							assertEquals("",0.104139155,actual_output_double[0][off_ramp_idx][0],8);
@@ -476,6 +486,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 						
 
 					}
+					// Check if split ratio solver are of type A.
 					else
 					{
 						assertEquals("Test: Load real scenario. - verify right SplitRatioSolver",Node_SplitRatioSolver_A.class,split_ratio_solver_field.get(node).getClass());
