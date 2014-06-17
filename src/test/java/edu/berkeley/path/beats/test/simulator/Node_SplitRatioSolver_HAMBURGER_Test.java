@@ -150,7 +150,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	
 	/* Test of calculation */	
 	// Test: calculation where adjusted sr are negative.
-	@Ignore
+	@Test
 	public void test_calculation_sr_is_negative() throws Exception
 	{
 		String configuration = "Test: calculation where adjusted sr are negative.";
@@ -175,10 +175,12 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 				}
 			}			
 		}
+
+		assertTrue(configuration, description.get(log.get(0)).equals("Split ratio at node ID = 0 has been adjusted to an illegal ratio (-0.7899999991852997) it has been ceiled to 0."));
 	}
 
 	// Test: calculation where adjusted sr are over 1.
-	@Ignore
+	@Test
 	public void test_calculation_sr_is_higher_then_one() throws Exception
 	{
 		String configuration = "Test: calculation where adjusted sr are over 1.";
@@ -203,6 +205,8 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 				}
 			}		
 		}
+		
+		assertTrue(configuration, description.get(log.get(0)).equals("Split ratio at node ID = 0 has been adjusted to an illegal ratio (1.8100000008147004) it has been floored to 1."));
 	}
 	
 	// Test: calculation diversion.
@@ -268,28 +272,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	@Ignore
 	public void test_calculation_two_Ensembles() throws Exception
 	{
-		String configuration = "Test: calculation with two ensembles.";
-		
-		// Generate Expected output .
-		Object expected_output = constructDouble3DMatrix(buildExpectedOutput(configuration));;
-		
-		// Generate test environment and calculate actual output.
-		Object actual_output = generateCalculationEnvironment(configuration);
-	
-		// Evaluate output.
-		double[][][] actual_output_double = (double[][][]) getActualValue.invoke(expected_output,null);
-		double[][][] expected_output_double = (double[][][]) getActualValue.invoke(actual_output,null);
-		
-		for(int i = 0; i < actual_output_double.length; i++) 
-		{
-			for(int o = 0 ; o < actual_output_double[i].length; o++) 
-			{
-				for(int vt = 0 ; vt < actual_output_double[i][o].length ; vt++)
-				{
-					assertEquals("test", expected_output_double[i][o][vt], actual_output_double[i][o][vt], 0);
-				}
-			}			
-		}
+		fail("Not yet implemented...");
 	}
 
 
@@ -588,16 +571,12 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 			parameters.addParameter("threshold", "0.062136995");
 			parameters.addParameter("scaling_factor", "1.609347219");
 		}
-		else if (configuration.equals("Test: calculation diversion."))
+		else
 		{
 			parameters.addParameter("threshold", "0.043495896");
 			parameters.addParameter("scaling_factor", "1.609347219");
 		}
-		else
-		{
-			parameters.addParameter("threshold", "0.02321");
-			parameters.addParameter("scaling_factor", "0.2321");
-		}
+		
 		nodeType.setParameters(parameters);
 		
 		// Assign fields
@@ -700,8 +679,24 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		int nr_types = 1;
 		
 		double[][][] local_sr = new double[nr_in][nr_out][nr_types];
-			
-		if(configuration.equals("Test: calculation no diversion."))
+		
+		if (configuration.equals("Test: calculation where adjusted sr are negative."))
+		{
+			for (int vt = 0; vt < nr_types ; vt++)
+			{
+				local_sr[0][0][vt] =  1.20;
+				local_sr[0][1][vt] = -0.80;
+			}
+		}
+		else if(configuration.equals("Test: calculation where adjusted sr are over 1."))
+		{	
+			for (int vt = 0; vt < nr_types ; vt++)
+			{
+				local_sr[0][0][vt] = -0.8;
+				local_sr[0][1][vt] =  1.8;
+			}
+		}
+		else if(configuration.equals("Test: calculation no diversion."))
 		{
 			for (int vt = 0; vt < nr_types ; vt++)
 			{
@@ -778,7 +773,8 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 			density[0][0] = 0.037282197;
 			density_map.put(4, density.clone());
 		}
-		else if (configuration.equals("Test: calculation diversion."))
+		// Default split ratio.
+		else
 		{
 			// Link 1 Ensemble 1
 			density = new double[1][1];
@@ -797,26 +793,6 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 			density[0][0] = 0.049709596;
 			density_map.put(4, density.clone());			
 		}
-		// Default split ratio.
-		else
-		{
-			// Link 1 Ensemble 1
-			density = new double[1][1];
-			density[0][0] = 0.1;
-			density_map.put(1, density.clone());
-			
-			// Link 2 Ensemble 1
-			density[0][0] = 0.1;
-			density_map.put(2, density.clone());
-				
-			// Link 3 Ensemble 1
-			density[0][0] = 0.1;
-			density_map.put(3, density.clone());
-			
-			// Link 4 Ensemble 1
-			density[0][0] = 0.1;
-			density_map.put(4, density.clone());
-		}
 			
 		return density_map;
 	}
@@ -829,14 +805,14 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		if(configuration.equals("Test: calculation where adjusted sr are negative."))
 		{
 			exp_output = new double[1][2][1];
-			exp_output[0][0][0] = 0.75;
-			exp_output[0][1][0] = 0.25;
+			exp_output[0][0][0] = 1.0;
+			exp_output[0][1][0] = 0.0;
 		}
-		else if(configuration.equals("Test: calculation no diversion."))
+		else if(configuration.equals("Test: calculation where adjusted sr are over 1."))
 		{
 			exp_output = new double[1][2][1];
-			exp_output[0][0][0] = 0.65;
-			exp_output[0][1][0] = 0.35;
+			exp_output[0][0][0] = 0.0;
+			exp_output[0][1][0] = 1.0;
 		}
 		else if (configuration.equals("Test: calculation diversion."))
 		{
@@ -844,8 +820,13 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 			exp_output[0][0][0] = 0.80;
 			exp_output[0][1][0] = 0.20;
 		}
-
-
+		else if(configuration.equals("Test: calculation no diversion."))
+		{
+			exp_output = new double[1][2][1];
+			exp_output[0][0][0] = 0.65;
+			exp_output[0][1][0] = 0.35;
+		}
+		
 
 
 		return exp_output;
