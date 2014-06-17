@@ -20,11 +20,14 @@ import edu.berkeley.path.beats.jaxb.NodeType;
 import edu.berkeley.path.beats.jaxb.VehicleType;
 import edu.berkeley.path.beats.jaxb.VehicleTypeSet;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkBehaviorCTM;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Node;
+import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_A;
 import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_HAMBURGER;
+import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Parameters;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog.BeatsError;
@@ -38,12 +41,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	private static Field description;
 	private static Field errorLog;
 	
-	// Scenario loading fields.
-	private static String config_folder = "data/config/";
-	private String config_file;
-	
 	// Test environment fields.
-	private Object expected_output;
 	private int nr_of_ensembles;	
 	private Node node = null;
 	private Node_SplitRatioSolver_HAMBURGER split_ratio_solver;
@@ -68,9 +66,6 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	@Before
 	public void resetTest() throws Exception 
 	{
-		// Reset scenario.
-		config_file = null;
-		
 		// Clearing Error log.
 		validateCondition = null;
 		BeatsErrorLog.clearErrorMessage();
@@ -273,6 +268,221 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	public void test_calculation_two_Ensembles() throws Exception
 	{
 		fail("Not yet implemented...");
+	}
+	
+	// Test: Load real scenario.	
+	@Test
+	public void test_load_real_scenario() throws Exception
+	{
+		String config_folder = "data/config/";
+		String config_file = "_largetest_Hamburger_SplitRatioSolver(I210W).xml";
+		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		if(scenario==null)
+			fail("scenario did not load");
+		
+		double timestep = Defaults.getTimestepFor(config_file);
+		double starttime = 0;
+		double endtime = 300;
+		int numEnsemble = 1;
+		String uncertaintymodel = "gaussian";
+		String nodeflowsolver = "proportional";
+		String nodesrsolver = "HAMBURGER";
+
+		scenario.initialize(timestep, starttime, endtime, numEnsemble, uncertaintymodel,nodeflowsolver,nodesrsolver);
+		scenario.advanceNSeconds(60*timestep);
+		
+		// Access split ratio solver field
+		Field split_ratio_solver_field = Node.class.getDeclaredField("node_sr_solver");
+		split_ratio_solver_field.setAccessible(true);
+		
+		if(scenario.getNetworkSet()==null)
+		{
+			fail("Failed to find the network");
+		}
+		for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork())
+		{
+			for(edu.berkeley.path.beats.jaxb.Node node_in_list : network.getNodeList().getNode())
+			{
+				Node node = (Node) node_in_list;
+				if(!node.isTerminal())
+				{
+					boolean does_threshold_exist = false;
+					boolean does_scaling_factor_exist = false;
+				
+					if(node.getNodeType().getParameters() == null)
+					{
+						assertEquals("Test: Load real scenario. - verify right SplitRatioSolver",Node_SplitRatioSolver_A.class,split_ratio_solver_field.get(node).getClass());
+					}
+					else
+					{
+						for (int p = 0 ; p < node.getNodeType().getParameters().getParameter().size() ; p++)
+						{
+							if(node.getNodeType().getParameters().getParameter().get(p).getName().equals("threshold"))
+							{
+								does_threshold_exist = true;
+							}
+							if(node.getNodeType().getParameters().getParameter().get(p).getName().equals("scaling_factor"))
+							{
+								does_scaling_factor_exist = true;
+							}
+						}
+					}
+					
+					if(does_threshold_exist && does_scaling_factor_exist)
+					{
+						assertEquals("Test: Load real scenario. - verify right SplitRatioSolver",Node_SplitRatioSolver_HAMBURGER.class,split_ratio_solver_field.get(node).getClass());
+						
+						split_ratio_solver = (Node_SplitRatioSolver_HAMBURGER) split_ratio_solver_field.get(node);
+						
+						Method updateNode = Node.class.getDeclaredMethod("update", null);
+						updateNode.setAccessible(true);
+						updateNode.invoke(node, null);
+						
+						int off_ramp_idx = -1;
+						for (int i = 0 ; i < node.getOutput_link().length ; i++)
+						{
+							if ( node.getOutput_link()[i].isOfframp())
+							{
+								off_ramp_idx = i;
+								break;
+							}
+						}
+						if (off_ramp_idx == -1)
+						{
+							fail("Error getting Off-Ramp link.");
+						}
+						
+						Field sr_local_avg = Node.class.getDeclaredField("splitratio_selected");
+						sr_local_avg.setAccessible(true);
+						
+						// Argument for the computeAppliedSplitRatio;
+						Object[] arguments = new Object[3];
+						arguments[0] = sr_local_avg.get(node);
+						arguments[1] = null;
+						arguments[2] = new Integer(0);
+						
+						// Generate input parameters for computeAppliedSplitRatio
+						Class[] parameterType =new Class[3];
+						parameterType[0] = sr_local_avg.get(node).getClass();
+						parameterType[1] = Class.forName("edu.berkeley.path.beats.simulator.Node_FlowSolver$SupplyDemand");
+						parameterType[2] = Integer.TYPE; 
+						
+						// Invoke computeAppliedSplitRatio
+						validateCondition = split_ratio_solver.getClass().getDeclaredMethod("computeAppliedSplitRatio", parameterType);
+						validateCondition.setAccessible(true);
+						Object actual_output = validateCondition.invoke(split_ratio_solver, arguments);
+						getActualValue = actual_output.getClass().getDeclaredMethod("getData", null);
+						getActualValue.setAccessible(true);
+						
+						double[][][] actual_output_double = (double[][][]) getActualValue.invoke(actual_output, null);
+						
+						if(node.getId() == 7L)
+						{
+							assertEquals("",0.104139155,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 11L)
+						{
+							assertEquals("",0.07618,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 17L)
+						{
+							assertEquals("",0.01924,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 21L)
+						{
+							assertEquals("",0.06206,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 27L )
+						{
+							assertEquals("",0.06206,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 29L)
+						{
+							assertEquals("",0.06206,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 35L)
+						{
+							assertEquals("",0.06206,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 37L)
+						{
+							assertEquals("",0.06206,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 43L )
+						{
+							assertEquals("",0.09831,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 47L)
+						{
+							assertEquals("",0.06206,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 51L)
+						{
+							assertEquals("",0.01585,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 58L)
+						{
+							assertEquals("",0.06206,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 64L)
+						{
+							assertEquals("",0.06206,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 72L)
+						{
+							assertEquals("",0.01059,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 76L)
+						{
+							assertEquals("",0.05349,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 82L)
+						{
+							assertEquals("",0.06206,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 84L)
+						{
+							assertEquals("",0.05515,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 88L)
+						{
+							assertEquals("",0.06206,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 92L)
+						{
+							assertEquals("",0.06206,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 94L)
+						{
+							assertEquals("",0.51869,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 96L )
+						{
+							assertEquals("",0.06206,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 98L )
+						{
+							assertEquals("",0.08712,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else if(node.getId() == 106)
+						{
+							assertEquals("",0.069209393,actual_output_double[0][off_ramp_idx][0],8);
+						}
+						else
+						{
+							fail("Can't find node: " + node.getId() + ".");
+						}
+						
+						
+
+					}
+					else
+					{
+						assertEquals("Test: Load real scenario. - verify right SplitRatioSolver",Node_SplitRatioSolver_A.class,split_ratio_solver_field.get(node).getClass());
+					}
+				}
+			}
+		}
 	}
 
 

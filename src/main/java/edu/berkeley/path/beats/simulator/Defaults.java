@@ -71,6 +71,7 @@ final public class Defaults {
     	aMap.put("_smalltest_multipletypes.xml",5d);
     	aMap.put("_smalltest_nocontrol_broken.xml",5d);
     	aMap.put("_smalltest_Hamburger_SplitRatioSolver.xml",5d);
+    	aMap.put("_largetest_Hamburger_SplitRatioSolver(I210W).xml", 2d);
         dt_map = Collections.unmodifiableMap(aMap);
     }
     
