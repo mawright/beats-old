@@ -131,7 +131,7 @@ public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 		
 		if(off_ramp_id == -1)
 		{
-			BeatsErrorLog.addError("Missing diverging link of type Off-ramp/Interconnect at node ID = " + myNode.getId() + " ,  it must be exactly one diverging link of type Off-ramp or Interconnect.");
+			BeatsErrorLog.addError("Missing diverging link of type Off-Ramp/Interconnect at node ID = " + myNode.getId() + " ,  it must be exactly one diverging link of type Off-Ramp or Interconnect.");
 		}
 	}
 
