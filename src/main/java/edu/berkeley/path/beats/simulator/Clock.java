@@ -127,7 +127,21 @@ public final class Clock {
     public double getDt(){
         return dt;
     }
+    
 //	public void print(){
 //		System.out.println("t=" + t + "\t\tstep=" + currentstep);
 //	}
+    
+    /////////////////////////////////////////////////////////////////////
+    // setter
+    /////////////////////////////////////////////////////////////////////
+    
+    /** set to a specific timestep **/
+    public void setRelativeTimeStep(int step){
+    	rel_step = step;
+    	// todo to make this useful in nonspecial cases - force all update()
+    	// functions called by scenario.update() to resample even if set step is
+    	// not a resampling step for demands, splits, etc
+    	// (Demand update() has a forceupdate option, for example)
+    }
 }
