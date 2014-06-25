@@ -5750,10 +5750,10 @@
          <fundamentalDiagram capacity="0.550433333333333" capacity_drop="0" congestion_speed="11.1759722222222" critical_speed="32.189951963747" free_flow_speed="32.189951963747" id="94" jam_density="0.0663510332250138" order="1" std_dev_capacity="0" std_dev_congestion_speed="0" std_dev_free_flow_speed="0" transition_density="0.017099538823582"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile dt="86400" id="95" link_id="202" sensor_id="764137" start_time="0">
-         <fundamentalDiagram capacity="0.550433333333333" capacity_drop="0" congestion_speed="22.3519444444444" critical_speed="64.379903927494" free_flow_speed="64.379903927494" id="95" jam_density="0.0331755166125069" order="1" std_dev_capacity="0" std_dev_congestion_speed="0" std_dev_free_flow_speed="0" transition_density="0.00854976941179105"/>
+         <fundamentalDiagram capacity="0.550433333333333" capacity_drop="0" congestion_speed="11.1759722222222" critical_speed="32.189951963747" free_flow_speed="32.189951963747" id="94" jam_density="0.0663510332250138" order="1" std_dev_capacity="0" std_dev_congestion_speed="0" std_dev_free_flow_speed="0" transition_density="0.017099538823582"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile dt="86400" id="96" link_id="203" sensor_id="764137" start_time="0">
-         <fundamentalDiagram capacity="0.550433333333333" capacity_drop="0" congestion_speed="22.3519444444444" critical_speed="64.379903927494" free_flow_speed="64.379903927494" id="96" jam_density="0.0331755166125069" order="1" std_dev_capacity="0" std_dev_congestion_speed="0" std_dev_free_flow_speed="0" transition_density="0.00854976941179105"/>
+         <fundamentalDiagram capacity="0.550433333333333" capacity_drop="0" congestion_speed="11.1759722222222" critical_speed="32.189951963747" free_flow_speed="32.189951963747" id="94" jam_density="0.0663510332250138" order="1" std_dev_capacity="0" std_dev_congestion_speed="0" std_dev_free_flow_speed="0" transition_density="0.017099538823582"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile dt="86400" id="97" link_id="100" sensor_id="764137" start_time="0">
          <fundamentalDiagram capacity="0.900293333333333" capacity_drop="0" congestion_speed="3.2925214122657" critical_speed="24.2243998796472" free_flow_speed="24.2243998796472" id="97" jam_density="0.310600564646586" order="1" std_dev_capacity="0" std_dev_congestion_speed="0" std_dev_free_flow_speed="0" transition_density="0.0371647321628694"/>
@@ -5765,10 +5765,10 @@
          <fundamentalDiagram capacity="0.450146666666667" capacity_drop="0" congestion_speed="3.2925214122657" critical_speed="24.2243998796472" free_flow_speed="24.2243998796472" id="99" jam_density="0.155300282323293" order="1" std_dev_capacity="0" std_dev_congestion_speed="0" std_dev_free_flow_speed="0" transition_density="0.0185823660814347"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile dt="86400" id="100" link_id="206" sensor_id="717624" start_time="0">
-         <fundamentalDiagram capacity="0.450146666666667" capacity_drop="0" congestion_speed="4.47038888888889" critical_speed="32.8904430685103" free_flow_speed="32.8904430685103" id="100" jam_density="0.114381436959826" order="1" std_dev_capacity="0" std_dev_congestion_speed="0" std_dev_free_flow_speed="0" transition_density="0.013686245142062"/>
+         <fundamentalDiagram capacity="0.450146666666667" capacity_drop="0" congestion_speed="3.2925214122657" critical_speed="24.2243998796472" free_flow_speed="24.2243998796472" id="99" jam_density="0.155300282323293" order="1" std_dev_capacity="0" std_dev_congestion_speed="0" std_dev_free_flow_speed="0" transition_density="0.0185823660814347"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile dt="86400" id="101" link_id="207" sensor_id="717624" start_time="0">
-         <fundamentalDiagram capacity="0.450146666666667" capacity_drop="0" congestion_speed="4.47038888888889" critical_speed="32.8904430685103" free_flow_speed="32.8904430685103" id="101" jam_density="0.114381436959826" order="1" std_dev_capacity="0" std_dev_congestion_speed="0" std_dev_free_flow_speed="0" transition_density="0.013686245142062"/>
+         <fundamentalDiagram capacity="0.450146666666667" capacity_drop="0" congestion_speed="3.2925214122657" critical_speed="24.2243998796472" free_flow_speed="24.2243998796472" id="99" jam_density="0.155300282323293" order="1" std_dev_capacity="0" std_dev_congestion_speed="0" std_dev_free_flow_speed="0" transition_density="0.0185823660814347"/>
       </fundamentalDiagramProfile>
       <fundamentalDiagramProfile dt="86400" id="102" link_id="208" sensor_id="770568" start_time="0">
          <fundamentalDiagram capacity="0.4704" capacity_drop="0" congestion_speed="11.1759722222222" critical_speed="31.2154510095277" free_flow_speed="31.2154510095277" id="102" jam_density="0.0571597581945899" order="1" std_dev_capacity="0" std_dev_congestion_speed="0" std_dev_free_flow_speed="0" transition_density="0.0150694603084999"/>
