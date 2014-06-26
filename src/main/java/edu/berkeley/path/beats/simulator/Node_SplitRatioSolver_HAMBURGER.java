@@ -78,7 +78,7 @@ public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 				diverging_ratio = 1;
 			}
 			
-			splitratio_new.set(0, off_ramp_id, v,  + diverging_ratio);
+			splitratio_new.set(0, off_ramp_id, v, diverging_ratio);
 			splitratio_new.set(0, fwy_id, v,1 - diverging_ratio);
 		}
 		
