@@ -68,18 +68,6 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 //		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
 //			((DemandProfile) dp).reset();
 	}
-	
-//	protected void validate() {
-//
-//		if(getDemandProfile()==null)
-//			return;
-//
-//		if(getDemandProfile().isEmpty())
-//			return;
-//
-//		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
-//			((DemandProfile)dp).validate();
-//	}
 
     protected void validate() {
 
@@ -95,11 +83,6 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 
     }
 
-//	protected void update() {
-//    	for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
-//    		((DemandProfile) dp).update(false);
-//	}
-
     protected void update() {
         Iterator it = link_id_to_demandprofile.entrySet().iterator();
         while (it.hasNext())
@@ -110,35 +93,14 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
     // protected interface
     /////////////////////////////////////////////////////////////////////
 
-    protected boolean override_profile_for_link(long link_id,double dt,HashMap<Long,double []> demands){
+    public boolean has_profile_for_link(long link_id){
+        return link_id_to_demandprofile==null ? false : link_id_to_demandprofile.containsKey(link_id);
+    }
 
-        // create, populate, validate, and reset a new profile
-        DemandProfile newDp = new DemandProfile();
-        newDp.setDt(dt);
-        newDp.setLinkIdOrg(link_id);
-        newDp.setKnob(1d);
-        newDp.setStartTime(myScenario.getCurrentTimeInSeconds());
-        Iterator it = demands.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry)it.next();
-            Long vt = (Long) pairs.getKey();
-            double [] d = (double []) pairs.getValue();
-            Demand newd = new Demand();
-            newd.setVehicleTypeId(vt);
-            newd.setContent( BeatsFormatter.csv(d,",") );
-            newDp.getDemand().add(newd);
-        }
-        newDp.populate(myScenario);
-        newDp.validate();
-        newDp.reset();
-
-        // add to map
-        if(link_id_to_demandprofile.containsKey(link_id)){
-            link_id_to_demandprofile.put(link_id,newDp);
-            return true;
-        }
-        else
-            return false;
+    protected void add_or_replace_profile(DemandProfile dp){
+        if(link_id_to_demandprofile==null)
+            link_id_to_demandprofile = new HashMap<Long,DemandProfile>();
+        link_id_to_demandprofile.put(dp.getLinkIdOrg(),dp);
     }
 
     /////////////////////////////////////////////////////////////////////

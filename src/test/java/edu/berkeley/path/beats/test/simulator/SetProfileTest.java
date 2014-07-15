@@ -1,14 +1,16 @@
 package edu.berkeley.path.beats.test.simulator;
 
-import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.DemandProfile;
+import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -19,70 +21,114 @@ public class SetProfileTest {
 
     private static Scenario scenario;
     private static String config_folder = "data/config/";
-    private static String config_file = "complete.xml";
+    private static String config_file = "three_link.xml";
+    private long source_link_id = 1;
+    private long sink_link_id = 3;
+    private long vt_id = 0;
 
     @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
+    public static void setUp() throws Exception {
         scenario = ObjectFactory.createAndLoadScenario(config_folder + config_file);
         if(scenario==null)
             fail("scenario did not load");
-
-        double timestep = Defaults.getTimestepFor(config_file);
+        double timestep = 5;
         double starttime = 0;
-        double endtime = 300;
+        double endtime = 3600;
         int numEnsemble = 1;
-        scenario.initialize(timestep,starttime,endtime,numEnsemble);
-
-        scenario.advanceNSeconds(100);
+        scenario.initialize(timestep, starttime, endtime, numEnsemble);
     }
 
     @Test
     public void test_setDemandProfile() {
 
-        long link_id = 1;
-        long vt_id = 0;
-        double sim_dt = scenario.getSimdtinseconds();
+        HashMap<Long,double []> hmap;
+        ArrayList<Double> inflow = new ArrayList();
+        Link link = scenario.getLinkWithId(source_link_id);
 
         try {
 
-            // get existing profile
-            DemandProfile dp = scenario.get_current_demand_for_link(link_id);
+            // set demands to 100,200 vph with dt=50 seconds
+            hmap = new HashMap<Long,double []>();
+            hmap.put(vt_id,new double [] {100d/3600d,200d/3600d});
 
-            // get current value
-            double current_demand = dp.getCurrentValue(0)[0]/sim_dt;
-            double [] override = {current_demand*2};
+            // send it to the scenario
+            scenario.set_demand_for_link_si(source_link_id,50, hmap);
 
-            System.out.println("Current: " + 3600*current_demand + " vph");
-            System.out.println("Override: " + 3600*override[0] + " vph");
+            // advance 120 seconds
+            for(int i=0;i<24;i++){
+                scenario.advanceNSeconds(5d);
+                inflow.add(link.getInflowInVeh(0)[0]*3600d/5d);
+            }
 
-            HashMap<Long,double []> X = new HashMap<Long,double []>();
-            X.put(vt_id,override);
+            // change demands to constant 300 vph 
+            hmap = new HashMap<Long,double []>();
+            hmap.put(vt_id,new double [] {300d/3600d});
 
-            scenario.set_demand_for_link_si(link_id, dp.getDt().doubleValue(), X);
+            // send it to the scenario
+            scenario.set_demand_for_link_si(source_link_id,50, hmap);
 
-            scenario.advanceNSeconds(sim_dt);
-
-            dp = scenario.get_current_demand_for_link(link_id);
-            current_demand = dp.getCurrentValue(0)[0]/sim_dt;
-
-
-            System.out.println("New current: " + 3600*current_demand + " vph");
-
-            scenario.advanceNSeconds(50*sim_dt);
-            current_demand = dp.getCurrentValue(0)[0]/sim_dt;
-            System.out.println("After 50 dts: " + 3600*current_demand + " vph");
+            // advance 120 seconds
+            for(int i=0;i<24;i++){
+                scenario.advanceNSeconds(5d);
+                inflow.add(link.getInflowInVeh(0)[0]*3600d/5d);
+            }
 
         } catch ( Exception exp){
-
+            assertTrue(false);
         }
 
-//        scenario.set_demand_for_link_si(link_id,start_time,dt,demands);
+        // inflow should be 100 vph for 10 steps, then 200 vph for 14 steps, then 300 for 24 steps
+        for(int i=0;i<10;i++)
+            assertEquals(inflow.get(i),100d,1E-2);
+        for(int i=10;i<24;i++)
+            assertEquals(inflow.get(i),200d,1E-2);
+        for(int i=24;i<48;i++)
+            assertEquals(inflow.get(i),300d,1E-2);
     }
 
     @Test
     public void test_setCapcityProfile() {
-        assertTrue(true);
-//        assertEquals(sensor.getMyLink().getId(),1);
+
+        ArrayList<Double> outflow = new ArrayList();
+        Link link = scenario.getLinkWithId(sink_link_id);
+
+        try{
+
+            // add a demand of 1800 vph to source link
+            HashMap<Long,double []> hmap = new HashMap<Long,double []>();
+            double [] v2 = {1800d/3600d};
+            hmap.put(vt_id, v2);
+            scenario.set_demand_for_link_si(source_link_id,5000, hmap);
+
+            // block the sink
+            scenario.set_capacity_for_link_si(sink_link_id,3600d,new double[]{0d});
+
+            // advance 120 seconds
+            for(int i=0;i<24;i++){
+                scenario.advanceNSeconds(5d);
+                outflow.add(link.getOutflowInVeh(0)[0]*3600d/5d);
+            }
+
+            // unblock the sink
+            scenario.set_capacity_for_link_si(sink_link_id,3600d,new double[]{100d});
+
+            // advance 120 seconds
+            for(int i=0;i<24;i++){
+                scenario.advanceNSeconds(5d);
+                outflow.add(link.getOutflowInVeh(0)[0]*3600d/5d);
+            }
+
+        } catch ( Exception exp){
+            System.err.println(exp);
+            assertTrue(false);
+        }
+
+        // outflow should be 0 vph for 24 steps, then 1800 for 24 steps
+        for(int i=0;i<24;i++)
+            assertEquals(outflow.get(i),0d,1E-2);
+        for(int i=24;i<48;i++)
+            assertEquals(outflow.get(i),1800d,1E-2);
+
     }
 
 }

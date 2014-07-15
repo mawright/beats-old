@@ -124,8 +124,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// boundary capacities (must follow network)
 		if(downstreamBoundaryCapacitySet!=null)
-			for( edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile() )
-				((CapacityProfile) capacityProfile).populate(this);
+            ((CapacitySet)downstreamBoundaryCapacitySet).populate(this);
+//			for( edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile() )
+//				((CapacityProfile) capacityProfile).populate(this);
 
 		if(demandSet!=null)
 			((DemandSet) demandSet).populate(this);
@@ -188,8 +189,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// validate capacity profiles
 		if(S.downstreamBoundaryCapacitySet!=null)
-			for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : S.downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
-				((CapacityProfile)capacityProfile).validate();
+            ((CapacitySet)S.downstreamBoundaryCapacitySet).validate();
+//			for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : S.downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
+//				((CapacityProfile)capacityProfile).validate();
 
 		// validate demand profiles
 		if(S.demandSet!=null)
@@ -275,8 +277,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         // sample profiles .............................
     	if(downstreamBoundaryCapacitySet!=null)
-        	for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
-        		((CapacityProfile) capacityProfile).update();
+            ((CapacitySet)downstreamBoundaryCapacitySet).update();
+//        	for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
+//        		((CapacityProfile) capacityProfile).update();
 
     	if(demandSet!=null)
     		((DemandSet)demandSet).update();
@@ -1565,6 +1568,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     }
 
     public DemandProfile get_current_demand_for_link(long link_id){
+        if(demandSet==null)
+            return null;
         return ((DemandSet) demandSet).get_demand_profile_for_link_id(link_id);
     }
 
@@ -1572,13 +1577,76 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
        Demand profiles are provided in a hash map with vehicle type id as the key.
        Units must be SI.
      */
-    public boolean set_demand_for_link_si(long link_id, double dt, HashMap<Long, double[]> demands){
-        DemandSet ds = (DemandSet) demandSet;
-        if(!ds.override_profile_for_link(link_id,dt,demands)){
-            System.err.println("Attempted to set demand profile on bad link id.");
-            return false;
+    public void set_demand_for_link_si(long link_id, double dt, HashMap<Long, double[]> demands) throws Exception{
+
+        // put the given demands into a DemandProfile
+        DemandProfile dp = new DemandProfile();
+        dp.setLinkIdOrg(link_id);
+        dp.setDt(dt);
+        dp.setKnob(1d);
+        dp.setStartTime(getCurrentTimeInSeconds());
+        Iterator it = demands.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry)it.next();
+            System.out.println(pairs.getKey() + " = " + pairs.getValue());
+            Demand d = new Demand();
+            d.setVehicleTypeId( (Long) pairs.getKey() );
+            d.setContent(BeatsFormatter.csv((double[])pairs.getValue(),","));
+            dp.getDemand().add(d);
         }
-        return true;
+
+        // populate, validate, reset
+        dp.populate(this);
+        BeatsErrorLog.clearErrorMessage();
+        dp.validate();
+        if(BeatsErrorLog.haserror()){
+            BeatsErrorLog.print();
+            throw new Exception("Failed in set_demand_for_link_si()");
+        }
+        dp.reset();
+
+        // check wheter I have a demandSet, otherwise create one
+        if(demandSet==null){
+            demandSet = new DemandSet();
+            ((DemandSet)demandSet).populate(this);
+        }
+
+        // add the demand profile to the demand set
+        ((DemandSet)demandSet).add_or_replace_profile(dp);
+
+    }
+
+    public void set_capacity_for_link_si(long link_id,double dt,double [] capacity) throws Exception {
+
+        // put the given capacity into a profile
+        CapacityProfile cp = new CapacityProfile();
+        cp.setStartTime(getCurrentTimeInSeconds());
+        cp.setDt(dt);
+        cp.setLinkId(link_id);
+        cp.setContent(BeatsFormatter.csv(capacity,","));
+
+        // populate, validate, reset
+        cp.populate(this);
+
+        // populate, validate, reset
+        cp.populate(this);
+        BeatsErrorLog.clearErrorMessage();
+        cp.validate();
+        if(BeatsErrorLog.haserror()){
+            BeatsErrorLog.print();
+            throw new Exception("Failed in set_demand_for_link_si()");
+        }
+        cp.reset();
+
+        // check wheter I have a demandSet, otherwise create one
+        if(downstreamBoundaryCapacitySet==null){
+            downstreamBoundaryCapacitySet = new CapacitySet();
+            ((CapacitySet)downstreamBoundaryCapacitySet).populate(this);
+        }
+
+        // add the capacity profile to the capacity set
+        ((CapacitySet)downstreamBoundaryCapacitySet).add_or_replace_profile(cp);
+
     }
 
 }
