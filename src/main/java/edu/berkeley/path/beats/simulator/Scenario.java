@@ -1574,10 +1574,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     }
 
     /* override the demand profile on a given link.
-       Demand profiles are provided in a hash map with vehicle type id as the key.
-       Units must be SI.
+       The demand is provided as an array, and split evenly over all vehicle types
+       Units are veh/second.
      */
-    public void set_demand_for_link_si(long link_id, double dt, HashMap<Long, double[]> demands) throws Exception{
+    public void set_demand_for_link_si(long link_id, double dt, double[] demands) throws Exception{
+    //public void set_demand_for_link_si(long link_id, double dt, HashMap<Long, double[]> demands) throws Exception{
+
+        if(demands.length<=1)
+            dt = Double.POSITIVE_INFINITY;
 
         // put the given demands into a DemandProfile
         DemandProfile dp = new DemandProfile();
@@ -1585,13 +1589,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         dp.setDt(dt);
         dp.setKnob(1d);
         dp.setStartTime(getCurrentTimeInSeconds());
-        Iterator it = demands.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry)it.next();
-            System.out.println(pairs.getKey() + " = " + pairs.getValue());
+
+        double [] demand_per_vt = BeatsMath.times(demands,1d/((double)numVehicleTypes));
+        for(VehicleType vt : getVehicleTypeSet().getVehicleType()){
             Demand d = new Demand();
-            d.setVehicleTypeId( (Long) pairs.getKey() );
-            d.setContent(BeatsFormatter.csv((double[])pairs.getValue(),","));
+            d.setVehicleTypeId(vt.getId());
+            d.setContent(BeatsFormatter.csv(demand_per_vt, ","));
             dp.getDemand().add(d);
         }
 
@@ -1617,6 +1620,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     }
 
     public void set_capacity_for_link_si(long link_id,double dt,double [] capacity) throws Exception {
+
+        if(capacity.length<=1)
+            dt = Double.POSITIVE_INFINITY;
 
         // put the given capacity into a profile
         CapacityProfile cp = new CapacityProfile();

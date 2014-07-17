@@ -48,11 +48,7 @@ public class SetProfileTest {
         try {
 
             // set demands to 100,200 vph with dt=50 seconds
-            hmap = new HashMap<Long,double []>();
-            hmap.put(vt_id,new double [] {100d/3600d,200d/3600d});
-
-            // send it to the scenario
-            scenario.set_demand_for_link_si(source_link_id,50, hmap);
+            scenario.set_demand_for_link_si(source_link_id,50d,new double [] {100d/3600d,200d/3600d});
 
             // advance 120 seconds
             for(int i=0;i<24;i++){
@@ -60,12 +56,8 @@ public class SetProfileTest {
                 inflow.add(link.getInflowInVeh(0)[0]*3600d/5d);
             }
 
-            // change demands to constant 300 vph 
-            hmap = new HashMap<Long,double []>();
-            hmap.put(vt_id,new double [] {300d/3600d});
-
-            // send it to the scenario
-            scenario.set_demand_for_link_si(source_link_id,50, hmap);
+            // change demands to constant 300 vph
+            scenario.set_demand_for_link_si(source_link_id,0d, new double [] {300d/3600d});
 
             // advance 120 seconds
             for(int i=0;i<24;i++){
@@ -95,13 +87,10 @@ public class SetProfileTest {
         try{
 
             // add a demand of 1800 vph to source link
-            HashMap<Long,double []> hmap = new HashMap<Long,double []>();
-            double [] v2 = {1800d/3600d};
-            hmap.put(vt_id, v2);
-            scenario.set_demand_for_link_si(source_link_id,5000, hmap);
+            scenario.set_demand_for_link_si(source_link_id,0d,new double [] {1800d/3600d});
 
             // block the sink
-            scenario.set_capacity_for_link_si(sink_link_id,3600d,new double[]{0d});
+            scenario.set_capacity_for_link_si(sink_link_id,0d,new double[]{0d});
 
             // advance 120 seconds
             for(int i=0;i<24;i++){
