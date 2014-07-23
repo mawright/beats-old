@@ -10,6 +10,8 @@ import org.junit.Test;
 import edu.berkeley.path.beats.simulator.BeatsFormatter;
 import edu.berkeley.path.beats.simulator.BeatsMath;
 
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+
 public class BeatsMathTest {
 
 	private String fixture_folder = "data/test/fixture/";
@@ -327,7 +329,30 @@ public class BeatsMathTest {
 		assertEquals(BeatsMath.gcd(-20,11),-1);
 		assertEquals(BeatsMath.gcd(-20,0),-20);
 	}
-
+	
+	@Test
+	public void test_dirichlet() {
+		// tests to see if sample mean is close to mean
+		int num_samples = 1000;
+		double[] params = { 2, 10, 30 };
+		double[] sample = new double[params.length];
+		Mean meancat1 = new Mean();
+		Mean meancat2 = new Mean();
+		Mean meancat3 = new Mean();
+		for(int i=0;i<num_samples;i++) {
+			sample = BeatsMath.sampleDirichlet(params);
+			meancat1.increment(sample[0]);
+			meancat2.increment(sample[1]);
+			meancat3.increment(sample[2]);
+		}
+		double eValuecat1 = params[0]/BeatsMath.sum(params);
+		double eValuecat2 = params[1]/BeatsMath.sum(params);
+		double eValuecat3 = params[2]/BeatsMath.sum(params);
+		assertEquals(meancat1.getResult(),eValuecat1,.05);
+		assertEquals(meancat2.getResult(),eValuecat2,.05);
+		assertEquals(meancat3.getResult(),eValuecat3,.05);
+	}
+	
 //	@Test
 //	public void test_makecopy() {
 //		Double [][] x = {{1d,2d},{3d,4d},{5d,6d}};

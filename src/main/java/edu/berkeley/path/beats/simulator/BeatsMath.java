@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
+import org.apache.commons.math3.distribution.GammaDistribution;
 
 /** XXX. 
  * YYY
@@ -330,5 +331,20 @@ public final class BeatsMath {
 	
 	public static double sampleZeroMeanGaussian(double std_dev){
 		return std_dev*BeatsMath.random.nextGaussian();
+	}
+	
+	public static double[] sampleDirichlet(double[] concentration_parameters){
+		// Samples from a Dirichlet distribution using Gamma distributions
+		// Random variables distributed according to a Dirichlet distribution are random vectors
+		// whose entries are in the range [0, 1] and sum to 1.
+		int i;
+		double[] sample = new double[concentration_parameters.length];
+		for(i=0;i<concentration_parameters.length;i++){
+			GammaDistribution Gamma = new GammaDistribution(concentration_parameters[i], 1);
+			sample[i] = Gamma.sample();
+		}
+		double sum_sample = BeatsMath.sum(sample);
+		sample = BeatsMath.times(sample, 1/sum_sample);
+		return sample;
 	}
 }
