@@ -215,6 +215,19 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
         int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
         
+        
+        // Select a split ratio from profile, event, or controller
+        if(istrivialsplit)
+            splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
+        else{
+            if(has_profile)
+                splitratio_selected = new Double3DMatrix(my_profile.getCurrentSplitRatio());
+            if(has_controller_split)
+                splitratio_selected.override_splits(this,controller_splits);
+//        if(has_event_split)
+//            splitratio_selected.override_splits(event_splits);
+        }
+        
         for(e=0;e<numEnsemble;e++){
 
             Node_FlowSolver.SupplyDemand demand_supply = new SupplyDemand(nIn,nOut,numVehicleTypes);
@@ -224,20 +237,6 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     			demand_supply.setDemand(i,input_link[i].get_out_demand_in_veh(e) );
     		for(j=0;j<nOut;j++)
     			demand_supply.setSupply(j,output_link[j].get_space_supply_in_veh(e));
-
-
-            // Select a split ratio from profile, event, or controller
-            if(istrivialsplit)
-                splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
-            else{
-                if(has_profile)
-                    splitratio_selected = new Double3DMatrix(my_profile.getCurrentSplitRatio());
-                if(has_controller_split)
-                    splitratio_selected.override_splits(this,controller_splits);
-//            if(has_event_split)
-//                splitratio_selected.override_splits(event_splits);
-            }
-
 
             // compute applied split ratio matrix
             Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected,demand_supply,e);
