@@ -347,4 +347,15 @@ public final class BeatsMath {
 		sample = BeatsMath.times(sample, 1/sum_sample);
 		return sample;
 	}
+	
+	public static double[] betaParamsFromRVMeanAndVariance(double mean, double variance){
+		// The beta distribution is the special case of the Dirichlet distribution for k = 2
+		// k > 2 not implemented yet
+		double[] params = new double[2];
+		double m = mean;
+		double v = variance;
+		params[0] = - m * (Math.pow(m, 2) - m + v) / v;
+		params[1] = (m-1) * (Math.pow(m, 2) - m + v) / v;
+		return params;
+	}
 }
