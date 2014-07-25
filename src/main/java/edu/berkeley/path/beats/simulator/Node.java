@@ -72,6 +72,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// selected split ratio
 	private Double3DMatrix splitratio_selected;
 	
+	// stochasticity
+	protected boolean isdeterministic;
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
@@ -110,6 +113,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		isTerminal = nOut==0 || nIn==0;
         istrivialsplit = nOut<=1;
         has_profile = false;
+        isdeterministic = true;
 
     	if(isTerminal)
     		return;
@@ -237,9 +241,19 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     			demand_supply.setDemand(i,input_link[i].get_out_demand_in_veh(e) );
     		for(j=0;j<nOut;j++)
     			demand_supply.setSupply(j,output_link[j].get_space_supply_in_veh(e));
+    		
+			// perturb split ratio
+    		Double3DMatrix splitratio_selected_perturbed;
+    		if(!isdeterministic){
+    			if (nOut==2){
+    				splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile.getVariance());}
+    			else{
+    				splitratio_selected_perturbed = new Double3DMatrix(splitratio_selected);}}
+    		else
+    			splitratio_selected_perturbed = new Double3DMatrix(splitratio_selected);
 
-            // compute applied split ratio matrix
-            Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected,demand_supply,e);
+			// compute applied split ratio matrix
+            Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected_perturbed,demand_supply,e);
 
             /////////////////////////////////////////////////
             // write first to logger
@@ -277,6 +291,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		this.my_profile = mySplitRatioProfile;
 		if(!istrivialsplit){
 			this.has_profile = true;
+			if (!mySplitRatioProfile.isdeterministic())
+				isdeterministic = false;
 		}
 	}
 
