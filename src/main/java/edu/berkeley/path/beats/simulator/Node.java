@@ -509,6 +509,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     }
 
     public static double[][][] perturb2DSplitForTest(double[][][] splitData){
+    	// implemented this way because Double3DMatrix is not public so not viewable in java/test/ package
     	Double3DMatrix split = new Double3DMatrix(splitData);
     	Double3DMatrix perturbedSplit = SplitRatioPerturber.perturb2OutputSplit(split, .03);
     	return perturbedSplit.cloneData();
