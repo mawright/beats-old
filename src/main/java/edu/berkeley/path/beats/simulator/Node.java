@@ -244,11 +244,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     		
 			// perturb split ratio
     		Double3DMatrix splitratio_selected_perturbed;
-    		if(!isdeterministic){
-    			if (nOut==2){
-    				splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile.getVariance());}
-    			else{
-    				splitratio_selected_perturbed = new Double3DMatrix(splitratio_selected);}}
+    		if(!isdeterministic && nOut==2 && nIn==1)
+   				splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile.getVariance());
     		else
     			splitratio_selected_perturbed = new Double3DMatrix(splitratio_selected);
 
@@ -511,6 +508,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         return istrivialsplit;
     }
 
-
+    public static double[][][] perturb2DSplitForTest(double[][][] splitData){
+    	Double3DMatrix split = new Double3DMatrix(splitData);
+    	Double3DMatrix perturbedSplit = SplitRatioPerturber.perturb2OutputSplit(split, .03);
+    	return perturbedSplit.cloneData();
+    }
 
 }
