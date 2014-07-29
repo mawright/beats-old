@@ -634,7 +634,7 @@
 					type="xs:long" use="optional" />
 				<xs:attribute name="mod_stamp" type="xs:string"
 					use="optional" default="0" />
-				<xs:attribute name="variance" type="xs:double"></xs:attribute>
+				<xs:attribute name="variance" type="xs:double" use="optional"/>
 			</xs:complexType>
 		</xs:element>		  
 
