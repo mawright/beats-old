@@ -15,11 +15,15 @@ public class SplitRatioPerturber {
 	
 	public static Double3DMatrix[] perturb2OutputSplit(Double3DMatrix split, double variance, int numEnsemble){
 		Double3DMatrix[] splitPerturbed = new Double3DMatrix[numEnsemble];
-		Arrays.fill(splitPerturbed, split);
 		
 		if(split.getnIn()!=1 && split.getnOut()!=2){
+			Arrays.fill(splitPerturbed, split);
 			return splitPerturbed;
-		}		
+		}
+		int e;
+		for (e=0;e<numEnsemble;e++){
+			splitPerturbed[e] = new Double3DMatrix(split);
+		}
 		
 		for (int v=0;v<split.getnVTypes();v++){
 			double max = 0;
@@ -40,7 +44,7 @@ public class SplitRatioPerturber {
 				params = BeatsMath.betaParamsFromRVMeanAndVariance(newmax, variance);
 				sample = BeatsMath.sampleDirichlet(params, numEnsemble);
 			}
-			for (int e=0;e<numEnsemble;e++){
+			for (e=0;e<numEnsemble;e++){
 				splitPerturbed[e].set(0, max_index, v, sample[e][0]);
 				splitPerturbed[e].set(0, 1-max_index, v, sample[e][1]);
 			}
