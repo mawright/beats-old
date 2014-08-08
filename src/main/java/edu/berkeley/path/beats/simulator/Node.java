@@ -30,6 +30,7 @@ import edu.berkeley.path.beats.jaxb.Splitratio;
 import edu.berkeley.path.beats.simulator.Node_FlowSolver.SupplyDemand;
 
 import java.io.BufferedWriter;
+import java.util.Arrays;
 import java.util.List;
 
 /** Node class.
@@ -232,6 +233,13 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 //            splitratio_selected.override_splits(event_splits);
         }
         
+     // perturb split ratio
+		Double3DMatrix[] splitratio_selected_perturbed = new Double3DMatrix[numEnsemble];
+		if(!isdeterministic && nOut==2 && nIn==1)
+			splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile.getVariance(), numEnsemble);
+		else
+			Arrays.fill(splitratio_selected_perturbed, 0, splitratio_selected_perturbed.length, splitratio_selected);
+        
         for(e=0;e<numEnsemble;e++){
 
             Node_FlowSolver.SupplyDemand demand_supply = new SupplyDemand(nIn,nOut,numVehicleTypes);
@@ -241,16 +249,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     			demand_supply.setDemand(i,input_link[i].get_out_demand_in_veh(e) );
     		for(j=0;j<nOut;j++)
     			demand_supply.setSupply(j,output_link[j].get_space_supply_in_veh(e));
-    		
-			// perturb split ratio
-    		Double3DMatrix splitratio_selected_perturbed;
-    		if(!isdeterministic && nOut==2 && nIn==1)
-   				splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile.getVariance());
-    		else
-    			splitratio_selected_perturbed = new Double3DMatrix(splitratio_selected);
 
 			// compute applied split ratio matrix
-            Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected_perturbed,demand_supply,e);
+            Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected_perturbed[e],demand_supply,e);
 
             /////////////////////////////////////////////////
             // write first to logger
@@ -511,8 +512,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     public static double[][][] perturb2DSplitForTest(double[][][] splitData){
     	// implemented this way because Double3DMatrix is not public so not viewable in java/test/ package
     	Double3DMatrix split = new Double3DMatrix(splitData);
-    	Double3DMatrix perturbedSplit = SplitRatioPerturber.perturb2OutputSplit(split, .03);
-    	return perturbedSplit.cloneData();
+    	Double3DMatrix[] perturbedSplit = SplitRatioPerturber.perturb2OutputSplit(split, .03, 1);
+    	return perturbedSplit[0].cloneData();
     }
 
 }

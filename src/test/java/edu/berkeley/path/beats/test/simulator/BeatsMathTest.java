@@ -335,15 +335,15 @@ public class BeatsMathTest {
 		// tests to see if sample mean is close to mean
 		int num_samples = 1000;
 		double[] params = { 2, 10, 30 };
-		double[] sample = new double[params.length];
+		double[][] sample = new double[num_samples][params.length];
 		Mean meancat1 = new Mean();
 		Mean meancat2 = new Mean();
 		Mean meancat3 = new Mean();
+		sample = BeatsMath.sampleDirichlet(params, num_samples);
 		for(int i=0;i<num_samples;i++) {
-			sample = BeatsMath.sampleDirichlet(params);
-			meancat1.increment(sample[0]);
-			meancat2.increment(sample[1]);
-			meancat3.increment(sample[2]);
+			meancat1.increment(sample[i][0]);
+			meancat2.increment(sample[i][1]);
+			meancat3.increment(sample[i][2]);
 		}
 		double eValuecat1 = params[0]/BeatsMath.sum(params);
 		double eValuecat2 = params[1]/BeatsMath.sum(params);

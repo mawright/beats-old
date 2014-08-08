@@ -1,5 +1,9 @@
 package edu.berkeley.path.beats.simulator;
 
+import java.util.Arrays;
+
+import org.apache.commons.math3.exception.NotStrictlyPositiveException;
+
 public class SplitRatioPerturber {
 
 	/**
@@ -9,11 +13,13 @@ public class SplitRatioPerturber {
 		// TODO Auto-generated method stub
 	}
 	
-	public static Double3DMatrix perturb2OutputSplit(Double3DMatrix split, double variance){
-		if(split.getnIn()!=1 && split.getnOut()!=2)
-			return split;
+	public static Double3DMatrix[] perturb2OutputSplit(Double3DMatrix split, double variance, int numEnsemble){
+		Double3DMatrix[] splitPerturbed = new Double3DMatrix[numEnsemble];
+		Arrays.fill(splitPerturbed, split);
 		
-		Double3DMatrix splitPerturbed = new Double3DMatrix(split);
+		if(split.getnIn()!=1 && split.getnOut()!=2){
+			return splitPerturbed;
+		}		
 		
 		for (int v=0;v<split.getnVTypes();v++){
 			double max = 0;
@@ -25,9 +31,19 @@ public class SplitRatioPerturber {
 				}
 			}
 			double[] params = BeatsMath.betaParamsFromRVMeanAndVariance(max, variance);
-			double[] sample = BeatsMath.sampleDirichlet(params);
-			splitPerturbed.set(0, max_index, v, sample[0]);
-			splitPerturbed.set(0, 1-max_index, v, sample[1]);
+			double[][] sample;
+			try{
+				sample = BeatsMath.sampleDirichlet(params, numEnsemble);
+			}
+			catch (NotStrictlyPositiveException ex){
+				double newmax = max - variance*1.5;
+				params = BeatsMath.betaParamsFromRVMeanAndVariance(newmax, variance);
+				sample = BeatsMath.sampleDirichlet(params, numEnsemble);
+			}
+			for (int e=0;e<numEnsemble;e++){
+				splitPerturbed[e].set(0, max_index, v, sample[e][0]);
+				splitPerturbed[e].set(0, 1-max_index, v, sample[e][1]);
+			}
 		}
 		return splitPerturbed;
 	}
