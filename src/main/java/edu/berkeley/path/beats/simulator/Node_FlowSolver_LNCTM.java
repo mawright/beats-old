@@ -82,7 +82,7 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
             if(BeatsMath.greaterthan(demand_supply.getSupply(j),0d))
                 dsratio[j] = Math.max( outDemandKnown[j] / demand_supply.getSupply(j) , 1d );
             else
-                dsratio[j] = 1d;
+	            	dsratio[e][j] = Double.POSITIVE_INFINITY;
 
             // reflect ratios back on inputs
             for(i=0;i<nIn;i++)
