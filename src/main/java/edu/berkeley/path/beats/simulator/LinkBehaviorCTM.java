@@ -83,9 +83,13 @@ public class LinkBehaviorCTM extends LinkBehavior {
             }
 
             // split among types
-            double alpha = totaloutflow/totaldensity;
-            for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-                outflowDemand[e][j] = get_density_in_veh(e, j)*alpha;
+            if(myScenario.getNumVehicleTypes()==1)
+                outflowDemand[e][0] = totaloutflow;
+            else{
+                double alpha = totaloutflow/totaldensity;
+                for(int j=0;j<myScenario.getNumVehicleTypes();j++)
+                    outflowDemand[e][j] = get_density_in_veh(e, j)*alpha;
+            }
 
         }
 

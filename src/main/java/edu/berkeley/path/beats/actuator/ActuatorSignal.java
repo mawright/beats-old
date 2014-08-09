@@ -42,6 +42,7 @@ public final class ActuatorSignal extends Actuator {
 	private HashMap<NEMA.ID,SignalPhase> nema2phase;
 	private Node myNode;
 	private ArrayList<SignalPhase> phases;
+    private PerformanceCalculator.SignalLogger signal_logger;
 
     /////////////////////////////////////////////////////////////////////
     // construction
@@ -60,9 +61,6 @@ public final class ActuatorSignal extends Actuator {
     /////////////////////////////////////////////////////////////////////
 
     public void set_command(ArrayList<SignalCommand> command){
-
-        if(!command.isEmpty())
-            System.out.println(command);
 
         for(SignalCommand c : command){
             SignalPhase p = nema2phase.get(c.nema);
@@ -100,16 +98,15 @@ public final class ActuatorSignal extends Actuator {
         // make list of phases and map
 		phases = new ArrayList<SignalPhase>();
 		nema2phase = new HashMap<NEMA.ID,SignalPhase>();
-        HashMap<NEMA.ID,List<Link>> nema_to_linklist = (HashMap<NEMA.ID,List<Link>>) implementor.get_target();
+        //HashMap<NEMA.ID,List<Link>> nema_to_linklist = (HashMap<NEMA.ID,List<Link>>) implementor.get_target();
         for(Phase jphase : jaxbSignal.getPhase() ){
             NEMA.ID nema = NEMA.int_to_nema(jphase.getNema().intValue());
-            List<Link> link_list = nema_to_linklist.get( nema );
-            if(link_list!=null){
-                SignalPhase sp = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
-                sp.populateFromJaxb(myScenario,jphase);
-                phases.add(sp);
-                nema2phase.put(nema,sp);
-            }
+            //List<Link> link_list = nema_to_linklist.get( nema );
+
+            SignalPhase sp = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
+            sp.populateFromJaxb(myScenario,jphase);
+            phases.add(sp);
+            nema2phase.put(nema,sp);
         }
 
 //        // get reference to opposing phase
@@ -220,8 +217,20 @@ public final class ActuatorSignal extends Actuator {
             ActuatorSignal.BulbColor new_bulb_color = phase.get_new_bulb_color(phase.hold_approved,phase.forceoff_approved);
 
             // set phase color if changed
-            if(new_bulb_color!=null){
+            if(new_bulb_color!=phase.bulbcolor){
+
                 phase.bulbcolor = new_bulb_color;
+
+                if(DebugFlags.signal_events)
+                    System.out.println(
+                            myNode.getMyNetwork().getMyScenario().getCurrentTimeInSeconds() + "\t" +
+                            "signal=" + getId() + "\t" +
+                            "phase=" + phase.myNEMA + "\t" +
+                            "color=" + phase.bulbcolor );
+
+                // log
+                if(signal_logger!=null)
+                    signal_logger.send_event(getId(),phase.myNEMA,phase.bulbcolor);
 
                 // deploy to dynamics
                 implementor.deploy_bulb_color(phase.myNEMA,phase.bulbcolor);
@@ -277,16 +286,48 @@ public final class ActuatorSignal extends Actuator {
 	// public methods
 	/////////////////////////////////////////////////////////////////////
 
+    // hack for call to deploy by Controller.initialize_actuators
+    public void deploy(double current_time_in_seconds,Controller caller){
+        if(caller==myController)
+            deploy(current_time_in_seconds);
+    }
+
 	public SignalPhase get_phase_with_nema(NEMA.ID nema){
 		if(nema==null)
 			return null;
 		return nema2phase.get(nema);
 	}
 
+    public void set_phase_state(NEMA.ID nema,BulbColor bulb_color){
+        SignalPhase phase = nema2phase.get(nema);
+        if(phase==null)
+            return;
+        phase.set_bulb_color(bulb_color);
+    }
+
     public Long get_node_id(){
         return myNode==null ? null : myNode.getId();
     }
 
+    public void register_event_logger(PerformanceCalculator.SignalLogger logger){
+        if(signal_logger==null)
+            signal_logger = logger;
+    }
+
+    public static int color_to_int(BulbColor x){
+        switch(x){
+            case GREEN:
+                return 1;
+            case YELLOW:
+                return 2;
+            case RED:
+                return 3;
+            case DARK:
+                return 4;
+            default:
+                return 0;
+        }
+    }
     /////////////////////////////////////////////////////////////////////
     // SignalPhase class
     /////////////////////////////////////////////////////////////////////
@@ -418,6 +459,10 @@ public final class ActuatorSignal extends Actuator {
         // protected
         /////////////////////////////////////////////////////////////////////
 
+        protected void set_bulb_color(BulbColor b){
+            this.bulbcolor = b;
+        }
+
 //        protected void updatePermitOpposingHold(){
 //            switch(bulbcolor){
 //                case GREEN:
@@ -439,19 +484,20 @@ public final class ActuatorSignal extends Actuator {
 
         protected ActuatorSignal.BulbColor get_new_bulb_color(boolean hold_approved,boolean forceoff_approved){
 
-            ActuatorSignal.BulbColor next_color = null;
+            ActuatorSignal.BulbColor next_color = bulbcolor;
             double bulbt = bulbtimer.getT();
 
             if(!protectd)
-                return permissive ? null : ActuatorSignal.BulbColor.RED;
+                return permissive ? ActuatorSignal.BulbColor.DARK : ActuatorSignal.BulbColor.RED;
 
             // execute this state machine until "done". May be more than once if
             // some state has zero holding time (eg yellowtime=0)
             boolean done=false;
 
+
             while(!done){
 
-                switch(bulbcolor){
+                switch(next_color){
 
                     // .............................................................................................
                     case GREEN:
@@ -539,6 +585,10 @@ public final class ActuatorSignal extends Actuator {
 
         public boolean is_red(){
             return bulbcolor==BulbColor.RED;
+        }
+
+        public BulbColor get_bulb_color(){
+            return bulbcolor;
         }
 
         public double getYellowtime() {
