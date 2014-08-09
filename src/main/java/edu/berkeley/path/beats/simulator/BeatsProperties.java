@@ -2,12 +2,16 @@ package edu.berkeley.path.beats.simulator;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
  * Created by gomes on 2/7/14.
  */
 public class BeatsProperties extends Properties {
+
+    public HashMap<String,Properties> aux_props;
 
     public String scenario_name;
     public String performance_config;
@@ -65,6 +69,18 @@ public class BeatsProperties extends Properties {
         if(output_prefix.isEmpty())
             throw new BeatsException("Output prefix not provided in properties file.");
 
+        aux_props = new HashMap<String,Properties>();
+        for(Map.Entry<Object, Object> entry : entrySet()){
+            String [] strlist = ((String) entry.getKey()).split("\\.");
+            if(strlist.length<=1)
+                continue;
+            String group_name = strlist[0];
+            if(!aux_props.containsKey(group_name))
+                aux_props.put(group_name,new Properties());
+            Properties prop = aux_props.get(group_name);
+            prop.setProperty(strlist[1],(String) entry.getValue());
+
+        }
     }
 
 

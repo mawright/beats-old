@@ -1,7 +1,7 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
-//import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker;
+import edu.berkeley.path.beats.control.adjoint_glue.AdjointRampMeteringPolicyMaker;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
@@ -29,8 +29,8 @@ public class Controller_CRM_MPC extends Controller {
     private edu.berkeley.path.beats.simulator.Network network;
 
     // parameters
-	private double pm_period;		  // [sec] period for calling the policy maker
-	private double pm_horizon;		  // [sec] policy maker time horizon
+    private double pm_period;		  // [sec] period for calling the policy maker
+    private double pm_horizon;		  // [sec] policy maker time horizon
     private double pm_dt;		 	  // [sec] internal time step for the policy maker
 
     // variable
@@ -40,48 +40,49 @@ public class Controller_CRM_MPC extends Controller {
 
 
     // derived
-    private int pm_horizon_steps;     // pm_horizon/pm_dt
+//    private int pm_horizon_steps;     // pm_horizon/pm_dt
 
-	/////////////////////////////////////////////////////////////////////
-	// Construction
-	/////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
+    // Construction
+    /////////////////////////////////////////////////////////////////////
 
-	public Controller_CRM_MPC(Scenario myScenario, edu.berkeley.path.beats.jaxb.Controller c) {
-		super(myScenario,c,Algorithm.CRM_MPC);
-	}
+    public Controller_CRM_MPC(Scenario myScenario, edu.berkeley.path.beats.jaxb.Controller c) {
+        super(myScenario,c,Algorithm.CRM_MPC);
+    }
 
-	/////////////////////////////////////////////////////////////////////
-	// populate / validate / reset
-	/////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
+    // populate / validate / reset
+    /////////////////////////////////////////////////////////////////////
 
-	@Override
-	protected void populate(Object jaxbobject) {
+    @Override
+    protected void populate(Object jaxbobject) {
 
-		// generate the policy maker
-		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) getJaxbController().getParameters();
-		policy_maker = null;
-		if (null != params && params.has("policy")){
+        // generate the policy maker
+        edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) getJaxbController().getParameters();
+        policy_maker = null;
+        if (null != params && params.has("policy")){
             PolicyMakerType myPMType;
-	    	try {
-				myPMType = PolicyMakerType.valueOf(params.get("policy").toLowerCase());
-			} catch (IllegalArgumentException e) {
-				myPMType = PolicyMakerType.NULL;
-			}
+            try {
+                myPMType = PolicyMakerType.valueOf(params.get("policy").toLowerCase());
+            } catch (IllegalArgumentException e) {
+                myPMType = PolicyMakerType.NULL;
+            }
 
-			switch(myPMType){
+            switch(myPMType){
                 case tester:
                     policy_maker = new PolicyMaker_Tester();
                     break;
-//				case adjoint:
-//					policy_maker = new AdjointRampMeteringPolicyMaker();
-//					break;
+                case adjoint:
+                    policy_maker = new AdjointRampMeteringPolicyMaker();
+                    policy_maker_properties = myScenario.get_auxiliary_properties("RAMP_METERING_ADJOINT");
+                    break;
 //				case actm_lp:
 //                    policy_maker = new PolicyMaker_CRM_ACTM_LP();
 //					break;
-				case NULL:
-					break;
-			}
-		}
+                case NULL:
+                    break;
+            }
+        }
 
         // link->actuator map
         link_actuator_map = new HashMap<Long,Actuator>();
@@ -91,21 +92,11 @@ public class Controller_CRM_MPC extends Controller {
                 link_actuator_map.put(new Long(se.getId()),act);
         }
 
-		// read timing parameters
+        // read timing parameters
         if(params!=null){
             pm_period = params.readParameter("dt_optimize", getDtinseconds());
             pm_dt = params.readParameter("policy_maker_timestep", getMyScenario().getSimdtinseconds());
             pm_horizon = params.readParameter("policy_maker_horizon",Double.NaN);
-            // policy maker parameters
-            String pm_properties_fn = params.get("policy_maker_properties");
-            if (pm_properties_fn != null) {
-                policy_maker_properties = new Properties();
-                try {
-                    policy_maker_properties.load(new FileInputStream(pm_properties_fn));
-                } catch (IOException e){
-                    System.err.print(e);
-                }
-            }
         }
         else{
             pm_period = getDtinseconds();
@@ -113,7 +104,7 @@ public class Controller_CRM_MPC extends Controller {
             pm_horizon = Double.NaN;
         }
 
-        pm_horizon_steps = BeatsMath.round(pm_horizon/pm_dt);
+//        pm_horizon_steps = BeatsMath.round(pm_horizon/pm_dt);
 
         // assign network (it will already be assigned if controller is scenario-less)
         if(network==null && myScenario!=null)
@@ -136,16 +127,16 @@ public class Controller_CRM_MPC extends Controller {
 
     }
 
-	@Override
-	protected void validate() {
+    @Override
+    protected void validate() {
 
-		super.validate();
+        super.validate();
 
-		if(policy_maker==null)
-			BeatsErrorLog.addError("Control algorithm undefined.");
+        if(policy_maker==null)
+            BeatsErrorLog.addError("Control algorithm undefined.");
 
-		if(Double.isNaN(pm_horizon))
-			BeatsErrorLog.addError("Optimization horizon undefined.");
+        if(Double.isNaN(pm_horizon))
+            BeatsErrorLog.addError("Optimization horizon undefined.");
 
         // opt_horizon is a multiple of pm_dt
         if(!Double.isNaN(pm_horizon) && !BeatsMath.isintegermultipleof(pm_horizon, pm_dt))
@@ -160,51 +151,51 @@ public class Controller_CRM_MPC extends Controller {
             return;
 
         // opt_period is a multiple of dtinseconds
-		if(!BeatsMath.isintegermultipleof(pm_period,getDtinseconds()))
-			BeatsErrorLog.addError("pm_period is not a a multiple of dtinseconds.");
+        if(!BeatsMath.isintegermultipleof(pm_period,getDtinseconds()))
+            BeatsErrorLog.addError("pm_period is not a a multiple of dtinseconds.");
 
-		// dtinseconds is a multiple of pm_dt
-		if(!BeatsMath.isintegermultipleof(getDtinseconds(), pm_dt))
-			BeatsErrorLog.addError("dtinseconds ("+getDtinseconds()+") is not a multiple of pm_dt ("+pm_dt+").");
+        // dtinseconds is a multiple of pm_dt
+        if(!BeatsMath.isintegermultipleof(getDtinseconds(), pm_dt))
+            BeatsErrorLog.addError("dtinseconds ("+getDtinseconds()+") is not a multiple of pm_dt ("+pm_dt+").");
 
-	}
+    }
 
-	@Override
-	protected void reset() {
-		super.reset();
-		time_last_opt = Double.NEGATIVE_INFINITY;
-	}
+    @Override
+    protected void reset() {
+        super.reset();
+        time_last_opt = Double.NEGATIVE_INFINITY;
+    }
 
-	/////////////////////////////////////////////////////////////////////
-	// update
-	/////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
+    // update
+    /////////////////////////////////////////////////////////////////////
 
-	@Override
-	protected void update() throws BeatsException {
+    @Override
+    protected void update() throws BeatsException {
 
-		double time_current = getMyScenario().getCurrentTimeInSeconds();
+        double time_current = getMyScenario().getCurrentTimeInSeconds();
 
-		// if it is time to optimize, update metering rate profile
-		if(BeatsMath.greaterorequalthan(time_current-time_last_opt, pm_period)){
+        // if it is time to optimize, update metering rate profile
+        if(BeatsMath.greaterorequalthan(time_current-time_last_opt, pm_period)){
 
-			// call policy maker (everything in SI units)
+            // call policy maker (everything in SI units)
             policy = policy_maker.givePolicy( network,
-                                              myScenario.gather_current_fds(time_current),
-                                              myScenario.predict_demands(time_current,pm_dt,pm_horizon_steps),
-                                              myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon_steps),
-                                              myScenario.gather_current_densities(),
-                                              controller_parameters,
-                                              pm_dt,
-                                              policy_maker_properties);
+                    myScenario.gather_current_fds(time_current),
+                    myScenario.predict_demands(time_current,pm_dt,pm_horizon),
+                    myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon),
+                    myScenario.gather_current_densities(),
+                    controller_parameters,
+                    pm_dt,
+                    policy_maker_properties);
 
             // update time keeper
-			time_last_opt = time_current;
-		}
+            time_last_opt = time_current;
+        }
 
         // .....
         send_policy_to_actuators(time_current);
 
-	}
+    }
 
     public void send_policy_to_actuators(double time_current){
         if(policy==null)
@@ -215,8 +206,8 @@ public class Controller_CRM_MPC extends Controller {
             ActuatorRampMeter act = (ActuatorRampMeter) link_actuator_map.get(rmprofile.sensorLink.getId());
             if(act!=null){
                 int clipped_time_index = Math.min(time_index,rmprofile.rampMeteringPolicy.size()-1);
-		double policy = rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d;
-		// System.out.println(policy);
+                double policy = rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d;
+                // System.out.println(policy);
                 act.setMeteringRateInVPH( policy);
             }
         }

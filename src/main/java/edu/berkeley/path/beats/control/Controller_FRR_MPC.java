@@ -1,20 +1,24 @@
 package edu.berkeley.path.beats.control;
 
-//import edu.berkeley.path.beats.control.adjoint_glue.AdjointReroutesPolicyMaker;
+import edu.berkeley.path.beats.actuator.ActuatorCMS;
+import edu.berkeley.path.beats.control.adjoint_glue.AdjointReroutesPolicyMaker;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.ScenarioElement;
 
 import java.util.HashMap;
+import java.util.Properties;
 
 public class Controller_FRR_MPC extends Controller {
 
     // policy maker
     private ReroutePolicyMaker policy_maker;
+    private Properties policy_maker_properties;
     private ReroutePolicySet policy;
-    private HashMap<Long,Actuator> link_actuator_map;
+    private HashMap<Long,Actuator> node_actuator_map;
 
     private edu.berkeley.path.beats.simulator.Network network;
 
@@ -30,7 +34,7 @@ public class Controller_FRR_MPC extends Controller {
 
 
     // derived
-    private int pm_horizon_steps;     // pm_horizon/pm_dt
+//    private int pm_horizon_steps;     // pm_horizon/pm_dt
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -50,6 +54,7 @@ public class Controller_FRR_MPC extends Controller {
 		// generate the policy maker
 		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) getJaxbController().getParameters();
 		policy_maker = null;
+        policy_maker_properties = null;
 		if (null != params && params.has("policy")){
             PolicyMakerType myPMType;
 	    	try {
@@ -59,20 +64,22 @@ public class Controller_FRR_MPC extends Controller {
 			}
 
 			switch(myPMType){
-//				case adjoint:
-//					policy_maker = new AdjointReroutesPolicyMaker();
-//					break;
+				case adjoint:
+					policy_maker = new AdjointReroutesPolicyMaker();
+                    policy_maker_properties = myScenario.get_auxiliary_properties("REROUTES_ADJOINT");
+					break;
 				case NULL:
 					break;
 			}
 		}
 
+
         // link->actuator map
-        link_actuator_map = new HashMap<Long,Actuator>();
+        node_actuator_map = new HashMap<Long,Actuator>();
         for(Actuator act : actuators){
             ScenarioElement se = (ScenarioElement) act.getScenarioElement();
-            if(se.getMyType()== ScenarioElement.Type.link)
-                link_actuator_map.put(new Long(se.getId()),act);
+            if(se.getMyType()==ScenarioElement.Type.node)
+                node_actuator_map.put(new Long(se.getId()),act);
         }
 
 		// read timing parameters
@@ -87,7 +94,7 @@ public class Controller_FRR_MPC extends Controller {
             pm_horizon = Double.NaN;
         }
 
-        pm_horizon_steps = BeatsMath.round(pm_horizon/pm_dt);
+//        pm_horizon_steps = BeatsMath.round(pm_horizon/pm_dt);
 
         // assign network (it will already be assigned if controller is scenario-less)
         if(network==null && myScenario!=null)
@@ -157,33 +164,33 @@ public class Controller_FRR_MPC extends Controller {
 			// call policy maker (everything in SI units)
             policy = policy_maker.givePolicy( network,
                                               myScenario.gather_current_fds(time_current),
-                                              myScenario.predict_demands(time_current,pm_dt,pm_horizon_steps),
-                                              myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon_steps),
+                                              myScenario.predict_demands(time_current,Double.NaN,pm_horizon),
+                                              myScenario.predict_split_ratios(time_current,Double.NaN,pm_horizon),
                                               myScenario.gather_current_densities(),
                                               myScenario.getRouteSet(),
-                                              pm_dt);
+                                              pm_dt,
+                                              policy_maker_properties );
 
             // update time keeper
 			time_last_opt = time_current;
 		}
 
-        // .....
-        send_policy_to_actuators(time_current);
+        // send policy to actuators
+        if(policy!=null){
+            double time_since_last_pm_call = time_current-time_last_opt;
+            int time_index = (int) (time_since_last_pm_call/pm_dt);
+            for(ReroutePolicyProfile rrprofile : policy.profiles){
+                ActuatorCMS act = (ActuatorCMS) node_actuator_map.get(rrprofile.actuatorNode.getId());
+                if(act!=null){
+                    int clipped_time_index = Math.min(time_index,rrprofile.reroutePolicy.size()-1);
+                    act.set_split(  rrprofile.in_link_id,
+                            rrprofile.out_link_id,
+                            rrprofile.vehicle_type_id,
+                            rrprofile.reroutePolicy.get(clipped_time_index) );
+                }
+            }
+        }
 
 	}
-
-    public void send_policy_to_actuators(double time_current){
-        if(policy==null)
-            return;
-//        double time_since_last_pm_call = time_current-time_last_opt;
-//        int time_index = (int) (time_since_last_pm_call/pm_dt);
-//        for(ReroutePolicyProfile rmprofile : policy.profiles){
-//            ActuatorRampMeter act = (ActuatorRampMeter) link_actuator_map.get(rmprofile.sensorLink.getId());
-//            if(act!=null){
-//                int clipped_time_index = Math.min(time_index,rmprofile.rampMeteringPolicy.size()-1);
-//                act.setMeteringRateInVPH( rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d);
-//            }
-//        }
-    }
 
 }
