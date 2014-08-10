@@ -1129,7 +1129,6 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="max_queue_vehicles" type="xs:double" use="required"/>	
 		</xs:complexType>
 	</xs:element>
 
