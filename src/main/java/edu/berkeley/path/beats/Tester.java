@@ -13,8 +13,9 @@ public class Tester {
 
         try{
 
-            String xml_file = "/home/matt/workspace_L0/L0-estimation/classes/210W/210W_v13_stochastic.xml";
+            //String xml_file = "/home/matt/workspace_L0/L0-estimation/classes/210W/210W_v13_stochastic.xml";
         	//String xml_file = "/home/matt/workspace_L0/beats/demo.xml";
+        	String xml_file = "/home/matt/workspace_L0/L0-estimation/classes/tests/configs/_smalltest_noisy_splits.xml";
         	Scenario scenario = (Scenario) ObjectFactory.createAndLoadScenario(xml_file);
 
             double simulation_dt = 5d;
@@ -24,8 +25,8 @@ public class Tester {
 
             scenario.initialize(simulation_dt, start_time, end_time, numEnsembles);
 
-            scenario.run();
-//            scenario.advanceNSeconds(1200);
+//            scenario.run();
+            scenario.advanceNSeconds(1200);
             
             double [][] X = scenario.getTotalDensity(scenario.getNetworkSet().getNetwork().get(0).getId());
 
