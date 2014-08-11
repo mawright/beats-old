@@ -667,9 +667,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return uncertaintyModel;
 	}
 
-	public boolean isGlobal_control_on() {
-		return global_control_on;
-	}
+//	public boolean isGlobal_control_on() {
+//		return global_control_on;
+//	}
 
 	public double getGlobal_demand_knob() {
 		return global_demand_knob;

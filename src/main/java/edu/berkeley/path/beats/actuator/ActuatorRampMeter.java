@@ -15,6 +15,8 @@ public class ActuatorRampMeter extends Actuator {
 	private Double min_rate_in_veh = 0d;
     private QueueOverride queue_override;
 
+    private double cycle_increment = 0.5d;   // [sec]
+
     /////////////////////////////////////////////////////////////////////
     // actuation command
     /////////////////////////////////////////////////////////////////////
@@ -23,13 +25,17 @@ public class ActuatorRampMeter extends Actuator {
         metering_rate_in_veh = rate_in_veh;
         metering_rate_in_veh = Math.max(metering_rate_in_veh,min_rate_in_veh);
         metering_rate_in_veh = Math.min(metering_rate_in_veh,max_rate_in_veh);
-	}
+
+        // round to the nearest time increment
+        if(!Double.isNaN(cycle_increment) & cycle_increment>0){
+            double dt = myController.getMyScenario().getSimdtinseconds();
+            double sec_per_veh = dt/metering_rate_in_veh;
+            metering_rate_in_veh = 1d/(Math.round(cycle_increment/sec_per_veh)*cycle_increment*dt);
+        }
+    }
 
 	public void setMeteringRateInVPH(Double rate_in_vph){
-        double dt_in_hours = myController.getMyScenario().getSimdtinseconds()/3600d;
-        metering_rate_in_veh = rate_in_vph*dt_in_hours;
-        metering_rate_in_veh = Math.max(metering_rate_in_veh,min_rate_in_veh);
-        metering_rate_in_veh = Math.min(metering_rate_in_veh,max_rate_in_veh);
+        setMeteringRateInVeh(rate_in_vph*myController.getMyScenario().getSimdtinseconds()/3600d);
 	}
 	
 	/////////////////////////////////////////////////////////////////////
