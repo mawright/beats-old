@@ -12,6 +12,11 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 	}
 
 	@Override
+	protected void validate() {
+		// TODO Auto-generated method stu
+	}
+	
+	@Override
 	protected void reset() {
 		dsratio 		= new double[myNode.nOut];
 		outDemandKnown 	= new double[myNode.nOut];
@@ -162,7 +167,6 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
                         sr_new[jj] += splitforeach;
 
                         if(Double.isNaN(sr_new[jj]))
-                            System.out.println("asdf");
 
                         outDemandKnown[jj] += demand_supply.getDemand(i,k)*splitforeach;
                     }
@@ -178,6 +182,8 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
     	return splitratio_new;
 
 	}
+
+
 
 
 }

@@ -51,7 +51,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public static enum UncertaintyType { uniform, gaussian }
 	public static enum ModeType { on_init_dens,left_of_init_dens,right_of_init_dens}
 	public static enum NodeFlowSolver { proportional , symmetric }
-	public static enum NodeSRSolver { A , B , C }
+	public static enum NodeSRSolver { A , B , C, HAMBURGER }
 
     private static Logger logger = Logger.getLogger(Scenario.class);
 

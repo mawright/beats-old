@@ -24,7 +24,6 @@ public class SetProfileTest {
     private static String config_file = "three_link.xml";
     private long source_link_id = 1;
     private long sink_link_id = 3;
-    private long vt_id = 0;
 
     @BeforeClass
     public static void setUp() throws Exception {
