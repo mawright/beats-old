@@ -588,11 +588,11 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         this.split_logger_dt = split_logger_dt;
     }
 	
-	protected void setGlobal_control_on(boolean global_control_on) {
+	public void setGlobal_control_on(boolean global_control_on) {
 		this.global_control_on = global_control_on;
 	}
 
-	protected void setGlobal_demand_knob(double global_demand_knob) {
+	public void setGlobal_demand_knob(double global_demand_knob) {
 		this.global_demand_knob = global_demand_knob;
 	}
 

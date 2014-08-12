@@ -382,7 +382,7 @@ public class Controller {
 		return jaxbController;
 	}
 
-	protected void setIson(boolean ison) {
+	public void setIson(boolean ison) {
 		this.ison = ison;
 	}
 	
