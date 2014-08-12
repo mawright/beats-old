@@ -45,7 +45,7 @@ import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 
 @SuppressWarnings("restriction")
-public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
+public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     public static enum RunMode { normal , fw_fr_split_output };
 	public static enum UncertaintyType { uniform, gaussian }
