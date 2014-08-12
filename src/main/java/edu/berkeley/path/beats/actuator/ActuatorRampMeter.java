@@ -15,7 +15,7 @@ public class ActuatorRampMeter extends Actuator {
 	private Double min_rate_in_veh = 0d;
     private QueueOverride queue_override;
 
-    private double cycle_increment = 0.5d;   // [sec]
+    private double cycle_increment;   // [sec]
 
     /////////////////////////////////////////////////////////////////////
     // actuation command
@@ -68,6 +68,10 @@ public class ActuatorRampMeter extends Actuator {
                     Double.parseDouble(params.get("min_rate_in_vphpl"))*lanes*dt_in_hours :
                     0d;
 		}
+
+        cycle_increment = Double.NaN;
+        if(params!=null && params.has("cycle_increment_sec"))
+            cycle_increment =  Double.parseDouble(params.get("cycle_increment_sec"));
 
         // queue override
         if(jaxbA.getQueueOverride()!=null)
