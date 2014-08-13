@@ -99,6 +99,11 @@ public class ActuatorRampMeter extends Actuator {
 	}
 
     @Override
+    protected void deploy_off_signal(){
+        implementor.deploy_metering_rate_in_veh(null);
+    };
+
+    @Override
     protected boolean register() {
         return ((Link)implementor.get_target()).register_flow_controller();
     }

@@ -384,6 +384,8 @@ public class Controller {
 
 	public void setIson(boolean ison) {
 		this.ison = ison;
+        for(Actuator act : this.actuators)
+            act.setIsOn(ison);
 	}
 	
 	/////////////////////////////////////////////////////////////////////
