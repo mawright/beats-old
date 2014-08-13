@@ -1568,7 +1568,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     }
     
     // set the clock to a specific time
-    public boolean setTimeInSeconds(int timeInSecs) throws BeatsException{
+    public void setTimeInSeconds(int timeInSecs) throws BeatsException{
     	
     	if(!BeatsMath.isintegermultipleof((double) timeInSecs,runParam.dt_sim))
 			throw new BeatsException("nsec (" + timeInSecs + ") must be an interger multiple of simulation dt (" + runParam.dt_sim + ").");
@@ -1598,11 +1598,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			}
 		} catch( BeatsException bex){
 			bex.printStackTrace();
-			return false;
+			throw bex;
 		}
-		
-    	
-    	return false;
+    }
 
     public DemandProfile get_current_demand_for_link(long link_id){
         if(demandSet==null)
