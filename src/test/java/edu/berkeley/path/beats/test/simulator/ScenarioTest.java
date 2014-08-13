@@ -119,9 +119,9 @@ public class ScenarioTest {
 			
 			double[][] densityAt200 = scenario.getTotalDensity(-1);
 			
-			scenario.advanceNSeconds(700d);
+			scenario.advanceNSeconds(300d);
 			double demand2 = scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0];
-			double[][] densityAt900Round1 = scenario.getTotalDensity(-1);
+			double[][] densityAt500Round1 = scenario.getTotalDensity(-1);
 			
 			assertFalse(scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0]==demand1);
 			
@@ -129,13 +129,13 @@ public class ScenarioTest {
 			scenario.setTotalDensity(densityAt200);
 			assertEquals(scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0],demand1,1e-4);
 			
-			scenario.advanceNSeconds(700d);
+			scenario.advanceNSeconds(300d);
 			assertEquals(scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0],demand2,1e-4);
 			
-			double[][] densityAt900Round2 = scenario.getTotalDensity(-1);
+			double[][] densityAt500Round2 = scenario.getTotalDensity(-1);
 			
-			for (int i=0;i<densityAt900Round1.length;i++)
-				assertEquals(densityAt900Round1[i][0], densityAt900Round2[i][0],1e-4);
+			for (int i=0;i<densityAt500Round1.length;i++)
+				assertEquals(densityAt500Round1[i][0], densityAt500Round2[i][0],1e-4);
 			
 		} catch (BeatsException e) {
 			fail("initialization failure.");
