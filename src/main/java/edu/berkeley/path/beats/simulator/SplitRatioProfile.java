@@ -170,14 +170,14 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 //					}		
 	}
 
-	protected void update() {
+	protected void update(boolean forcesample) {
 		if(profile==null)
 			return;
 		if(myNode==null)
 			return;
 		if(isdone)
 			return;
-		if(myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
+		if(forcesample || myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
 			
 			int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
 

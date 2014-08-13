@@ -280,7 +280,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         // sample profiles .............................
     	if(downstreamBoundaryCapacitySet!=null)
         	for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
-        		((CapacityProfile) capacityProfile).update();
+        		((CapacityProfile) capacityProfile).update(false);
 
     	if(demandSet!=null)
     		((DemandSet)demandSet).update();
@@ -290,7 +290,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     	if(fundamentalDiagramSet!=null)
         	for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdProfile : fundamentalDiagramSet.getFundamentalDiagramProfile())
-        		((FundamentalDiagramProfile) fdProfile).update();
+        		((FundamentalDiagramProfile) fdProfile).update(false);
 
         // update sensor readings .......................
     	sensorset.update();
@@ -1566,6 +1566,44 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 success &= ((Link)network.getLinkList().getLink().get(i)).set_density_in_veh(e,val);
             }
         return success;
+    }
+    
+    // set the clock to a specific time
+    public boolean setTimeInSeconds(int timeInSecs) throws BeatsException{
+    	
+    	if(!BeatsMath.isintegermultipleof((double) timeInSecs,runParam.dt_sim))
+			throw new BeatsException("nsec (" + timeInSecs + ") must be an interger multiple of simulation dt (" + runParam.dt_sim + ").");
+		int timestep = BeatsMath.round(timeInSecs/runParam.dt_sim);
+		
+		try{
+			reset();
+			
+			clock.setRelativeTimeStep(timestep);
+			
+			if(downstreamBoundaryCapacitySet!=null)
+	        	for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
+	        		((CapacityProfile) capacityProfile).update(true);
+		
+			if(demandSet!=null){
+				for(edu.berkeley.path.beats.jaxb.DemandProfile dp : ((DemandSet) demandSet).getDemandProfile())
+					((DemandProfile) dp).update(true);
+			
+			if(splitRatioSet!=null)
+	    		for(edu.berkeley.path.beats.jaxb.SplitRatioProfile srp : ((SplitRatioSet) splitRatioSet).getSplitRatioProfile())
+	    			((SplitRatioProfile) srp).update(true);
+
+			if(fundamentalDiagramSet!=null)
+	        	for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdProfile : fundamentalDiagramSet.getFundamentalDiagramProfile())
+	        		((FundamentalDiagramProfile) fdProfile).update(true);
+				
+			}
+		} catch( BeatsException bex){
+			bex.printStackTrace();
+			return false;
+		}
+		
+    	
+    	return false;
     }
 
 }
