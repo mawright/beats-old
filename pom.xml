@@ -278,6 +278,8 @@
 					<target>1.6</target>
 					<excludes>	
 						<!--<exclude>edu/berkeley/path/beats/control/adjoint_glue/*.java</exclude>-->
+						<exclude>edu/berkeley/path/beats/control/adjoint_glue/AdjointReroutesPolicyMaker.java</exclude>
+						<exclude>edu/berkeley/path/beats/test/simulator/DTA_test.java</exclude>
 						<exclude>edu/berkeley/path/beats/util/scenario/JSON*.java</exclude>
 						<exclude>edu/berkeley/path/beats/processor/*.java</exclude>
 						<exclude>edu/berkeley/path/beats/db/*.java</exclude>
