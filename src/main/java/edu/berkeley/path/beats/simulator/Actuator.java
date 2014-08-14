@@ -62,6 +62,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
     };
 
     protected void deploy_off_signal(){
+        return;
     };
 
     public ActuatorImplementation getImplementor(){
@@ -74,9 +75,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 
     public void setIsOn(boolean xison){
         this.isOn = xison;
-        if(!isOn){
-
-        }
-
+        if(!isOn)
+            deploy_off_signal();
     }
 }

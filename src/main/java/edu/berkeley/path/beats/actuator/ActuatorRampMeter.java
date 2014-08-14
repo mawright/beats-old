@@ -23,15 +23,15 @@ public class ActuatorRampMeter extends Actuator {
 
     public void setMeteringRateInVeh(Double rate_in_veh){
         metering_rate_in_veh = rate_in_veh;
-        metering_rate_in_veh = Math.max(metering_rate_in_veh,min_rate_in_veh);
-        metering_rate_in_veh = Math.min(metering_rate_in_veh,max_rate_in_veh);
-
         // round to the nearest time increment
         if(!Double.isNaN(cycle_increment) & cycle_increment>0){
             double dt = myController.getMyScenario().getSimdtinseconds();
             double sec_per_veh = dt/metering_rate_in_veh;
-            metering_rate_in_veh = 1d/(Math.round(cycle_increment/sec_per_veh)*cycle_increment*dt);
+            double sec_per_veh_round = Math.round(sec_per_veh/cycle_increment)*cycle_increment;
+            metering_rate_in_veh = dt/sec_per_veh_round;
         }
+        metering_rate_in_veh = Math.max(metering_rate_in_veh,min_rate_in_veh);
+        metering_rate_in_veh = Math.min(metering_rate_in_veh,max_rate_in_veh);
     }
 
 	public void setMeteringRateInVPH(Double rate_in_vph){
