@@ -400,13 +400,13 @@
 		</dependency>
 		-->
 		
-		<!-- JSON
+		<!-- JSON -->
 		<dependency>
 			<groupId>org.codehaus.jettison</groupId>
 			<artifactId>jettison</artifactId>
 			<version>1.3.2</version>
 		</dependency>
-		-->
+		
 
 		<!-- DB/JSON/PROCESSOR -->
 		<dependency>
