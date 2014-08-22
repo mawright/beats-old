@@ -850,6 +850,21 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		return density;           
 	}
+	
+	public double [][] getTotalInflow(long network_id){
+		Network network = getNetworkWithId(network_id);
+		if(network==null)
+			return null;
+		
+		double [][] inflow = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
+		int i,e;
+		for(i=0;i<network.getLinkList().getLink().size();i++){
+			Link link = (Link) network.getLinkList().getLink().get(i);
+			for(e=0;e<getNumEnsemble();e++)
+				inflow[i][e] = link.getTotalInflowInVeh(e);
+		}
+		return inflow;           
+	}
 
 	public Cumulatives getCumulatives() {
         return cumulatives;
