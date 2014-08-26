@@ -127,7 +127,17 @@ public final class Clock {
     public double getDt(){
         return dt;
     }
+    
 //	public void print(){
 //		System.out.println("t=" + t + "\t\tstep=" + currentstep);
 //	}
+    
+    /////////////////////////////////////////////////////////////////////
+    // setter
+    /////////////////////////////////////////////////////////////////////
+    
+    /** set to a specific timestep **/
+    protected void setRelativeTimeStep(int step){
+    	rel_step = step;
+    }
 }
