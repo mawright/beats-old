@@ -87,6 +87,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private boolean initialized = true;
 	private boolean scenario_locked=false;				// true when the simulation is running
 
+    // auxiliary properties, used by control algorithms
+    private HashMap<String,Properties> aux_props;
+
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
@@ -344,14 +347,18 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 "A",
                 "",
                 "normal",
-                "",Double.NaN);
+                "",
+                Double.NaN,
+                null);
 	}
 
     public void initialize(double timestep,double starttime,double endtime,int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver) throws BeatsException {
         initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble,uncertaintymodel,nodeflowsolver,nodesrsolver,
                 "",
                 "normal",
-                "",Double.NaN);
+                "",
+                Double.NaN,
+                null);
     }
 
     public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble) throws BeatsException {
@@ -361,12 +368,15 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 "A",
                 "",
                 "normal",
-                "",Double.NaN);
+                "",
+                Double.NaN,
+                null);
     }
 
     public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix,
                            int numReps, int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver,
-                           String performance_config, String run_mode,String split_logger_prefix,Double split_logger_dt) throws BeatsException {
+                           String performance_config, String run_mode,String split_logger_prefix,Double split_logger_dt ,
+                           HashMap<String,Properties> aux_props) throws BeatsException {
 
         // set stuff
         setUncertaintyModel(uncertaintymodel);
@@ -375,6 +385,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         setRunMode(run_mode);
         setSplitLoggerPrefix(split_logger_prefix);
         setSplitLoggerDt(split_logger_dt);
+        this.aux_props = aux_props;
 
         // create performance calculator
         if(!performance_config.isEmpty())
@@ -559,6 +570,10 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 	// protected simple getters and setters
 	/////////////////////////////////////////////////////////////////////
+
+    public Properties get_auxiliary_properties(String group_name){
+        return aux_props.get(group_name);
+    }
 
 	protected edu.berkeley.path.beats.simulator.ControllerSet getControllerset() {
 		return controllerset;
@@ -1447,7 +1462,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return init_dens_set;
     }
 
-    public SplitRatioSet predict_split_ratios(double time_current,double sample_dt,int horizon_steps){
+    public SplitRatioSet predict_split_ratios(double time_current,double sample_dt,double horizon){
 
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
@@ -1463,7 +1478,11 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             SplitRatioProfile srp = (SplitRatioProfile) factory.createSplitRatioProfile();
             split_ratio_set.getSplitRatioProfile().add(srp);
 
-            srp.setDt(sample_dt);
+
+            double srp_sample_dt = Double.isNaN(sample_dt) ? sr_profile.getDt() : sample_dt;
+            int horizon_steps = BeatsMath.round(horizon/srp_sample_dt);
+
+            srp.setDt(srp_sample_dt);
             srp.setNodeId(N.getId());
             for(Input in : N.getInputs().getInput()){
                 for(Output out : N.getOutputs().getOutput()){
@@ -1478,7 +1497,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                         double [] sr = sr_profile.predict(
                                 in.getLinkId(),
                                 out.getLinkId(),
-                                v,time_current, sample_dt, horizon_steps);
+                                v,time_current, srp_sample_dt, horizon_steps);
 
                         if(sr==null)
                             continue;
@@ -1503,6 +1522,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
             // set values
             fdp.setLinkId(L.getId());
+            //fdp.setDt(-1d);
             FundamentalDiagram fd = (FundamentalDiagram) factory.createFundamentalDiagram();
             fd.copyfrom(L.getFundamentalDiagramProfile().getFDforTime(time_current));
             fd.setOrder(0);
@@ -1511,7 +1531,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return fd_set;
     }
 
-    public DemandSet predict_demands(double time_current,double sample_dt,int horizon_steps){
+    public DemandSet predict_demands(double time_current,double sample_dt,double horizon){
+
 
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
@@ -1526,15 +1547,18 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 DemandProfile dp = (DemandProfile) factory.createDemandProfile();
                 demand_set.getDemandProfile().add(dp);
 
+                double dp_sample_dt= Double.isNaN(sample_dt) ? dem_profile.getDt() : sample_dt;
+                int horizon_steps = BeatsMath.round(horizon/dp_sample_dt);
+
                 dp.setLinkIdOrg(L.getId());
-                dp.setDt(sample_dt);
+                dp.setDt(dp_sample_dt);
                 for(int v=0;v<getNumVehicleTypes();v++){
-                    edu.berkeley.path.beats.jaxb.Demand dem = factory.createDemand();
+                    Demand dem = factory.createDemand();
                     dp.getDemand().add(dem);
 
                     // set values
                     dem.setVehicleTypeId(getVehicleTypeIdForIndex(v));
-                    dem.setContent(BeatsFormatter.csv(dem_profile.predict_in_VPS(v, time_current, sample_dt, horizon_steps), ","));
+                    dem.setContent(BeatsFormatter.csv(dem_profile.predict_in_VPS(v, time_current, dp_sample_dt, horizon_steps), ","));
                 }
             }
         }

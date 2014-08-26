@@ -7,6 +7,8 @@ import edu.berkeley.path.beats.jaxb.Network;
 import edu.berkeley.path.beats.jaxb.RouteSet;
 import edu.berkeley.path.beats.jaxb.SplitRatioSet;
 
+import java.util.Properties;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jdr
@@ -22,5 +24,6 @@ public interface ReroutePolicyMaker {
                                      SplitRatioSet splitRatios,
                                      InitialDensitySet ics,
                                      RouteSet routes,
-                                     Double dt);
+                                     Double dt ,
+                                     Properties properties);
 }

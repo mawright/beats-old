@@ -7,10 +7,7 @@ import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.FundamentalDiagram;
 import edu.berkeley.path.ramp_metering.*;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -30,7 +27,7 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
         private Map<Link, Link> mainlineSourceMap = new HashMap<Link, Link>();
         private Map<Link, Link> mainlineOfframpMap = new HashMap<Link, Link>();
         private Network network;
-        public int nLinks = 0;
+        public int nLinks  = 0;
 
         public MainlineStructure(Network network) {
             super();
@@ -181,7 +178,7 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
     }
 
     @Override
-    public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt) {
+    public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt,Properties props) {
         ScenarioMainlinePair pair = convertScenario(net, fd, demand, splitRatios, ics, control, dt);
         FreewayScenario scenario = pair.scenario;
         MainlineStructure mainlineStructure = pair.mainlineStructure;
@@ -191,8 +188,11 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
             scenario = scenario.expandSimTime(.3);
             simstate = FreewaySimulator.simpleSim(scenario);
         }
-        Adjoint$.MODULE$.optimizer_$eq(new ChainedOptimizer());
-        double[][] controlValue = null; //new AdjointRampMetering(scenario.fw()).givePolicy(scenario.simParams(), scenario.policyParams());
+        AdjointRampMetering metering = new AdjointRampMetering(scenario);
+        if (props != null) {
+            metering.setProperties(props);
+        }
+        double[][] controlValue = metering.givePolicy();
         simstate = FreewaySimulator.simpleSim(scenario, flatten(controlValue));
         RampMeteringPolicySet policySet = new RampMeteringPolicySet();
 
@@ -282,7 +282,7 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
             offramps[i] = offrampList.get(i);
         }
         Freeway freeway = Freeway.fromArrays(freewayLinks, onramps, offramps);
-        PolicyParameters policyParameters = null; //new PolicyParameters(dt, -1);
+        PolicyParameters policyParameters = new PolicyParameters(dt, -1, 0);
         assert demand.getDemandProfile().get(0).getDt() % Math.floor(dt) == 0;
         int bcDtFactor = (int) (Math.floor(demand.getDemandProfile().get(0).getDt())) / (int) Math.floor(dt);
         Map<Link, double[]> indexedDemand = new HashMap<Link, double[]>();
