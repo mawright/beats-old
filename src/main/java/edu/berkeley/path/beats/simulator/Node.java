@@ -98,14 +98,14 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		}
 
 		nIn = 0;
-		if(getInputs()!=null){
-			nIn = getInputs().getInput().size();
-			input_link = new Link[nIn];
-			for(int i=0;i<nIn;i++){
-				edu.berkeley.path.beats.jaxb.Input input = getInputs().getInput().get(i);
-				input_link[i] = myNetwork.getLinkWithId(input.getLinkId());
-			}
-		}
+        if(getInputs()!=null){
+            nIn = getInputs().getInput().size();
+            input_link = new Link[nIn];
+            for(int i=0;i<nIn;i++){
+                edu.berkeley.path.beats.jaxb.Input input = getInputs().getInput().get(i);
+                input_link[i] = myNetwork.getLinkWithId(input.getLinkId());
+            }
+        }
 		
 		isTerminal = nOut==0 || nIn==0;
         istrivialsplit = nOut<=1;

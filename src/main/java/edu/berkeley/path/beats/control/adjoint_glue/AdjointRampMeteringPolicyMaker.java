@@ -63,6 +63,8 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
                     break;
                 }
             }
+            if(links.size()!=1)
+                System.err.println("ERROR: Multiple mainline sources!");
             Link l = links.get(0);
             while (true) {
                 l = nextMainline(l);
@@ -88,13 +90,17 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
         }
 
         public Link source(Link l) {
-            for (edu.berkeley.path.beats.jaxb.Link ll : l.getBegin_node().getInput_link()) {
-                Link lll = (Link) ll;
-                if (lll.getLinkType().getName().equalsIgnoreCase("Source")) {
-                    return lll;
-                }
-            }
-            return null;
+
+            // GG: Hack to make it work in L0
+            return l;
+
+//            for (edu.berkeley.path.beats.jaxb.Link ll : l.getBegin_node().getInput_link()) {
+//                Link lll = (Link) ll;
+//                if (lll.getLinkType().getName().equalsIgnoreCase("Source")) {
+//                    return lll;
+//                }
+//            }
+//            return null;
         }
 
         public Link onramp(Link l) {
