@@ -271,7 +271,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	}
 
-	private void update() throws BeatsException {
+	protected void update() throws BeatsException {
 
         // sample profiles .............................
     	if(downstreamBoundaryCapacitySet!=null)
