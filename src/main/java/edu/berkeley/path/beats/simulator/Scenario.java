@@ -62,7 +62,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     private PerformanceCalculator perf_calc;
 	private Clock clock;
 	private int numVehicleTypes;			// number of vehicle types
-	private boolean global_control_on;	// global control switch
+	//private boolean global_control_on;	// global control switch
 	private double global_demand_knob;	// scale factor for all demands
 	private edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
 	private EventSet eventset = new EventSet();	// holds time sorted list of events
@@ -97,7 +97,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	protected void populate() throws BeatsException {
 
 	    // initialize scenario attributes ..............................................
-		this.global_control_on = true;
 		this.global_demand_knob = 1d;
 		this.has_flow_unceratinty = BeatsMath.greaterthan(getStd_dev_flow(),0.0);
 
@@ -232,7 +231,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public void reset() throws BeatsException {
 
 		started_writing = false;
-		global_control_on = true;
 	    global_demand_knob = 1d;
 
 		// reset the clock
@@ -310,8 +308,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 ((Network) network).update_supply_demand();
 
         // update controllers
-    	if(global_control_on)
-    		controllerset.update();
+        controllerset.update();
 
     	// update and deploy actuators
     	actuatorset.deploy(getCurrentTimeInSeconds());
@@ -603,11 +600,12 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         this.split_logger_dt = split_logger_dt;
     }
 	
-	protected void setGlobal_control_on(boolean global_control_on) {
-		this.global_control_on = global_control_on;
+	public void setGlobal_control_on(boolean global_control_on) {
+        for(Controller c : controllerset.get_Controllers())
+            c.setIson(global_control_on);
 	}
 
-	protected void setGlobal_demand_knob(double global_demand_knob) {
+	public void setGlobal_demand_knob(double global_demand_knob) {
 		this.global_demand_knob = global_demand_knob;
 	}
 
@@ -681,10 +679,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public UncertaintyType getUncertaintyModel() {
 		return uncertaintyModel;
 	}
-
-//	public boolean isGlobal_control_on() {
-//		return global_control_on;
-//	}
 
 	public double getGlobal_demand_knob() {
 		return global_demand_knob;
