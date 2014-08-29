@@ -91,16 +91,16 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
 
         public Link source(Link l) {
 
-//            // GG: Hack to make it work in L0
-//            return l;
+            // GG: Hack to make it work in L0
+            return l;
 
-            for (edu.berkeley.path.beats.jaxb.Link ll : l.getBegin_node().getInput_link()) {
-                Link lll = (Link) ll;
-                if (lll.getLinkType().getName().equalsIgnoreCase("Source")) {
-                    return lll;
-                }
-            }
-            return null;
+//            for (edu.berkeley.path.beats.jaxb.Link ll : l.getBegin_node().getInput_link()) {
+//                Link lll = (Link) ll;
+//                if (lll.getLinkType().getName().equalsIgnoreCase("Source")) {
+//                    return lll;
+//                }
+//            }
+//            return null;
         }
 
         public Link onramp(Link l) {
