@@ -83,7 +83,6 @@ public final class Runner {
         }
     }
 
-
     public static Scenario load_scenario_from_properties(String propsfile){
 
         Scenario scenario = null;
@@ -135,8 +134,9 @@ public final class Runner {
     private static void run_simulation(String[] args){
 
         long time = System.currentTimeMillis();
+        Scenario scenario = null;
         try {
-            Scenario scenario = load_scenario_from_properties(args[0]);
+            scenario = load_scenario_from_properties(args[0]);
 
             // run the scenario
             scenario.run();

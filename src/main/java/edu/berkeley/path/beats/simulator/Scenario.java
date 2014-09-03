@@ -333,6 +333,21 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	}
 
+    // override by subclass to close down external loggers
+    protected void close() throws BeatsException {
+        if(perf_calc!=null)
+            perf_calc.close_output();
+        for(edu.berkeley.path.beats.jaxb.Node jnode : this.getNetworkSet().getNetwork().get(0).getNodeList().getNode()){
+            Node node = (Node) jnode;
+            if(node.split_ratio_logger !=null)
+                try{ node.split_ratio_logger.close(); }
+                catch(IOException e){
+                    throw new BeatsException(e.getMessage());
+                }
+        }
+        DebugLogger.close_all();
+    }
+
 	/////////////////////////////////////////////////////////////////////
 	// initialization
 	/////////////////////////////////////////////////////////////////////
@@ -511,19 +526,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			}
 
             finally {
-				if (null != outputwriter)
+                if (null != outputwriter)
                     outputwriter.close();
-                if(perf_calc!=null)
-                    perf_calc.close_output();
-                for(edu.berkeley.path.beats.jaxb.Node jnode : this.getNetworkSet().getNetwork().get(0).getNodeList().getNode()){
-                    Node node = (Node) jnode;
-                    if(node.split_ratio_logger !=null)
-                        try{ node.split_ratio_logger.close(); }
-                        catch(IOException e){
-                            throw new BeatsException(e.getMessage());
-                        }
-                }
-                DebugLogger.close_all();
+                close();
 			}
 		}
         scenario_locked = false;
