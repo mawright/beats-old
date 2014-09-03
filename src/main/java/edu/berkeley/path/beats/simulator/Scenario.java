@@ -1458,6 +1458,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     public SplitRatioSet predict_split_ratios(double time_current,double sample_dt,double horizon){
 
+        System.out.println("BEATS predict_split_ratios");
+
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
         SplitRatioSet split_ratio_set = (SplitRatioSet) factory.createSplitRatioSet();
@@ -1498,6 +1500,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
                         srp.getSplitratio().add(splitratio);
                         splitratio.setContent(BeatsFormatter.csv(sr, ","));
+
+                        System.out.println("BEATS\t node:"+N.getId() + " out:" + out.getLinkId() + " in:" + in.getLinkId() + " " + BeatsFormatter.csv(sr, ","));
+
                     }
                 }
             }
@@ -1506,6 +1511,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     }
 
     public FundamentalDiagramSet gather_current_fds(double time_current){
+
+        System.out.println("BEATS gather_current_fds");
+
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
         FundamentalDiagramSet fd_set = factory.createFundamentalDiagramSet();
@@ -1529,7 +1537,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     }
 
     public DemandSet predict_demands(double time_current,double sample_dt,double horizon){
-
 
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
@@ -1555,7 +1562,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
                     // set values
                     dem.setVehicleTypeId(getVehicleTypeIdForIndex(v));
-                    dem.setContent(BeatsFormatter.csv(dem_profile.predict_in_VPS(v, time_current, dp_sample_dt, horizon_steps), ","));
+                    double [] x = dem_profile.predict_in_VPS(v, time_current, dp_sample_dt, horizon_steps);
+                    dem.setContent(BeatsFormatter.csv(x, ","));
                 }
             }
         }
