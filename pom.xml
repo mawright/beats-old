@@ -12,7 +12,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<torque.sql.dir>${project.build.directory}/generated-sql</torque.sql.dir>
+		<!-- <torque.sql.dir>${project.build.directory}/generated-sql</torque.sql.dir> -->
 	</properties>
 
 	<scm>
@@ -26,7 +26,9 @@
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
 			</resource>
+			<!--
 			<resource>
 				<targetPath>sql</targetPath>
 				<directory>${torque.sql.dir}</directory>
@@ -34,10 +36,27 @@
 					<include>**/*.sql</include>
 				</includes>
 			</resource>
+			-->
 		</resources>
 		
 		<plugins>
 		
+			<!-- ???
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			-->
+			
 			<!-- JAXB -->
 			<plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -126,8 +145,14 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>edu.berkeley.path.beats.RunnerCOP</mainClass>
+							<mainClass>edu.berkeley.path.beats.Runner</mainClass>
+							<!--<addDefaultImplementationEntries>true</addDefaultImplementationEntries>-->
 						</manifest>
+						<!--
+						<manifestEntries>
+							<git-SHA-1>${buildNumber}</git-SHA-1>
+						</manifestEntries>
+						-->
 					</archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
@@ -143,10 +168,16 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>edu.berkeley.path.beats.RunnerCOP</mainClass>
-							<addClasspath>true</addClasspath>
+							<mainClass>edu.berkeley.path.beats.Runner</mainClass>
+							<!--<addClasspath>true</addClasspath>-->
 							<classpathPrefix>lib/</classpathPrefix>
+							<!--<addDefaultImplementationEntries>true</addDefaultImplementationEntries>-->
 						</manifest>
+						<!--
+						<manifestEntries>
+							<git-SHA-1>${buildNumber}</git-SHA-1>
+						</manifestEntries>
+						-->
 					</archive>
 				</configuration>
 			</plugin>
@@ -285,7 +316,7 @@
 						<exclude>edu/berkeley/path/beats/db/*.java</exclude>
 						<exclude>edu/berkeley/path/beats/om/*.java</exclude>
 						<exclude>edu/berkeley/path/beats/om/map/*.java</exclude>
-						<exclude>edu/berkeley/path/beats/RunnerCOPCOP.java</exclude>
+						<exclude>edu/berkeley/path/beats/RunnerCOP.java</exclude>
 						<exclude>edu/berkeley/path/beats/simulator/output/OutputWriterDB.java</exclude>
 						<exclude>org/apache/torque/linkage/SiriusMapInit.java</exclude>
 					</excludes> 
@@ -368,13 +399,13 @@
 			<version>0.101-SNAPSHOT</version>
 		</dependency>
 				
-		<!-- FLOW REROUTES
+		<!-- FLOW REROUTES 
 		<dependency>
-			<groupId>dtapc</groupId>
+			<groupId>edu.berkeley.path</groupId>
 			<artifactId>dtapc</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>0.101-SNAPSHOT</version>
 		</dependency>
-		 -->
+		-->
 				
 		<dependency>
 			<groupId>commons-lang</groupId>
