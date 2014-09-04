@@ -1443,8 +1443,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     // predictors
     /////////////////////////////////////////////////////////////////////
 
-    public InitialDensitySet gather_current_densities(){
-
+    public InitialDensitySet get_current_densities_si(){
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
         InitialDensitySet init_dens_set = (InitialDensitySet) factory.createInitialDensitySet();
@@ -1462,8 +1461,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     }
 
     public SplitRatioSet predict_split_ratios(double time_current,double sample_dt,double horizon){
-
-        System.out.println("BEATS predict_split_ratios");
 
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
@@ -1505,9 +1502,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
                         srp.getSplitratio().add(splitratio);
                         splitratio.setContent(BeatsFormatter.csv(sr, ","));
-
-                        System.out.println("BEATS\t node:"+N.getId() + " out:" + out.getLinkId() + " in:" + in.getLinkId() + " " + BeatsFormatter.csv(sr, ","));
-
                     }
                 }
             }
@@ -1515,10 +1509,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return split_ratio_set;
     }
 
-    public FundamentalDiagramSet gather_current_fds(double time_current){
-
-        System.out.println("BEATS gather_current_fds");
-
+    public FundamentalDiagramSet get_current_fds_si(double time_current){
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
         FundamentalDiagramSet fd_set = factory.createFundamentalDiagramSet();
@@ -1541,7 +1532,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return fd_set;
     }
 
-    public DemandSet predict_demands(double time_current,double sample_dt,double horizon){
+    public DemandSet predict_demands_si(double time_current, double sample_dt, double horizon){
 
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();

@@ -186,9 +186,9 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
     @Override
     public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt,Properties props) {
 
-        System.out.println("Demands\n"+demand);
-        System.out.println("Splits\n"+splitRatios);
-        System.out.println("InitialDensitySet\n"+ics);
+//        System.out.println("Demands\n"+demand);
+//        System.out.println("Splits\n"+splitRatios);
+//        System.out.println("InitialDensitySet\n"+ics);
 
         ScenarioMainlinePair pair = convertScenario(net, fd, demand, splitRatios, ics, control, dt);
         FreewayScenario scenario = pair.scenario;
@@ -260,15 +260,11 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
 
     static public ScenarioMainlinePair convertScenario(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt) {
 
-System.out.println("1");
-
         MainlineStructure mainline = new MainlineStructure(net);
         Map<Link, FundamentalDiagram> fdMap = new HashMap<Link, FundamentalDiagram>();
         for (edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile f : fd.getFundamentalDiagramProfile()) {
             fdMap.put(net.getLinkWithId(f.getLinkId()), (FundamentalDiagram) (f.getFundamentalDiagram().get(0)));
         }
-
-        System.out.println("2");
 
         FreewayLink[] freewayLinks = new FreewayLink[mainline.nLinks];
         int linkIndex = 0;
@@ -289,8 +285,6 @@ System.out.println("1");
             ++linkIndex;
         }
 
-        System.out.println("3");
-
         List<Integer> onrampList = mainline.onrampIndices();
         List<Integer> offrampList = mainline.offrampIndices();
         int[] onramps = new int[onrampList.size()];
@@ -302,15 +296,11 @@ System.out.println("1");
             offramps[i] = offrampList.get(i);
         }
 
-        System.out.println("4");
-
         Freeway freeway = Freeway.fromArrays(freewayLinks, onramps, offramps);
         PolicyParameters policyParameters = new PolicyParameters(dt, -1, 0);
         assert demand.getDemandProfile().get(0).getDt() % Math.floor(dt) == 0;
         int bcDtFactor = (int) (Math.floor(demand.getDemandProfile().get(0).getDt())) / (int) Math.floor(dt);
         Map<Link, double[]> indexedDemand = new HashMap<Link, double[]>();
-
-        System.out.println("5");
 
         for (edu.berkeley.path.beats.jaxb.DemandProfile d : demand.getDemandProfile()) {
             String[] splits = d.getDemand().get(0).getContent().split(",");
@@ -325,8 +315,6 @@ System.out.println("1");
             }
             indexedDemand.put(net.getLinkWithId(d.getLinkIdOrg()), dem);
         }
-
-        System.out.println("6");
 
         Map<Link, double[]> indexedRatios = new HashMap<Link, double[]>();
         for (edu.berkeley.path.beats.jaxb.SplitRatioProfile d : splitRatios.getSplitRatioProfile()) {
@@ -345,8 +333,6 @@ System.out.println("1");
             }
         }
 
-        System.out.println("7");
-
         int t = indexedDemand.values().iterator().next().length;
         double[][] splits = new double[offramps.length][t];
         for (int i = 0; i < offramps.length; ++i) {
@@ -356,8 +342,6 @@ System.out.println("1");
         for (int i = 0; i < onramps.length; ++i) {
             dems[i] = indexedDemand.get(mainline.mainlineSourceMap.get(mainline.links.get(onramps[i])));
         }
-
-        System.out.println("8");
 
         double[] densityIC = new double[mainline.nLinks];
         double[] queueIC = new double[mainline.nLinks];
@@ -379,8 +363,6 @@ System.out.println("1");
             }
         }
 
-        System.out.println("9");
-
         for ( Density d : ics.getDensity()) {
             double value = Double.parseDouble(d.getContent());
             Link link = net.getLinkWithId(d.getLinkId());
@@ -394,8 +376,6 @@ System.out.println("1");
             }
         }
 
-        System.out.println("10");
-
         double[] minRates = new double[onramps.length - 1];
         double[] maxRates = new double[onramps.length - 1];
         List<Link> orderedOnramps = mainline.orderedOnramps();
@@ -405,9 +385,6 @@ System.out.println("1");
             minRates[index] = c.min_rate;
             maxRates[index] = c.max_rate;
         }
-
-
-        System.out.println("11");
 
         SimulationParameters simParams = SimulationParameters.fromJava(BoundaryConditions.fromArrays(dems, splits), InitialConditions.fromArrays(densityIC, queueIC), minRates, maxRates);
         return new ScenarioMainlinePair(new FreewayScenario(freeway, simParams, policyParameters), mainline);

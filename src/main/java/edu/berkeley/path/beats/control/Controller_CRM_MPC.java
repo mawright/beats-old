@@ -10,9 +10,6 @@ import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Scenario;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -180,10 +177,10 @@ public class Controller_CRM_MPC extends Controller {
 
             // call policy maker (everything in SI units)
             policy = policy_maker.givePolicy( network,
-                    myScenario.gather_current_fds(time_current),
-                    myScenario.predict_demands(time_current,pm_dt,pm_horizon),
+                    myScenario.get_current_fds_si(time_current),
+                    myScenario.predict_demands_si(time_current, pm_dt, pm_horizon),
                     myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon),
-                    myScenario.gather_current_densities(),
+                    myScenario.get_current_densities_si(),
                     controller_parameters,
                     pm_dt,
                     policy_maker_properties);
