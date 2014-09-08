@@ -43,8 +43,13 @@ public final class Runner {
 			String[] arguments = new String[args.length - 1];
 			System.arraycopy(args, 1, arguments, 0, args.length - 1);
 
-            // simulate
-			if (cmd.equals("-s")){
+            // simulate config/output with default parameters
+            if (cmd.equals("-d")){
+                Runner.run_simulation_with_config(arguments);
+            }
+
+            // simulate with properties file
+			else if (cmd.equals("-s")){
 				Runner.run_simulation(arguments);
 			}
 
@@ -130,6 +135,50 @@ public final class Runner {
 
         return scenario;
 
+    }
+
+    private static void run_simulation_with_config(String[] args){
+
+        String config_file = args[0];
+        String output_prefix = args[1];
+        long time = System.currentTimeMillis();
+
+        try {
+
+            // load configuration file
+            Scenario scenario = ObjectFactory.createAndLoadScenario(config_file);
+
+            if (scenario==null)
+                throw new BeatsException("Scenario did not load");
+
+            // initialize
+            scenario.initialize( Defaults.SIMDT ,
+                    Defaults.TIME_INIT ,
+                    Defaults.TIME_INIT+Defaults.DURATION ,
+                    Defaults.OUT_DT ,
+                    "text",
+                    output_prefix,
+                    1,
+                    1 ,
+                    "gaussian",
+                    "proportional",
+                    "A",
+                    "",
+                    "normal",
+                    "",
+                    Double.NaN,
+                    null);
+
+            // run the scenario
+            scenario.run();
+
+        }
+        catch (BeatsException exc) {
+            exc.printStackTrace();
+        }
+        finally{
+            System.out.println("done in " + (System.currentTimeMillis()-time));
+        }
     }
 
     private static void run_simulation(String[] args){
