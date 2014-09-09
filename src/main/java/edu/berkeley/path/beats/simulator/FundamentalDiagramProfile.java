@@ -174,4 +174,13 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
     }
 
 
+    @Override
+    public String toString() {
+        String str = "";
+        edu.berkeley.path.beats.simulator.FundamentalDiagram fd = (FundamentalDiagram) getFundamentalDiagram().get(0);
+        str += "vf="+fd.getVfNormalized()+",";
+        str += "w="+fd.getWNormalized()+",";
+        str += "C="+fd._getCapacityInVeh()+",";
+        return str;
+    }
 }

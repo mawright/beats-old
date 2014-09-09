@@ -28,6 +28,7 @@ package edu.berkeley.path.beats.test.simulator.output;
 
 import static org.junit.Assert.*;
 
+import edu.berkeley.path.beats.Jaxb;
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -53,7 +54,6 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import edu.berkeley.path.beats.simulator.Defaults;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsException;
@@ -164,7 +164,7 @@ public class XMLOutputWriterTest {
 		String outtype = "xml";
 
 		// load the scenario
-		Scenario scenario = ObjectFactory.createAndLoadScenario(confpath);
+		Scenario scenario = Jaxb.create_scenario_from_xml(confpath);
 		if (null == scenario) fail("The scenario was not loaded");
 
 		// simulation settings

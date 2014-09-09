@@ -1,11 +1,19 @@
 package edu.berkeley.path.beats.control.adjoint_glue;
 
+import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.control.*;
-import edu.berkeley.path.beats.jaxb.Density;
-import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
+import edu.berkeley.path.beats.jaxb.*;
+import edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.DemandSet;
 import edu.berkeley.path.beats.simulator.FundamentalDiagram;
+import edu.berkeley.path.beats.simulator.InitialDensitySet;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Network;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.SplitRatioSet;
 import edu.berkeley.path.ramp_metering.*;
+import edu.berkeley.path.ramp_metering.SimulationOutput;
 
 import java.util.*;
 
@@ -186,9 +194,26 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
     @Override
     public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt,Properties props) {
 
-//        System.out.println("Demands\n"+demand);
-//        System.out.println("Splits\n"+splitRatios);
-//        System.out.println("InitialDensitySet\n"+ics);
+        edu.berkeley.path.beats.jaxb.Scenario S = new edu.berkeley.path.beats.jaxb.Scenario();
+        S.setNetworkSet(new NetworkSet());
+        S.getNetworkSet().getNetwork().add(net);
+        S.setFundamentalDiagramSet(fd);
+        S.setDemandSet(demand);
+        S.setSplitRatioSet(splitRatios);
+        S.setInitialDensitySet(ics);
+        try {
+            Jaxb.write_scenario_to_xml(S,"xmlout.xml");
+        } catch (BeatsException e) {
+            e.printStackTrace();
+        }
+
+
+        System.out.println("Demands\n"+demand);
+        System.out.println("Splits\n"+splitRatios);
+        System.out.println("InitialDensitySet\n"+ics);
+        System.out.println("FundamentalDiagramSet\n");
+        for(FundamentalDiagramProfile fdp:fd.getFundamentalDiagramProfile())
+            System.out.println(fdp);
 
         ScenarioMainlinePair pair = convertScenario(net, fd, demand, splitRatios, ics, control, dt);
         FreewayScenario scenario = pair.scenario;
@@ -196,7 +221,9 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
         int origT = scenario.simParams().numTimesteps();
         SimulationOutput simstate = FreewaySimulator.simpleSim(scenario);
         while (!networkSufficientlyCleared(scenario, simstate)) {
+            System.out.println("scenario length: "+scenario.simParams().numTimesteps());
             scenario = scenario.expandSimTime(.3);
+            System.out.println("expanded scenario length: "+scenario.simParams().numTimesteps());
             simstate = FreewaySimulator.simpleSim(scenario);
         }
         AdjointRampMetering metering = new AdjointRampMetering(scenario);
@@ -254,6 +281,7 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
     private boolean networkSufficientlyCleared(FreewayScenario scenario, SimulationOutput simstate) {
         double vehiclesAtEnd = FreewaySimulator.totalVehiclesEnd(scenario.fw(), simstate, scenario.policyParams().deltaTimeSeconds());
         double totalSimulatedVehicles =  scenario.totalVehicles();
+        System.out.println("vehiclesAtEnd="+vehiclesAtEnd+"\ttotalSimulatedVehicles="+totalSimulatedVehicles);
         return vehiclesAtEnd <= totalSimulatedVehicles * .01 + .1;
 
     }

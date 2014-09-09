@@ -2,8 +2,10 @@ package edu.berkeley.path.beats.util.scenario;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 
+import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.util.SchemaUtil;
 
@@ -28,8 +30,20 @@ abstract class ScenarioLoaderBase implements ScenarioLoaderIF {
 	protected static Unmarshaller getUnmarshaller() throws JAXBException, BeatsException {
 		Unmarshaller unmarshaller = getJAXBContext().createUnmarshaller();
 		unmarshaller.setSchema(SchemaUtil.getSchema());
-		edu.berkeley.path.beats.simulator.ObjectFactory.setObjectFactory(unmarshaller, getJAXBObjectFactory());
+		setObjectFactory(unmarshaller, getJAXBObjectFactory());
 		return unmarshaller;
 	}
+
+    private static void setObjectFactory(Unmarshaller unmrsh, Object factory) throws BeatsException {
+        final String classname = unmrsh.getClass().getName();
+        String propnam = classname.startsWith("com.sun.xml.internal") ?//
+                "com.sun.xml.internal.bind.ObjectFactory" ://
+                "com.sun.xml.bind.ObjectFactory";
+        try {
+            unmrsh.setProperty(propnam, factory);
+        } catch (PropertyException e) {
+            throw new BeatsException(e);
+        }
+    }
 
 }

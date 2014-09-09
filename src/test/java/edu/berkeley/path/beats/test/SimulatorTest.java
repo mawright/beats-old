@@ -32,6 +32,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import edu.berkeley.path.beats.Jaxb;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +41,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import edu.berkeley.path.beats.simulator.Defaults;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.BeatsFormatter;
@@ -115,7 +115,7 @@ public class SimulatorTest {
 
 			// load configuration file
 			System.out.println("\tLoading");
-			scenario = ObjectFactory.createAndLoadScenario(conffile.toString());
+			scenario = Jaxb.create_scenario_from_xml(conffile.toString());
 
 			if (null == scenario)
 				throw new BeatsException("UNEXPECTED! Scenario was not loaded");

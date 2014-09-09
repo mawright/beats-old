@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.control;
 
+import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.actuator.ActuatorCMS;
 import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.simulator.*;
@@ -48,53 +49,14 @@ public class Controller_SR_Generator_simple extends Controller {
 
         // load offramp flow information
         Parameters param = (Parameters) ((edu.berkeley.path.beats.jaxb.Controller)jaxbobject).getParameters();
-        String configfilename = param.get("fr_flow_file");
-
-        JAXBContext context;
-        Unmarshaller u = null;
-
-        // create unmarshaller .......................................................
-        try {
-            //Reset the classloader for main thread; need this if I want to run properly
-            //with JAXB within MATLAB. (luis)
-            Thread.currentThread().setContextClassLoader(ObjectFactory.class.getClassLoader());
-            context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
-            u = context.createUnmarshaller();
-        } catch( JAXBException je ) {
-            System.err.print("Failed to create context for JAXB unmarshaller");
-        }
-
-        // schema assignment ..........................................................
-        try{
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            ClassLoader classLoader = ObjectFactory.class.getClassLoader();
-            Schema schema = factory.newSchema(classLoader.getResource("beats.xsd"));
-            u.setSchema(schema);
-        } catch(SAXException e){
-            System.err.print("Schema not found");
-        }
-
-        // process configuration file name ...........................................
-        if(!configfilename.endsWith(".xml"))
-            configfilename += ".xml";
-
-        // read and return ...........................................................
         DemandSet demand_set = null;
         try {
-            ObjectFactory.setObjectFactory(u, new JaxbObjectFactory());
-            demand_set = (DemandSet) u.unmarshal( new FileInputStream(configfilename) );
-        } catch( JAXBException je ) {
-            System.err.print("JAXB threw an exception when loading the configuration file");
-            System.err.println(je);
-        } catch (FileNotFoundException e) {
-            System.err.print("Configuration file not found");
-        }
-
-        if(demand_set==null)
+            demand_set = Jaxb.create_demand_set_from_xml(param.get("fr_flow_file"));
+        } catch (BeatsException e) {
+            e.printStackTrace();
             return;
-
+        }
         demand_set.populate(myScenario);
-
         node_data = new ArrayList<NodeData>();
         for(Actuator act:actuators){
             ScenarioElement se = (ScenarioElement) act.getScenarioElement();
@@ -102,7 +64,6 @@ public class Controller_SR_Generator_simple extends Controller {
                 continue;
             node_data.add(new NodeData(demand_set,(Node) se.getReference()));
         }
-
     }
 
     @Override

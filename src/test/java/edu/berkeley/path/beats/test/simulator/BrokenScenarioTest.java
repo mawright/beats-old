@@ -3,15 +3,14 @@ package edu.berkeley.path.beats.test.simulator;
 import java.io.File;
 import java.util.Vector;
 
+import edu.berkeley.path.beats.Jaxb;
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 import edu.berkeley.path.beats.simulator.Defaults;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.ScenarioValidationError;
 import edu.berkeley.path.beats.simulator.BeatsException;
@@ -77,7 +76,7 @@ public class BrokenScenarioTest {
 	@Test(expected=ScenarioValidationError.class)
 	public void ensureValidationError() throws BeatsException {
 		logger.info("CONFIG: " + config.getPath());
-		Scenario scenario = ObjectFactory.createAndLoadScenario(config.getPath());
+		Scenario scenario = Jaxb.create_scenario_from_xml(config.getPath());
 		
 		// initialize
 		double timestep = Defaults.getTimestepFor(config.getName());

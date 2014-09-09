@@ -35,6 +35,7 @@ import javax.xml.bind.Unmarshaller;
 
 import javax.xml.stream.*;
 
+import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.simulator.JaxbObjectFactory;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -54,86 +55,86 @@ class XMLOutputReader {
 			exc.printStackTrace();
 		}
 	}
-	
+
 	public static Data Read(String filename) throws FileNotFoundException {
 		return Read(new FileInputStream(filename));
 	}
-	
+
 	public static Data Read(InputStream is) {
 		Data res = new Data();
-		try {
-			XMLStreamReader xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(is);
-			while (xmlsr.hasNext()) {
-				if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType()) {
-					String localname = xmlsr.getName().getLocalPart();
-					if ("scenario".equals(localname)) {
-						JAXBContext jaxbc;
-						try {
-							jaxbc = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class);
-							Unmarshaller unmrsh = jaxbc.createUnmarshaller();
-							ObjectFactory.setObjectFactory(unmrsh, new JaxbObjectFactory());
-							res.scenario = (Scenario) unmrsh.unmarshal(xmlsr);
-						} catch (JAXBException exc) {
-							exc.printStackTrace();
-						}
-					}else if ("data".equals(localname)) {
-						if (null != res.scenario) {
-							int nvehtypes = res.scenario.getNumVehicleTypes();
-							if (nvehtypes <= 0) nvehtypes = 1;
-							int nlinks = 0;
-							for (edu.berkeley.path.beats.jaxb.Network network : res.scenario.getNetworkSet().getNetwork())
-								nlinks += network.getLinkList().getLink().size();
-							int t_incr = 30;
-							int d_incr = t_incr * nvehtypes * nlinks;
-							res.t = new Vector<Double>(t_incr, t_incr);
-							res.d = new Vector<Double>(d_incr, d_incr);
-							res.f = new Vector<Double>(d_incr, d_incr);
-							res.mf = new Vector<Double>(d_incr, d_incr);
-							res.fv = new Vector<Double>(d_incr, d_incr);
-						} else {
-							res.t = new Vector<Double>();
-							res.d = new Vector<Double>();
-							res.f = new Vector<Double>();
-							res.mf = new Vector<Double>();
-							res.fv = new Vector<Double>();
-						}
-						xmlsr.next();
-						while (xmlsr.hasNext()) {
-							if (XMLStreamConstants.END_ELEMENT == xmlsr.getEventType() && "data".equals(xmlsr.getName().getLocalPart())) break;
-							else if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType()) {
-								if ("ts".equals(xmlsr.getName().getLocalPart())) {
-									res.t.add(Double.valueOf(xmlsr.getAttributeValue(null, "sec")));
-								}else if ("net".equals(xmlsr.getName().getLocalPart())) {
-									String dt_attr = xmlsr.getAttributeValue(null, "dt");
-									double dt = null == dt_attr ? 1.0f : Double.valueOf(dt_attr);
-									xmlsr.next();
-									while (xmlsr.hasNext()) {
-										if (XMLStreamConstants.END_ELEMENT == xmlsr.getEventType() && "net".equals(xmlsr.getName().getLocalPart())) break;
-										else if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType() && "l".equals(xmlsr.getName().getLocalPart())) {
-											res.d.addAll(unformat(xmlsr.getAttributeValue(null, "d"), ":"));
-
-											Vector<Double> vect_f = unformat(xmlsr.getAttributeValue(null, "f"), ":");
-											for (int iii = 0; iii < vect_f.size(); ++iii) vect_f.set(iii, vect_f.get(iii) * dt);
-											res.f.addAll(vect_f);
-
-											res.mf.addAll(unformat(xmlsr.getAttributeValue(null, "mf"), ":"));
-											res.fv.addAll(unformat(xmlsr.getAttributeValue(null, "fv"), ":"));
-										}
-										xmlsr.next();
-									}
-								}
-							}
-							xmlsr.next();
-						}
-					}
-				}
-				xmlsr.next();
-			}
-		} catch (XMLStreamException exc) {
-			exc.printStackTrace();
-		} catch (FactoryConfigurationError exc) {
-			exc.printStackTrace();
-		}
+//		try {
+//			XMLStreamReader xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(is);
+//			while (xmlsr.hasNext()) {
+//				if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType()) {
+//					String localname = xmlsr.getName().getLocalPart();
+//					if ("scenario".equals(localname)) {
+//						JAXBContext jaxbc;
+//						try {
+//							jaxbc = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class);
+//							Unmarshaller unmrsh = jaxbc.createUnmarshaller();
+//							Jaxb.setObjectFactory(unmrsh, new JaxbObjectFactory());
+//							res.scenario = (Scenario) unmrsh.unmarshal(xmlsr);
+//						} catch (JAXBException exc) {
+//							exc.printStackTrace();
+//						}
+//					}else if ("data".equals(localname)) {
+//						if (null != res.scenario) {
+//							int nvehtypes = res.scenario.getNumVehicleTypes();
+//							if (nvehtypes <= 0) nvehtypes = 1;
+//							int nlinks = 0;
+//							for (edu.berkeley.path.beats.jaxb.Network network : res.scenario.getNetworkSet().getNetwork())
+//								nlinks += network.getLinkList().getLink().size();
+//							int t_incr = 30;
+//							int d_incr = t_incr * nvehtypes * nlinks;
+//							res.t = new Vector<Double>(t_incr, t_incr);
+//							res.d = new Vector<Double>(d_incr, d_incr);
+//							res.f = new Vector<Double>(d_incr, d_incr);
+//							res.mf = new Vector<Double>(d_incr, d_incr);
+//							res.fv = new Vector<Double>(d_incr, d_incr);
+//						} else {
+//							res.t = new Vector<Double>();
+//							res.d = new Vector<Double>();
+//							res.f = new Vector<Double>();
+//							res.mf = new Vector<Double>();
+//							res.fv = new Vector<Double>();
+//						}
+//						xmlsr.next();
+//						while (xmlsr.hasNext()) {
+//							if (XMLStreamConstants.END_ELEMENT == xmlsr.getEventType() && "data".equals(xmlsr.getName().getLocalPart())) break;
+//							else if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType()) {
+//								if ("ts".equals(xmlsr.getName().getLocalPart())) {
+//									res.t.add(Double.valueOf(xmlsr.getAttributeValue(null, "sec")));
+//								}else if ("net".equals(xmlsr.getName().getLocalPart())) {
+//									String dt_attr = xmlsr.getAttributeValue(null, "dt");
+//									double dt = null == dt_attr ? 1.0f : Double.valueOf(dt_attr);
+//									xmlsr.next();
+//									while (xmlsr.hasNext()) {
+//										if (XMLStreamConstants.END_ELEMENT == xmlsr.getEventType() && "net".equals(xmlsr.getName().getLocalPart())) break;
+//										else if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType() && "l".equals(xmlsr.getName().getLocalPart())) {
+//											res.d.addAll(unformat(xmlsr.getAttributeValue(null, "d"), ":"));
+//
+//											Vector<Double> vect_f = unformat(xmlsr.getAttributeValue(null, "f"), ":");
+//											for (int iii = 0; iii < vect_f.size(); ++iii) vect_f.set(iii, vect_f.get(iii) * dt);
+//											res.f.addAll(vect_f);
+//
+//											res.mf.addAll(unformat(xmlsr.getAttributeValue(null, "mf"), ":"));
+//											res.fv.addAll(unformat(xmlsr.getAttributeValue(null, "fv"), ":"));
+//										}
+//										xmlsr.next();
+//									}
+//								}
+//							}
+//							xmlsr.next();
+//						}
+//					}
+//				}
+//				xmlsr.next();
+//			}
+//		} catch (XMLStreamException exc) {
+//			exc.printStackTrace();
+//		} catch (FactoryConfigurationError exc) {
+//			exc.printStackTrace();
+//		}
 		return res;
 	}
 

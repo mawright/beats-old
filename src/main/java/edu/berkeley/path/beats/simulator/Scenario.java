@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.jaxb.*;
 import org.apache.log4j.Logger;
@@ -401,7 +402,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         // create performance calculator
         if(!performance_config.isEmpty())
-            set_performance_calculator(ObjectFactory.createPerformanceCalculator(performance_config));
+            set_performance_calculator(Jaxb.create_performance_calculator(performance_config));
 
 		// create run parameters object
 		boolean writeoutput = true;
@@ -581,7 +582,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return controllerset;
 	}
 
-	protected void setConfigfilename(String configfilename) {
+	public void setConfigfilename(String configfilename) {
 		this.configfilename = configfilename;
 	}
 
@@ -1521,7 +1522,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             // set values
             fdp.setLinkId(L.getId());
             //fdp.setDt(-1d);
-            FundamentalDiagram fd = (FundamentalDiagram) factory.createFundamentalDiagram();
+            FundamentalDiagram fd = new FundamentalDiagram(L);
+
             if(L.getFundamentalDiagramProfile()==null)
                 fd.settoDefault();
             else

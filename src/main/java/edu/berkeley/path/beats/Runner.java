@@ -99,7 +99,7 @@ public final class Runner {
         try {
 
             // load configuration file
-            scenario = ObjectFactory.createAndLoadScenario(props.scenario_name);
+            scenario = Jaxb.create_scenario_from_xml(props.scenario_name);
 
             if (scenario==null)
                 throw new BeatsException("Scenario did not load");
