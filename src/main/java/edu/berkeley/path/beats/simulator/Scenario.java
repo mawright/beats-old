@@ -1473,10 +1473,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 continue;
 
             SplitRatioProfile sr_profile = N.getSplitRatioProfile();
-
             SplitRatioProfile srp = (SplitRatioProfile) factory.createSplitRatioProfile();
             split_ratio_set.getSplitRatioProfile().add(srp);
-
 
             double srp_sample_dt = Double.isNaN(sample_dt) ? sr_profile.getDt() : sample_dt;
             int horizon_steps = BeatsMath.round(horizon/srp_sample_dt);

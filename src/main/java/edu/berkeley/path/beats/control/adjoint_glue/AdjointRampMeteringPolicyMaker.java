@@ -412,5 +412,4 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
         return new ScenarioMainlinePair(new FreewayScenario(freeway, simParams, policyParameters), mainline);
     }
 
-
 }
