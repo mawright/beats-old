@@ -17,9 +17,11 @@ public class RampMeteringPolicySet {
         profiles = new LinkedList<RampMeteringPolicyProfile>();
     }
 
-    public void print() {
-        for (RampMeteringPolicyProfile profile : profiles) {
-            profile.print();
-        }
+    @Override
+    public String toString() {
+        String str = "";
+        for (RampMeteringPolicyProfile profile : profiles)
+            str += "\t" + profile +"\n";
+        return str;
     }
 }

@@ -210,7 +210,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 
 	    this.copyfrom(fd);		// copy and normalize
 	}
-	
+
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
@@ -275,6 +275,11 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		_capacityDrop 	  = Defaults.capacityDrop	* lanes * simDtInSeconds;
 		_vf = Defaults.vf * simDtInSeconds / lengthInMeters;
 		_w  = Defaults.w  * simDtInSeconds / lengthInMeters;
+
+        this.setCapacity(Defaults.capacity);
+        this.setFreeFlowSpeed(Defaults.vf);
+        this.setCongestionSpeed(Defaults.w);
+        this.setJamDensity(Defaults.densityJam);
 	}
 
  	// copy per lane parameters from jaxb and normalize

@@ -2,8 +2,7 @@ package edu.berkeley.path.beats.test.simulator;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
-
+import edu.berkeley.path.beats.Jaxb;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -11,7 +10,6 @@ import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.InitialDensitySet;
 import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 public class InitialDensitySetTest {
@@ -23,7 +21,7 @@ public class InitialDensitySetTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		String config_file = "complete_twotypes.xml";
-		scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
 		if(scenario==null)
 			fail("scenario did not load");
 

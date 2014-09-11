@@ -26,6 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.jaxb.Splitratio;
+
 final public class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatioSet {
 
 	/////////////////////////////////////////////////////////////////////
@@ -57,5 +59,15 @@ final public class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatio
     	for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
     		((SplitRatioProfile) sr).update(false);	
 	}
-	
+
+    @Override
+    public String toString() {
+        String str = "";
+        if(getSplitRatioProfile()!=null)
+            for(edu.berkeley.path.beats.jaxb.SplitRatioProfile srp : getSplitRatioProfile())
+                if(srp.getSplitratio()!=null)
+                    for(Splitratio sr : srp.getSplitratio())
+                        str += String.format("%d\t%d\t%d\t%d\t%s\n",srp.getNodeId(),sr.getLinkIn(),sr.getLinkOut(),sr.getVehicleTypeId(),sr.getContent());
+        return str;
+    }
 }

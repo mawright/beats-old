@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import edu.berkeley.path.beats.Jaxb;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -27,7 +28,6 @@ import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_A;
 import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_HAMBURGER;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Parameters;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog.BeatsError;
@@ -277,7 +277,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		// Load scenario
 		String config_folder = "data/config/";
 		String config_file = "_largetest_Hamburger_SplitRatioSolver(I210W).xml";
-		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
 		if(scenario==null)
 			fail("scenario did not load");
 		

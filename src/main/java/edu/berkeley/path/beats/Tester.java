@@ -1,6 +1,5 @@
 package edu.berkeley.path.beats;
 
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 /**
@@ -16,7 +15,7 @@ public class Tester {
             //String xml_file = "/home/matt/workspace_L0/L0-estimation/classes/210W/210W_v13_stochastic.xml";
         	//String xml_file = "/home/matt/workspace_L0/beats/demo.xml";
         	String xml_file = "/home/matt/workspace_L0/L0-estimation/classes/tests/configs/_smalltest_noisy_splits.xml";
-        	Scenario scenario = (Scenario) ObjectFactory.createAndLoadScenario(xml_file);
+        	Scenario scenario = Jaxb.create_scenario_from_xml(xml_file);
 
             double simulation_dt = 5d;
             double start_time = 0d;

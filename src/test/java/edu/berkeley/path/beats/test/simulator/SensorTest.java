@@ -2,11 +2,11 @@ package edu.berkeley.path.beats.test.simulator;
 
 import static org.junit.Assert.*;
 
+import edu.berkeley.path.beats.Jaxb;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.Defaults;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
 
@@ -19,7 +19,7 @@ public class SensorTest {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
 		if(scenario==null)
 			fail("scenario did not load");
 		

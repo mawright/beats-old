@@ -2,13 +2,12 @@ package edu.berkeley.path.beats.test.simulator;
 
 import static org.junit.Assert.*;
 
+import edu.berkeley.path.beats.Jaxb;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 public class LinkTest {
@@ -20,7 +19,7 @@ public class LinkTest {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
 		if(scenario==null)
 			fail("scenario did not load");
 		

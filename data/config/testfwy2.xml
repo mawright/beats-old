@@ -59,20 +59,22 @@
       </ActivationIntervals>
       <table name="schedule">
         <column_names>
-          <column_name name="StartTime" key="false"/>
-          <column_name name="MeteringRates" key="false"/>
+          <column_name id="0" name="StartTime" key="false"/>
+          <column_name id="0" name="MeteringRates" key="false"/>
         </column_names>
         <row>
-          <column>10</column>
-          <column>1200</column>
+          <column id="0">10</column>
+          <column id="0">1200</column>
         </row>
         <row>
-          <column>60</column>
-          <column>100</column>
+          <column id="0">60</column>
+          <column id="0">100</column>
         </row>
       </table>
     </controller>
-    <controller dt="5" type="IRM_ALINEA" id="-2" enabled="true">
+    
+	<!--
+	<controller dt="5" type="IRM_ALINEA" id="-2" enabled="true">
       <parameters>
         <parameter name="gain" value="50"/>
       </parameters>
@@ -113,19 +115,20 @@
       </ActivationIntervals>
       <table name="tod">
         <column_names>
-          <column_name name="MeteringRates" key="false"/>
-          <column_name name="OccupancyThresholds" key="false"/>
+          <column_name id="0" name="MeteringRates" key="false"/>
+          <column_name id="0" name="OccupancyThresholds" key="false"/>
         </column_names>
         <row>
-          <column>1200</column>
-          <column>30</column>
+          <column id="0">1200</column>
+          <column id="0">30</column>
         </row>
         <row>
-          <column>1000</column>
-          <column>60</column>
+          <column id="0">1000</column>
+          <column id="0">60</column>
         </row>
       </table>
     </controller>
+	-->
     <controller dt="5" type="IRM_ALINEA" id="-5" enabled="true">
       <parameters>
         <parameter name="gain" value="50"/>
