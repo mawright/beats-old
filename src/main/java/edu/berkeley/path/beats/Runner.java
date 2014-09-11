@@ -145,7 +145,7 @@ public final class Runner {
         try {
 
             // load configuration file
-            Scenario scenario = ObjectFactory.createAndLoadScenario(config_file);
+            Scenario scenario = Jaxb.create_scenario_from_xml(config_file);
 
             if (scenario==null)
                 throw new BeatsException("Scenario did not load");

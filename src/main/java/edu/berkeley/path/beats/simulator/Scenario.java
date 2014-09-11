@@ -353,6 +353,25 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// initialization
 	/////////////////////////////////////////////////////////////////////
 
+    public void initialize_with_properties(BeatsProperties props) throws BeatsException {
+        initialize( props.sim_dt ,
+                props.start_time ,
+                props.start_time + props.duration ,
+                props.output_dt ,
+                props.output_format,
+                props.output_prefix,
+                props.num_reps,
+                props.ensemble_size ,
+                props.uncertainty_model ,
+                props.node_flow_model ,
+                props.split_ratio_model ,
+                props.performance_config ,
+                props.run_mode,
+                props.split_logger_prefix,
+                props.split_logger_dt,
+                props.aux_props );
+    }
+
 	public void initialize(double timestep,double starttime,double endtime,int numEnsemble) throws BeatsException {
 		initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble,
                 "gaussian",

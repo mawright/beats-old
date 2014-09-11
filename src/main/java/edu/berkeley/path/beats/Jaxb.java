@@ -19,25 +19,26 @@ public class Jaxb {
 
     /* READ */
 
-    public static Scenario create_scenario_from_xml(String configfilename) throws BeatsException{
+    public static Scenario create_scenario_from_xml(String configfilename,Object object_factory) throws BeatsException{
         BeatsErrorLog.clearErrorMessage();
-        Unmarshaller u = create_unmarshaller();
-        assign_schema(u);
+        Unmarshaller u = create_unmarshaller(object_factory);
         Scenario S = (Scenario) unmarshall(u,configfilename);
         S.setConfigfilename(configfilename);
         return S;
     }
 
+    public static Scenario create_scenario_from_xml(String configfilename) throws BeatsException{
+        return create_scenario_from_xml(configfilename,new JaxbObjectFactory());
+    }
+
     public static PerformanceCalculator create_performance_calculator(String configfilename) throws BeatsException {
         BeatsErrorLog.clearErrorMessage();
-        Unmarshaller u = create_unmarshaller();
-        assign_schema(u);
+        Unmarshaller u = create_unmarshaller(new JaxbObjectFactory());
         return (PerformanceCalculator) unmarshall(u,configfilename);
     }
 
     public static DemandSet create_demand_set_from_xml(String filename) throws BeatsException {
-        Unmarshaller u = create_unmarshaller();
-        assign_schema(u);
+        Unmarshaller u = create_unmarshaller(new JaxbObjectFactory());
         return (DemandSet) unmarshall(u,filename);
     }
 
@@ -53,7 +54,8 @@ public class Jaxb {
 
     /* PRIVATE */
 
-    private static Unmarshaller create_unmarshaller() throws BeatsException{
+
+    private static Unmarshaller create_unmarshaller(Object object_factory) throws BeatsException{
         Unmarshaller u = null;
         try {
             //Reset the classloader for main thread; need this if I want to run properly
@@ -61,14 +63,10 @@ public class Jaxb {
             Thread.currentThread().setContextClassLoader(ObjectFactory.class.getClassLoader());
             JAXBContext context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
             u = context.createUnmarshaller();
-            setObjectFactory(u, new JaxbObjectFactory());
+            setObjectFactory(u,object_factory);
         } catch( JAXBException je ) {
             throw new BeatsException("Failed to create context for JAXB unmarshaller", je);
         }
-        return u;
-    }
-
-    private static void assign_schema(Unmarshaller u) throws BeatsException {
         try{
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             ClassLoader classLoader = ObjectFactory.class.getClassLoader();
@@ -77,6 +75,7 @@ public class Jaxb {
         } catch(SAXException e){
             throw new BeatsException("Schema not found", e);
         }
+        return u;
     }
 
     private static void setObjectFactory(Unmarshaller unmrsh, Object factory) throws BeatsException {
