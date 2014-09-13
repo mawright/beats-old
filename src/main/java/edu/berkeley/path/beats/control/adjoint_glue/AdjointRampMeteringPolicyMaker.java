@@ -243,7 +243,7 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
             for (RampMeteringControl limit : control.control) {
                 if (limit.link.equals(policy.sensorLink)) {
                     lowerLimitFlux = limit.min_rate;
-                    upperLimitFlux = limit.max_rate;
+                    upperLimitFlux = Math.min(limit.max_rate, maxFlux);
                     break;
                 }
             }
@@ -252,7 +252,7 @@ public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
                 double rampFlux = simstate.fluxRamp()[t][rampIndex];
                 double maxQueueFlux = simstate.queue()[t][rampIndex] / scenario.policyParams().deltaTimeSeconds();
                 if (uValue >= 1.0 || rampFlux >= maxQueueFlux || maxQueueFlux <= 0.1 * maxFlux || rampFlux >= .95 * maxFlux) {
-                    policy.rampMeteringPolicy.add(Math.max(maxFlux, lowerLimitFlux));
+                    policy.rampMeteringPolicy.add(upperLimitFlux);
                     continue;
                 }
                 policy.rampMeteringPolicy.add(Math.min(upperLimitFlux, Math.max(rampFlux, lowerLimitFlux)));
