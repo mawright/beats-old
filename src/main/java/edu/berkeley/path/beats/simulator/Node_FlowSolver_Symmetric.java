@@ -3,6 +3,7 @@ package edu.berkeley.path.beats.simulator;
 import java.util.Set;
 
 import edu.berkeley.path.beats.util.ArraySet;
+import org.apache.log4j.Logger;
 
 /**
  * The node model proposed in
@@ -12,7 +13,6 @@ import edu.berkeley.path.beats.util.ArraySet;
  * Transportation Research Part B 45 (2011) 289-309
  */
 public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
-
 
 	private double [][] directed_demand; // [nIn][nOut] S_{ij}
 	double [] priority_i; // [nIn] C_i
@@ -41,22 +41,6 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 		flow = new double[nIn][nOut];
 		model = new NodeModel(nIn, nOut);
 	}
-
-	/// ***** THIS BELONGS IN SPLIT RATIO VALIDATION *******
-//	@Override
-//	protected void validate() {
-//		super.validate();
-//		if (!istrivialsplit) {
-//			for (int iind = 0; iind < nIn; ++iind)
-//				for (int oind = 0; oind < nOut; ++oind)
-//					for (int vt = 0; vt < myNetwork.getMyScenario().getNumVehicleTypes(); ++vt)
-//						if (splitratio.get(iind, oind, vt).isNaN())
-//							BeatsErrorLog.addWarning("NaN split ratios: node " + getId() + ", " +
-//									"input link " + input_link[iind].getId() + ", " +
-//									"output link " + output_link[oind].getId() + ", " +
-//									"vehicle type '" + myNetwork.getMyScenario().getVehicleTypeNames()[vt] + "'");
-//		}
-//	}
 
 	@Override
     protected IOFlow computeLinkFlows(final Double3DMatrix splitratio,final SupplyDemand demand_supply,final int ensemble_index){
@@ -121,9 +105,9 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 		private int nIn;
 		private int nOut;
 
-		double [][] priority; // [nIn][nOut] C_{ij}
-		double [] demand_i; // [nIn] S_i
-		private double [] supply_residual; // [nOut] \tilde R_j(k)
+		double [][] priority; // [nIn][nOut] C_{ij} directed priorities
+		double [] demand_i; // [nIn] S_i incoming link demands
+		private double [] supply_residual; // [nOut] \tilde R_j(k)  outgoing link supply residuals
 		private Set<Integer> j_set; // [nOut] J(k)
 		private Set<Integer> [] uj_set; // [nOut][nIn] U_j(k)
 		private double [] a_coef; // [nOut] a_j(k)
@@ -141,7 +125,9 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 			a_coef = new double[nOut];
 		}
 
-		/**
+        private static Logger logger = Logger.getLogger(NodeModel.class);
+
+        /**
 		 * Solve the node model
 		 * @param demand directed demand
 		 * @param supply outgoing links' supply
@@ -167,23 +153,30 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 						priority[i][j] = 0 >= demand_i[i] ? priority_i[i] / nOut :
 							priority_i[i] * demand[i][j] / demand_i[i];
 			}
-			
-			// initialization
-			j_set.clear();
-			for (int j = 0; j < nOut; ++j) {
-				uj_set[j].clear();
-				// \tilde R_j(0) = R_j
-				supply_residual[j] = supply[j];
-				double demand_j = 0; // S_j
-				for (int i = 0; i < nIn; ++i) {
-					// S_j = \sum_i S_{ij}
-					demand_j += demand[i][j];
-					// U_j(0) = {i: S_{ij} > 0}
-					if (demand[i][j] > 0) uj_set[j].add(i);
-				}
-				// J(0) = {j: S_j > 0}
-				if (demand_j > 0) j_set.add(j);
-			}
+
+            // initialization
+            j_set.clear();
+            for (int j = 0; j < nOut; ++j) {
+                uj_set[j].clear();
+                // \tilde R_j(0) = R_j
+                supply_residual[j] = supply[j];
+                double demand_j = 0; // S_j
+                int zero_priority_positive_demand_count = 0;
+                for (int i = 0; i < nIn; ++i)
+                    if (0 < priority_i[i]) {
+                        // S_j = \sum_{i: p_i > 0} S_{ij}
+                        demand_j += demand[i][j];
+                        // U_j(0) = {i: p_i > 0, S_{ij} > 0}
+                        if (demand[i][j] > 0) uj_set[j].add(i);
+                    } else if (0 < demand[i][j])
+                        ++zero_priority_positive_demand_count;
+                if (1 < zero_priority_positive_demand_count)
+                    logger.warn("Outgoing link #" + (j + 1) + " has " + //
+                            zero_priority_positive_demand_count + " incoming links with zero priority and positive directed demand. " + //
+                            "The flows for those incoming links may be incorrect");
+                // J(0) = {j: S_j > 0}
+                if (demand_j > 0) j_set.add(j);
+            }
 			
 			// main loop
 			while (!j_set.isEmpty()) {
@@ -256,7 +249,26 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 					
 					j_set.remove(min_a_ind);
 				}
-			}
+            }
+
+            // compute flows for zero-priority incoming links with positive demand
+            for (int i = 0; i < nIn; ++i)
+                if (0 == priority_i[i] && 0 < demand_i[i]) {
+                    // diverge model
+                    double flow_i = demand_i[i];
+                    for (int j = 0; j < nOut; ++j)
+                        if (0 < demand[i][j]) {
+                            double split_ratio_ij = demand[i][j] / demand_i[i];
+                            flow_i = Math.min(flow_i, supply_residual[j] / split_ratio_ij);
+                        }
+                    for (int j = 0; j < nOut; ++j)
+                        if (0 < demand[i][j]) {
+                            flow[i][j] = flow_i * demand[i][j] / demand_i[i];
+                            supply_residual[j] -= flow[i][j];
+                        }
+                }
+
+
 		}
 	}
 
