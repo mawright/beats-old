@@ -524,6 +524,7 @@
 			<xs:attribute name="data_feed_id" type="xs:long" use="optional" />
 			<xs:attribute name="lane_number" type="xs:int" use="optional" />
 			<xs:attribute name="link_offset" type="xs:double" use="optional" />
+			<xs:attribute name="link_type_original" type="xs:string" use="optional" />
 			<xs:attribute name="modStamp" type="xs:string" use="optional" />
 			<xs:attribute name="health_status" use="optional">
 				<xs:simpleType >
