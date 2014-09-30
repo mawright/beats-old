@@ -24,7 +24,7 @@ package edu.berkeley.path.beats.control.rr_interface;
 /**
  * Created by gomes on 2/12/14.
  */
-public class AdjointReroutesPolicyMaker { //} implements ReroutePolicyMaker {
+public class ReroutesPolicyMakerAdjoint { //} implements ReroutePolicyMaker {
 
 //    static enum optimizer_types {FINITE_DIFFERENCE,ADJOINT};
 //

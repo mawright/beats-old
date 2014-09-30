@@ -16,7 +16,7 @@ import java.util.*;
  * Time: 10:45 AM
  * To change this template use File | Settings | File Templates.
  */
-public class AdjointRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
+public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
 
 
     static public class MainlineStructure {

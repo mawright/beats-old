@@ -70,7 +70,7 @@ public class Controller_CRM_MPC extends Controller {
                     policy_maker = new PolicyMaker_Tester();
                     break;
                 case adjoint:
-                    policy_maker = new AdjointRampMeteringPolicyMaker();
+                    policy_maker = new RampMeteringPolicyMakerAdjoint();
                     policy_maker_properties = myScenario.get_auxiliary_properties("RAMP_METERING_ADJOINT");
                     break;
 //				case actm_lp:

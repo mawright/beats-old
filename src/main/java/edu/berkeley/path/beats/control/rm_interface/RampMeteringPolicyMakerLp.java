@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * Created by gomes on 9/30/2014.
  */
-public class LpRampMeteringPolicyMaker implements RampMeteringPolicyMaker {
+public class RampMeteringPolicyMakerLp implements RampMeteringPolicyMaker {
 
 
     @Override
