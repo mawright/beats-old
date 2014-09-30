@@ -1,4 +1,4 @@
-package edu.berkeley.path.beats.control;
+package edu.berkeley.path.beats.control.rr_interface;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -1,8 +1,8 @@
-package edu.berkeley.path.beats.control.adjoint_glue;
+package edu.berkeley.path.beats.control.rr_interface;
 
-//import edu.berkeley.path.beats.control.ReroutePolicyMaker;
-//import edu.berkeley.path.beats.control.ReroutePolicyProfile;
-//import edu.berkeley.path.beats.control.ReroutePolicySet;
+//import edu.berkeley.path.beats.control.rr_interface.ReroutePolicyMaker;
+//import edu.berkeley.path.beats.control.rr_interface.ReroutePolicyProfile;
+//import edu.berkeley.path.beats.control.rr_interface.ReroutePolicySet;
 //import edu.berkeley.path.beats.jaxb.*;
 //import edu.berkeley.path.beats.jaxb.Node;
 //import edu.berkeley.path.dtapc.dataStructures.HashMapPairCellsDouble;
@@ -20,8 +20,6 @@ package edu.berkeley.path.beats.control.adjoint_glue;
 //import edu.berkeley.path.dtapc.generalNetwork.state.internalSplitRatios.IntertemporalSplitRatios;
 //import edu.berkeley.path.dtapc.optimization.GradientDescent;
 //import org.apache.commons.lang.ArrayUtils;
-
-import java.util.*;
 
 /**
  * Created by gomes on 2/12/14.

@@ -2,6 +2,9 @@ package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorCMS;
 //import edu.berkeley.path.beats.control.adjoint_glue.AdjointReroutesPolicyMaker;
+import edu.berkeley.path.beats.control.rr_interface.ReroutePolicyMaker;
+import edu.berkeley.path.beats.control.rr_interface.ReroutePolicyProfile;
+import edu.berkeley.path.beats.control.rr_interface.ReroutePolicySet;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;

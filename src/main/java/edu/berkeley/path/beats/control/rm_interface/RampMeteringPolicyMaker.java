@@ -1,4 +1,4 @@
-package edu.berkeley.path.beats.control;
+package edu.berkeley.path.beats.control.rm_interface;
 
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import edu.berkeley.path.beats.simulator.DemandSet;
