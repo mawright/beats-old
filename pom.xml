@@ -392,28 +392,20 @@
 			<version>4.4</version>
 		</dependency>
 
-		<!-- RAMP METERING -->
+		<!-- ADJOINT RAMP METERING -->
 		<dependency>
 			<groupId>edu.berkeley.path</groupId>
 			<artifactId>ramp-metering</artifactId>
 			<version>0.101-SNAPSHOT</version>
 		</dependency>
 
-		<!--
+		<!-- LP RAMP METERING  -->
 		<dependency>
 			<groupId>edu.berkeley.path</groupId>
 			<artifactId>lp-ramp-metering</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
-		-->
 		
-		<dependency>
-    <groupId>edu.berkeley.path</groupId>
-    <artifactId>lp-ramp-metering</artifactId>
-    <version>0.1-SNAPSHOT</version>
-</dependency>
-
-
 		<!-- FLOW REROUTES 
 		<dependency>
 			<groupId>edu.berkeley.path</groupId>
@@ -452,7 +444,6 @@
 			<artifactId>jettison</artifactId>
 			<version>1.3.2</version>
 		</dependency>
-
 
 		<!-- DB/JSON/PROCESSOR -->
 		<dependency>
