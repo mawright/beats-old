@@ -33,7 +33,7 @@ public class Controller_CRM_MPC extends Controller {
     // variable
     private double time_last_opt;     // [sec] time of last policy maker call
 
-    private static enum PolicyMakerType {tester,adjoint,NULL}
+    private static enum PolicyMakerType {tester,adjoint,lp,NULL}
 
 
     // derived
@@ -73,9 +73,9 @@ public class Controller_CRM_MPC extends Controller {
                     policy_maker = new RampMeteringPolicyMakerAdjoint();
                     policy_maker_properties = myScenario.get_auxiliary_properties("RAMP_METERING_ADJOINT");
                     break;
-//				case actm_lp:
-//                    policy_maker = new PolicyMaker_CRM_ACTM_LP();
-//					break;
+				case lp:
+                    policy_maker = new RampMeteringPolicyMakerLp();
+					break;
                 case NULL:
                     break;
             }
