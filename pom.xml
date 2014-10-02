@@ -398,6 +398,12 @@
 			<artifactId>ramp-metering</artifactId>
 			<version>0.101-SNAPSHOT</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>edu.berkeley.path</groupId>
+			<artifactId>lp-ramp-metering</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
 				
 		<!-- FLOW REROUTES 
 		<dependency>
