@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.jaxb.*;
 import org.apache.log4j.Logger;
@@ -333,9 +334,43 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	}
 
+    // override by subclass to close down external loggers
+    protected void close() throws BeatsException {
+        if(perf_calc!=null)
+            perf_calc.close_output();
+        for(edu.berkeley.path.beats.jaxb.Node jnode : this.getNetworkSet().getNetwork().get(0).getNodeList().getNode()){
+            Node node = (Node) jnode;
+            if(node.split_ratio_logger !=null)
+                try{ node.split_ratio_logger.close(); }
+                catch(IOException e){
+                    throw new BeatsException(e.getMessage());
+                }
+        }
+        DebugLogger.close_all();
+    }
+
 	/////////////////////////////////////////////////////////////////////
 	// initialization
 	/////////////////////////////////////////////////////////////////////
+
+    public void initialize_with_properties(BeatsProperties props) throws BeatsException {
+        initialize( props.sim_dt ,
+                props.start_time ,
+                props.start_time + props.duration ,
+                props.output_dt ,
+                props.output_format,
+                props.output_prefix,
+                props.num_reps,
+                props.ensemble_size ,
+                props.uncertainty_model ,
+                props.node_flow_model ,
+                props.split_ratio_model ,
+                props.performance_config ,
+                props.run_mode,
+                props.split_logger_prefix,
+                props.split_logger_dt,
+                props.aux_props );
+    }
 
 	public void initialize(double timestep,double starttime,double endtime,int numEnsemble) throws BeatsException {
 		initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble,
@@ -386,7 +421,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         // create performance calculator
         if(!performance_config.isEmpty())
-            set_performance_calculator(ObjectFactory.createPerformanceCalculator(performance_config));
+            set_performance_calculator(Jaxb.create_performance_calculator(performance_config));
 
 		// create run parameters object
 		boolean writeoutput = true;
@@ -511,19 +546,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			}
 
             finally {
-				if (null != outputwriter)
+                if (null != outputwriter)
                     outputwriter.close();
-                if(perf_calc!=null)
-                    perf_calc.close_output();
-                for(edu.berkeley.path.beats.jaxb.Node jnode : this.getNetworkSet().getNetwork().get(0).getNodeList().getNode()){
-                    Node node = (Node) jnode;
-                    if(node.split_ratio_logger !=null)
-                        try{ node.split_ratio_logger.close(); }
-                        catch(IOException e){
-                            throw new BeatsException(e.getMessage());
-                        }
-                }
-                DebugLogger.close_all();
+                close();
 			}
 		}
         scenario_locked = false;
@@ -576,7 +601,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return controllerset;
 	}
 
-	protected void setConfigfilename(String configfilename) {
+	public void setConfigfilename(String configfilename) {
 		this.configfilename = configfilename;
 	}
 
@@ -1438,8 +1463,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     // predictors
     /////////////////////////////////////////////////////////////////////
 
-    public InitialDensitySet gather_current_densities(){
-
+    public InitialDensitySet get_current_densities_si(){
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
         InitialDensitySet init_dens_set = (InitialDensitySet) factory.createInitialDensitySet();
@@ -1468,10 +1492,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 continue;
 
             SplitRatioProfile sr_profile = N.getSplitRatioProfile();
-
             SplitRatioProfile srp = (SplitRatioProfile) factory.createSplitRatioProfile();
             split_ratio_set.getSplitRatioProfile().add(srp);
-
 
             double srp_sample_dt = Double.isNaN(sample_dt) ? sr_profile.getDt() : sample_dt;
             int horizon_steps = BeatsMath.round(horizon/srp_sample_dt);
@@ -1505,7 +1527,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return split_ratio_set;
     }
 
-    public FundamentalDiagramSet gather_current_fds(double time_current){
+    public FundamentalDiagramSet get_current_fds_si(double time_current){
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
         FundamentalDiagramSet fd_set = factory.createFundamentalDiagramSet();
@@ -1517,7 +1539,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             // set values
             fdp.setLinkId(L.getId());
             //fdp.setDt(-1d);
-            FundamentalDiagram fd = (FundamentalDiagram) factory.createFundamentalDiagram();
+            FundamentalDiagram fd = new FundamentalDiagram(L);
+
             if(L.getFundamentalDiagramProfile()==null)
                 fd.settoDefault();
             else
@@ -1528,8 +1551,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return fd_set;
     }
 
-    public DemandSet predict_demands(double time_current,double sample_dt,double horizon){
-
+    public DemandSet predict_demands_si(double time_current, double sample_dt, double horizon){
 
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
@@ -1555,7 +1577,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
                     // set values
                     dem.setVehicleTypeId(getVehicleTypeIdForIndex(v));
-                    dem.setContent(BeatsFormatter.csv(dem_profile.predict_in_VPS(v, time_current, dp_sample_dt, horizon_steps), ","));
+                    double [] x = dem_profile.predict_in_VPS(v, time_current, dp_sample_dt, horizon_steps);
+                    dem.setContent(BeatsFormatter.csv(x, ","));
                 }
             }
         }

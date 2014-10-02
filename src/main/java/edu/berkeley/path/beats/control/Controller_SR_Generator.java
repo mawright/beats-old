@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.control;
 
+import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.actuator.ActuatorCMS;
 import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.jaxb.DemandProfile;
@@ -85,7 +86,6 @@ public class Controller_SR_Generator extends Controller {
         // read and return ...........................................................
         DemandSet demand_set = null;
         try {
-            ObjectFactory.setObjectFactory(u, new JaxbObjectFactory());
             demand_set = (DemandSet) u.unmarshal( new FileInputStream(configfilename) );
         } catch( JAXBException je ) {
             System.err.print("JAXB threw an exception when loading the configuration file");

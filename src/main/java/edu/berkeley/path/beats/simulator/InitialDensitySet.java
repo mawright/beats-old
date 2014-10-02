@@ -26,7 +26,9 @@
 
 package edu.berkeley.path.beats.simulator;
 
-/** XXX. 
+import edu.berkeley.path.beats.jaxb.Density;
+
+/** XXX.
  * YYY
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -178,4 +180,12 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 //		return link;
 //	}
 
+
+    @Override
+    public String toString() {
+        String str = "";
+        for(Density d:getDensity())
+            str += String.format("%d\t%d\t%s\n",d.getLinkId(),d.getVehicleTypeId(),d.getContent());
+        return str;
+    }
 }

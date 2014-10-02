@@ -20,11 +20,11 @@ public class RampMeteringPolicyProfile {
         rampMeteringPolicy = new LinkedList<Double>();
     }
 
-    public void print() {
-        System.out.println(sensorLink.getLinkName());
-        for (Double d : rampMeteringPolicy) {
-            System.out.print(d.toString() + ",");
-        }
-        System.out.println();
+    @Override
+    public String toString() {
+        String str = sensorLink.getId() + ": ";
+        for (Double d : rampMeteringPolicy)
+            str += d.toString() + ",";
+        return str;
     }
 }

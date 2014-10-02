@@ -28,6 +28,7 @@ package edu.berkeley.path.beats.calibrator;
 
 import java.util.*;
 
+import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 import edu.berkeley.path.beats.simulator.*;
@@ -408,7 +409,7 @@ public class FDCalibrator {
 		try {
 
 			// read the original network file 
-			scenario = ObjectFactory.createAndLoadScenario(configfilename);
+            scenario = Jaxb.create_scenario_from_xml(configfilename);
 			if(scenario==null)
 				return;	
 			

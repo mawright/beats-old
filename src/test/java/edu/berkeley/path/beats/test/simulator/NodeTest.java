@@ -4,19 +4,16 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 
+import edu.berkeley.path.beats.Jaxb;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver;
 import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_A;
 import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_HAMBURGER;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog.BeatsError;
 
 public class NodeTest {
 
@@ -26,7 +23,7 @@ public class NodeTest {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
 		if(scenario==null)
 			fail("scenario did not load");
 		
@@ -114,7 +111,7 @@ public class NodeTest {
 	public void test_attatch_Node_SpitRatioSolver_HAMBURGER_node() throws Exception
 	{
 		config_file = "_smalltest_Hamburger_SplitRatioSolver.xml";
-		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
 		if(scenario==null)
 			fail("scenario did not load");
 		
@@ -140,7 +137,7 @@ public class NodeTest {
 	public void test_attatch_Node_SpitRatioSolver_HAMBURGER_normal_node() throws Exception
 	{
 		config_file = "_smalltest_Hamburger_SplitRatioSolver.xml";
-		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
 		if(scenario==null)
 			fail("scenario did not load");
 		

@@ -88,7 +88,6 @@ public final class Runner {
         }
     }
 
-
     public static Scenario load_scenario_from_properties(String propsfile){
 
         Scenario scenario = null;
@@ -105,7 +104,7 @@ public final class Runner {
         try {
 
             // load configuration file
-            scenario = ObjectFactory.createAndLoadScenario(props.scenario_name);
+            scenario = Jaxb.create_scenario_from_xml(props.scenario_name);
 
             if (scenario==null)
                 throw new BeatsException("Scenario did not load");
@@ -146,7 +145,7 @@ public final class Runner {
         try {
 
             // load configuration file
-            Scenario scenario = ObjectFactory.createAndLoadScenario(config_file);
+            Scenario scenario = Jaxb.create_scenario_from_xml(config_file);
 
             if (scenario==null)
                 throw new BeatsException("Scenario did not load");
@@ -184,8 +183,9 @@ public final class Runner {
     private static void run_simulation(String[] args){
 
         long time = System.currentTimeMillis();
+        Scenario scenario = null;
         try {
-            Scenario scenario = load_scenario_from_properties(args[0]);
+            scenario = load_scenario_from_properties(args[0]);
 
             // run the scenario
             scenario.run();

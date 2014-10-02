@@ -1,8 +1,7 @@
 package edu.berkeley.path.beats.test.simulator;
 
-import edu.berkeley.path.beats.simulator.DemandProfile;
+import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,7 +26,7 @@ public class SetProfileTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        scenario = ObjectFactory.createAndLoadScenario(config_folder + config_file);
+        scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
         if(scenario==null)
             fail("scenario did not load");
         double timestep = 5;

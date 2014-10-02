@@ -4,12 +4,12 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import edu.berkeley.path.beats.Jaxb;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 public class NetworkTest {
@@ -21,7 +21,7 @@ public class NetworkTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		System.out.println(config_folder+config_file);
-		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
 		if(scenario==null)
 			fail("scenario did not load");
 		network = (Network) scenario.getNetworkSet().getNetwork().get(0);

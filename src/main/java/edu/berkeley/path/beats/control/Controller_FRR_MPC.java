@@ -166,10 +166,10 @@ public class Controller_FRR_MPC extends Controller {
 
 			// call policy maker (everything in SI units)
             policy = policy_maker.givePolicy( network,
-                                              myScenario.gather_current_fds(time_current),
-                                              myScenario.predict_demands(time_current,Double.NaN,pm_horizon),
+                                              myScenario.get_current_fds_si(time_current),
+                                              myScenario.predict_demands_si(time_current, Double.NaN, pm_horizon),
                                               myScenario.predict_split_ratios(time_current,Double.NaN,pm_horizon),
-                                              myScenario.gather_current_densities(),
+                                              myScenario.get_current_densities_si(),
                                               myScenario.getRouteSet(),
                                               pm_dt,
                                               policy_maker_properties );

@@ -21,7 +21,7 @@ public class Controller_CRM_MPC extends Controller {
     private Properties policy_maker_properties;
     private RampMeteringPolicySet policy;
     private RampMeteringControlSet controller_parameters;
-    private HashMap<Long,Actuator> link_actuator_map;
+    private HashMap<Link,Actuator> link_actuator_map;
 
     private edu.berkeley.path.beats.simulator.Network network;
 
@@ -81,12 +81,36 @@ public class Controller_CRM_MPC extends Controller {
             }
         }
 
+        // controller parameters
+//        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getLinkList().getLink()){
+//            Link L = (Link) jaxbL;
+//            if(L.isOnramp()){
+//                RampMeteringControl con = new RampMeteringControl();
+//                con.link = L;
+//                con.max_rate = 900d/3600d;    // veh/sec
+//                con.min_rate = 0;    // veh/sec
+//                controller_parameters.control.add(con);
+//            }
+//        }
+
         // link->actuator map
-        link_actuator_map = new HashMap<Long,Actuator>();
+        link_actuator_map = new HashMap<Link,Actuator>();
+        controller_parameters = new RampMeteringControlSet();
         for(Actuator act : actuators){
             ScenarioElement se =  (ScenarioElement) act.getScenarioElement();
-            if(se.getMyType()==ScenarioElement.Type.link)
-                link_actuator_map.put(new Long(se.getId()),act);
+            if(se.getMyType()==ScenarioElement.Type.link){
+                Link link = myScenario.getLinkWithId(se.getId());
+                link_actuator_map.put(link,act);
+                Parameters param = (Parameters) act.getParameters();
+                RampMeteringControl con = new RampMeteringControl(link);
+                if(param!=null)  {
+                    if(param.has("max_rate_in_vphpl"))
+                        con.max_rate = Double.parseDouble(param.get("max_rate_in_vphpl"))*link.getLanes()/3600d;  // veh/sec
+                    if(param.has("min_rate_in_vphpl"))
+                        con.min_rate = Double.parseDouble(param.get("min_rate_in_vphpl"))*link.getLanes()/3600d;    // veh/sec
+                }
+                controller_parameters.control.add(con);
+            }
         }
 
         // read timing parameters
@@ -106,21 +130,6 @@ public class Controller_CRM_MPC extends Controller {
         // assign network (it will already be assigned if controller is scenario-less)
         if(network==null && myScenario!=null)
             network = (Network) myScenario.getNetworkSet().getNetwork().get(0);
-
-        // controller parameters
-        controller_parameters = new RampMeteringControlSet();
-        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getLinkList().getLink()){
-            Link L = (Link) jaxbL;
-            if(L.isOnramp()){
-                RampMeteringControl con = new RampMeteringControl();
-                con.link = L;
-                con.max_rate = 1;    // veh/sec
-                con.min_rate = 0;    // veh/sec
-                controller_parameters.control.add(con);
-            }
-        }
-
-
 
     }
 
@@ -177,13 +186,15 @@ public class Controller_CRM_MPC extends Controller {
 
             // call policy maker (everything in SI units)
             policy = policy_maker.givePolicy( network,
-                    myScenario.gather_current_fds(time_current),
-                    myScenario.predict_demands(time_current,pm_dt,pm_horizon),
+                    myScenario.get_current_fds_si(time_current),
+                    myScenario.predict_demands_si(time_current, pm_dt, pm_horizon),
                     myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon),
-                    myScenario.gather_current_densities(),
+                    myScenario.get_current_densities_si(),
                     controller_parameters,
                     pm_dt,
                     policy_maker_properties);
+
+            System.out.println(time_current+"\n"+policy);
 
             // update time keeper
             time_last_opt = time_current;
@@ -200,12 +211,15 @@ public class Controller_CRM_MPC extends Controller {
         double time_since_last_pm_call = time_current-time_last_opt;
         int time_index = (int) (time_since_last_pm_call/pm_dt);
         for(RampMeteringPolicyProfile rmprofile : policy.profiles){
-            ActuatorRampMeter act = (ActuatorRampMeter) link_actuator_map.get(rmprofile.sensorLink.getId());
+            ActuatorRampMeter act = (ActuatorRampMeter) link_actuator_map.get(rmprofile.sensorLink);
             if(act!=null){
                 int clipped_time_index = Math.min(time_index,rmprofile.rampMeteringPolicy.size()-1);
                 double policy = rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d;
                 // System.out.println(policy);
                 act.setMeteringRateInVPH( policy);
+            }
+            else{
+                System.out.println("WARNING: Actuator not found!");
             }
         }
     }

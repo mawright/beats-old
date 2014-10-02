@@ -222,119 +222,119 @@ final public class ObjectFactory {
 	// Scenario 
 	/////////////////////////////////////////////////////////////////////
 
-    public static Scenario createAndLoadScenario(String configfilename) throws BeatsException {
+//    public static Scenario createAndLoadScenario(String configfilename) throws BeatsException {
+//
+//		JAXBContext context;
+//		Unmarshaller u;
+//
+//		BeatsErrorLog.clearErrorMessage();
+//
+//    	// create unmarshaller .......................................................
+//        try {
+//		//Reset the classloader for main thread; need this if I want to run properly
+//  		//with JAXB within MATLAB. (luis)
+//		Thread.currentThread().setContextClassLoader(ObjectFactory.class.getClassLoader());
+//        	context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
+//	        u = context.createUnmarshaller();
+//        } catch( JAXBException je ) {
+//        	throw new BeatsException("Failed to create context for JAXB unmarshaller", je);
+//        }
+//
+//        // schema assignment ..........................................................
+//        try{
+//            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+//            ClassLoader classLoader = ObjectFactory.class.getClassLoader();
+//        	Schema schema = factory.newSchema(classLoader.getResource("beats.xsd"));
+//        	u.setSchema(schema);
+//        } catch(SAXException e){
+//        	throw new BeatsException("Schema not found", e);
+//        }
+//
+//        // process configuration file name ...........................................
+//		if(!configfilename.endsWith(".xml"))
+//			configfilename += ".xml";
+//
+//        // read and return ...........................................................
+//        Scenario S = null; //new Scenario();
+//        try {
+//        	setObjectFactory(u, new JaxbObjectFactory());
+//        	S = (Scenario) u.unmarshal( new FileInputStream(configfilename) );
+//        } catch( JAXBException je ) {
+//        	throw new BeatsException("JAXB threw an exception when loading the configuration file", je);
+//        } catch (FileNotFoundException e) {
+//        	throw new BeatsException("Configuration file not found. " + configfilename, e);
+//		}
+//
+//        if(S==null){
+//        	throw new BeatsException("Unknown load error");
+//		}
+//
+//		// check the scenario schema version
+//		//edu.berkeley.path.beats.util.SchemaUtil.checkSchemaVersion(S);
+//
+//        // copy in input parameters ..................................................
+//        S.setConfigfilename(configfilename);
+//
+//		return S;
+//	}
 
-		JAXBContext context;
-		Unmarshaller u;
-
-		BeatsErrorLog.clearErrorMessage();
-		
-    	// create unmarshaller .......................................................
-        try {
-		//Reset the classloader for main thread; need this if I want to run properly
-  		//with JAXB within MATLAB. (luis)
-		Thread.currentThread().setContextClassLoader(ObjectFactory.class.getClassLoader());
-        	context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
-	        u = context.createUnmarshaller();
-        } catch( JAXBException je ) {
-        	throw new BeatsException("Failed to create context for JAXB unmarshaller", je);
-        }
-        
-        // schema assignment ..........................................................
-        try{
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            ClassLoader classLoader = ObjectFactory.class.getClassLoader();            
-        	Schema schema = factory.newSchema(classLoader.getResource("beats.xsd"));
-        	u.setSchema(schema);
-        } catch(SAXException e){
-        	throw new BeatsException("Schema not found", e);
-        }
-        
-        // process configuration file name ...........................................
-		if(!configfilename.endsWith(".xml"))
-			configfilename += ".xml";
-
-        // read and return ...........................................................
-        Scenario S = null; //new Scenario();
-        try {
-        	setObjectFactory(u, new JaxbObjectFactory());
-        	S = (Scenario) u.unmarshal( new FileInputStream(configfilename) );
-        } catch( JAXBException je ) {
-        	throw new BeatsException("JAXB threw an exception when loading the configuration file", je);
-        } catch (FileNotFoundException e) {
-        	throw new BeatsException("Configuration file not found. " + configfilename, e);
-		}
-        
-        if(S==null){
-        	throw new BeatsException("Unknown load error");
-		}
-
-		// check the scenario schema version
-		//edu.berkeley.path.beats.util.SchemaUtil.checkSchemaVersion(S);
-
-        // copy in input parameters ..................................................
-        S.setConfigfilename(configfilename);
-
-		return S;
-	}
-
-	public static void setObjectFactory(Unmarshaller unmrsh, Object factory) throws PropertyException {
-		final String classname = unmrsh.getClass().getName();
-		String propnam = classname.startsWith("com.sun.xml.internal") ?//
-				"com.sun.xml.internal.bind.ObjectFactory" ://
-				"com.sun.xml.bind.ObjectFactory";
-		unmrsh.setProperty(propnam, factory);
-	}
-
-    public static PerformanceCalculator createPerformanceCalculator(String configfilename) throws BeatsException {
-
-        JAXBContext context;
-        Unmarshaller u;
-
-        BeatsErrorLog.clearErrorMessage();
-
-        // create unmarshaller .......................................................
-        try {
-            //Reset the classloader for main thread; need this if I want to run properly
-            //with JAXB within MATLAB. (luis)
-            Thread.currentThread().setContextClassLoader(ObjectFactory.class.getClassLoader());
-            context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
-            u = context.createUnmarshaller();
-        } catch( JAXBException je ) {
-            throw new BeatsException("Failed to create context for JAXB unmarshaller", je);
-        }
-
-        // schema assignment ..........................................................
-        try{
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            ClassLoader classLoader = ObjectFactory.class.getClassLoader();
-            Schema schema = factory.newSchema(classLoader.getResource("beats_output.xsd"));
-            u.setSchema(schema);
-        } catch(SAXException e){
-            throw new BeatsException("Schema not found", e);
-        }
-
-        // process configuration file name ...........................................
-        if(!configfilename.endsWith(".xml"))
-            configfilename += ".xml";
-
-        // read and return ...........................................................
-        PerformanceCalculator perf_calc = null;
-        try {
-            setObjectFactory(u, new JaxbObjectFactory());
-            perf_calc = new PerformanceCalculator((OutputRequest) u.unmarshal( new FileInputStream(configfilename) ));
-        } catch( JAXBException je ) {
-            throw new BeatsException("JAXB threw an exception when loading the performance calculator configuration file", je);
-        } catch (FileNotFoundException e) {
-            throw new BeatsException("Performance calculator configuration file not found", e);
-        }
-
-        if(perf_calc==null){
-            throw new BeatsException("Unknown performance calculator load error");
-        }
-
-        return perf_calc;
-    }
+//	public static void setObjectFactory(Unmarshaller unmrsh, Object factory) throws PropertyException {
+//		final String classname = unmrsh.getClass().getName();
+//		String propnam = classname.startsWith("com.sun.xml.internal") ?//
+//				"com.sun.xml.internal.bind.ObjectFactory" ://
+//				"com.sun.xml.bind.ObjectFactory";
+//		unmrsh.setProperty(propnam, factory);
+//	}
+//
+//    public static PerformanceCalculator create_performance_calculator(String configfilename) throws BeatsException {
+//
+//        JAXBContext context;
+//        Unmarshaller u;
+//
+//        BeatsErrorLog.clearErrorMessage();
+//
+//        // create unmarshaller .......................................................
+//        try {
+//            //Reset the classloader for main thread; need this if I want to run properly
+//            //with JAXB within MATLAB. (luis)
+//            Thread.currentThread().setContextClassLoader(ObjectFactory.class.getClassLoader());
+//            context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
+//            u = context.createUnmarshaller();
+//        } catch( JAXBException je ) {
+//            throw new BeatsException("Failed to create context for JAXB unmarshaller", je);
+//        }
+//
+//        // schema assignment ..........................................................
+//        try{
+//            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+//            ClassLoader classLoader = ObjectFactory.class.getClassLoader();
+//            Schema schema = factory.newSchema(classLoader.getResource("beats_output.xsd"));
+//            u.setSchema(schema);
+//        } catch(SAXException e){
+//            throw new BeatsException("Schema not found", e);
+//        }
+//
+//        // process configuration file name ...........................................
+//        if(!configfilename.endsWith(".xml"))
+//            configfilename += ".xml";
+//
+//        // read and return ...........................................................
+//        PerformanceCalculator perf_calc = null;
+//        try {
+//            setObjectFactory(u, new JaxbObjectFactory());
+//            perf_calc = new PerformanceCalculator((OutputRequest) u.unmarshal( new FileInputStream(configfilename) ));
+//        } catch( JAXBException je ) {
+//            throw new BeatsException("JAXB threw an exception when loading the performance calculator configuration file", je);
+//        } catch (FileNotFoundException e) {
+//            throw new BeatsException("Performance calculator configuration file not found", e);
+//        }
+//
+//        if(perf_calc==null){
+//            throw new BeatsException("Unknown performance calculator load error");
+//        }
+//
+//        return perf_calc;
+//    }
 
     /////////////////////////////////////////////////////////////////////
 	// public: controller

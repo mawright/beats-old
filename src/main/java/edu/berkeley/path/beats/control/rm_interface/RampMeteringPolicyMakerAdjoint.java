@@ -1,10 +1,18 @@
 package edu.berkeley.path.beats.control.rm_interface;
 
-import edu.berkeley.path.beats.jaxb.Density;
-import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
+import edu.berkeley.path.beats.Jaxb;
+import edu.berkeley.path.beats.jaxb.*;
+import edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.DemandSet;
 import edu.berkeley.path.beats.simulator.FundamentalDiagram;
+import edu.berkeley.path.beats.simulator.InitialDensitySet;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Network;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.SplitRatioSet;
 import edu.berkeley.path.ramp_metering.*;
+import edu.berkeley.path.ramp_metering.SimulationOutput;
 
 import java.util.*;
 
@@ -90,16 +98,16 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
 
         public Link source(Link l) {
 
-//            // GG: Hack to make it work in L0
-//            return l;
+            // GG: Hack to make it work in L0
+            return l;
 
-            for (edu.berkeley.path.beats.jaxb.Link ll : l.getBegin_node().getInput_link()) {
-                Link lll = (Link) ll;
-                if (lll.getLinkType().getName().equalsIgnoreCase("Source")) {
-                    return lll;
-                }
-            }
-            return null;
+//            for (edu.berkeley.path.beats.jaxb.Link ll : l.getBegin_node().getInput_link()) {
+//                Link lll = (Link) ll;
+//                if (lll.getLinkType().getName().equalsIgnoreCase("Source")) {
+//                    return lll;
+//                }
+//            }
+//            return null;
         }
 
         public Link onramp(Link l) {
@@ -184,6 +192,26 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
 
     @Override
     public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt,Properties props) {
+
+//        edu.berkeley.path.beats.jaxb.Scenario S = new edu.berkeley.path.beats.jaxb.Scenario();
+//        S.setNetworkSet(new NetworkSet());
+//        S.getNetworkSet().getNetwork().add(net);
+//        S.setFundamentalDiagramSet(fd);
+//        S.setDemandSet(demand);
+//        S.setSplitRatioSet(splitRatios);
+//        S.setInitialDensitySet(ics);
+//        try {
+//            Jaxb.write_scenario_to_xml(S,"xmlout.xml");
+//        } catch (BeatsException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println("Demands\n"+demand);
+//        System.out.println("Splits\n"+splitRatios);
+//        System.out.println("InitialDensitySet\n"+ics);
+//        System.out.println("FundamentalDiagramSet\n");
+//        for(FundamentalDiagramProfile fdp:fd.getFundamentalDiagramProfile())
+//            System.out.println(fdp);
+
         ScenarioMainlinePair pair = convertScenario(net, fd, demand, splitRatios, ics, control, dt);
         FreewayScenario scenario = pair.scenario;
         MainlineStructure mainlineStructure = pair.mainlineStructure;
@@ -214,7 +242,7 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
             for (RampMeteringControl limit : control.control) {
                 if (limit.link.equals(policy.sensorLink)) {
                     lowerLimitFlux = limit.min_rate;
-                    upperLimitFlux = limit.max_rate;
+                    upperLimitFlux = Math.min(limit.max_rate, maxFlux);
                     break;
                 }
             }
@@ -223,7 +251,7 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
                 double rampFlux = simstate.fluxRamp()[t][rampIndex];
                 double maxQueueFlux = simstate.queue()[t][rampIndex] / scenario.policyParams().deltaTimeSeconds();
                 if (uValue >= 1.0 || rampFlux >= maxQueueFlux || maxQueueFlux <= 0.1 * maxFlux || rampFlux >= .95 * maxFlux) {
-                    policy.rampMeteringPolicy.add(Math.max(maxFlux, lowerLimitFlux));
+                    policy.rampMeteringPolicy.add(upperLimitFlux);
                     continue;
                 }
                 policy.rampMeteringPolicy.add(Math.min(upperLimitFlux, Math.max(rampFlux, lowerLimitFlux)));
@@ -249,15 +277,16 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
         double vehiclesAtEnd = FreewaySimulator.totalVehiclesEnd(scenario.fw(), simstate, scenario.policyParams().deltaTimeSeconds());
         double totalSimulatedVehicles =  scenario.totalVehicles();
         return vehiclesAtEnd <= totalSimulatedVehicles * .01 + .1;
-
     }
 
     static public ScenarioMainlinePair convertScenario(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt) {
+
         MainlineStructure mainline = new MainlineStructure(net);
         Map<Link, FundamentalDiagram> fdMap = new HashMap<Link, FundamentalDiagram>();
         for (edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile f : fd.getFundamentalDiagramProfile()) {
             fdMap.put(net.getLinkWithId(f.getLinkId()), (FundamentalDiagram) (f.getFundamentalDiagram().get(0)));
         }
+
         FreewayLink[] freewayLinks = new FreewayLink[mainline.nLinks];
         int linkIndex = 0;
         for (Link link : mainline.links) {
@@ -276,6 +305,7 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
             freewayLinks[linkIndex] = new FreewayLink(new edu.berkeley.path.ramp_metering.FundamentalDiagram(f.getFreeFlowSpeed(), f.getCapacity() * link.getLanes(), f.getJamDensity() * link.getLanes()), length, rMax, p);
             ++linkIndex;
         }
+
         List<Integer> onrampList = mainline.onrampIndices();
         List<Integer> offrampList = mainline.offrampIndices();
         int[] onramps = new int[onrampList.size()];
@@ -286,11 +316,13 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
         for (int i = 0; i < offrampList.size(); ++i) {
             offramps[i] = offrampList.get(i);
         }
+
         Freeway freeway = Freeway.fromArrays(freewayLinks, onramps, offramps);
         PolicyParameters policyParameters = new PolicyParameters(dt, -1, 0);
         assert demand.getDemandProfile().get(0).getDt() % Math.floor(dt) == 0;
         int bcDtFactor = (int) (Math.floor(demand.getDemandProfile().get(0).getDt())) / (int) Math.floor(dt);
         Map<Link, double[]> indexedDemand = new HashMap<Link, double[]>();
+
         for (edu.berkeley.path.beats.jaxb.DemandProfile d : demand.getDemandProfile()) {
             String[] splits = d.getDemand().get(0).getContent().split(",");
             double[] dem = new double[splits.length * bcDtFactor];
@@ -304,6 +336,7 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
             }
             indexedDemand.put(net.getLinkWithId(d.getLinkIdOrg()), dem);
         }
+
         Map<Link, double[]> indexedRatios = new HashMap<Link, double[]>();
         for (edu.berkeley.path.beats.jaxb.SplitRatioProfile d : splitRatios.getSplitRatioProfile()) {
             for (edu.berkeley.path.beats.jaxb.Splitratio split : d.getSplitratio()) {
@@ -320,6 +353,7 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
                 indexedRatios.put(net.getLinkWithId(split.getLinkOut()), dem);
             }
         }
+
         int t = indexedDemand.values().iterator().next().length;
         double[][] splits = new double[offramps.length][t];
         for (int i = 0; i < offramps.length; ++i) {
@@ -329,6 +363,7 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
         for (int i = 0; i < onramps.length; ++i) {
             dems[i] = indexedDemand.get(mainline.mainlineSourceMap.get(mainline.links.get(onramps[i])));
         }
+
         double[] densityIC = new double[mainline.nLinks];
         double[] queueIC = new double[mainline.nLinks];
         for ( Density d : ics.getDensity()) {
@@ -348,6 +383,7 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
                 continue;
             }
         }
+
         for ( Density d : ics.getDensity()) {
             double value = Double.parseDouble(d.getContent());
             Link link = net.getLinkWithId(d.getLinkId());
@@ -360,6 +396,7 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
                 }
             }
         }
+
         double[] minRates = new double[onramps.length - 1];
         double[] maxRates = new double[onramps.length - 1];
         List<Link> orderedOnramps = mainline.orderedOnramps();
@@ -373,6 +410,5 @@ public class RampMeteringPolicyMakerAdjoint implements RampMeteringPolicyMaker {
         SimulationParameters simParams = SimulationParameters.fromJava(BoundaryConditions.fromArrays(dems, splits), InitialConditions.fromArrays(densityIC, queueIC), minRates, maxRates);
         return new ScenarioMainlinePair(new FreewayScenario(freeway, simParams, policyParameters), mainline);
     }
-
 
 }

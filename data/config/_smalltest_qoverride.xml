@@ -42,7 +42,12 @@
 	<actuator id="-6">
 		<scenarioElement id="-6" type="link"/>
 		<actuator_type id="0" name="ramp_meter"/>
-		<queue_override strategy="max_rate" max_queue_vehicles="20"/>
+         <parameters>
+            <parameter name="max_queue_vehicles" value="60"/>
+            <parameter name="max_rate_in_vphpl" value="900"/>
+            <parameter name="min_rate_in_vphpl" value="240"/>
+         </parameters>
+         <queue_override strategy="max_rate"/>
 	</actuator>
   </ActuatorSet>
 

@@ -2,11 +2,8 @@ package edu.berkeley.path.beats.test.simulator;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.io.IOException;
-
+import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.simulator.*;
-import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -23,7 +20,7 @@ public class ScenarioTest {
 	public static void setUpBeforeClass() throws Exception {
 		try {
 			String config_file = "_smalltest.xml";
-			static_scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+			static_scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
 			if(static_scenario==null)
 				fail("scenario did not load");
 
@@ -44,7 +41,7 @@ public class ScenarioTest {
 	public void test_initialize_run_advanceNSeconds() {
 		try {
 			String config_file = "_smalltest.xml";
-			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+			Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
 			if(scenario==null)
 				fail("scenario did not load");
 
@@ -101,7 +98,7 @@ public class ScenarioTest {
 	public void test_set_timestep() {
 		try {
 			String config_file = "_smalltest_withdemandprofile.xml";
-			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+			Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
 			if(scenario==null)
 				fail("scenario did not load");
 
@@ -240,7 +237,7 @@ public class ScenarioTest {
 	public void test_get_Controller_Event_Sensor_WithId() {
 		try {
 			String config_file = "complete.xml";
-			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+			Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
 			if(scenario==null)
 				fail("scenario did not load");
 
