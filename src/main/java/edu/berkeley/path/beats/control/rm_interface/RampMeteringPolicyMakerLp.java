@@ -6,6 +6,10 @@ import edu.berkeley.path.beats.simulator.InitialDensitySet;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.SplitRatioSet;
 
+import edu.berkeley.path.lprm.jaxb.ActuatorSet;
+import edu.berkeley.path.lprm.lp.RampMeteringSolver;
+
+import java.util.ArrayList;
 import java.util.Properties;
 
 /**
@@ -13,10 +17,41 @@ import java.util.Properties;
  */
 public class RampMeteringPolicyMakerLp implements RampMeteringPolicyMaker {
 
-
     @Override
     public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt, Properties props) {
+
+        double sim_dt_in_seconds = 3d;
+        double K_dem_seconds = 9d;
+        double K_cool_seconds = 3d;
+        double eta = .1d;
+
+        int K_dem = (int) Math.round(K_dem_seconds / sim_dt_in_seconds);
+        int K_cool = (int) Math.round(K_cool_seconds / sim_dt_in_seconds);
+
+        ActuatorSet actuators = null;
+
+        try {
+            edu.berkeley.path.lprm.network.beats.Network lp_net = null;
+            edu.berkeley.path.lprm.jaxb.FundamentalDiagramSet lp_fds = null;
+            edu.berkeley.path.lprm.jaxb.SplitRatioSet lp_srs = null;
+
+            RampMeteringSolver solver = new RampMeteringSolver(lp_net, lp_fds, lp_srs, actuators, K_dem, K_cool, eta, sim_dt_in_seconds);
+//        ArrayList<String> errors = policy_maker.getFwy().check_CFL_condition(sim_dt_in_seconds);
+//        if (!errors.isEmpty()) {
+//            System.err.print(errors);
+//            throw new Exception("CFL error");
+//        }
+//        InitialDensitySet ics = scenario.getInitialDensitySet();
+//        DemandSet demands = scenario.getDemandSet();
+//        policy_maker.set_data(ics, demands);
+//        RampMeteringSolution sol = policy_maker.solve(solver_type);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         return null;
+
     }
 
 
