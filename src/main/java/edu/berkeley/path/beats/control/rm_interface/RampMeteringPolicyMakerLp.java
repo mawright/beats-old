@@ -6,7 +6,7 @@ import edu.berkeley.path.beats.simulator.InitialDensitySet;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.SplitRatioSet;
 
-import edu.berkeley.path.lprm.jaxb.ActuatorSet;
+import edu.berkeley.path.beats.jaxb.ActuatorSet;
 import edu.berkeley.path.lprm.lp.RampMeteringSolver;
 
 import java.util.ArrayList;
@@ -32,10 +32,8 @@ public class RampMeteringPolicyMakerLp implements RampMeteringPolicyMaker {
 
         try {
             edu.berkeley.path.lprm.network.beats.Network lp_net = null;
-            edu.berkeley.path.lprm.jaxb.FundamentalDiagramSet lp_fds = null;
-            edu.berkeley.path.lprm.jaxb.SplitRatioSet lp_srs = null;
 
-            RampMeteringSolver solver = new RampMeteringSolver(lp_net, lp_fds, lp_srs, actuators, K_dem, K_cool, eta, sim_dt_in_seconds);
+            RampMeteringSolver solver = new RampMeteringSolver(lp_net, fd, splitRatios, actuators, K_dem, K_cool, eta, sim_dt_in_seconds);
 //        ArrayList<String> errors = policy_maker.getFwy().check_CFL_condition(sim_dt_in_seconds);
 //        if (!errors.isEmpty()) {
 //            System.err.print(errors);
