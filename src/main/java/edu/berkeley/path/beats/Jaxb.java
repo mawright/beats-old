@@ -1,7 +1,6 @@
 package edu.berkeley.path.beats;
 
 import edu.berkeley.path.beats.simulator.*;
-//import edu.berkeley.path.beats.util.SchemaUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;

@@ -1,12 +1,11 @@
 package edu.berkeley.path.beats.control.rm_interface;
 
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
-import edu.berkeley.path.beats.simulator.DemandSet;
-import edu.berkeley.path.beats.simulator.InitialDensitySet;
-import edu.berkeley.path.beats.simulator.Network;
-import edu.berkeley.path.beats.simulator.SplitRatioSet;
+import edu.berkeley.path.beats.simulator.*;
 
 import edu.berkeley.path.beats.jaxb.ActuatorSet;
+import edu.berkeley.path.lprm.rm.RampMeteringSolution;
+import edu.berkeley.path.lprm.rm.RampMeteringSolver;
 //import edu.berkeley.path.lprm.lp.RampMeteringSolver;
 
 import java.util.ArrayList;
@@ -17,32 +16,25 @@ import java.util.Properties;
  */
 public class RampMeteringPolicyMakerLp implements RampMeteringPolicyMaker {
 
-    @Override
-    public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt, Properties props) {
+    private RampMeteringSolver solver;
+    private double sim_dt_in_seconds;
 
-        double sim_dt_in_seconds = 3d;
-        double K_dem_seconds = 9d;
-        double K_cool_seconds = 3d;
-        double eta = .1d;
-
+    public RampMeteringPolicyMakerLp(Scenario myScenario,double K_dem_seconds,double K_cool_seconds,double eta){
+        sim_dt_in_seconds = myScenario.getSimdtinseconds();
         int K_dem = (int) Math.round(K_dem_seconds / sim_dt_in_seconds);
         int K_cool = (int) Math.round(K_cool_seconds / sim_dt_in_seconds);
-
-        ActuatorSet actuators = null;
-
         try {
-            edu.berkeley.path.lprm.network.beats.Network lp_net = null;
+            solver = new RampMeteringSolver(myScenario, K_dem, K_cool, eta, sim_dt_in_seconds);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-//            RampMeteringSolver solver = new RampMeteringSolver(lp_net, fd, splitRatios, actuators, K_dem, K_cool, eta, sim_dt_in_seconds);
-//        ArrayList<String> errors = policy_maker.getFwy().check_CFL_condition(sim_dt_in_seconds);
-//        if (!errors.isEmpty()) {
-//            System.err.print(errors);
-//            throw new Exception("CFL error");
-//        }
-//        InitialDensitySet ics = scenario.getInitialDensitySet();
-//        DemandSet demands = scenario.getDemandSet();
-//        policy_maker.set_data(ics, demands);
-//        RampMeteringSolution sol = policy_maker.solve(solver_type);
+    @Override
+    public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt, Properties props) {
+        try {
+            solver.set_data(ics,demand);
+            RampMeteringSolution sol = solver.solve();
         } catch (Exception e) {
             e.printStackTrace();
         }

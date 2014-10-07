@@ -18,7 +18,7 @@ public class Controller_CRM_MPC extends Controller {
 
     // policy maker
     private RampMeteringPolicyMaker policy_maker;
-    private Properties policy_maker_properties;
+    private Properties pm_props;
     private RampMeteringPolicySet policy;
     private RampMeteringControlSet controller_parameters;
     private HashMap<Link,Actuator> link_actuator_map;
@@ -35,10 +35,6 @@ public class Controller_CRM_MPC extends Controller {
 
     private static enum PolicyMakerType {tester,adjoint,lp,NULL}
 
-
-    // derived
-//    private int pm_horizon_steps;     // pm_horizon/pm_dt
-
     /////////////////////////////////////////////////////////////////////
     // Construction
     /////////////////////////////////////////////////////////////////////
@@ -54,32 +50,7 @@ public class Controller_CRM_MPC extends Controller {
     @Override
     protected void populate(Object jaxbobject) {
 
-        // generate the policy maker
         edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) getJaxbController().getParameters();
-        policy_maker = null;
-        if (null != params && params.has("policy")){
-            PolicyMakerType myPMType;
-            try {
-                myPMType = PolicyMakerType.valueOf(params.get("policy").toLowerCase());
-            } catch (IllegalArgumentException e) {
-                myPMType = PolicyMakerType.NULL;
-            }
-
-            switch(myPMType){
-                case tester:
-                    policy_maker = new PolicyMaker_Tester();
-                    break;
-                case adjoint:
-                    policy_maker = new RampMeteringPolicyMakerAdjoint();
-                    policy_maker_properties = myScenario.get_auxiliary_properties("RAMP_METERING_ADJOINT");
-                    break;
-				case lp:
-                    policy_maker = new RampMeteringPolicyMakerLp();
-					break;
-                case NULL:
-                    break;
-            }
-        }
 
         // controller parameters
 //        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getLinkList().getLink()){
@@ -125,11 +96,38 @@ public class Controller_CRM_MPC extends Controller {
             pm_horizon = Double.NaN;
         }
 
-//        pm_horizon_steps = BeatsMath.round(pm_horizon/pm_dt);
-
         // assign network (it will already be assigned if controller is scenario-less)
         if(network==null && myScenario!=null)
             network = (Network) myScenario.getNetworkSet().getNetwork().get(0);
+
+        // generate the policy maker
+        policy_maker = null;
+        if (null != params && params.has("policy")){
+            PolicyMakerType myPMType;
+            try {
+                myPMType = PolicyMakerType.valueOf(params.get("policy").toLowerCase());
+            } catch (IllegalArgumentException e) {
+                myPMType = PolicyMakerType.NULL;
+            }
+
+            switch(myPMType){
+                case tester:
+                    policy_maker = new PolicyMaker_Tester();
+                    break;
+                case adjoint:
+                    pm_props = myScenario.get_auxiliary_properties("RAMP_METERING_ADJOINT");
+                    policy_maker = new RampMeteringPolicyMakerAdjoint();
+                    break;
+				case lp:
+                    pm_props = myScenario.get_auxiliary_properties("RAMP_METERING_LP");
+                    double K_cool_seconds = Double.parseDouble(pm_props.getProperty("K_cool_seconds"));
+                    double eta = Double.parseDouble(pm_props.getProperty("eta"));
+                    policy_maker = new RampMeteringPolicyMakerLp(myScenario,pm_horizon,K_cool_seconds,eta);
+					break;
+                case NULL:
+                    break;
+            }
+        }
 
     }
 
@@ -192,7 +190,7 @@ public class Controller_CRM_MPC extends Controller {
                     myScenario.get_current_densities_si(),
                     controller_parameters,
                     pm_dt,
-                    policy_maker_properties);
+                    pm_props);
 
             System.out.println(time_current+"\n"+policy);
 
