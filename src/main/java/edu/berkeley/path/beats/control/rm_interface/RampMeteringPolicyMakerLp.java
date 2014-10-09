@@ -4,6 +4,7 @@ import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import edu.berkeley.path.beats.simulator.*;
 
 import edu.berkeley.path.beats.jaxb.ActuatorSet;
+import edu.berkeley.path.lprm.lp.solver.SolverType;
 import edu.berkeley.path.lprm.rm.RampMeteringSolution;
 import edu.berkeley.path.lprm.rm.RampMeteringSolver;
 //import edu.berkeley.path.lprm.lp.RampMeteringSolver;
@@ -16,10 +17,12 @@ import java.util.Properties;
  */
 public class RampMeteringPolicyMakerLp implements RampMeteringPolicyMaker {
 
+    private Scenario myScenario;
     private RampMeteringSolver solver;
     private double sim_dt_in_seconds;
 
     public RampMeteringPolicyMakerLp(Scenario myScenario,double K_dem_seconds,double K_cool_seconds,double eta){
+        this.myScenario = myScenario;
         sim_dt_in_seconds = myScenario.getSimdtinseconds();
         int K_dem = (int) Math.round(K_dem_seconds / sim_dt_in_seconds);
         int K_cool = (int) Math.round(K_cool_seconds / sim_dt_in_seconds);
@@ -34,14 +37,12 @@ public class RampMeteringPolicyMakerLp implements RampMeteringPolicyMaker {
     public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt, Properties props) {
         try {
             solver.set_data(ics,demand);
-            RampMeteringSolution sol = solver.solve();
+            RampMeteringSolution sol = solver.solve(SolverType.GUROBI);
+            return new RampMeteringPolicySet(myScenario,sol);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-
-
-        return null;
-
     }
 
 

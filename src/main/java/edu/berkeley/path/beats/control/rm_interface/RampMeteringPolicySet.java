@@ -1,7 +1,13 @@
 package edu.berkeley.path.beats.control.rm_interface;
 
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.lprm.rm.RampMeteringSolution;
+
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,6 +21,17 @@ public class RampMeteringPolicySet {
 
     public RampMeteringPolicySet() {
         profiles = new LinkedList<RampMeteringPolicyProfile>();
+    }
+
+    public RampMeteringPolicySet(Scenario myScenario,RampMeteringSolution sol){
+        profiles = new LinkedList<RampMeteringPolicyProfile>();
+        HashMap<Long,Double[]> prof_map = sol.get_metering_profiles();
+        for(Map.Entry<Long,Double[]> entry : prof_map.entrySet()){
+            Long or_id = entry.getKey();
+            Double [] policy = entry.getValue();
+            Link or = myScenario.getLinkWithId(or_id);
+            profiles.add(new RampMeteringPolicyProfile(or,policy));
+        }
     }
 
     @Override
