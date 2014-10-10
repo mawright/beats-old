@@ -15,7 +15,6 @@ import java.util.Properties;
 
 public class Controller_CRM_MPC extends Controller {
 
-
     // policy maker
     private RampMeteringPolicyMaker policy_maker;
     private Properties pm_props;

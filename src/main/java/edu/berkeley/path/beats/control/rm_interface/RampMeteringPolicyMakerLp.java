@@ -3,13 +3,10 @@ package edu.berkeley.path.beats.control.rm_interface;
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import edu.berkeley.path.beats.simulator.*;
 
-import edu.berkeley.path.beats.jaxb.ActuatorSet;
 import edu.berkeley.path.lprm.lp.solver.SolverType;
 import edu.berkeley.path.lprm.rm.RampMeteringSolution;
 import edu.berkeley.path.lprm.rm.RampMeteringSolver;
-//import edu.berkeley.path.lprm.lp.RampMeteringSolver;
 
-import java.util.ArrayList;
 import java.util.Properties;
 
 /**
@@ -38,6 +35,7 @@ public class RampMeteringPolicyMakerLp implements RampMeteringPolicyMaker {
         try {
             solver.set_data(ics,demand);
             RampMeteringSolution sol = solver.solve(SolverType.GUROBI);
+            System.out.println("Distance to CTM: " + sol.get_max_ctm_distance());
             return new RampMeteringPolicySet(myScenario,sol);
         } catch (Exception e) {
             e.printStackTrace();

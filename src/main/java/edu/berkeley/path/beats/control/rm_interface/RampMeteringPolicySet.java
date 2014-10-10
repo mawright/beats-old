@@ -25,7 +25,7 @@ public class RampMeteringPolicySet {
 
     public RampMeteringPolicySet(Scenario myScenario,RampMeteringSolution sol){
         profiles = new LinkedList<RampMeteringPolicyProfile>();
-        HashMap<Long,Double[]> prof_map = sol.get_metering_profiles();
+        HashMap<Long,Double[]> prof_map = sol.get_metering_profiles_in_vps();
         for(Map.Entry<Long,Double[]> entry : prof_map.entrySet()){
             Long or_id = entry.getKey();
             Double [] policy = entry.getValue();
