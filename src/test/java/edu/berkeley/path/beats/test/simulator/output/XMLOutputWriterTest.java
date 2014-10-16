@@ -80,10 +80,10 @@ public class XMLOutputWriterTest {
 	 */
 	@BeforeClass
 	public static void loadSchemas() throws SAXException {
-		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		ClassLoader classLoader = XMLOutputWriterTest.class.getClassLoader();
-		ischema = factory.newSchema(classLoader.getResource("beats.xsd"));
-		oschema = factory.newSchema(classLoader.getResource("sirius_output.xsd"));
+//		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+//		ClassLoader classLoader = XMLOutputWriterTest.class.getClassLoader();
+//		ischema = factory.newSchema(classLoader.getResource("beats.xsd"));
+//		oschema = factory.newSchema(classLoader.getResource("sirius_output.xsd"));
 	}
 
 	/**
