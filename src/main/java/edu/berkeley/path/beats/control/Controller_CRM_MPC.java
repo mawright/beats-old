@@ -191,7 +191,7 @@ public class Controller_CRM_MPC extends Controller {
                     pm_dt,
                     pm_props);
 
-            System.out.println(time_current+"\n"+policy);
+//            System.out.println(time_current+"\n"+policy);
 
             // update time keeper
             time_last_opt = time_current;
