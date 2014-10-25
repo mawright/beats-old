@@ -113,14 +113,23 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         has_speed_controller = false;
 
         // link behavior
-        if(linkType!=null && linkType.getName().compareTo("Intersection Approach")==0)
-            link_behavior = new LinkBehaviorQueue(this);
 
-        else if (linkType!=null && linkType.getName().compareTo("Street")==0)
-            link_behavior = new LinkBehaviorQueueAndTravelTime(this);
+        if(myScenario.is_actm) {
+            link_behavior = new LinkBehaviorACTM(this);
+        }
+        else {
+            if(linkType!=null)
+                link_behavior = new LinkBehaviorCTM(this);
+            else {
+                if(linkType.getName().compareTo("Intersection Approach")==0)
+                    link_behavior = new LinkBehaviorQueue(this);
+                else if (linkType.getName().compareTo("Street")==0)
+                    link_behavior = new LinkBehaviorQueueAndTravelTime(this);
+                else
+                    link_behavior = new LinkBehaviorCTM(this);
+            }
+        }
 
-        else
-            link_behavior = new LinkBehaviorCTM(this);
 	}
 
 	protected void validate() {

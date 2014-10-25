@@ -87,6 +87,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
     
 	protected void populate(Network myNetwork) {
+
+        Scenario myScenario = myNetwork.getMyScenario();
+
     	// Note: It is assumed that this comes *before* SplitRatioProfile.populate
 
 		this.myNetwork = myNetwork;
@@ -119,26 +122,32 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     	if(isTerminal)
     		return;
 
-        if(!istrivialsplit & !myNetwork.getMyScenario().split_logger_prefix.isEmpty())
+        if(!istrivialsplit & !myScenario.split_logger_prefix.isEmpty())
             split_ratio_logger = new SplitRatioLogger(this);
 
 		// initialize the split ratio matrix
 		// NOTE: SHOULD THIS GO IN RESET?
-		splitratio_selected = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+		splitratio_selected = new Double3DMatrix(nIn,nOut,myScenario.getNumVehicleTypes(),0d);
 		normalizeSplitRatioMatrix(splitratio_selected);
 
 		// create node flow solver
-		switch(getMyNetwork().getMyScenario().getNodeFlowSolver()){
-			case proportional:
-				node_flow_solver = new Node_FlowSolver_LNCTM(this);
-				break;
-			case symmetric:
-				node_flow_solver = new Node_FlowSolver_Symmetric(this);
-				break;
-		}
+        if(myScenario.is_actm)
+            node_flow_solver = new Node_FlowSolver_ACTM(this);
+        else
+            switch(myScenario.getNodeFlowSolver()) {
+                case proportional:
+                    node_flow_solver = new Node_FlowSolver_LNCTM(this);
+                    break;
+                case symmetric:
+                    node_flow_solver = new Node_FlowSolver_Symmetric(this);
+                    break;
+                case actm:
+                    node_flow_solver = new Node_FlowSolver_ACTM(this);
+                    break;
+            }
 		
 		// create node split ratio solver
-		switch(getMyNetwork().getMyScenario().getNodeSRSolver()){
+		switch(myScenario.getNodeSRSolver()){
 			case A:
 				node_sr_solver = new Node_SplitRatioSolver_A(this);
 				break;
@@ -216,9 +225,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         if(isTerminal)
             return;
 
-        int e,i,j;        
-        int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
-        int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
+        int e,i,j;
+        Scenario myScenario = myNetwork.getMyScenario();
+        int numEnsemble = myScenario.getNumEnsemble();
+        int numVehicleTypes = myScenario.getNumVehicleTypes();
         
         
         // Select a split ratio from profile, event, or controller

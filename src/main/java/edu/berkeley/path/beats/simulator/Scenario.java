@@ -51,45 +51,48 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     public static enum RunMode { normal , fw_fr_split_output };
 	public static enum UncertaintyType { uniform, gaussian }
 	public static enum ModeType { on_init_dens,left_of_init_dens,right_of_init_dens}
-	public static enum NodeFlowSolver { proportional , symmetric }
+	public static enum NodeFlowSolver { proportional , symmetric , actm }
 	public static enum NodeSRSolver { A , B , C, HAMBURGER }
 
-    private static Logger logger = Logger.getLogger(Scenario.class);
+    protected static Logger logger = Logger.getLogger(Scenario.class);
 
-    private RunMode run_mode;
+    protected RunMode run_mode;
     protected String split_logger_prefix;
     protected Double split_logger_dt;
-	private Cumulatives cumulatives;
-    private PerformanceCalculator perf_calc;
-	private Clock clock;
-	private int numVehicleTypes;			// number of vehicle types
-	//private boolean global_control_on;	// global control switch
-	private double global_demand_knob;	// scale factor for all demands
-	private edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
-	private EventSet eventset = new EventSet();	// holds time sorted list of events
-	private SensorSet sensorset = new SensorSet();
-	private ActuatorSet actuatorset = new ActuatorSet();
-	private boolean started_writing;
+	protected Cumulatives cumulatives;
+    protected PerformanceCalculator perf_calc;
+	protected Clock clock;
+	protected int numVehicleTypes;			// number of vehicle types
+	//protected boolean global_control_on;	// global control switch
+	protected double global_demand_knob;	// scale factor for all demands
+	protected edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
+	protected EventSet eventset = new EventSet();	// holds time sorted list of events
+	protected SensorSet sensorset = new SensorSet();
+	protected ActuatorSet actuatorset = new ActuatorSet();
+	protected boolean started_writing;
 
-	private String configfilename;
-	private NodeFlowSolver nodeflowsolver = NodeFlowSolver.proportional;
-	private NodeSRSolver nodesrsolver = NodeSRSolver.A;
+	protected String configfilename;
+	protected NodeFlowSolver nodeflowsolver = NodeFlowSolver.proportional;
+	protected NodeSRSolver nodesrsolver = NodeSRSolver.A;
+
+    // IsActm
+    protected boolean is_actm;
 
 	// Model uncertainty
-	private UncertaintyType uncertaintyModel;
-	private double std_dev_flow = 0.0d;	// [veh]
-	private boolean has_flow_unceratinty;
+	protected UncertaintyType uncertaintyModel;
+	protected double std_dev_flow = 0.0d;	// [veh]
+	protected boolean has_flow_unceratinty;
 
 	// data
-	private boolean sensor_data_loaded = false;
+	protected boolean sensor_data_loaded = false;
 
 	// run parameters
-	private RunParameters runParam;
-	private boolean initialized = true;
-	private boolean scenario_locked=false;				// true when the simulation is running
+	protected RunParameters runParam;
+	protected boolean initialized = false;
+	protected boolean scenario_locked=false;				// true when the simulation is running
 
     // auxiliary properties, used by control algorithms
-    private HashMap<String,Properties> aux_props;
+    protected HashMap<String,Properties> aux_props;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -280,8 +283,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         // sample profiles .............................
     	if(downstreamBoundaryCapacitySet!=null)
             ((CapacitySet)downstreamBoundaryCapacitySet).update();
-//        	for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
-//        		((CapacityProfile) capacityProfile).update();
 
     	if(demandSet!=null)
     		((DemandSet)demandSet).update();
@@ -409,8 +410,17 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                            int numReps, int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver,
                            String performance_config, String run_mode,String split_logger_prefix,Double split_logger_dt ,
                            HashMap<String,Properties> aux_props) throws BeatsException {
+        boolean is_actm = false;
+        this.initialize(timestep,starttime,endtime,outdt,outtype,outprefix,numReps,numEnsemble,uncertaintymodel,is_actm,nodeflowsolver,nodesrsolver,performance_config,run_mode,split_logger_prefix,split_logger_dt ,aux_props);
+    }
+
+    public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix,
+                           int numReps, int numEnsemble,String uncertaintymodel,boolean is_actm,String nodeflowsolver,String nodesrsolver,
+                           String performance_config, String run_mode,String split_logger_prefix,Double split_logger_dt ,
+                           HashMap<String,Properties> aux_props) throws BeatsException {
 
         // set stuff
+        setIsActm(is_actm);
         setUncertaintyModel(uncertaintymodel);
         setNodeFlowSolver(nodeflowsolver);
         setNodeSRSolver(nodesrsolver);
@@ -518,6 +528,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 
 	public void run() throws BeatsException{
+
+        if(!initialized)
+            throw new BeatsException("Initialize first.");
 
 		logger.info("Simulation period: [" + runParam.t_start_output + ":" + runParam.dt_sim + ":" + runParam.t_end_output + "]");
 		logger.info("Output period: [" + runParam.t_start_output + ":" + runParam.dt_output + ":" + runParam.t_end_output + "]");
@@ -646,7 +659,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     }
 
 	/////////////////////////////////////////////////////////////////////
-	// protected complex getters
+	// complex getters
 	/////////////////////////////////////////////////////////////////////
 
 	/** Retrieve a network with a given ID.
@@ -1138,15 +1151,11 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 	}
 
-	public void calibrate_fundamental_diagrams() throws BeatsException {
+	protected void calibrate_fundamental_diagrams() throws BeatsException {
 		FDCalibrator.calibrate(this);
 	}
-	
-	/////////////////////////////////////////////////////////////////////
-	// private methods
-	/////////////////////////////////////////////////////////////////////	
-	
-	private void assign_initial_state() throws BeatsException {
+
+	protected void assign_initial_state() throws BeatsException {
 		
 		// initial density set time stamp
         double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp() : Double.POSITIVE_INFINITY;  // [sec]        
@@ -1227,7 +1236,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	}
 
-	private boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter) throws BeatsException{
+	protected boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter) throws BeatsException{
 
         if(DebugFlags.time_print>0 && getCurrentTimeInSeconds()%DebugFlags.time_print == 0)
             System.out.println(getCurrentTimeInSeconds());
@@ -1254,17 +1263,13 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return true;
 	}
 	
-	private void recordstate(boolean writefiles,OutputWriterBase outputwriter,boolean exportflows) throws BeatsException {
+	protected void recordstate(boolean writefiles,OutputWriterBase outputwriter,boolean exportflows) throws BeatsException {
 		if(writefiles)
 			outputwriter.recordstate(clock.getT(),exportflows,outputwriter.outSteps);
 		cumulatives.reset();
 	}
 
-	/////////////////////////////////////////////////////////////////////
-	// private classes
-	/////////////////////////////////////////////////////////////////////	
-	
-	private class RunParameters{
+	protected class RunParameters{
 		
 		// prescribed
 		public double dt_sim;				// [sec] simulation time step
@@ -1344,7 +1349,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		 * @param val
 		 * @return the "rounded" value
 		 */
-		private double round(double val) {
+		protected double round(double val) {
 			if(Double.isInfinite(val))
 				return val;
 			if(Double.isNaN(val))
@@ -1354,15 +1359,11 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	protected static class Cumulatives {
-		private Scenario scenario;
 
-		/** link ID -> cumulative data */
+        Scenario scenario;
 		java.util.Map<Long, LinkCumulativeData> links = null;
 
-		/** signal ID -> completed phases */
-//		java.util.Map<Long, SignalPhases> phases = null;
-
-		private static Logger logger = Logger.getLogger(Cumulatives.class);
+		protected static Logger logger = Logger.getLogger(Cumulatives.class);
 
 		public Cumulatives(Scenario scenario) {
 			this.scenario = scenario;
@@ -1383,19 +1384,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				logger.info("Link cumulative data have been requested");
 			}
 		}
-
-//		public void storeSignalPhases() {
-//			if (null == phases) {
-//				phases = new HashMap<Long, SignalPhases>();
-//				if (null != scenario.getSignalSet())
-//					for (edu.berkeley.path.beats.jaxb.Signal signal : scenario.getSignalSet().getSignal()) {
-//						if (phases.containsKey(signal.getId()))
-//							logger.warn("Duplicate signal: ID=" + signal.getId());
-//						phases.put(signal.getId(), new SignalPhases(signal));
-//					}
-//				logger.info("ActuatorSignal phases have been requested");
-//			}
-//		}
 
 		public void reset() {
 			if (null != links) {
@@ -1434,8 +1422,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //	 * ActuatorSignal phase storage
 //	 */
 //	public static class SignalPhases {
-//		private edu.berkeley.path.beats.actuator.ActuatorSignal signal;
-//		private List<ActuatorSignal.PhaseData> phases;
+//		edu.berkeley.path.beats.actuator.ActuatorSignal signal;
+//		List<ActuatorSignal.PhaseData> phases;
 //
 //		SignalPhases(edu.berkeley.path.beats.jaxb.Signal signal) {
 //			this.signal = signal;
@@ -1454,6 +1442,10 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //			phases.clear();
 //		}
 //	}
+
+    public void setIsActm(boolean is_actm) {
+        this.is_actm = is_actm;
+    }
 
 	public void setUncertaintyModel(String uncertaintyModel) {
 		this.uncertaintyModel = Scenario.UncertaintyType.valueOf(uncertaintyModel);
