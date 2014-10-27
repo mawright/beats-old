@@ -59,9 +59,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	protected SplitRatioProfile my_profile;
 	protected boolean has_profile;
 
-	// node behavior
-	protected Node_SplitRatioSolver node_sr_solver;
-	protected Node_FlowSolver node_flow_solver;
+    // node behavior
+    protected Node_SplitRatioSolver node_sr_solver;
+    protected Node_FlowSolver node_flow_solver;
 	
 	// does change ........................................
 
@@ -130,65 +130,11 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		splitratio_selected = new Double3DMatrix(nIn,nOut,myScenario.getNumVehicleTypes(),0d);
 		normalizeSplitRatioMatrix(splitratio_selected);
 
-		// create node flow solver
-        if(myScenario.is_actm)
-            node_flow_solver = new Node_FlowSolver_ACTM(this);
-        else
-            switch(myScenario.getNodeFlowSolver()) {
-                case proportional:
-                    node_flow_solver = new Node_FlowSolver_LNCTM(this);
-                    break;
-                case symmetric:
-                    node_flow_solver = new Node_FlowSolver_Symmetric(this);
-                    break;
-                case actm:
-                    node_flow_solver = new Node_FlowSolver_ACTM(this);
-                    break;
-            }
-		
-		// create node split ratio solver
-		switch(myScenario.getNodeSRSolver()){
-			case A:
-				node_sr_solver = new Node_SplitRatioSolver_A(this);
-				break;
-			case B:
-				node_sr_solver = new Node_SplitRatioSolver_B(this);
-				break;
-			case C:
-				node_sr_solver = new Node_SplitRatioSolver_C(this);
-				break;
-			case HAMBURGER:
-				boolean does_threshold_exist = false;
-				boolean does_scaling_factor_exist = false;
-				
-				if(this.getNodeType().getParameters() == null)
-				{
-					node_sr_solver = new Node_SplitRatioSolver_A(this);
-				}
-				else
-				{
-					for (int p = 0 ; p < this.getNodeType().getParameters().getParameter().size() ; p++)
-					{
-						if(this.getNodeType().getParameters().getParameter().get(p).getName().equals("threshold"))
-						{
-							does_threshold_exist = true;
-						}
-						if(this.getNodeType().getParameters().getParameter().get(p).getName().equals("scaling_factor"))
-						{
-							does_scaling_factor_exist = true;
-						}
-					}
-				}
-				
-				if(does_threshold_exist && does_scaling_factor_exist)
-				{
-					node_sr_solver = new Node_SplitRatioSolver_HAMBURGER(this);
-				}
-				else
-				{
-					node_sr_solver = new Node_SplitRatioSolver_A(this);
-				}
-		}
+		// default node flow and split solvers
+        node_flow_solver = new Node_FlowSolver_LNCTM(this);
+        node_sr_solver = new Node_SplitRatioSolver_A(this);
+
+
 		
 	}
     
@@ -291,9 +237,16 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
-	
-    
-	// split ratio profile ..............................................
+
+    protected void set_node_flow_solver(Node_FlowSolver node_flow_solver){
+        this.node_flow_solver = node_flow_solver;
+    }
+
+    protected void set_node_split_solver(Node_SplitRatioSolver node_sr_solver){
+        this.node_sr_solver = node_sr_solver;
+    }
+
+    // split ratio profile ..............................................
 
 	protected void setMySplitRatioProfile(SplitRatioProfile mySplitRatioProfile) {
 		this.my_profile = mySplitRatioProfile;

@@ -349,10 +349,9 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
         this.setStdDevCongestionSpeed(that.getStdDevCongestionSpeed());
         this.setJamDensity(that.getJamDensity());
         this.setTransitionDensity(that.getTransitionDensity());
-
     }
 	
-	protected void reset(Scenario.UncertaintyType uncertaintyModel){
+	protected void reset(TypeUncertainty uncertaintyModel){
 		if(myLink==null)
 			return;
 		// set lanes back to original value

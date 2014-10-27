@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Network class
@@ -55,7 +56,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		// links
 		for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
 			((Link) link).populate(this);
-		
+
 	}
 	
 	protected void validate() {
@@ -91,7 +92,6 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 
         if(isempty)
             return;
-
         // compute link demand and supply ...............
         for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
             ((Link)link).updateOutflowDemand();
@@ -99,19 +99,19 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
         }
     }
 
-	protected void update_flow_density() throws BeatsException {
+    protected void update_flow() throws BeatsException {
+        if(isempty)
+            return;
+        for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
+            ((Node) node).update();
+    }
 
-		if(isempty)
-			return;
-
-        // update nodes: compute flows on links .........
-		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
-			((Node) node).update();
-
-        // update links: compute densities .............
+    protected void update_density() throws BeatsException {
+        if(isempty)
+            return;
         for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
-        	((Link)link).update();
-	}
+            ((Link)link).update();
+    }
 
 	/////////////////////////////////////////////////////////////////////
 	// public API

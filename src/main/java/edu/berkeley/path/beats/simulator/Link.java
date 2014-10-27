@@ -34,12 +34,15 @@ import java.math.BigDecimal;
  */
 public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
+    public enum Type {onramp,offramp,source,freeway,intersection_approach,street,other,undefined}
+
     protected Scenario myScenario;
     protected Network myNetwork;
 
 	// does not change ....................................
     protected Node begin_node;
     protected Node end_node;
+    protected Type link_type;
 
     // in/out flows (from node model or demand profiles)
     protected double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
@@ -112,22 +115,28 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         has_flow_controller = false;
         has_speed_controller = false;
 
-        // link behavior
+        // default link behavior
+        link_behavior = new LinkBehaviorCTM(this);
 
-        if(myScenario.is_actm) {
-            link_behavior = new LinkBehaviorACTM(this);
-        }
-        else {
-            if(linkType!=null)
-                link_behavior = new LinkBehaviorCTM(this);
-            else {
-                if(linkType.getName().compareTo("Intersection Approach")==0)
-                    link_behavior = new LinkBehaviorQueue(this);
-                else if (linkType.getName().compareTo("Street")==0)
-                    link_behavior = new LinkBehaviorQueueAndTravelTime(this);
-                else
-                    link_behavior = new LinkBehaviorCTM(this);
-            }
+        // link type
+        if(getLinkType()==null)
+            link_type = Type.undefined;
+        else{
+            String name = getLinkType().getName();
+            if(name.compareToIgnoreCase("Intersection Approach")==0)
+                link_type = Type.intersection_approach;
+            else if (name.compareToIgnoreCase("Street")==0)
+                link_type = Type.street;
+            else if (name.compareToIgnoreCase("On-Ramp")==0)
+                link_type = Type.onramp;
+            else if (name.compareToIgnoreCase("Off-Ramp")==0)
+                link_type = Type.offramp;
+            else if (name.compareToIgnoreCase("Freeway")==0)
+                link_type = Type.freeway;
+            else if (name.compareToIgnoreCase("Source")==0)
+                link_type = Type.source;
+            else
+                link_type = Type.other;
         }
 
 	}
@@ -201,6 +210,10 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
+
+    protected void set_link_behavior(LinkBehavior link_behavior){
+        this.link_behavior = link_behavior;
+    }
 
 	// demand profiles .................................................
 	protected void setMyDemandProfile(DemandProfile x){
@@ -320,34 +333,19 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 
 	public static boolean haveSameType(Link linkA,Link linkB){
-		String typeA = linkA.getType();
-		String typeB = linkB.getType();
-		if(typeA==null || typeB==null)
-			return false;
-		return typeA.equalsIgnoreCase(typeB);
+        return linkA.link_type==linkB.link_type;
 	}
-	
-	public String getType(){
-		if(getLinkType()==null)
-			return null;
-		if(getLinkType().getName()==null)
-			return null;
-		return getLinkType().getName();
-	}
-	
+
 	public boolean isOnramp(){
-		String name = getType();
-		return name==null ? null : name.compareToIgnoreCase("On-Ramp")==0;
+		return link_type==Type.onramp;
 	}
 
     public boolean isOfframp(){
-        String name = getType();
-        return name==null ? null : name.compareToIgnoreCase("Off-Ramp")==0;
+        return link_type==Type.offramp;
     }
 
 	public boolean isFreeway(){
-		String name = getType();
-		return name==null ? null : name.compareToIgnoreCase("Freeway")==0;
+        return link_type==Type.freeway;
 	}
 
     public double computeTotalDelayInVeh(int e){

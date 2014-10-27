@@ -41,22 +41,17 @@ import org.apache.log4j.Logger;
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
 import edu.berkeley.path.beats.data.DataFileReader;
 import edu.berkeley.path.beats.data.FiveMinuteData;
-//import edu.berkeley.path.beats.jaxb.DemandProfile;
 import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 
 @SuppressWarnings("restriction")
 public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
-    public static enum RunMode { normal , fw_fr_split_output };
-	public static enum UncertaintyType { uniform, gaussian }
-	public static enum ModeType { on_init_dens,left_of_init_dens,right_of_init_dens}
-	public static enum NodeFlowSolver { proportional , symmetric , actm }
-	public static enum NodeSRSolver { A , B , C, HAMBURGER }
+//	public static enum ModeType { on_init_dens,left_of_init_dens,right_of_init_dens}
 
     protected static Logger logger = Logger.getLogger(Scenario.class);
 
-    protected RunMode run_mode;
+    //protected RunMode run_mode;
     protected String split_logger_prefix;
     protected Double split_logger_dt;
 	protected Cumulatives cumulatives;
@@ -72,14 +67,11 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	protected boolean started_writing;
 
 	protected String configfilename;
-	protected NodeFlowSolver nodeflowsolver = NodeFlowSolver.proportional;
-	protected NodeSRSolver nodesrsolver = NodeSRSolver.A;
 
-    // IsActm
-    protected boolean is_actm;
+    protected ScenarioUpdaterAbstract updater;
 
 	// Model uncertainty
-	protected UncertaintyType uncertaintyModel;
+	protected TypeUncertainty uncertaintyModel;
 	protected double std_dev_flow = 0.0d;	// [veh]
 	protected boolean has_flow_unceratinty;
 
@@ -161,6 +153,10 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         if(perf_calc!=null)
             perf_calc.populate(this);
+
+        // create the updater
+        updater.populate();
+
 	}
 
 	public static void validate(Scenario S) {
@@ -196,8 +192,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// validate capacity profiles
 		if(S.downstreamBoundaryCapacitySet!=null)
             ((CapacitySet)S.downstreamBoundaryCapacitySet).validate();
-//			for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : S.downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
-//				((CapacityProfile)capacityProfile).validate();
 
 		// validate demand profiles
 		if(S.demandSet!=null)
@@ -275,63 +269,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         if(perf_calc!=null)
             perf_calc.reset();
-
-	}
-
-	protected void update() throws BeatsException {
-
-        // sample profiles .............................
-    	if(downstreamBoundaryCapacitySet!=null)
-            ((CapacitySet)downstreamBoundaryCapacitySet).update();
-
-    	if(demandSet!=null)
-    		((DemandSet)demandSet).update();
-
-    	if(splitRatioSet!=null)
-    		((SplitRatioSet) splitRatioSet).update();
-
-    	if(fundamentalDiagramSet!=null)
-        	for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdProfile : fundamentalDiagramSet.getFundamentalDiagramProfile())
-        		((FundamentalDiagramProfile) fdProfile).update(false);
-
-        // update sensor readings .......................
-    	sensorset.update();
-
-        // update signals ...............................
-		// NOTE: ensembles have not been implemented for signals. They do not apply
-		// to pretimed control, but would make a differnece for feedback control.
-//		if(signalSet!=null)
-//			for(edu.berkeley.path.beats.jaxb.ActuatorSignal signal : signalSet.getSignal())
-//				((ActuatorSignal)signal).update();
-
-        // update supplu/demand prior to controllers if run_mode==fw_fr_split_output
-        if(run_mode==RunMode.fw_fr_split_output)
-            for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
-                ((Network) network).update_supply_demand();
-
-        // update controllers
-        controllerset.update();
-
-    	// update and deploy actuators
-    	actuatorset.deploy(getCurrentTimeInSeconds());
-
-    	// update events
-    	eventset.update();
-
-        // update the network state......................
-		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
-            if(run_mode==RunMode.normal)
-                    ((Network) network).update_supply_demand();
-            ((Network) network).update_flow_density();
-        }
-
-		cumulatives.update();
-
-        if(perf_calc!=null)
-            perf_calc.update();
-
-		// advance the clock
-    	clock.advance();
 
 	}
 
@@ -420,14 +357,21 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                            HashMap<String,Properties> aux_props) throws BeatsException {
 
         // set stuff
-        setIsActm(is_actm);
         setUncertaintyModel(uncertaintymodel);
-        setNodeFlowSolver(nodeflowsolver);
-        setNodeSRSolver(nodesrsolver);
-        setRunMode(run_mode);
         setSplitLoggerPrefix(split_logger_prefix);
         setSplitLoggerDt(split_logger_dt);
         this.aux_props = aux_props;
+
+        // create scenario updater
+        if(is_actm){
+            updater = new ScenarioUpdaterACTM(this);
+        }
+        else{
+            if(run_mode.compareToIgnoreCase("fw_fr_split_output")==0)
+                updater = new ScenarioUpdaterFrFlow(this,nodeflowsolver,nodesrsolver);
+            else
+                updater = new ScenarioUpdaterStandard(this,nodeflowsolver,nodesrsolver);
+        }
 
         // create performance calculator
         if(!performance_config.isEmpty())
@@ -618,17 +562,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		this.configfilename = configfilename;
 	}
 
-	protected void setNodeFlowSolver(String nodeflowsolver) {
-		this.nodeflowsolver = NodeFlowSolver.valueOf(nodeflowsolver);
-	}
-
-	protected void setNodeSRSolver(String nodesrsolver) {
-		this.nodesrsolver = NodeSRSolver.valueOf(nodesrsolver);
-	}
-
-    protected void setRunMode(String run_mode){
-        this.run_mode = RunMode.valueOf(run_mode);
-    }
+//    protected void setRunMode(String run_mode){
+//        this.run_mode = RunMode.valueOf(run_mode);
+//    }
 
     protected void setSplitLoggerPrefix(String split_logger_prefix){
         this.split_logger_prefix = split_logger_prefix;
@@ -714,7 +650,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     public String getOutputPrefix(){ return runParam.outprefix; }
 
-	public UncertaintyType getUncertaintyModel() {
+	public TypeUncertainty getUncertaintyModel() {
 		return uncertaintyModel;
 	}
 
@@ -831,13 +767,13 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return configfilename;
 	}
 	
-	public NodeFlowSolver getNodeFlowSolver(){
-		return this.nodeflowsolver;
-	}
-
-	public NodeSRSolver getNodeSRSolver(){
-		return this.nodesrsolver;
-	}
+//	public TypeNodeFlowSolver getNodeFlowSolver(){
+//		return this.updater.nodeflowsolver;
+//	}
+//
+//	public TypeNodeSplitSolver getNodeSRSolver(){
+//		return this.updater.nodesrsolver;
+//	}
 
 	/** Vehicle type names.
 	 * @return	Array of strings with the names of the vehicles types.
@@ -1161,17 +1097,17 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp() : Double.POSITIVE_INFINITY;  // [sec]        
 		
 		// determine the simulation mode and sim_start time
-        double sim_start; 
-        ModeType simulationMode = null;
+        double sim_start;
+        TypeMode simulationMode;
 		if(BeatsMath.equals(runParam.t_start_output,time_ic)){
 			sim_start = runParam.t_start_output;
-			simulationMode = ModeType.on_init_dens;
+			simulationMode = TypeMode.on_init_dens;
 		}
 		else{
 			// it is a warmup. we need to decide on start and end times
 			if(BeatsMath.lessthan(time_ic, runParam.t_start_output) ){	// go from ic to timestart
 				sim_start = time_ic;
-				simulationMode = ModeType.right_of_init_dens;
+				simulationMode = TypeMode.right_of_init_dens;
 			}
 			else{							
 				
@@ -1185,13 +1121,13 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				
 				// ... start simulation there or at output start time
 				sim_start = Math.min(runParam.t_start_output,demand_start);
-				simulationMode = ModeType.left_of_init_dens;
+				simulationMode = TypeMode.left_of_init_dens;
 				
 			}		
 		}
 				
 		// copy InitialDensityState to initial_state if starting from or to the right of InitialDensitySet time stamp
-		if(simulationMode!=ModeType.left_of_init_dens && getInitialDensitySet()!=null){
+		if(simulationMode!=TypeMode.left_of_init_dens && getInitialDensitySet()!=null){
 			for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
 				for(edu.berkeley.path.beats.jaxb.Link jlink:network.getLinkList().getLink()){
 					double [] density = ((InitialDensitySet)getInitialDensitySet()).getDensityForLinkIdInVeh(network.getId(),jlink.getId());
@@ -1221,7 +1157,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         // advance to start of output time
         while( BeatsMath.lessthan(getCurrentTimeInSeconds(),runParam.t_start_output) )
-            update();
+            updater.update();
 
         // copy the result to the initial density
         for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
@@ -1251,7 +1187,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	        }
 
         	// update scenario
-        	update();
+        	updater.update();
 
             if(outputwriter!=null && started_writing && clock.getRelativeTimeStep()%outputwriter.outSteps == 0 )
                 recordstate(writefiles,outputwriter,true);
@@ -1443,12 +1379,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //		}
 //	}
 
-    public void setIsActm(boolean is_actm) {
-        this.is_actm = is_actm;
-    }
-
 	public void setUncertaintyModel(String uncertaintyModel) {
-		this.uncertaintyModel = Scenario.UncertaintyType.valueOf(uncertaintyModel);
+		this.uncertaintyModel = TypeUncertainty.valueOf(uncertaintyModel);
 	}
 
     /////////////////////////////////////////////////////////////////////
