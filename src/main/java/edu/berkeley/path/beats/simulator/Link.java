@@ -204,26 +204,59 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
     protected void updateSpaceSupply(){
-        link_behavior.update_space_supply();
+        link_behavior.update_total_space_supply();
     }
 
-	/////////////////////////////////////////////////////////////////////
-	// protected interface
-	/////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
+    // protected interface
+    /////////////////////////////////////////////////////////////////////
 
-    protected void set_link_behavior(LinkBehavior link_behavior){
-        this.link_behavior = link_behavior;
+    // FD profile ......................................................
+
+    // called by FundamentalDiagramProfile.populate,
+    protected void setFundamentalDiagramProfile(FundamentalDiagramProfile fdp){
+        if(fdp==null)
+            return;
+        myFDprofile = fdp;
     }
 
-	// demand profiles .................................................
-	protected void setMyDemandProfile(DemandProfile x){
-		this.myDemandProfile = x;
-	}
+    // used by FundamentalDiagramProfile to set the FD
+    protected void setFDFromProfile(FundamentalDiagram fd) throws BeatsException{
+        if(fd==null)
+            return;
 
-	// capcity profile .................................................
-	protected void setMyCapacityProfile(CapacityProfile x){
-		this.myCapacityProfile = x;
-	}
+        // sample the fundamental digram
+        for(int e=0;e<myScenario.getNumEnsemble();e++)
+            FDfromProfile[e] = fd.perturb();
+    }
+
+    // initial condition ..................................................
+    protected void copy_state_to_initial_state(){
+        initial_density = getDensityInVeh(0).clone();
+    }
+
+    protected void set_initial_state(double [] d){
+        initial_density  = d==null ? BeatsMath.zeros(myScenario.getNumVehicleTypes()) : d.clone();
+    }
+
+    protected void setInflow(int ensemble,double[] inflow) {
+        this.inflow[ensemble] = inflow;
+    }
+
+    protected void setOutflow(int ensemble,double[] outflow) {
+        this.outflow[ensemble] = outflow;
+    }
+
+    // getter for the currently active fundamental diagram
+    protected FundamentalDiagram currentFD(int ensemble){
+        if(activeFDevent)
+            return FDfromEvent;
+        return FDfromProfile==null ? null : FDfromProfile[ensemble];
+    }
+
+    /////////////////////////////////////////////////////////////////////
+	// public interface
+	/////////////////////////////////////////////////////////////////////
 	
 	// Events ..........................................................
 
@@ -265,25 +298,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		_lanes = newlanes;					// adjust local copy of lane count
 	}
 
-	// FD profile ......................................................
-
-	// called by FundamentalDiagramProfile.populate,
-	protected void setFundamentalDiagramProfile(FundamentalDiagramProfile fdp){
-		if(fdp==null)
-			return;
-		myFDprofile = fdp;
-	}
-
-	// used by FundamentalDiagramProfile to set the FD
-	protected void setFDFromProfile(FundamentalDiagram fd) throws BeatsException{
-		if(fd==null)
-			return;
-
-		// sample the fundamental digram
-		for(int e=0;e<myScenario.getNumEnsemble();e++)
-			FDfromProfile[e] = fd.perturb();
-	}
-
 	// controller registration .........................................
 
     public boolean register_flow_controller(){
@@ -319,19 +333,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         return myNetwork;
     }
 
-	// initial condition ..................................................
-	protected void copy_state_to_initial_state(){
-		initial_density = getDensityInVeh(0).clone();
-	}
-	
-	protected void set_initial_state(double [] d){
-		initial_density  = d==null ? BeatsMath.zeros(myScenario.getNumVehicleTypes()) : d.clone();
-	}
-	
-	/////////////////////////////////////////////////////////////////////
-	// public API
-	/////////////////////////////////////////////////////////////////////
-
 	public static boolean haveSameType(Link linkA,Link linkB){
         return linkA.link_type==linkB.link_type;
 	}
@@ -355,40 +356,28 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         return val;
     }
 
-
     // Link geometry ....................
 
-	/** network that contains this link */
-//	public Network getMyNetwork() {
-//		return myNetwork;
-//	}
-
-	/** upstream node of this link  */
 	public Node getBegin_node() {
 		return begin_node;
 	}
 
-	/** downstream node of this link */
 	public Node getEnd_node() {
 		return end_node;
 	}
 
-	/** Length of this link in meters */
 	public double getLengthInMeters() {
 		return _length;
 	}
 
-	/** Number of lanes in this link */
 	public double get_Lanes() {
 		return _lanes;
 	}
 
-	/** <code>true</code> if this link is a source of demand into the network */
 	public boolean isSource() {
 		return issource;
 	}
 
-	/** <code>true</code> if this link is a sink of demand from the network */
 	public boolean isSink() {
 		return issink;
 	}
@@ -445,18 +434,9 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         return link_behavior.space_supply[e];
     }
 
-
     /////////////////////////////////////////////////////////////////////
     // interface for node model
     /////////////////////////////////////////////////////////////////////
-
-    public void setInflow(int ensemble,double[] inflow) {
-        this.inflow[ensemble] = inflow;
-    }
-
-    public void setOutflow(int ensemble,double[] outflow) {
-        this.outflow[ensemble] = outflow;
-    }
 
     public double[] getOutflowInVeh(int ensemble) {
         try{
@@ -520,7 +500,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
     // Fundamental diagram ....................
 
-	/** Jam density in vehicle/link. */
 	public double getDensityJamInVeh(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -532,7 +511,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Critical density in vehicle/link. */
 	public double getDensityCriticalInVeh(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -544,7 +522,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Capacity drop in vehicle/simulation time step */
 	public double getCapacityDropInVeh(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -556,7 +533,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Capacity in vehicle/simulation time step */
 	public double getCapacityInVeh(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -568,7 +544,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Jam density in vehicle/meter/lane. */
 	public double getDensityJamInVPMPL(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -580,7 +555,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Critical density in vehicle/meter/lane. */
 	public double getDensityCriticalInVPMPL(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -592,7 +566,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Capacity drop in vehicle/second/lane. */
 	public double getCapacityDropInVPSPL(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -604,7 +577,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Capacity in vehicles per second. */
 	public double getCapacityInVPS(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -616,7 +588,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Capacity in vehicle/second/lane. */
 	public double getCapacityInVPSPL(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -628,7 +599,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Freeflow speed in normalized units (link/time step). */
 	public double getNormalizedVf(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -640,7 +610,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Freeflow speed in meters/second. */
 	public double getVfInMPS(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -652,7 +621,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Critical speed in meters/second. */
 	public double getCriticalSpeedInMPS(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -667,7 +635,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Congestion wave speed in normalized units (link/time step). */
 	public double getNormalizedW(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -679,7 +646,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Congestion wave speed in meters/second. */
 	public double getWInMPS(int ensemble) {
 		try {
 			FundamentalDiagram FD = currentFD(ensemble);
@@ -691,8 +657,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-
-
     public DemandProfile getDemandProfile(){
         return myDemandProfile;
     }
@@ -700,18 +664,5 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     public FundamentalDiagramProfile getFundamentalDiagramProfile(){
         return myFDprofile;
     }
-
-
-    /////////////////////////////////////////////////////////////////////
-	// private
-	/////////////////////////////////////////////////////////////////////
-
-	// getter for the currently active fundamental diagram
-	protected FundamentalDiagram currentFD(int ensemble){
-		if(activeFDevent)
-			return FDfromEvent;
-		return FDfromProfile==null ? null : FDfromProfile[ensemble];
-	}
-
 
 }

@@ -26,7 +26,7 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
             // set link behaviors
             for(edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()){
                 Link blink = (Link)link;
-                blink.set_link_behavior(create_link_behavior(blink));
+                blink.link_behavior =  create_link_behavior(blink);
             }
 
             // set node behaviors

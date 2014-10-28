@@ -10,9 +10,11 @@ public interface LinkBehaviorInterface {
     // inflow, outflow are in veh units and index with [ensemble][vehicle_type]
     public void update_state(double [][] inflow,double [][] outflow);
 
+    // typically min(v*n,F,control)
     public void update_outflow_demand(double external_max_speed, double external_max_flow);
 
-    public void update_space_supply();
+    // typically simply njam-n
+    public void update_total_space_supply();
 
     // GET / SET / RESET DENSITY
 

@@ -97,7 +97,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehavior {
 
     // identical to simple queueing code
     @Override
-    public void update_space_supply() {
+    public void update_total_space_supply() {
 
         double totaldensity;
         FundamentalDiagram FD;

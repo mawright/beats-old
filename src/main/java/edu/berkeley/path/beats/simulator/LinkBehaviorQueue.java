@@ -77,7 +77,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
     }
 
     @Override
-    public void update_space_supply(){
+    public void update_total_space_supply(){
         double totaldensity;
         FundamentalDiagram FD;
         for(int e=0;e<myScenario.getNumEnsemble();e++){

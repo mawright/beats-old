@@ -84,7 +84,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			return;
 		
 		// attach to link
-		myLink.setMyDemandProfile(this);
+		myLink.myDemandProfile = this;
 		
 		// sample demand distribution, convert to vehicle units
 		int numdemand = getDemand().size();

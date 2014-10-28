@@ -59,8 +59,8 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 			return;
 		
 		// set to link
-		myLink.setMyCapacityProfile(this);
-		
+		myLink.myCapacityProfile = this;
+
 		// sample demand distribution, convert to vehicle units
 		if(getContent()!=null){
 			capacity = new BeatsTimeProfile(getContent(),",");	// true=> reshape to vector along k, define length
