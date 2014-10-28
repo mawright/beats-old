@@ -30,13 +30,6 @@ public class ScenarioUpdaterStandard extends ScenarioUpdaterAbstract {
         // update sensor readings .......................
        scenario.sensorset.update();
 
-        // update signals ...............................
-        // NOTE: ensembles have not been implemented for signals. They do not apply
-        // to pretimed control, but would make a differnece for feedback control.
-//		if(signalSet!=null)
-//			for(edu.berkeley.path.beats.jaxb.ActuatorSignal signal : signalSet.getSignal())
-//				((ActuatorSignal)signal).update();
-
         // update controllers
         scenario.controllerset.update();
 

@@ -87,7 +87,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     protected HashMap<String,Properties> aux_props;
 
 	/////////////////////////////////////////////////////////////////////
-	// populate / reset / validate / update
+	// populate / reset / validate
 	/////////////////////////////////////////////////////////////////////
 
 	protected void populate() throws BeatsException {

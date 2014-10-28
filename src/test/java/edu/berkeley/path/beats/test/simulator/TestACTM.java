@@ -14,7 +14,7 @@ import static org.junit.Assert.fail;
  */
 public class TestACTM {
 
-    private String config = "C:\\Users\\gomes\\Desktop\\test_actm\\210W_pm_cropped_L0_actm.xml";
+    private String config = "C:\\Users\\gomes\\Dropbox\\_work_dynamic\\test_actm\\210W_pm_cropped_L0_actm.xml";
 
     @Test
     public void test_actm() {

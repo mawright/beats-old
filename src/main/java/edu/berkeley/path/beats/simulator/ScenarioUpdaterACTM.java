@@ -12,11 +12,13 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
     private List<Link> not_onramp_links;
 
     public ScenarioUpdaterACTM(Scenario scenario){
-
         super(scenario,null,"A");
-
         System.out.println("ERROR!!! ACTM link and node behaviors not implemented");
+    }
 
+    @Override
+    public void populate() {
+        super.populate();
         // for actm, collect references to onramp links
         onramp_links = new ArrayList<Link>();
         not_onramp_links = new ArrayList<Link>();
@@ -58,22 +60,22 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
         // update events
         scenario.eventset.update();
 
-//        // first update onramps
-//        for(Link link : onramp_links ){
-//            link.updateOutflowDemand();
-//            link.updateSpaceSupply();
-//        }
+        // first update onramps
+        for(Link link : onramp_links ){
+            link.updateOutflowDemand();
+            link.updateSpaceSupply();
+        }
 //        for (edu.berkeley.path.beats.jaxb.Node node : net.getNodeList().getNode())
 //            ((Node) node).update();
-//
-//
-//        // update the network state......................
-//        for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
-//            Network net = (Network) network;
-//            net.update_supply_demand();
-//            net.update_flow();
-//            net.update_density();
-//        }
+
+
+        // update the network state......................
+        for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
+            Network net = (Network) network;
+            net.update_supply_demand();
+            net.update_flow();
+            net.update_density();
+        }
 
         scenario.cumulatives.update();
 
