@@ -41,7 +41,7 @@ public class LinkBehaviorTravelTime extends LinkBehavior {
     @Override
     public void update_outflow_demand(double external_max_speed, double external_max_flow){
         for(int e=0;e<myScenario.getNumEnsemble();e++)
-            outflowDemand[e] = ensemble.get(e).cell_array.get(0).n;
+            flow_demand[e] = ensemble.get(e).cell_array.get(0).n;
     }
 
     @Override

@@ -184,11 +184,11 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		activeFDevent = false;
 	}
 
-	protected void update() {
+	protected void update_densities() {
 
         // behavior for all sink links
         if(issink)
-            outflow = link_behavior.outflowDemand;
+            outflow = link_behavior.flow_demand;
 
         // behavior for all source links
         if(issource && myDemandProfile!=null)
@@ -437,12 +437,12 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         return link_behavior.set_density_in_veh(e,d);
     }
 
-    public double[] get_out_demand_in_veh(int ensemble) {
-        return link_behavior.get_out_demand_in_veh(ensemble);
+    public double[] get_out_demand_in_veh(int e) {
+        return link_behavior.flow_demand[e];
     }
 
-    public double get_space_supply_in_veh(int ensemble) {
-        return link_behavior.get_space_supply_in_veh(ensemble);
+    public double get_space_supply_in_veh(int e) {
+        return link_behavior.space_supply[e];
     }
 
 

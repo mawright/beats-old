@@ -340,7 +340,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 						split_ratio_solver = (Node_SplitRatioSolver_HAMBURGER) split_ratio_solver_field.get(node);
 						
 						// Access update function in Node and invoke it.
-						Method updateNode = Node.class.getDeclaredMethod("update", null);
+						Method updateNode = Node.class.getDeclaredMethod("update_flows", null);
 						updateNode.setAccessible(true);
 						updateNode.invoke(node, null);
 						

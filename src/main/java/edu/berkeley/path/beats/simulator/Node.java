@@ -134,8 +134,6 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         node_flow_solver = new Node_FlowSolver_LNCTM(this);
         node_sr_solver = new Node_SplitRatioSolver_A(this);
 
-
-		
 	}
     
 	protected void validate() {
@@ -166,7 +164,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		node_sr_solver.reset();
 	}
 	
-	protected void update() {
+	protected void update_flows() {
 		
         if(isTerminal)
             return;
@@ -175,8 +173,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         Scenario myScenario = myNetwork.getMyScenario();
         int numEnsemble = myScenario.getNumEnsemble();
         int numVehicleTypes = myScenario.getNumVehicleTypes();
-        
-        
+
         // Select a split ratio from profile, event, or controller
         if(istrivialsplit)
             splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
@@ -189,7 +186,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 //            splitratio_selected.override_splits(event_splits);
         }
         
-     // perturb split ratio
+        // perturb split ratio
 		Double3DMatrix[] splitratio_selected_perturbed = new Double3DMatrix[numEnsemble];
 		if(!isdeterministic && nOut==2 && nIn==1)
 			splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile.getVariance(), numEnsemble);

@@ -26,7 +26,6 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Network class
@@ -103,14 +102,14 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
         if(isempty)
             return;
         for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
-            ((Node) node).update();
+            ((Node) node).update_flows();
     }
 
     protected void update_density() throws BeatsException {
         if(isempty)
             return;
         for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
-            ((Link)link).update();
+            ((Link)link).update_densities();
     }
 
 	/////////////////////////////////////////////////////////////////////

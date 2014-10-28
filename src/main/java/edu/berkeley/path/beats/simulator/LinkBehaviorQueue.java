@@ -32,7 +32,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
 
             // case empty link
             if( BeatsMath.lessorequalthan(totaldensity,0d) ){
-                outflowDemand[e] =  BeatsMath.zeros(numVehicleTypes);
+                flow_demand[e] =  BeatsMath.zeros(numVehicleTypes);
                 continue;
             }
 
@@ -69,7 +69,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
             // split among types
             double alpha = totaloutflow/totaldensity;
             for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-                outflowDemand[e][j] = get_density_in_veh(e, j)*alpha;
+                flow_demand[e][j] = get_density_in_veh(e, j)*alpha;
 
         }
 
@@ -83,7 +83,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
         for(int e=0;e<myScenario.getNumEnsemble();e++){
             FD = myLink.currentFD(e);
             totaldensity = myLink.getTotalDensityInVeh(e);
-            spaceSupply[e] = Math.min(FD._getDensityJamInVeh()-totaldensity,FD._getCapacityInVeh());
+            space_supply[e] = Math.min(FD._getDensityJamInVeh()-totaldensity,FD._getCapacityInVeh());
 
             // flow uncertainty model
             if(myScenario.isHas_flow_unceratinty()){
@@ -98,8 +98,8 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
                         delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
                         break;
                 }
-                spaceSupply[e] = Math.max( 0d , spaceSupply[e] + delta_flow );
-                spaceSupply[e] = Math.min( spaceSupply[e] , FD._getDensityJamInVeh() - totaldensity);
+                space_supply[e] = Math.max( 0d , space_supply[e] + delta_flow );
+                space_supply[e] = Math.min( space_supply[e] , FD._getDensityJamInVeh() - totaldensity);
             }
         }
     }
