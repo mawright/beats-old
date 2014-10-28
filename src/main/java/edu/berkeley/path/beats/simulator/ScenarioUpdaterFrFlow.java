@@ -31,7 +31,7 @@ public class ScenarioUpdaterFrFlow extends ScenarioUpdaterAbstract {
 
         // update supply/demand prior to controllers if run_mode==fw_fr_split_output
         for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork())
-            ((Network) network).update_supply_demand();
+            update_supply_demand((Network) network);
 
         // update controllers
         scenario.controllerset.update();
@@ -45,8 +45,8 @@ public class ScenarioUpdaterFrFlow extends ScenarioUpdaterAbstract {
         // update the network state......................
         for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
             Network net = (Network) network;
-            net.update_flow();
-            net.update_density();
+            update_flow(net);
+            update_density(net);
         }
 
         scenario.cumulatives.update();

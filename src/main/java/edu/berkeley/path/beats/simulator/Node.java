@@ -29,7 +29,6 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.jaxb.Splitratio;
 import edu.berkeley.path.beats.simulator.Node_FlowSolver.SupplyDemand;
 
-import java.io.BufferedWriter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -60,8 +59,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	protected boolean has_profile;
 
     // node behavior
-    protected Node_SplitRatioSolver node_sr_solver;
-    protected Node_FlowSolver node_flow_solver;
+    protected NodeBehavior node_behavior;
 	
 	// does change ........................................
 
@@ -131,8 +129,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		normalizeSplitRatioMatrix(splitratio_selected);
 
 		// default node flow and split solvers
-        node_flow_solver = new Node_FlowSolver_LNCTM(this);
-        node_sr_solver = new Node_SplitRatioSolver_A(this);
+        this.node_behavior = new NodeBehavior(new Node_SplitRatioSolver_A(this) ,
+                                              new Node_FlowSolver_LNCTM(this) ,
+                                              new Node_SupplyPartitioner(this) );
 
 	}
     
@@ -151,8 +150,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 				if(link==null)
 					BeatsErrorLog.addError("Incorrect input link ID in node ID=" + getId());
 		
-		if(node_sr_solver!=null)
-			node_sr_solver.validate();
+		if(node_behavior.sr_solver !=null)
+            node_behavior.sr_solver.validate();
 				
 		
 	}
@@ -160,8 +159,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	protected void reset() {
     	if(isTerminal)
     		return;
-		node_flow_solver.reset();
-		node_sr_solver.reset();
+		node_behavior.flow_solver.reset();
+        node_behavior.sr_solver.reset();
 	}
 	
 	protected void update_flows() {
@@ -192,7 +191,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 			splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile.getVariance(), numEnsemble);
 		else
 			Arrays.fill(splitratio_selected_perturbed, 0, splitratio_selected_perturbed.length, splitratio_selected);
-        
+
+
+
+
         for(e=0;e<numEnsemble;e++){
 
             Node_FlowSolver.SupplyDemand demand_supply = new SupplyDemand(nIn,nOut,numVehicleTypes);
@@ -200,11 +202,14 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
             // collect input demands and output supplies ...................
     		for(i=0;i<nIn;i++)
     			demand_supply.setDemand(i,input_link[i].get_out_demand_in_veh(e) );
-    		for(j=0;j<nOut;j++)
-    			demand_supply.setSupply(j,output_link[j].get_space_supply_in_veh(e));
+    		for(j=0;j<nOut;j++){
+                double total_supply = output_link[j].get_total_space_supply_in_veh(e);
+                double available_supply = node_behavior.supply_partitioner.compute_total_available_suppy_in_link(total_supply,output_link[j],e);
+    			demand_supply.setSupply(j,available_supply);
+            }
 
 			// compute applied split ratio matrix
-            Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected_perturbed[e],demand_supply,e);
+            Double3DMatrix splitratio_applied = node_behavior.sr_solver.computeAppliedSplitRatio(splitratio_selected_perturbed[e],demand_supply,e);
 
             /////////////////////////////////////////////////
             // write first to logger
@@ -213,7 +218,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
             /////////////////////////////////////////////////
 
             // compute node flows ..........................................
-            Node_FlowSolver.IOFlow IOflow = node_flow_solver.computeLinkFlows(splitratio_applied,demand_supply,e);
+            Node_FlowSolver.IOFlow IOflow = node_behavior.flow_solver.computeLinkFlows(splitratio_applied,demand_supply,e);
 
             if(IOflow==null)
                 return;
@@ -234,14 +239,6 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
-
-    protected void set_node_flow_solver(Node_FlowSolver node_flow_solver){
-        this.node_flow_solver = node_flow_solver;
-    }
-
-    protected void set_node_split_solver(Node_SplitRatioSolver node_sr_solver){
-        this.node_sr_solver = node_sr_solver;
-    }
 
     // split ratio profile ..............................................
 

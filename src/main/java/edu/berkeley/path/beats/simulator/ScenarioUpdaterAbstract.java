@@ -32,8 +32,9 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
             // set node behaviors
             for(edu.berkeley.path.beats.jaxb.Node node : network.getNodeList().getNode()){
                 Node bNode = (Node)node;
-                bNode.set_node_split_solver(create_node_sr_solver(bNode));
-                bNode.set_node_flow_solver(create_node_flow_solver(bNode));
+                bNode.node_behavior = new NodeBehavior( create_node_sr_solver(bNode) ,
+                                                        create_node_flow_solver(bNode) ,
+                                                        create_node_supply_partitioner(bNode) );
             }
         }
     }
@@ -100,6 +101,39 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
                 node_flow_solver = new Node_FlowSolver_LNCTM(node);
         }
         return node_flow_solver;
+    }
+
+    protected Node_SupplyPartitioner create_node_supply_partitioner(Node node){
+        return new Node_SupplyPartitioner(node);
+    }
+
+    /////////////////////////////////////
+    // helper methods
+    /////////////////////////////////////
+
+    protected void update_supply_demand(Network network) throws BeatsException {
+
+        if(network.isempty)
+            return;
+        // compute link demand and supply ...............
+        for(edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()){
+            ((Link)link).updateOutflowDemand();
+            ((Link)link).updateSpaceSupply();
+        }
+    }
+
+    protected void update_flow(Network network) throws BeatsException {
+        if(network.isempty)
+            return;
+        for (edu.berkeley.path.beats.jaxb.Node node : network.getNodeList().getNode())
+            ((Node) node).update_flows();
+    }
+
+    protected void update_density(Network network) throws BeatsException {
+        if(network.isempty)
+            return;
+        for(edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink())
+            ((Link)link).update_densities();
     }
 
 }

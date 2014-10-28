@@ -66,6 +66,8 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
                 if(numunknown==0)
                     continue;
 
+
+
                 // compute and sort output demand/supply ratio .................
                 for(j=0;j<nOut;j++)
                     dsratio[j] = outDemandKnown[j] / demand_supply.getSupply(j);

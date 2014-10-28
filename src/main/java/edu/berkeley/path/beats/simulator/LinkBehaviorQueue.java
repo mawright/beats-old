@@ -15,6 +15,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
 
     // UPDATE
 
+    // same as ctm case with vf = 1
     @Override
     public void update_outflow_demand(double external_max_speed, double external_max_flow){
 
@@ -76,36 +77,38 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
         return;
     }
 
-    @Override
-    public void update_total_space_supply(){
-        double totaldensity;
-        FundamentalDiagram FD;
-        for(int e=0;e<myScenario.getNumEnsemble();e++){
-            FD = myLink.currentFD(e);
-            totaldensity = myLink.getTotalDensityInVeh(e);
-            space_supply[e] = Math.min(FD._getDensityJamInVeh()-totaldensity,FD._getCapacityInVeh());
-
-            // flow uncertainty model
-            if(myScenario.isHas_flow_unceratinty()){
-                double delta_flow=0.0;
-                double std_dev_flow = myScenario.getStd_dev_flow();
-                switch(myScenario.getUncertaintyModel()){
-                    case uniform:
-                        delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
-                        break;
-
-                    case gaussian:
-                        delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
-                        break;
-                }
-                space_supply[e] = Math.max( 0d , space_supply[e] + delta_flow );
-                space_supply[e] = Math.min( space_supply[e] , FD._getDensityJamInVeh() - totaldensity);
-            }
-        }
-    }
+    // same as ctm case with w = 1
+//    @Override
+//    public void update_total_space_supply(){
+//        double totaldensity;
+//        FundamentalDiagram FD;
+//        for(int e=0;e<myScenario.getNumEnsemble();e++){
+//            FD = myLink.currentFD(e);
+//            totaldensity = myLink.getTotalDensityInVeh(e);
+//            total_space_supply[e] = Math.min(FD._getDensityJamInVeh()-totaldensity,FD._getCapacityInVeh());
+//
+//            // flow uncertainty model
+//            if(myScenario.isHas_flow_unceratinty()){
+//                double delta_flow=0.0;
+//                double std_dev_flow = myScenario.getStd_dev_flow();
+//                switch(myScenario.getUncertaintyModel()){
+//                    case uniform:
+//                        delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
+//                        break;
+//
+//                    case gaussian:
+//                        delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
+//                        break;
+//                }
+//                total_space_supply[e] = Math.max( 0d , total_space_supply[e] + delta_flow );
+//                total_space_supply[e] = Math.min( total_space_supply[e] , FD._getDensityJamInVeh() - totaldensity);
+//            }
+//        }
+//    }
 
     // COMPUTE
 
+    // same as ctm with vf = 1
     @Override
     public double compute_speed_in_mps(int ensemble){
         try{
@@ -120,6 +123,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
         }
     }
 
+    // same as ctm with vf = 1
     @Override
     public double compute_delay_in_veh(int ensemble, int vt_index){
         double n = get_density_in_veh(ensemble, vt_index);

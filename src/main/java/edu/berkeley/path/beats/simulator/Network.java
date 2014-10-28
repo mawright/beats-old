@@ -33,8 +33,8 @@ import java.util.List;
 */
 public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 
-	private boolean isempty;
-	private Scenario myScenario;
+	protected boolean isempty;
+    private Scenario myScenario;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -87,30 +87,30 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 
 	}
 
-    protected void update_supply_demand() throws BeatsException {
-
-        if(isempty)
-            return;
-        // compute link demand and supply ...............
-        for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
-            ((Link)link).updateOutflowDemand();
-            ((Link)link).updateSpaceSupply();
-        }
-    }
-
-    protected void update_flow() throws BeatsException {
-        if(isempty)
-            return;
-        for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
-            ((Node) node).update_flows();
-    }
-
-    protected void update_density() throws BeatsException {
-        if(isempty)
-            return;
-        for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
-            ((Link)link).update_densities();
-    }
+//    protected void update_supply_demand() throws BeatsException {
+//
+//        if(isempty)
+//            return;
+//        // compute link demand and supply ...............
+//        for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
+//            ((Link)link).updateOutflowDemand();
+//            ((Link)link).updateSpaceSupply();
+//        }
+//    }
+//
+//    protected void update_flow() throws BeatsException {
+//        if(isempty)
+//            return;
+//        for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
+//            ((Node) node).update_flows();
+//    }
+//
+//    protected void update_density() throws BeatsException {
+//        if(isempty)
+//            return;
+//        for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
+//            ((Link)link).update_densities();
+//    }
 
 	/////////////////////////////////////////////////////////////////////
 	// public API

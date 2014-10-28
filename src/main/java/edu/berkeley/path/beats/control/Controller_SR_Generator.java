@@ -1,6 +1,5 @@
 package edu.berkeley.path.beats.control;
 
-import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.actuator.ActuatorCMS;
 import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.jaxb.DemandProfile;
@@ -385,7 +384,7 @@ public class Controller_SR_Generator extends Controller {
             non_offramp_xi = new double[link_not_fr.size()];
             for(j=0;j<ind_not_fr.size();j++){
                 double num = offramp_flow_demand_ratio*(known_non_offramp_demand[j] + non_offramp_phi[j]);
-                double Rj = link_not_fr.get(j).get_space_supply_in_veh(0);
+                double Rj = link_not_fr.get(j).get_total_space_supply_in_veh(0);
                 double den = Rj + offramp_flow_demand_ratio * non_offramp_phi[j];
                 if(BeatsMath.equals(num,0d))
                     non_offramp_xi[j] = 0d;

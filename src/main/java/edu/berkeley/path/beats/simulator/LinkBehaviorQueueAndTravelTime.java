@@ -104,24 +104,26 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehavior {
         for(int e=0;e<ensemble.size();e++){
             FD = myLink.currentFD(e);
             totaldensity = myLink.getTotalDensityInVeh(e);
-            space_supply[e] = Math.min(FD._getDensityJamInVeh()-totaldensity,FD._getCapacityInVeh());
+            total_space_supply[e] = FD._getDensityJamInVeh()-totaldensity;
 
-            // flow uncertainty model
-            if(myScenario.isHas_flow_unceratinty()){
-                double delta_flow=0.0;
-                double std_dev_flow = myScenario.getStd_dev_flow();
-                switch(myScenario.getUncertaintyModel()){
-                    case uniform:
-                        delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
-                        break;
+//            total_space_supply[e] = Math.min(FD._getDensityJamInVeh()-totaldensity,FD._getCapacityInVeh());
 
-                    case gaussian:
-                        delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
-                        break;
-                }
-                space_supply[e] = Math.max( 0d , space_supply[e] + delta_flow );
-                space_supply[e] = Math.min( space_supply[e] , FD._getDensityJamInVeh() - totaldensity);
-            }
+//            // flow uncertainty model
+//            if(myScenario.isHas_flow_unceratinty()){
+//                double delta_flow=0.0;
+//                double std_dev_flow = myScenario.getStd_dev_flow();
+//                switch(myScenario.getUncertaintyModel()){
+//                    case uniform:
+//                        delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
+//                        break;
+//
+//                    case gaussian:
+//                        delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
+//                        break;
+//                }
+//                total_space_supply[e] = Math.max( 0d , total_space_supply[e] + delta_flow );
+//                total_space_supply[e] = Math.min( total_space_supply[e] , FD._getDensityJamInVeh() - totaldensity);
+//            }
         }
     }
 

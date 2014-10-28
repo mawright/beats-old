@@ -42,9 +42,9 @@ public class ScenarioUpdaterStandard extends ScenarioUpdaterAbstract {
         // update the network state......................
         for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
             Network net = (Network) network;
-            net.update_supply_demand();
-            net.update_flow();
-            net.update_density();
+            update_supply_demand(net);
+            update_flow(net);
+            update_density(net);
         }
 
         scenario.cumulatives.update();

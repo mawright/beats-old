@@ -25,107 +25,37 @@ public class LinkBehaviorCTM extends LinkBehavior {
                 density[e][j] += inflow[e][j] - outflow[e][j];
     }
 
-    @Override
-    public void update_outflow_demand(double external_max_speed, double external_max_flow){
-
-        int numVehicleTypes = myScenario.getNumVehicleTypes();
-
-        double totaldensity;
-        double totaloutflow;
-        FundamentalDiagram FD;
-
-        for(int e=0;e<myScenario.getNumEnsemble();e++){
-
-            FD = myLink.currentFD(e);
-
-            totaldensity = myLink.getTotalDensityInVeh(e);
-
-            // case empty link
-            if( BeatsMath.lessorequalthan(totaldensity,0d) ){
-                flow_demand[e] =  BeatsMath.zeros(numVehicleTypes);
-                continue;
-            }
-
-            // compute total flow leaving the link in the absence of flow control
-            if( totaldensity < FD.getDensityCriticalInVeh() ){
-                totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),external_max_speed);
-            }
-            else{
-                totaloutflow = Math.max(FD._getCapacityInVeh()-FD._getCapacityDropInVeh(),0d);
-                totaloutflow = Math.min(totaloutflow,external_max_speed*FD.getDensityCriticalInVeh());
-            }
-
-            // capacity profile
-            if(myLink.myCapacityProfile!=null)
-                totaloutflow = Math.min( totaloutflow , myLink.myCapacityProfile.getCurrentValue() );
-
-            // flow controller
-            totaloutflow = Math.min( totaloutflow , external_max_flow );
-
-            // flow uncertainty model (unless controller wants zero flow)
-            if(myScenario.isHas_flow_unceratinty() && BeatsMath.greaterthan(external_max_flow,0d) ){
-
-                double delta_flow=0.0;
-                double std_dev_flow = myScenario.getStd_dev_flow();
-
-                switch(myScenario.getUncertaintyModel()){
-                    case uniform:
-                        delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
-                        break;
-
-                    case gaussian:
-                        delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
-                        break;
-                }
-
-                totaloutflow = Math.max( 0d , totaloutflow + delta_flow );
-                totaloutflow = Math.min( totaloutflow , totaldensity );
-            }
-
-            // split among types
-            if(myScenario.getNumVehicleTypes()==1)
-                flow_demand[e][0] = totaloutflow;
-            else{
-                double alpha = totaloutflow/totaldensity;
-                for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-                    flow_demand[e][j] = get_density_in_veh(e, j)*alpha;
-            }
-
-        }
-
-        return;
-    }
-
-    @Override
-    public void update_total_space_supply(){
-        double totaldensity;
-        FundamentalDiagram FD;
-        for(int e=0;e<myScenario.getNumEnsemble();e++){
-            FD = myLink.currentFD(e);
-            totaldensity = myLink.getTotalDensityInVeh(e);
-            space_supply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
-            space_supply[e] = Math.min(space_supply[e],FD._getCapacityInVeh());
-
-            // flow uncertainty model
-            if(myScenario.isHas_flow_unceratinty()){
-                double delta_flow=0.0;
-                double std_dev_flow = myScenario.getStd_dev_flow();
-                switch(myScenario.getUncertaintyModel()){
-                    case uniform:
-                        delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
-                        break;
-
-                    case gaussian:
-                        delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
-                        break;
-                }
-                space_supply[e] = Math.max( 0d , space_supply[e] + delta_flow );
-                space_supply[e] = Math.min( space_supply[e] , FD._getDensityJamInVeh() - totaldensity);
-            }
-        }
-    }
+//    @Override
+//    public void update_total_space_supply(){
+//        double totaldensity;
+//        FundamentalDiagram FD;
+//        for(int e=0;e<myScenario.getNumEnsemble();e++){
+//            FD = myLink.currentFD(e);
+//            totaldensity = myLink.getTotalDensityInVeh(e);
+//            total_space_supply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
+//            total_space_supply[e] = Math.min(total_space_supply[e],FD._getCapacityInVeh());
+//
+//            // flow uncertainty model
+//            if(myScenario.isHas_flow_unceratinty()){
+//                double delta_flow=0.0;
+//                double std_dev_flow = myScenario.getStd_dev_flow();
+//                switch(myScenario.getUncertaintyModel()){
+//                    case uniform:
+//                        delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
+//                        break;
+//
+//                    case gaussian:
+//                        delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
+//                        break;
+//                }
+//                total_space_supply[e] = Math.max( 0d , total_space_supply[e] + delta_flow );
+//                total_space_supply[e] = Math.min( total_space_supply[e] , FD._getDensityJamInVeh() - totaldensity);
+//            }
+//        }
+//    }
 
     // GET / SET / RESET DENSITY
+
 
     @Override
     public double get_density_in_veh(int ensemble_index, int vehicletype_index) throws IndexOutOfBoundsException {
@@ -161,7 +91,6 @@ public class LinkBehaviorCTM extends LinkBehavior {
         try{
             if(myScenario.getClock().getRelativeTimeStep()==0)
                 return Double.NaN;
-
             double totaldensity = BeatsMath.sum(density[ensemble]);
             double speed = BeatsMath.greaterthan(totaldensity,0d) ?
                             BeatsMath.sum(myLink.outflow[ensemble])/totaldensity :

@@ -103,8 +103,8 @@ public class LinkBehaviorACTM extends LinkBehavior  {
         for(int e=0;e<myScenario.getNumEnsemble();e++){
             FD = myLink.currentFD(e);
             totaldensity = myLink.getTotalDensityInVeh(e);
-            space_supply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
-            space_supply[e] = Math.min(space_supply[e],FD._getCapacityInVeh());
+            total_space_supply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
+            total_space_supply[e] = Math.min(total_space_supply[e],FD._getCapacityInVeh());
 
             // flow uncertainty model
             if(myScenario.isHas_flow_unceratinty()){
@@ -119,8 +119,8 @@ public class LinkBehaviorACTM extends LinkBehavior  {
                         delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
                         break;
                 }
-                space_supply[e] = Math.max( 0d , space_supply[e] + delta_flow );
-                space_supply[e] = Math.min( space_supply[e] , FD._getDensityJamInVeh() - totaldensity);
+                total_space_supply[e] = Math.max( 0d , total_space_supply[e] + delta_flow );
+                total_space_supply[e] = Math.min( total_space_supply[e] , FD._getDensityJamInVeh() - totaldensity);
             }
         }
     }

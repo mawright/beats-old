@@ -1,27 +1,16 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.Jaxb;
-import edu.berkeley.path.beats.actuator.ActuatorCMS;
-import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.DemandSet;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Parameters;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
-import org.xml.sax.SAXException;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,7 +93,7 @@ public class Controller_SR_Generator_simple extends Controller {
             double ml_up_demand_vph = BeatsMath.sum(nd.link_fw_up.get(0).get_out_demand_in_veh(0))/dt_in_hr;
             double ml_dn_supply_vph = 0d;
             for(Link link : nd.link_fr)
-                ml_dn_supply_vph += link.get_space_supply_in_veh(0);
+                ml_dn_supply_vph += link.get_total_space_supply_in_veh(0);
             ml_dn_supply_vph /= dt_in_hr;
             double ml_up_flow_vph = Math.min( ml_up_demand_vph , ml_dn_supply_vph + tot_fr_flow_vph );
             for(int j=0;j<nd.link_fr.size();j++){
