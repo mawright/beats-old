@@ -2,12 +2,12 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
-public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
+public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
 
     protected double [] outDemandKnown;	    // [nOut]
 	protected double [] dsratio;			// [nOut]
 
-	public Node_SplitRatioSolver_A(Node myNode) {
+	public Node_SplitRatioSolver_Greedy(Node myNode) {
 		super(myNode);
 	}
 
@@ -23,7 +23,7 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 	}
 	
 	@Override
-	protected Double3DMatrix computeAppliedSplitRatio(final Double3DMatrix splitratio_selected,final Node_FlowSolver.SupplyDemand demand_supply,final int ensemble_index) {
+	protected Double3DMatrix computeAppliedSplitRatio(final Double3DMatrix splitratio_selected, Node_FlowSolver.SupplyDemand demand_supply,final int e) {
 
     	int i,j,k;
     	int numunknown;	

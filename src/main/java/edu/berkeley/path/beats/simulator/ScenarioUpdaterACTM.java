@@ -63,7 +63,7 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
         // first update onramps
         for(Link link : onramp_links ){
             link.updateOutflowDemand();
-            link.updateSpaceSupply();
+            link.updateTotalSpaceSupply();
         }
 //        for (edu.berkeley.path.beats.jaxb.Node node : net.getNodeList().getNode())
 //            ((Node) node).update();

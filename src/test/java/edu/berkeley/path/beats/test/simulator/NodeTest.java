@@ -5,15 +5,11 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Field;
 
 import edu.berkeley.path.beats.Jaxb;
+import edu.berkeley.path.beats.simulator.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.berkeley.path.beats.simulator.Defaults;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_A;
-import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_HAMBURGER;
-import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_Greedy;
 
 public class NodeTest {
 
@@ -156,7 +152,7 @@ public class NodeTest {
 		Field node_sr_solver_field = Node.class.getDeclaredField("node_sr_solver");
 		node_sr_solver_field.setAccessible(true);
 		Object node_sr_solver = node_sr_solver_field.get(node);
-		assertEquals("Test of of node_sr_solver", node_sr_solver.getClass(), Node_SplitRatioSolver_A.class);
+		assertEquals("Test of of node_sr_solver", node_sr_solver.getClass(), Node_SplitRatioSolver_Greedy.class);
 	}
 	
 	@Test

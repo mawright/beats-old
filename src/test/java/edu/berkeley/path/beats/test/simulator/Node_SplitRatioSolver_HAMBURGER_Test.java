@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import edu.berkeley.path.beats.Jaxb;
+import edu.berkeley.path.beats.simulator.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -20,16 +21,7 @@ import edu.berkeley.path.beats.jaxb.LinkType;
 import edu.berkeley.path.beats.jaxb.NodeType;
 import edu.berkeley.path.beats.jaxb.VehicleType;
 import edu.berkeley.path.beats.jaxb.VehicleTypeSet;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.Defaults;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.LinkBehaviorCTM;
-import edu.berkeley.path.beats.simulator.Network;
-import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_A;
-import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_HAMBURGER;
-import edu.berkeley.path.beats.simulator.Parameters;
-import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_Greedy;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog.BeatsError;
 
 public class Node_SplitRatioSolver_HAMBURGER_Test {
@@ -315,7 +307,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 					// Check if nodes without parameters has solver A.
 					if(node.getNodeType().getParameters() == null)
 					{
-						assertEquals("Test: Load real scenario. - verify right SplitRatioSolver",Node_SplitRatioSolver_A.class,split_ratio_solver_field.get(node).getClass());
+						assertEquals("Test: Load real scenario. - verify right SplitRatioSolver",Node_SplitRatioSolver_Greedy.class,split_ratio_solver_field.get(node).getClass());
 					}
 					else
 					{
@@ -489,7 +481,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 					// Check if split ratio solver are of type A.
 					else
 					{
-						assertEquals("Test: Load real scenario. - verify right SplitRatioSolver",Node_SplitRatioSolver_A.class,split_ratio_solver_field.get(node).getClass());
+						assertEquals("Test: Load real scenario. - verify right SplitRatioSolver",Node_SplitRatioSolver_Greedy.class,split_ratio_solver_field.get(node).getClass());
 					}
 				}
 			}

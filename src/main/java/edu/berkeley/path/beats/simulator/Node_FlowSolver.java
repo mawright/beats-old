@@ -4,7 +4,7 @@ public abstract class Node_FlowSolver {
 
 	protected Node myNode;
 	
-    protected abstract IOFlow computeLinkFlows(final Double3DMatrix sr,final SupplyDemand demand_supply,final int ensemble_index);
+    protected abstract IOFlow computeLinkFlows(final Double3DMatrix sr,SupplyDemand demand_supply,final int ensemble_index);
 
     protected abstract void reset();
     
@@ -15,7 +15,7 @@ public abstract class Node_FlowSolver {
 
 	protected static class SupplyDemand {
 		// input to node model, copied from link suppy/demand
-		protected double [][] demand;		// [nIn][nTypes]
+		protected double [][] demand;    // [nIn][nTypes]
 		protected double [] supply;		// [nOut]
 		
 		public SupplyDemand(int nIn,int nOut,int numVehicleTypes) {

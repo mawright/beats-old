@@ -94,7 +94,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 //        // compute link demand and supply ...............
 //        for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
 //            ((Link)link).updateOutflowDemand();
-//            ((Link)link).updateSpaceSupply();
+//            ((Link)link).updateTotalSpaceSupply();
 //        }
 //    }
 //

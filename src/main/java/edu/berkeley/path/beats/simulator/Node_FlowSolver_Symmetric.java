@@ -43,13 +43,13 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 	}
 
 	@Override
-    protected IOFlow computeLinkFlows(final Double3DMatrix splitratio,final SupplyDemand demand_supply,final int ensemble_index){
+    protected IOFlow computeLinkFlows(final Double3DMatrix splitratio,SupplyDemand demand_supply,final int ensemble_index){
 
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut; 
     	int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
 		IOFlow ioflow = new IOFlow(nIn,nOut,numVehicleTypes);
-		
+
         // priority_i and demand
         for (int i = 0; i < nIn; ++i) {
             priority_i[i] = myNode.input_link[i].getPriority(ensemble_index);

@@ -5,10 +5,13 @@ package edu.berkeley.path.beats.simulator;
  */
 public class NodeBehavior {
 
+    protected Node node;
     protected Node_SplitRatioSolver sr_solver;
     protected Node_FlowSolver flow_solver;
     protected Node_SupplyPartitioner supply_partitioner;
-    public NodeBehavior(Node_SplitRatioSolver sr_solver,Node_FlowSolver flow_solver,Node_SupplyPartitioner supply_partitioner){
+
+    public NodeBehavior(Node node,Node_SplitRatioSolver sr_solver,Node_FlowSolver flow_solver,Node_SupplyPartitioner supply_partitioner){
+        this.node = node;
         this.supply_partitioner = supply_partitioner;
         this.sr_solver = sr_solver;
         this.flow_solver = flow_solver;

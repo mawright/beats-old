@@ -203,7 +203,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         link_behavior.update_outflow_demand(external_max_speed, external_max_flow);
     }
 
-    protected void updateSpaceSupply(){
+    protected void updateTotalSpaceSupply(){
         link_behavior.update_total_space_supply();
     }
 

@@ -27,7 +27,6 @@
 package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.jaxb.Splitratio;
-import edu.berkeley.path.beats.simulator.Node_FlowSolver.SupplyDemand;
 
 import java.util.Arrays;
 import java.util.List;
@@ -129,7 +128,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		normalizeSplitRatioMatrix(splitratio_selected);
 
 		// default node flow and split solvers
-        this.node_behavior = new NodeBehavior(new Node_SplitRatioSolver_A(this) ,
+        this.node_behavior = new NodeBehavior(this,
+                                              new Node_SplitRatioSolver_Greedy(this) ,
                                               new Node_FlowSolver_LNCTM(this) ,
                                               new Node_SupplyPartitioner(this) );
 
@@ -193,13 +193,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 			Arrays.fill(splitratio_selected_perturbed, 0, splitratio_selected_perturbed.length, splitratio_selected);
 
 
-
-
         for(e=0;e<numEnsemble;e++){
 
-            Node_FlowSolver.SupplyDemand demand_supply = new SupplyDemand(nIn,nOut,numVehicleTypes);
-
             // collect input demands and output supplies ...................
+            Node_FlowSolver.SupplyDemand demand_supply = new Node_FlowSolver.SupplyDemand(nIn,nOut,numVehicleTypes);
     		for(i=0;i<nIn;i++)
     			demand_supply.setDemand(i,input_link[i].get_out_demand_in_veh(e) );
     		for(j=0;j<nOut;j++){

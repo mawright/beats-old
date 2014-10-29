@@ -32,7 +32,8 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
             // set node behaviors
             for(edu.berkeley.path.beats.jaxb.Node node : network.getNodeList().getNode()){
                 Node bNode = (Node)node;
-                bNode.node_behavior = new NodeBehavior( create_node_sr_solver(bNode) ,
+                bNode.node_behavior = new NodeBehavior( bNode,
+                                                        create_node_sr_solver(bNode) ,
                                                         create_node_flow_solver(bNode) ,
                                                         create_node_supply_partitioner(bNode) );
             }
@@ -64,23 +65,17 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
         Node_SplitRatioSolver node_sr_solver;
         switch(nodesrsolver){
             case A:
-                node_sr_solver = new Node_SplitRatioSolver_A(node);
-                break;
-            case B:
-                node_sr_solver = new Node_SplitRatioSolver_B(node);
-                break;
-            case C:
-                node_sr_solver = new Node_SplitRatioSolver_C(node);
+                node_sr_solver = new Node_SplitRatioSolver_Greedy(node);
                 break;
             case HAMBURGER:
                 Parameters param = (Parameters) node.getNodeType().getParameters();
                 if(param!=null && param.has("threshold") && param.has("scaling_factor"))
                     node_sr_solver = new Node_SplitRatioSolver_HAMBURGER(node);
                 else
-                    node_sr_solver = new Node_SplitRatioSolver_A(node);
+                    node_sr_solver = new Node_SplitRatioSolver_Greedy(node);
                 break;
             default:
-                node_sr_solver = new Node_SplitRatioSolver_A(node);
+                node_sr_solver = new Node_SplitRatioSolver_Greedy(node);
         }
         return node_sr_solver;
     }
@@ -118,7 +113,7 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
         // compute link demand and supply ...............
         for(edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()){
             ((Link)link).updateOutflowDemand();
-            ((Link)link).updateSpaceSupply();
+            ((Link)link).updateTotalSpaceSupply();
         }
     }
 

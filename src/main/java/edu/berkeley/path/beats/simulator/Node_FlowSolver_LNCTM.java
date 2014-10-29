@@ -53,13 +53,13 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
 	}
 	
 	@Override
-	protected IOFlow computeLinkFlows(final Double3DMatrix sr,final SupplyDemand demand_supply,final int ensemble_index){
+	protected IOFlow computeLinkFlows(final Double3DMatrix sr,SupplyDemand demand_supply,final int ensemble_index){
 
     	int i,j,k;
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut;        
     	int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
-    	    	
+
         // input i contributes to output j .............................
     	for(i=0;i<sr.getnIn();i++)
         	for(j=0;j<sr.getnOut();j++)
@@ -91,7 +91,6 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
 
         }
 
-        
         IOFlow ioflow = new IOFlow(nIn,nOut,numVehicleTypes);
 
         // scale down input demands

@@ -31,7 +31,7 @@ public class Node_FlowSolver_ACTM  extends Node_FlowSolver {
     }
 
     @Override
-    protected IOFlow computeLinkFlows(final Double3DMatrix sr,final SupplyDemand demand_supply,final int ensemble_index){
+    protected IOFlow computeLinkFlows(final Double3DMatrix sr,SupplyDemand demand_supply,final int ensemble_index){
 
         int i,j,k;
         int nIn = myNode.nIn;
