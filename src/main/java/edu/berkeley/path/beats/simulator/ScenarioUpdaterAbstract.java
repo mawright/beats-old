@@ -136,4 +136,49 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
             ((Link)link).update_densities();
     }
 
+    protected void update_profiles() throws BeatsException {
+
+        // sample profiles .............................
+        if(scenario.getDownstreamBoundaryCapacitySet()!=null)
+            ((CapacitySet)scenario.getDownstreamBoundaryCapacitySet()).update();
+
+        if(scenario.getDemandSet()!=null)
+            ((DemandSet)scenario.getDemandSet()).update();
+
+        if(scenario.getSplitRatioSet()!=null)
+            ((SplitRatioSet) scenario.getSplitRatioSet()).update();
+
+        if(scenario.getFundamentalDiagramSet()!=null)
+            for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdProfile : scenario.getFundamentalDiagramSet().getFundamentalDiagramProfile())
+                ((FundamentalDiagramProfile) fdProfile).update(false);
+    }
+
+    protected void update_sensors_control_events() throws BeatsException{
+
+        // update sensor readings .......................
+        scenario.sensorset.update();
+
+        // update controllers
+        scenario.controllerset.update();
+
+        // update and deploy actuators
+        scenario.actuatorset.deploy(scenario.getCurrentTimeInSeconds());
+
+        // update events
+        scenario.eventset.update();
+
+    }
+
+    protected void update_cumalitives_clock() throws BeatsException {
+
+        scenario.cumulatives.update();
+
+        if(scenario.perf_calc!=null)
+            scenario.perf_calc.update();
+
+        // advance the clock
+        scenario.clock.advance();
+
+    }
+
 }
