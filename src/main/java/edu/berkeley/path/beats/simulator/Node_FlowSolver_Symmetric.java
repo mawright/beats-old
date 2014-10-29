@@ -43,12 +43,15 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 	}
 
 	@Override
-    protected IOFlow computeLinkFlows(final Double3DMatrix splitratio,SupplyDemand demand_supply,final int ensemble_index){
+    protected IOFlow computeLinkFlows(final Double3DMatrix splitratio,final int ensemble_index){
 
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut; 
     	int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
 		IOFlow ioflow = new IOFlow(nIn,nOut,numVehicleTypes);
+
+        double [][] demand = myNode.node_behavior.getDemand(ensemble_index);
+        double [] supply = myNode.node_behavior.getAvailableSupply(ensemble_index);
 
         // priority_i and demand
         for (int i = 0; i < nIn; ++i) {
@@ -60,15 +63,15 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
                         // S_{ij} = \sum_{vt} S_i^{vt} * sr_{ij}^{vt}
                         double sr = splitratio.get(i, j, vt);
                         if (!Double.isNaN(sr))
-                            directed_demand[i][j] += demand_supply.getDemand(i,vt) * sr;
+                            directed_demand[i][j] += demand[i][vt] * sr;
                     } else
-                        directed_demand[i][j] += demand_supply.getDemand(i,vt);
+                        directed_demand[i][j] += demand[i][vt];
                 }
             }
         }
 
         // compute flow from demand, supply and priorities
-        model.solve(directed_demand, demand_supply.getSupply(), priority_i, flow);
+        model.solve(directed_demand, supply, priority_i, flow);
 
         // set outFlow to 0
         for (int j = 0; j < nOut; ++j)
@@ -91,7 +94,7 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
                     flow_i += flow[i][j];
                 final double reduction = flow_i / demand_i;
                 for (int vt = 0; vt < numVehicleTypes; ++vt) {
-                    ioflow.setIn(i,vt,  demand_supply.getDemand(i,vt)*reduction  );
+                    ioflow.setIn(i,vt,demand[i][vt]*reduction  );
                     for (int j = 0; j < nOut; ++j){
                         ioflow.addOut(j,vt, ioflow.getIn(i,vt) * splitratio.get(i,j,vt) );
                     }

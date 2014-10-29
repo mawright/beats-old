@@ -17,4 +17,21 @@ public class NodeBehavior {
         this.flow_solver = flow_solver;
     }
 
+    protected double [][] getDemand(int e){
+        int nIn = node.getnIn();
+        int nVT = node.myNetwork.getMyScenario().getNumVehicleTypes();
+        double [][] x = new double[nIn][nVT];
+        for(int i=0;i<nIn;i++)
+            for(int k=0;k<nVT;k++)
+                x[i][k] = node.input_link[i].get_out_demand_in_veh(e)[k];
+        return x;
+    }
+
+    protected double [] getAvailableSupply(int e){
+        double [] x = new double[node.getnOut()];
+        for(int j=0;j<node.getnOut();j++)
+            x[j] = node.output_link[j].get_available_space_supply_in_veh(e);
+        return x;
+    }
+
 }

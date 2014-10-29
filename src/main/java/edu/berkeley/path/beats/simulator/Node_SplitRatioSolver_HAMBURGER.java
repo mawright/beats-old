@@ -1,7 +1,5 @@
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.simulator.Node_FlowSolver.SupplyDemand;
-
 public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 	
 	/* Fields */
@@ -47,7 +45,7 @@ public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 	/* Methods */
 	// Method for adjust the split ratio
 	@Override
-	protected Double3DMatrix computeAppliedSplitRatio(Double3DMatrix splitratio_selected, SupplyDemand demand_supply,final int ensemble_index) {
+	protected Double3DMatrix computeAppliedSplitRatio(Double3DMatrix splitratio_selected,final int ensemble_index) {
 		
 		Double3DMatrix splitratio_new = new Double3DMatrix(splitratio_selected.getData());
 		

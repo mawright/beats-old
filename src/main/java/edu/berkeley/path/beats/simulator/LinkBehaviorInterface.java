@@ -16,6 +16,9 @@ public interface LinkBehaviorInterface {
     // typically simply njam-n
     public void update_total_space_supply();
 
+    // typically simply min(w(njam-n),F), always called after update_total_space_supply
+    public void update_available_space_supply();
+
     // GET / SET / RESET DENSITY
 
     public double get_density_in_veh(int ensemble_index, int vehicletype_index) throws IndexOutOfBoundsException;

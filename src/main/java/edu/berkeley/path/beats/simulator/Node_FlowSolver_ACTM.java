@@ -31,12 +31,15 @@ public class Node_FlowSolver_ACTM  extends Node_FlowSolver {
     }
 
     @Override
-    protected IOFlow computeLinkFlows(final Double3DMatrix sr,SupplyDemand demand_supply,final int ensemble_index){
+    protected IOFlow computeLinkFlows(final Double3DMatrix sr,final int ensemble_index){
 
         int i,j,k;
         int nIn = myNode.nIn;
         int nOut = myNode.nOut;
         int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
+
+        double [][] demand = myNode.node_behavior.getDemand(ensemble_index);
+        double [] supply = myNode.node_behavior.getAvailableSupply(ensemble_index);
 
         // input i contributes to output j .............................
         for(i=0;i<sr.getnIn();i++)
@@ -54,11 +57,11 @@ public class Node_FlowSolver_ACTM  extends Node_FlowSolver {
             outDemandKnown[j] = 0d;
             for(i=0;i<nIn;i++)
                 for(k=0;k<numVehicleTypes;k++)
-                    outDemandKnown[j] += demand_supply.getDemand(i,k)*sr.get(i,j,k);
+                    outDemandKnown[j] += demand[i][k]*sr.get(i,j,k);
 
             // compute and sort output demand/supply ratio .............
-            if(BeatsMath.greaterthan(demand_supply.getSupply(j),0d))
-                dsratio[j] = Math.max( outDemandKnown[j] / demand_supply.getSupply(j) , 1d );
+            if(BeatsMath.greaterthan(supply[j],0d))
+                dsratio[j] = Math.max( outDemandKnown[j] / supply[j] , 1d );
             else
                 dsratio[j] = Double.POSITIVE_INFINITY;
 
@@ -75,7 +78,7 @@ public class Node_FlowSolver_ACTM  extends Node_FlowSolver {
         // scale down input demands
         for(i=0;i<nIn;i++){
             for(k=0;k<numVehicleTypes;k++){
-                ioflow.setIn(i,k , demand_supply.getDemand(i,k) / applyratio[i] );
+                ioflow.setIn(i,k , demand[i][k] / applyratio[i] );
             }
         }
 

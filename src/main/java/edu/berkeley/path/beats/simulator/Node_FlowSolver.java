@@ -4,7 +4,7 @@ public abstract class Node_FlowSolver {
 
 	protected Node myNode;
 	
-    protected abstract IOFlow computeLinkFlows(final Double3DMatrix sr,SupplyDemand demand_supply,final int ensemble_index);
+    protected abstract IOFlow computeLinkFlows(final Double3DMatrix sr,final int ensemble_index);
 
     protected abstract void reset();
     

@@ -203,8 +203,9 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         link_behavior.update_outflow_demand(external_max_speed, external_max_flow);
     }
 
-    protected void updateTotalSpaceSupply(){
+    protected void updateSpaceSupply(){
         link_behavior.update_total_space_supply();
+        link_behavior.update_available_space_supply();
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -432,6 +433,10 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
     public double get_total_space_supply_in_veh(int e) {
         return link_behavior.total_space_supply[e];
+    }
+
+    public double get_available_space_supply_in_veh(int e) {
+        return link_behavior.available_space_supply[e];
     }
 
     /////////////////////////////////////////////////////////////////////

@@ -113,7 +113,7 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
         // compute link demand and supply ...............
         for(edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()){
             ((Link)link).updateOutflowDemand();
-            ((Link)link).updateTotalSpaceSupply();
+            ((Link)link).updateSpaceSupply();
         }
     }
 

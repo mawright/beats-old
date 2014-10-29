@@ -7,8 +7,9 @@ public abstract class LinkBehavior implements LinkBehaviorInterface {
 
     protected Link myLink;
     protected Scenario myScenario;
-    protected double [] total_space_supply;     // [veh]	numEnsemble (typically njam-n)
-    protected double [][] flow_demand;          // [veh] 	numEnsemble x numVehTypes (typically min(vn,F,c))
+    protected double [] total_space_supply;         // [veh]	numEnsemble (typically njam-n)
+    protected double [] available_space_supply;     // [veh]	numEnsemble (typically min(w*(njam-n),F))
+    protected double [][] flow_demand;              // [veh] 	numEnsemble x numVehTypes (typically min(vn,F,c))
 
     public LinkBehavior(Link link){
         this.myLink = link;
@@ -20,6 +21,7 @@ public abstract class LinkBehavior implements LinkBehaviorInterface {
         int n2 = myScenario.getNumVehicleTypes();
         flow_demand = BeatsMath.zeros(n1,n2);
         total_space_supply = BeatsMath.zeros(n1);
+        available_space_supply = BeatsMath.zeros(n1);
         reset_density();
         for(int e=0;e<n1;e++)
             set_density_in_veh(e,initial_density);
@@ -101,6 +103,31 @@ public abstract class LinkBehavior implements LinkBehaviorInterface {
     public void update_total_space_supply(){
         for(int e=0;e<myScenario.getNumEnsemble();e++)
             total_space_supply[e] = myLink.currentFD(e)._getDensityJamInVeh() - myLink.getTotalDensityInVeh(e);
+    }
+
+    @Override
+    public void update_available_space_supply(){
+        for(int e=0;e<myScenario.getNumEnsemble();e++){
+            FundamentalDiagram FD = myLink.currentFD(e);
+            available_space_supply[e] = Math.min( FD.getWNormalized()*total_space_supply[e] , FD._getCapacityInVeh() );
+
+            // flow uncertainty model
+            if(myScenario.isHas_flow_unceratinty()){
+                double delta_flow=0.0;
+                double std_dev_flow = myScenario.getStd_dev_flow();
+                switch(myScenario.getUncertaintyModel()){
+                    case uniform:
+                        delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
+                        break;
+
+                    case gaussian:
+                        delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
+                        break;
+                }
+                available_space_supply[e] = Math.max( 0d , available_space_supply[e] + delta_flow );
+                available_space_supply[e] = Math.min( available_space_supply[e] , total_space_supply[e] );
+            }
+        }
     }
 
 }

@@ -195,18 +195,18 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
         for(e=0;e<numEnsemble;e++){
 
-            // collect input demands and output supplies ...................
-            Node_FlowSolver.SupplyDemand demand_supply = new Node_FlowSolver.SupplyDemand(nIn,nOut,numVehicleTypes);
-    		for(i=0;i<nIn;i++)
-    			demand_supply.setDemand(i,input_link[i].get_out_demand_in_veh(e) );
-    		for(j=0;j<nOut;j++){
-                double total_supply = output_link[j].get_total_space_supply_in_veh(e);
-                double available_supply = node_behavior.supply_partitioner.compute_total_available_suppy_in_link(total_supply,output_link[j],e);
-    			demand_supply.setSupply(j,available_supply);
-            }
+//            // collect input demands and output supplies ...................
+//            Node_FlowSolver.SupplyDemand demand_supply = new Node_FlowSolver.SupplyDemand(nIn,nOut,numVehicleTypes);
+//    		for(i=0;i<nIn;i++)
+//    			demand_supply.setDemand(i,input_link[i].get_out_demand_in_veh(e) );
+//    		for(j=0;j<nOut;j++){
+//                double total_supply = output_link[j].get_total_space_supply_in_veh(e);
+//                double available_supply = node_behavior.supply_partitioner.compute_total_available_suppy_in_link(total_supply,output_link[j],e);
+//    			demand_supply.setSupply(j,available_supply);
+//            }
 
 			// compute applied split ratio matrix
-            Double3DMatrix splitratio_applied = node_behavior.sr_solver.computeAppliedSplitRatio(splitratio_selected_perturbed[e],demand_supply,e);
+            Double3DMatrix splitratio_applied = node_behavior.sr_solver.computeAppliedSplitRatio(splitratio_selected_perturbed[e],e);
 
             /////////////////////////////////////////////////
             // write first to logger
@@ -215,7 +215,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
             /////////////////////////////////////////////////
 
             // compute node flows ..........................................
-            Node_FlowSolver.IOFlow IOflow = node_behavior.flow_solver.computeLinkFlows(splitratio_applied,demand_supply,e);
+            Node_FlowSolver.IOFlow IOflow = node_behavior.flow_solver.computeLinkFlows(splitratio_applied,e);
 
             if(IOflow==null)
                 return;
