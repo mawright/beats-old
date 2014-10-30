@@ -38,19 +38,36 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
 
         update_sensors_control_events();
 
-        // first update onramps
-        for(Link link : onramp_links ){
+        // compute demand on all links
+        for(Link link : links )
             link.updateOutflowDemand();
-            link.updateSpaceSupply();
+
+        // mainline allocation for onramps
+        for(Link link : mainline_links_with_onramp )
+            ((LinkBehaviorACTM) link.link_behavior).update_available_space_supply_for_onramp();
+
+        // onramp flow
+        for (Link link : onramp_links ){
+            Node node = link.getEnd_node();
+            Node_FlowSolver_ACTM flow_solver = (Node_FlowSolver_ACTM) node.node_behavior.flow_solver;
+            double onramp_flow = flow_solver.compute_onramp_flow(splitratio_applied, e);
+            link.setOutflow(e,onramp_flow);
         }
 
-        // update the network state......................
-        for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
-            Network net = (Network) network;
-            update_supply_demand(net);
-            update_flow(net);
-            update_density(net);
+        // rest supply
+        for (Link link : not_onramp_links){
+            link.updateOutflowDemand();
+            ((LinkBehaviorACTM) link.link_behavior).update_available_space_supply_for_mainline();
         }
+
+        // mainline flow
+        for (Node node : mainline_nodes){
+            ???
+        }
+
+        // update density
+        for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork())
+            update_density(network);
 
         update_cumalitives_clock();
     }
