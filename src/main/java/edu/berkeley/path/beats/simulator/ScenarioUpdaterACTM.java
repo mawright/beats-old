@@ -36,7 +36,9 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
     public void update() throws BeatsException {
 
         // CHECK NUMENSEMBLE == 1
+        // CHECK NUMVEHICLETYPES = 1
         int e=0;
+        int vt = 0;
         double xi = 0.1;
         double gamma = 0.1;
 
@@ -54,18 +56,17 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
 
         // mainline allocation for onramps only: xi*(njam-n)
         for(FwyNode fwy_node : fwy_nodes )
-            if(fwy_node.onramp!=null)
-                ((LinkBehaviorACTM) fwy_node.onramp.link_behavior).update_available_space_supply_for_onramp();
+            if(fwy_node.onramp!=null && fwy_node.dn_ml!=null) {
+                fwy_node.supply_for_onramp = xi * fwy_node.dn_ml.link_behavior.total_space_supply[e];
+            }
 
         // onramp flow = min(onramp demand,mainline supply for onramp)
         for (FwyNode fwy_node : fwy_nodes){
             if(fwy_node.onramp!=null){
-                Node_FlowSolver_ACTM flow_solver = (Node_FlowSolver_ACTM) fwy_node.node.node_behavior.flow_solver;
                 double[] demand = fwy_node.onramp.get_out_demand_in_veh(e);
-                double supply = ((LinkBehaviorACTM) fwy_node.onramp.link_behavior).available_space_supply_for_onramp[e];
                 double total_demand = BeatsMath.sum(demand);
-                double ratio = Math.min(1d,supply/total_demand);
-                fwy_node.r = Math.min(total_demand,supply);
+                double ratio = Math.min(1d,fwy_node.supply_for_onramp/total_demand);
+                fwy_node.r = Math.min(total_demand,fwy_node.supply_for_onramp);
                 fwy_node.onramp.setOutflow(e, BeatsMath.times(demand,ratio) );
             }
         }
@@ -94,11 +95,15 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
             // update split ratio matrix
             Double3DMatrix[] splitratio_selected = node.select_and_perturb_split_ratio();
 
-            // compute applied split ratio matrix
-            Double3DMatrix splitratio_applied = node.node_behavior.sr_solver.computeAppliedSplitRatio(splitratio_selected[e],e);
+            double fr_split = splitratio_selected[e].get(fwy_node.up_ml_index,fwy_node.fr_index,vt);
 
-            // compute node flows ..........................................
-            Node_FlowSolver.IOFlow IOflow = node.node_behavior.flow_solver.computeLinkFlows(splitratio_applied,e);
+
+
+
+
+
+
+            Node_FlowSolver.IOFlow IOflow = node.node_behavior.flow_solver.computeLinkFlows(splitratio_selected[e],e);
 
             if(IOflow==null)
                 return;
@@ -121,7 +126,7 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
 
     @Override
     protected LinkBehavior create_link_behavior(Link link) {
-        return new LinkBehaviorACTM(link);
+        return null;
     }
 
     @Override
@@ -135,6 +140,9 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
         Node node;
         Link onramp;
         double r;
+        double supply_for_onramp;
+        int up_ml_index;
+        int fr_index;
     }
 
 }
