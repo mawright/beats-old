@@ -107,13 +107,13 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
     /////////////////////////////////////
 
     protected void update_supply_demand(Network network) throws BeatsException {
-
         if(network.isempty)
             return;
-        // compute link demand and supply ...............
         for(edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()){
-            ((Link)link).updateOutflowDemand();
-            ((Link)link).updateSpaceSupply();
+            Link bLink = ((Link)link);
+            bLink.updateOutflowDemand();
+            bLink.link_behavior.update_total_space_supply();
+            bLink.link_behavior.update_available_space_supply();
         }
     }
 

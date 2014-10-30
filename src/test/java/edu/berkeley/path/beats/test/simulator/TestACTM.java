@@ -3,6 +3,7 @@ package edu.berkeley.path.beats.test.simulator;
 import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Scenario;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -17,6 +18,7 @@ public class TestACTM {
     private String config = "C:\\Users\\gomes\\Dropbox\\_work_dynamic\\test_actm\\210W_pm_cropped_L0_actm.xml";
 
     @Test
+    @Ignore
     public void test_actm() {
         try {
             Scenario scenario = Jaxb.create_scenario_from_xml(config);

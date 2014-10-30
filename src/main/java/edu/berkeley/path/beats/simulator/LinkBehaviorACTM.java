@@ -5,6 +5,13 @@ package edu.berkeley.path.beats.simulator;
  */
 public class LinkBehaviorACTM extends LinkBehavior  {
 
+    protected double [] available_space_supply_for_onramp;     // [veh]	numEnsemble
+
+
+    protected double xi;        // allocation for onramp
+    protected double w;         // allocation for mainline
+
+
     protected double [][] density;  // [veh] numEnsemble x numVehTypes
 
     public LinkBehaviorACTM(Link link){
@@ -15,7 +22,12 @@ public class LinkBehaviorACTM extends LinkBehavior  {
     // LinkBehaviorInterface
     /////////////////////////////////////////////////////////////////////
 
-    // UPDATE
+    @Override
+    protected void reset(double[] initial_density) {
+        super.reset(initial_density);
+        int n1 = myScenario.getNumEnsemble();
+        available_space_supply_for_onramp = BeatsMath.zeros(n1);
+    }
 
     @Override
     public void update_state(double [][] inflow,double [][] outflow){
@@ -96,33 +108,9 @@ public class LinkBehaviorACTM extends LinkBehavior  {
         return;
     }
 
-    @Override
-    public void update_total_space_supply(){
-        double totaldensity;
-        FundamentalDiagram FD;
-        for(int e=0;e<myScenario.getNumEnsemble();e++){
-            FD = myLink.currentFD(e);
-            totaldensity = myLink.getTotalDensityInVeh(e);
-            total_space_supply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
-            total_space_supply[e] = Math.min(total_space_supply[e],FD._getCapacityInVeh());
-
-            // flow uncertainty model
-            if(myScenario.isHas_flow_unceratinty()){
-                double delta_flow=0.0;
-                double std_dev_flow = myScenario.getStd_dev_flow();
-                switch(myScenario.getUncertaintyModel()){
-                    case uniform:
-                        delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
-                        break;
-
-                    case gaussian:
-                        delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
-                        break;
-                }
-                total_space_supply[e] = Math.max( 0d , total_space_supply[e] + delta_flow );
-                total_space_supply[e] = Math.min( total_space_supply[e] , FD._getDensityJamInVeh() - totaldensity);
-            }
-        }
+    public void update_available_space_supply_for_onramp() {
+        for(int e=0;e<myScenario.getNumEnsemble();e++)
+            available_space_supply_for_onramp[e] = xi*total_space_supply[e];
     }
 
     // GET / SET / RESET DENSITY

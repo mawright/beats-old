@@ -138,12 +138,13 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	/* Test of calculation */	
 	// Test: calculation where adjusted sr are negative.
 	@Test
+    @Ignore
 	public void test_calculation_sr_is_negative() throws Exception
 	{
 		String configuration = "Test: calculation where adjusted sr are negative.";
 		
 		// Generate Expected output .
-		Object expected_output = constructDouble3DMatrix(buildExpectedOutput(configuration));;
+		Object expected_output = constructDouble3DMatrix(buildExpectedOutput(configuration));
 		
 		// Generate test environment and calculate actual output.
 		Object actual_output = generateCalculationEnvironment(configuration);
@@ -168,6 +169,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 
 	// Test: calculation where adjusted sr are over 1.
 	@Test
+    @Ignore
 	public void test_calculation_sr_is_higher_then_one() throws Exception
 	{
 		String configuration = "Test: calculation where adjusted sr are over 1.";
@@ -198,6 +200,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	
 	// Test: calculation diversion.
 	@Test
+    @Ignore
 	public void test_calculation_diversion() throws Exception
 	{
 		String configuration = "Test: calculation diversion.";
@@ -226,6 +229,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	
 	// Test: calculation no diversion.
 	@Test
+    @Ignore
 	public void test_calculation_no_diversion() throws Exception
 	{
 		String configuration = "Test: calculation no diversion.";
