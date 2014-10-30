@@ -31,15 +31,15 @@ public class Node_FlowSolver_ACTM  extends Node_FlowSolver {
     }
 
     @Override
-    protected IOFlow computeLinkFlows(final Double3DMatrix sr,final int ensemble_index){
+    protected IOFlow computeLinkFlows(final Double3DMatrix sr,final int e){
 
         int i,j,k;
         int nIn = myNode.nIn;
         int nOut = myNode.nOut;
         int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
 
-        double [][] demand = myNode.node_behavior.getDemand(ensemble_index);
-        double [] supply = myNode.node_behavior.getAvailableSupply(ensemble_index);
+        double [][] demand = myNode.node_behavior.getDemand(e);
+        double [] supply = myNode.node_behavior.getAvailableSupply(e);
 
         // input i contributes to output j .............................
         for(i=0;i<sr.getnIn();i++)

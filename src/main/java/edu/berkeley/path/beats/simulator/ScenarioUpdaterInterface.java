@@ -5,5 +5,6 @@ package edu.berkeley.path.beats.simulator;
  */
 public interface ScenarioUpdaterInterface {
     void populate();
+
     void update() throws BeatsException;
  }
