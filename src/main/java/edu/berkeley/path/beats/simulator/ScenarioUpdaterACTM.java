@@ -34,40 +34,15 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
     @Override
     public void update() throws BeatsException {
 
-        // sample profiles .............................
-        if(scenario.getDownstreamBoundaryCapacitySet()!=null)
-            ((CapacitySet)scenario.getDownstreamBoundaryCapacitySet()).update();
+        update_profiles();
 
-        if(scenario.getDemandSet()!=null)
-            ((DemandSet)scenario.getDemandSet()).update();
-
-        if(scenario.getSplitRatioSet()!=null)
-            ((SplitRatioSet) scenario.getSplitRatioSet()).update();
-
-        if(scenario.getFundamentalDiagramSet()!=null)
-            for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdProfile : scenario.getFundamentalDiagramSet().getFundamentalDiagramProfile())
-                ((FundamentalDiagramProfile) fdProfile).update(false);
-
-        // update sensor readings .......................
-        scenario.sensorset.update();
-
-        // update controllers
-        scenario.controllerset.update();
-
-        // update and deploy actuators
-        scenario.actuatorset.deploy(scenario.getCurrentTimeInSeconds());
-
-        // update events
-        scenario.eventset.update();
+        update_sensors_control_events();
 
         // first update onramps
         for(Link link : onramp_links ){
             link.updateOutflowDemand();
             link.updateSpaceSupply();
         }
-//        for (edu.berkeley.path.beats.jaxb.Node node : net.getNodeList().getNode())
-//            ((Node) node).update();
-
 
         // update the network state......................
         for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
@@ -77,13 +52,7 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
             update_density(net);
         }
 
-        scenario.cumulatives.update();
-
-        if(scenario.perf_calc!=null)
-            scenario.perf_calc.update();
-
-        // advance the clock
-        scenario.clock.advance();
+        update_cumalitives_clock();
     }
 
     @Override

@@ -24,7 +24,7 @@ public class RampMeteringPolicyMakerLp implements RampMeteringPolicyMaker {
         int K_dem = (int) Math.round(K_dem_seconds / sim_dt_in_seconds);
         int K_cool = (int) Math.round(K_cool_seconds / sim_dt_in_seconds);
         try {
-            solver = new RampMeteringSolver(myScenario, K_dem, K_cool, eta, sim_dt_in_seconds,true);
+            solver = new RampMeteringSolver(myScenario, K_dem, K_cool, eta, sim_dt_in_seconds,SolverType.GUROBI,true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -34,7 +34,7 @@ public class RampMeteringPolicyMakerLp implements RampMeteringPolicyMaker {
     public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt, Properties props) {
         try {
             solver.set_data(ics,demand);
-            RampMeteringSolution sol = solver.solve(SolverType.GUROBI);
+            RampMeteringSolution sol = solver.solve();
             System.out.println("Distance to CTM: " + sol.get_max_ctm_distance() + "\t" + sol.get_leftover_vehicles());
             return new RampMeteringPolicySet(myScenario,sol);
         } catch (Exception e) {
