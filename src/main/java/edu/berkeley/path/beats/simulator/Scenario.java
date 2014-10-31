@@ -562,10 +562,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		this.configfilename = configfilename;
 	}
 
-//    protected void setRunMode(String run_mode){
-//        this.run_mode = RunMode.valueOf(run_mode);
-//    }
-
     protected void setSplitLoggerPrefix(String split_logger_prefix){
         this.split_logger_prefix = split_logger_prefix;
     }

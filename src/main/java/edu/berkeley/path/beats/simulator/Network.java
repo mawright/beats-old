@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Network class
@@ -86,31 +87,6 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 			((Link) link).reset();
 
 	}
-
-//    protected void update_supply_demand() throws BeatsException {
-//
-//        if(isempty)
-//            return;
-//        // compute link demand and supply ...............
-//        for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
-//            ((Link)link).updateOutflowDemand();
-//            ((Link)link).updateSpaceSupply();
-//        }
-//    }
-//
-//    protected void update_flow() throws BeatsException {
-//        if(isempty)
-//            return;
-//        for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
-//            ((Node) node).update_flows();
-//    }
-//
-//    protected void update_density() throws BeatsException {
-//        if(isempty)
-//            return;
-//        for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
-//            ((Link)link).update_densities();
-//    }
 
 	/////////////////////////////////////////////////////////////////////
 	// public API
@@ -186,5 +162,21 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		}
 		return sigl;
 	}
-	
+
+    public List<Node> get_terminal_freeway_nodes(){
+        ArrayList x = new ArrayList<Node>();
+        for(edu.berkeley.path.beats.jaxb.Node node : this.getNodeList().getNode()) {
+            Node bNode = (Node)node;
+            if (bNode.isTerminal) {
+                boolean all_fwy = true;
+                for(Link link :  bNode.output_link)
+                    all_fwy &= link.link_type==Link.Type.freeway;
+                if(all_fwy)
+                    x.add(bNode);
+            }
+        }
+        return x;
+    }
+
+
 }

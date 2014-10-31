@@ -89,9 +89,6 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
             case symmetric:
                 node_flow_solver = new Node_FlowSolver_Symmetric(node);
                 break;
-            case actm:
-                node_flow_solver = new Node_FlowSolver_ACTM(node);
-                break;
             default:
                 node_flow_solver = new Node_FlowSolver_LNCTM(node);
         }
