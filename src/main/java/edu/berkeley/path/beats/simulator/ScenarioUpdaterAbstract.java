@@ -40,8 +40,8 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
         }
     }
 
-    protected LinkBehavior create_link_behavior(Link link){
-        LinkBehavior link_behavior;
+    protected LinkBehaviorCTM create_link_behavior(Link link){
+        LinkBehaviorCTM link_behavior;
         switch(link.link_type){
             case freeway:
                 link_behavior = new LinkBehaviorCTM(link);

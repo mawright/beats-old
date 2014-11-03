@@ -63,7 +63,7 @@ final class Double3DMatrix {
         	for(int j=0;j<nOut;j++)
             	for(int k=0;k<nVTypes;k++)
             		data[i][j][k] = val;
-    	this.isempty = nIn==0 && nOut==0 && nVTypes==0;
+    	this.isempty = nIn==0 || nOut==0 || nVTypes==0;
     }
     
     public Double3DMatrix(String str) {

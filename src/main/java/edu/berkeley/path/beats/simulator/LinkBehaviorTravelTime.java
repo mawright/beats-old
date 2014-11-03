@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by gomes on 3/12/14.
  */
-public class LinkBehaviorTravelTime extends LinkBehavior {
+public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
 
     protected List<CellArray> ensemble;     // ensemble of cell arrays
 

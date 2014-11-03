@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.simulator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +21,47 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
         // find first node
         List<Node> first_fwy_nodes = ((Network)scenario.getNetworkSet().getNetwork().get(0)).get_terminal_freeway_nodes();
 
+        if(first_fwy_nodes.size()!=1)
+            return;
 
+        Node current_node = first_fwy_nodes.get(0);
+        int c = 0;
+        fwy_nodes = new ArrayList<FwyNode>();
+        while(true){
+
+            FwyNode fwynode = new FwyNode();
+            fwy_nodes.add(fwynode);
+
+            fwynode.node = current_node;
+
+            for(int i=0;i<current_node.output_link.length;i++){
+                Link link = current_node.output_link[i];
+                if(link.link_type==Link.Type.freeway)
+                    fwynode.dn_ml = link;
+                if(link.link_type==Link.Type.offramp)
+                    fwynode.fr_index = i;
+            }
+
+            for(int i=0;i<current_node.input_link.length;i++) {
+                Link link = current_node.input_link[i];
+                if (link.link_type == Link.Type.onramp)
+                    fwynode.onramp = link;
+                if (link.link_type == Link.Type.freeway)
+                    fwynode.up_ml_index = i;
+            }
+
+            if(fwynode.dn_ml==null){
+                System.out.println("Reached end of freeway at node " + current_node.getId());
+                break;
+            }
+
+            if(c++ > 1000){
+                System.out.println("Exceeded maximum number of freeway segments. Possibly a loop exists.");
+                break;
+            }
+
+            current_node = fwynode.dn_ml.getEnd_node();
+        }
 
     }
 
@@ -63,7 +104,7 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
             }
         }
 
-        // available supply for mainline = min( w*(totalsupply - gamma*r ) , F )
+        // available supply for mainline = w*(totalsupply - gamma*r )
         for(FwyNode fwy_node : fwy_nodes){
             Link link = fwy_node.dn_ml;
             if(link==null)
@@ -71,8 +112,7 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
             FundamentalDiagram FD = link.currentFD(e);
             double r = fwy_node.onramp==null ? 0d : fwy_node.r;
             double w = FD.getWNormalized();
-            double F = FD._getCapacityInVeh();
-            link.link_behavior.available_space_supply[e] = Math.min( w*(link.get_total_space_supply_in_veh(e) - gamma*r) , F );
+            link.link_behavior.available_space_supply[e] = w*(link.get_total_space_supply_in_veh(e) - gamma*r);
         }
 
         // mainline flow
@@ -89,13 +129,12 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
 
             double fr_split = splitratio_selected[e].get(fwy_node.up_ml_index,fwy_node.fr_index,vt);
 
+            fr_split = Double.isNaN(fr_split) ? 0d : fr_split;
+
 
 
 
             Node_FlowSolver.IOFlow IOflow = node.node_behavior.flow_solver.computeLinkFlows(splitratio_selected[e],e);
-
-            if(IOflow==null)
-                return;
 
             // assign flow to input links ..................................
             for(int i=0;i< node.nIn;i++)
@@ -114,15 +153,14 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
     }
 
     @Override
-    protected LinkBehavior create_link_behavior(Link link) {
-        return null;
+    protected LinkBehaviorCTM create_link_behavior(Link link) {
+        return new LinkBehaviorACTM(link);
     }
 
     @Override
     protected Node_FlowSolver create_node_flow_solver(Node node) {
         return null; //new Node_FlowSolver_ACTM(node);
     }
-
 
     public class FwyNode {
         Link dn_ml;
@@ -132,6 +170,11 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
         double supply_for_onramp;
         int up_ml_index;
         int fr_index;
+
+        @Override
+        public String toString() {
+            return dn_ml==null ? "-" : String.format("%d",dn_ml.getId());
+        }
     }
 
 }

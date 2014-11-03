@@ -81,7 +81,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     protected double [] initial_density;			    // [veh]  	numVehTypes
 
     // link behavior
-    protected LinkBehavior link_behavior;
+    protected LinkBehaviorCTM link_behavior;
 
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -114,9 +114,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
         has_flow_controller = false;
         has_speed_controller = false;
-
-        // default link behavior
-        link_behavior = new LinkBehaviorCTM(this);
 
         // link type
         if(getLinkType()==null)
@@ -194,7 +191,6 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         if(issource && myDemandProfile!=null)
             for(int e=0;e<myScenario.getNumEnsemble();e++)
                 inflow[e] = myDemandProfile.getCurrentValue(e);
-
 
         link_behavior.update_state(inflow,outflow);
 	}

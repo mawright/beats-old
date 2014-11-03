@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by gomes on 3/13/14.
  */
-public class LinkBehaviorQueueAndTravelTime extends LinkBehavior {
+public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
 
     protected List<CellArrayAndQueue> ensemble;     // ensemble of cell arrays
 
@@ -148,7 +148,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehavior {
     }
 
     @Override
-    public void reset_density() {
+    protected void reset_density() {
         for(CellArrayAndQueue caq : ensemble)
             caq.reset();
     }

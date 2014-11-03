@@ -167,7 +167,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
         ArrayList x = new ArrayList<Node>();
         for(edu.berkeley.path.beats.jaxb.Node node : this.getNodeList().getNode()) {
             Node bNode = (Node)node;
-            if (bNode.isTerminal) {
+            if (bNode.nIn==0) {
                 boolean all_fwy = true;
                 for(Link link :  bNode.output_link)
                     all_fwy &= link.link_type==Link.Type.freeway;

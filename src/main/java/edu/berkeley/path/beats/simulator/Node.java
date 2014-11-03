@@ -128,10 +128,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		normalizeSplitRatioMatrix(splitratio_selected);
 
 		// default node flow and split solvers
-        this.node_behavior = new NodeBehavior(this,
-                                              new Node_SplitRatioSolver_Greedy(this) ,
-                                              new Node_FlowSolver_LNCTM(this) ,
-                                              new Node_SupplyPartitioner(this) );
+//        node_behavior = new NodeBehavior(this,
+//                                          new Node_SplitRatioSolver_Greedy(this) ,
+//                                          new Node_FlowSolver_LNCTM(this) ,
+//                                          new Node_SupplyPartitioner(this) );
 
 	}
     
@@ -159,8 +159,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	protected void reset() {
     	if(isTerminal)
     		return;
-		node_behavior.flow_solver.reset();
-        node_behavior.sr_solver.reset();
+        if(node_behavior.flow_solver!=null)
+		    node_behavior.flow_solver.reset();
+        if(node_behavior.sr_solver!=null)
+            node_behavior.sr_solver.reset();
 	}
 	
 	protected void update_flows() {
