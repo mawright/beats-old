@@ -6,9 +6,18 @@ package edu.berkeley.path.beats.simulator;
 public class LinkBehaviorACTM extends LinkBehaviorCTM {
 
     private Node my_end_node;
+    private int my_link_ind;
+    private int fr_link_ind;
 
     public LinkBehaviorACTM(Link link) {
         super(link);
+        my_end_node = link.getEnd_node();
+        my_link_ind = my_end_node.getInputLinkIndex(link.getId());
+        fr_link_ind = -1;
+        for(int i=0;i<my_end_node.getOutput_link().length;i++)
+            if(my_end_node.output_link[i].isOfframp())
+                fr_link_ind = i;
+
     }
 
     @Override
@@ -20,6 +29,7 @@ public class LinkBehaviorACTM extends LinkBehaviorCTM {
         double totaldensity;
         double totaloutflow;
         FundamentalDiagram FD;
+        double betabar  = fr_link_ind>=0? 1 - my_end_node.getSplitRatio(my_link_ind,fr_link_ind,0) : 1d;
 
         for(int e=0;e<myScenario.getNumEnsemble();e++){
 
@@ -35,6 +45,7 @@ public class LinkBehaviorACTM extends LinkBehaviorCTM {
 
             // compute total flow leaving the link in the absence of flow control
             double ff_speed = Math.min(FD.getVfNormalized(),external_max_speed);
+
             totaloutflow = Math.min( ff_speed*totaldensity , FD._getCapacityInVeh() / betabar );
 
             // capacity profile

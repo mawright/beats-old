@@ -1,6 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,16 +39,20 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
                 Link link = current_node.output_link[i];
                 if(link.link_type==Link.Type.freeway)
                     fwynode.dn_ml = link;
-                if(link.link_type==Link.Type.offramp)
+                if(link.link_type==Link.Type.offramp){
+                    fwynode.offramp = link;
                     fwynode.fr_index = i;
+                }
             }
 
             for(int i=0;i<current_node.input_link.length;i++) {
                 Link link = current_node.input_link[i];
                 if (link.link_type == Link.Type.onramp)
                     fwynode.onramp = link;
-                if (link.link_type == Link.Type.freeway)
+                if (link.link_type == Link.Type.freeway){
+                    fwynode.up_ml = link;
                     fwynode.up_ml_index = i;
+                }
             }
 
             if(fwynode.dn_ml==null){
@@ -74,6 +79,7 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
         int vt = 0;
         double xi = 0.1;
         double gamma = 0.1;
+        double [] fake_array = {0d};
 
         update_profiles();
 
@@ -118,31 +124,33 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
         // mainline flow
         for(FwyNode fwy_node : fwy_nodes){
 
-            Link link = fwy_node.dn_ml;
-            if(link==null)
-                continue;
-
             Node node = fwy_node.node;
 
             // update split ratio matrix
             Double3DMatrix[] splitratio_selected = node.select_and_perturb_split_ratio();
+            double beta = splitratio_selected[e].get(fwy_node.up_ml_index,fwy_node.fr_index,vt);
+            beta = Double.isNaN(beta) ? 0d : beta;
 
-            double fr_split = splitratio_selected[e].get(fwy_node.up_ml_index,fwy_node.fr_index,vt);
-
-            fr_split = Double.isNaN(fr_split) ? 0d : fr_split;
-
-
-
-
-            Node_FlowSolver.IOFlow IOflow = node.node_behavior.flow_solver.computeLinkFlows(splitratio_selected[e],e);
+            double [] fout = {0d}; // fake array for vehicle type
+            fout[0] = Math.min( fwy_node.up_ml==null ? 0d :
+                                                       fwy_node.up_ml.get_total_out_demand_in_veh(e) ,
+                                fwy_node.dn_ml==null ? Double.POSITIVE_INFINITY :
+                                                       fwy_node.dn_ml.link_behavior.available_space_supply[e]/(1-beta) );
 
             // assign flow to input links ..................................
-            for(int i=0;i< node.nIn;i++)
-                node.input_link[i].setOutflow(e,IOflow.getIn(i));
+            if(fwy_node.up_ml!=null)
+                fwy_node.up_ml.setOutflow(e,fout);
 
-            // assign flow to output links .................................
-            for (int j=0;j< node.nOut;j++)
-                node.output_link[j].setInflow(e,IOflow.getOut(j));
+            if(fwy_node.offramp!=null){
+                double [] s = {beta*fout[0]};
+                fwy_node.offramp.setInflow(e,s);
+            }
+
+            if(fwy_node.dn_ml!=null){
+                double [] fin = {(1-beta)*fout[0]+fwy_node.r};
+                fwy_node.dn_ml.setInflow(e,fin);
+            }
+
         }
 
         // update density
@@ -163,9 +171,11 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
     }
 
     public class FwyNode {
-        Link dn_ml;
         Node node;
+        Link dn_ml;
+        Link up_ml;
         Link onramp;
+        Link offramp;
         double r;
         double supply_for_onramp;
         int up_ml_index;

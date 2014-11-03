@@ -422,6 +422,10 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         return link_behavior.flow_demand[e];
     }
 
+    public double get_total_out_demand_in_veh(int e){
+        return BeatsMath.sum(link_behavior.flow_demand[e]);
+    }
+
     public double get_total_space_supply_in_veh(int e) {
         return link_behavior.total_space_supply[e];
     }
