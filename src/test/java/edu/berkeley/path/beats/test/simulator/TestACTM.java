@@ -15,7 +15,7 @@ import static org.junit.Assert.fail;
  */
 public class TestACTM {
 
-    private String config = "C:\\Users\\gomes\\Dropbox\\_work_dynamic\\test_actm\\210W_pm_cropped_L0_actm.xml";
+    private String config = "C:\\Users\\gomes\\Dropbox\\_work_dynamic\\test_actm\\210W_pm_cropped_L0.xml";
 
     @Test
     public void test_actm() {
@@ -24,10 +24,10 @@ public class TestACTM {
 
             double timestep = 5d;
             double starttime = 0d;
-            double endtime = 3600d;
+            double endtime = 86400;
             double outdt = 300d;
             String outtype = "text";
-            String outprefix = "C:\\Users\\gomes\\code\\L0\\L0-mpc-demo\\data\\out";
+            String outprefix = "C:\\Users\\gomes\\Dropbox\\_work_dynamic\\test_actm\\actm";
             String uncertaintymodel = "gaussian";
             String nodeflowsolver = "proportional";
             String nodesrsolver = "A";

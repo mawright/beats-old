@@ -1,7 +1,6 @@
 package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -10,6 +9,9 @@ import java.util.List;
 public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
 
     private List<FwyNode> fwy_nodes;
+
+    private static double xi = 0.1;
+    private static double gamma = 1d;
 
     public ScenarioUpdaterACTM(Scenario scenario){
         super(scenario,null,"A");
@@ -77,9 +79,6 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
         // CHECK NUMVEHICLETYPES = 1
         int e=0;
         int vt = 0;
-        double xi = 0.1;
-        double gamma = 0.1;
-        double [] fake_array = {0d};
 
         update_profiles();
 
@@ -127,11 +126,15 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
             Node node = fwy_node.node;
 
             // update split ratio matrix
-            Double3DMatrix[] splitratio_selected = node.select_and_perturb_split_ratio();
-            double beta = splitratio_selected[e].get(fwy_node.up_ml_index,fwy_node.fr_index,vt);
-            beta = Double.isNaN(beta) ? 0d : beta;
+            double beta = 0d;
+            if(fwy_node.fr_index>=0){
+                Double3DMatrix[] splitratio_selected = node.select_and_perturb_split_ratio();
+                beta = splitratio_selected[e].get(fwy_node.up_ml_index,fwy_node.fr_index,vt);
+                beta = Double.isNaN(beta) ? 0d : beta;
+            }
 
             double [] fout = {0d}; // fake array for vehicle type
+
             fout[0] = Math.min( fwy_node.up_ml==null ? 0d :
                                                        fwy_node.up_ml.get_total_out_demand_in_veh(e) ,
                                 fwy_node.dn_ml==null ? Double.POSITIVE_INFINITY :
@@ -143,7 +146,7 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
 
             if(fwy_node.offramp!=null){
                 double [] s = {beta*fout[0]};
-                fwy_node.offramp.setInflow(e,s);
+                fwy_node.offramp.setInflow(e, s);
             }
 
             if(fwy_node.dn_ml!=null){
@@ -171,19 +174,19 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
     }
 
     public class FwyNode {
-        Node node;
-        Link dn_ml;
-        Link up_ml;
-        Link onramp;
-        Link offramp;
-        double r;
-        double supply_for_onramp;
-        int up_ml_index;
-        int fr_index;
+        Node node = null;
+        Link dn_ml = null;
+        Link up_ml = null;
+        Link onramp = null;
+        Link offramp = null;
+        double r = 0d;
+        double supply_for_onramp = Double.POSITIVE_INFINITY;
+        int up_ml_index = -1;
+        int fr_index = -1;
 
         @Override
         public String toString() {
-            return dn_ml==null ? "-" : String.format("%d",dn_ml.getId());
+            return String.format("%b\t%b\t%b\t%b",up_ml==null,onramp==null,dn_ml==null,offramp==null);
         }
     }
 
