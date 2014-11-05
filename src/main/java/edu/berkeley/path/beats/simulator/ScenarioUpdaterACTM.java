@@ -11,7 +11,7 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
     private List<FwyNode> fwy_nodes;
 
     private static double xi = 0.1;
-    private static double gamma = 1d;
+    private static double gamma = 4d;
 
     public ScenarioUpdaterACTM(Scenario scenario){
         super(scenario,null,"A");
@@ -117,7 +117,7 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
             FundamentalDiagram FD = link.currentFD(e);
             double r = fwy_node.onramp==null ? 0d : fwy_node.r;
             double w = FD.getWNormalized();
-            link.link_behavior.available_space_supply[e] = w*(link.get_total_space_supply_in_veh(e) - gamma*r);
+            link.link_behavior.available_space_supply[e] = Math.max( w*(link.get_total_space_supply_in_veh(e) - gamma*r) , 0d );
         }
 
         // mainline flow

@@ -24,7 +24,7 @@ public class TestACTM {
 
             double timestep = 5d;
             double starttime = 0d;
-            double endtime = 86400;
+            double endtime = 18000;
             double outdt = 300d;
             String outtype = "text";
             String outprefix = "C:\\Users\\gomes\\Dropbox\\_work_dynamic\\test_actm\\actm";
