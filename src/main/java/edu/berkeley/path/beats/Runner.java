@@ -45,12 +45,12 @@ public final class Runner {
 
             // simulate config/output with default parameters
             if (cmd.equals("-d")){
-                Runner.run_simulation_with_config(arguments);
+                Runner.run_simulation_with_config(arguments[0],arguments[1]);
             }
 
             // simulate with properties file
 			else if (cmd.equals("-s")){
-				Runner.run_simulation(arguments);
+				Runner.run_simulation(arguments[0]);
 			}
 
             // version
@@ -136,10 +136,8 @@ public final class Runner {
 
     }
 
-    private static void run_simulation_with_config(String[] args){
+    public static void run_simulation_with_config(String config_file,String output_prefix){
 
-        String config_file = args[0];
-        String output_prefix = args[1];
         long time = System.currentTimeMillis();
 
         try {
@@ -180,12 +178,12 @@ public final class Runner {
         }
     }
 
-    private static void run_simulation(String[] args){
+    public static void run_simulation(String propsfile){
 
         long time = System.currentTimeMillis();
         Scenario scenario = null;
         try {
-            scenario = load_scenario_from_properties(args[0]);
+            scenario = load_scenario_from_properties(propsfile);
 
             // run the scenario
             scenario.run();

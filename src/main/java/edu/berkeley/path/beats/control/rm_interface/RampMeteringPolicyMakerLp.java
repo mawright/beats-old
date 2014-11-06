@@ -43,5 +43,4 @@ public class RampMeteringPolicyMakerLp implements RampMeteringPolicyMaker {
         }
     }
 
-
 }
