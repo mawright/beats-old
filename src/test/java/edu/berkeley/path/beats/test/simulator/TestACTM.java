@@ -18,6 +18,7 @@ public class TestACTM {
     private String config = "C:\\Users\\gomes\\Dropbox\\_work_dynamic\\test_actm\\210W_pm_cropped_L0.xml";
 
     @Test
+    @Ignore
     public void test_actm() {
         try {
             Scenario scenario = Jaxb.create_scenario_from_xml(config);
