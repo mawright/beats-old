@@ -36,9 +36,12 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 	private int laststep;
 	private boolean isdeterministic;
 	private BeatsTimeProfile [][][] profile; 	// profile[i][j][v] is the split ratio profile for
-												// input link i, output link j, vehicle type v.	
+												// input link i, output link j, vehicle type v.
+	private BeatsTimeProfile [][][] concentrationParamsProfile; // profile[i][j][v] is the concentration params
+																// profile by same indices as above
 	// does change ........................................
 	private Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
+	private Double3DMatrix currentConcentrationParameters; // current CP matric with dimensions [inlink x outlink x vehtype]
 	private boolean isdone; 
 	private int step_initial_abs;
 
@@ -67,7 +70,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 			dtinseconds = getDt().floatValue();					// assume given in seconds
 			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
 		}
-		else{ 	// only allow if it contains only one fd
+		else{ 	// only allow if it contains only one splitratio
 			if(getSplitratio().size()==1){
 				dtinseconds = Double.POSITIVE_INFINITY;
 				samplesteps = Integer.MAX_VALUE;
@@ -92,9 +95,21 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 			if(!profile[in_index][out_index][vt_index].isEmpty())
 				laststep = Math.max(laststep,profile[in_index][out_index][vt_index].getNumTime());
 		}
+		// copy of above for building concentration params profile
+		if(hasConcentrationParameters()) {
+			concentrationParamsProfile = new BeatsTimeProfile[myNode.getnIn()][myNode.getnOut()][myScenario.getNumVehicleTypes()];
+			for(edu.berkeley.path.beats.jaxb.ConcentrationParameters cp : getConcentrationParameters()){
+				in_index = myNode.getInputLinkIndex(cp.getLinkIn());
+				out_index = myNode.getOutputLinkIndex(cp.getLinkOut());
+				vt_index = myScenario.getVehicleTypeIndexForId(cp.getVehicleTypeId());
+				if(in_index<0 || out_index<0 || vt_index<0)
+					continue; 
+				profile[in_index][out_index][vt_index] = new BeatsTimeProfile(cp.getContent(),false);
+			}
+		}
 		
 		// optional uncertainty model
-		if(super.getVariance()!=null)
+		if(super.getVariance()!=null && !hasConcentrationParameters())
 			isdeterministic = false;
 		else
 			isdeterministic = true;
@@ -111,6 +126,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 	protected void reset() {
         isdone = false;
 		currentSplitRatio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
+		currentConcentrationParameters = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
 	}
 
 	protected void validate() {
@@ -193,6 +209,9 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 			// sample
 			currentSplitRatio = sampleAtTimeStep( Math.min( step , laststep-1) );
 			
+			// sample CPs
+			currentConcentrationParameters = sampleConcentrationParametersAtTimeStep( Math.min( step, laststep-1) );
+			
 			// assign
 			myNode.normalizeSplitRatioMatrix(currentSplitRatio);
 			//myNode.setSampledSRProfile(currentSplitRatio);
@@ -208,6 +227,10 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 
 	protected Double3DMatrix getCurrentSplitRatio() {
 		return currentSplitRatio;
+	}
+	
+	protected Double3DMatrix getCurrentConcentrationParameters() {
+		return currentConcentrationParameters;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -236,6 +259,30 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 						continue;
 					lastk = Math.min(k,profile[i][j][v].getNumTime()-1);	// hold last value
 					X.set(i,j,v,profile[i][j][v].get(lastk));
+				}
+			}
+		}
+		return X;
+	}
+	
+	private Double3DMatrix sampleConcentrationParametersAtTimeStep(int k){
+		if(myNode==null)
+			return null;
+		if (!hasConcentrationParameters())
+			return null;
+		Double3DMatrix X = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),
+				myScenario.getNumVehicleTypes(),Double.NaN);	// initialize all unknown
+		
+		int i,j,v,lastk;
+		for(i=0;i<myNode.getnIn();i++){
+			for(j=0;j<myNode.getnOut();j++){
+				for(v=0;v<myScenario.getNumVehicleTypes();v++){
+					if(concentrationParamsProfile[i][j][v]==null)						// nan if not defined
+						continue;
+					if(concentrationParamsProfile[i][j][v].isEmpty())					// nan if no data
+						continue;
+					lastk = Math.min(k,concentrationParamsProfile[i][j][v].getNumTime()-1);	// hold last value
+					X.set(i,j,v,concentrationParamsProfile[i][j][v].get(lastk));
 				}
 			}
 		}
@@ -278,6 +325,10 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 
 	public boolean isdeterministic() {
 		return isdeterministic;
+	}
+	
+	public boolean hasConcentrationParameters() {
+		return getConcentrationParameters().isEmpty();
 	}
 
 }
