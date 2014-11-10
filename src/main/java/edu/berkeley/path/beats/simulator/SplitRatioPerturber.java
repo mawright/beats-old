@@ -14,6 +14,7 @@ public class SplitRatioPerturber {
 	}
 	
 	public static Double3DMatrix[] sampleFromConcentrationParameters( Double3DMatrix params, int numEnsemble){
+		// Assumes concentration parameters of each input link are independent
 		Double3DMatrix[] splitPerturbed = new Double3DMatrix[numEnsemble];
 		
 		int v,o,i,e;
