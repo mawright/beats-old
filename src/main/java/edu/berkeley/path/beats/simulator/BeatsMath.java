@@ -337,6 +337,7 @@ public final class BeatsMath {
 		// Samples from a Dirichlet distribution using Gamma distributions
 		// Random variables distributed according to a Dirichlet distribution are random vectors
 		// whose entries are in the range [0, 1] and sum to 1.
+		// sample dims: numSamples DirichletDims
 		int i, e;
 		double[][] sample = new double[numSamples][concentration_parameters.length];
 		for(i=0;i<concentration_parameters.length;i++){
