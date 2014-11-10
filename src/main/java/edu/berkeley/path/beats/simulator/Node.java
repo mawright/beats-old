@@ -280,10 +280,12 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
 
     protected Double3DMatrix[] select_and_perturb_split_ratio(){
+    	
+    	int numVTypes = getMyNetwork().getMyScenario().getNumVehicleTypes();
 
         // Select a split ratio from profile, event, or controller
         if(istrivialsplit)
-            splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
+            splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),numVTypes,1d);
         else{
             if(has_profile)
                 splitratio_selected = new Double3DMatrix(my_profile.getCurrentSplitRatio());
@@ -296,7 +298,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         // perturb split ratio
         int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
         Double3DMatrix[] splitratio_selected_perturbed = new Double3DMatrix[numEnsemble];
-        if(!isdeterministic && nOut==2 && nIn==1)
+        if(!isdeterministic && my_profile.hasConcentrationParameters() 
+        		&& my_profile.isCurrentConcentrationParametersValid())
+        	splitratio_selected_perturbed = SplitRatioPerturber.sampleFromConcentrationParameters(my_profile.getCurrentConcentrationParameters(), numEnsemble);
+        else if(!isdeterministic && nOut==2 && nIn==1)
             splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile.getVariance(), numEnsemble);
         else
             Arrays.fill(splitratio_selected_perturbed, 0, splitratio_selected_perturbed.length, splitratio_selected);

@@ -104,12 +104,12 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 				vt_index = myScenario.getVehicleTypeIndexForId(cp.getVehicleTypeId());
 				if(in_index<0 || out_index<0 || vt_index<0)
 					continue; 
-				profile[in_index][out_index][vt_index] = new BeatsTimeProfile(cp.getContent(),false);
+				concentrationParamsProfile[in_index][out_index][vt_index] = new BeatsTimeProfile(cp.getContent(),false);
 			}
 		}
 		
 		// optional uncertainty model
-		if(super.getVariance()!=null && !hasConcentrationParameters())
+		if(super.getVariance()!=null || hasConcentrationParameters())
 			isdeterministic = false;
 		else
 			isdeterministic = true;
@@ -233,6 +233,19 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 		return currentConcentrationParameters;
 	}
 	
+	protected boolean isCurrentConcentrationParametersValid() {
+		int i,j,v;
+		for(i=0;i<myNode.getnIn();i++){
+			for(j=0;j<myNode.getnOut();j++){
+				for(v=0;v<myScenario.getNumVehicleTypes();v++){
+					if(Double.isNaN(currentConcentrationParameters.get(i,j,v)))
+						return false;
+				}
+			}
+		}
+		return true;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// private methods
 	/////////////////////////////////////////////////////////////////////
@@ -328,7 +341,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 	}
 	
 	public boolean hasConcentrationParameters() {
-		return getConcentrationParameters().isEmpty();
+		return !getConcentrationParameters().isEmpty();
 	}
 
 }
