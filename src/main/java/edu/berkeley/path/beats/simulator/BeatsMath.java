@@ -336,11 +336,13 @@ public final class BeatsMath {
 	public static double[][] sampleDirichlet(double[] concentration_parameters, int numSamples){
 		// Samples from a Dirichlet distribution using Gamma distributions
 		// Random variables distributed according to a Dirichlet distribution are random vectors
-		// whose entries are in the range [0, 1] and sum to 1.
+		// whose entries are in the range (0, 1) and sum to 1.
 		// sample dims: numSamples DirichletDims
 		int i, e;
 		double[][] sample = new double[numSamples][concentration_parameters.length];
 		for(i=0;i<concentration_parameters.length;i++){
+			if (concentration_parameters[i] <= 0d)
+				concentration_parameters[i] = 0.01d; //concentration parameters must be positive
 			GammaDistribution Gamma = new GammaDistribution(concentration_parameters[i], 1);
 			for(e=0;e<numSamples;e++){
 				sample[e][i] = Gamma.sample();
