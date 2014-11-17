@@ -307,7 +307,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 props.run_mode,
                 props.split_logger_prefix,
                 props.split_logger_dt,
-                props.aux_props );
+                props.aux_props,
+                props.use_actm );
     }
 
 	public void initialize(double timestep,double starttime,double endtime,int numEnsemble) throws BeatsException {
@@ -319,7 +320,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 "normal",
                 "",
                 Double.NaN,
-                null);
+                null,
+                false);
 	}
 
     public void initialize(double timestep,double starttime,double endtime,int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver) throws BeatsException {
@@ -328,7 +330,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 "normal",
                 "",
                 Double.NaN,
-                null);
+                null,
+                false);
     }
 
     public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble) throws BeatsException {
@@ -340,7 +343,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 "normal",
                 "",
                 Double.NaN,
-                null);
+                null,
+                false);
     }
 
     public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix,
@@ -348,13 +352,29 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                            String performance_config, String run_mode,String split_logger_prefix,Double split_logger_dt ,
                            HashMap<String,Properties> aux_props) throws BeatsException {
         boolean is_actm = false;
-        this.initialize(timestep,starttime,endtime,outdt,outtype,outprefix,numReps,numEnsemble,uncertaintymodel,is_actm,nodeflowsolver,nodesrsolver,performance_config,run_mode,split_logger_prefix,split_logger_dt ,aux_props);
+        this.initialize(timestep,
+                        starttime,
+                        endtime,
+                        outdt,
+                        outtype,
+                        outprefix,
+                        numReps,
+                        numEnsemble,
+                        uncertaintymodel,
+                        nodeflowsolver,
+                        nodesrsolver,
+                        performance_config,
+                        run_mode,
+                        split_logger_prefix,
+                        split_logger_dt ,
+                        aux_props,
+                        is_actm);
     }
 
     public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix,
-                           int numReps, int numEnsemble,String uncertaintymodel,boolean is_actm,String nodeflowsolver,String nodesrsolver,
+                           int numReps, int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver,
                            String performance_config, String run_mode,String split_logger_prefix,Double split_logger_dt ,
-                           HashMap<String,Properties> aux_props) throws BeatsException {
+                           HashMap<String,Properties> aux_props,boolean is_actm) throws BeatsException {
 
         // set stuff
         setUncertaintyModel(uncertaintymodel);

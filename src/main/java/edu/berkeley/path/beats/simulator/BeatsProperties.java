@@ -29,6 +29,7 @@ public class BeatsProperties extends Properties {
     public Integer num_reps;
     public Integer ensemble_size;
     public Double split_logger_dt;
+    public Boolean use_actm;
 
     public BeatsProperties(String prop_file_name) throws BeatsException {
 
@@ -57,6 +58,7 @@ public class BeatsProperties extends Properties {
         performance_config = getProperty("PERFORMANCE", "");
         split_logger_prefix = getProperty("SPLIT_LOGGER_PREFIX","");
         split_logger_dt = getProperty("SPLIT_LOGGER_DT")==null ? sim_dt : Double.parseDouble(getProperty("SPLIT_LOGGER_DT","0"));
+        use_actm = getProperty("USE_ACTM")==null ? false : Boolean.parseBoolean(getProperty("USE_ACTM"));
 
         DebugFlags.time_print = getProperty("DEBUG.TIME")==null ? 0 : Integer.parseInt(getProperty("DEBUG.TIME", "0"));
         DebugFlags.signal_events = getProperty("DEBUG.SIGNAL_EVENTS") ==null ? false : Boolean.parseBoolean(getProperty("DEBUG.SIGNAL_EVENTS"));
@@ -79,7 +81,6 @@ public class BeatsProperties extends Properties {
                 aux_props.put(group_name,new Properties());
             Properties prop = aux_props.get(group_name);
             prop.setProperty(strlist[1],(String) entry.getValue());
-
         }
     }
 
@@ -103,6 +104,7 @@ public class BeatsProperties extends Properties {
         str += "PERFORMANCE = " + performance_config + "\n";
         str += "SPLIT_LOGGER_PREFIX = " + split_logger_prefix + "\n";
         str += "SPLIT_LOGGER_DT = " + split_logger_dt;
+        str += "USE_ACTM = " + use_actm;
         return str;
     }
 

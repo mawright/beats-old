@@ -37,8 +37,8 @@ public class TestACTM {
             boolean is_actm = true;
 
             scenario.initialize(timestep,starttime,endtime,outdt,outtype,outprefix,1,1,
-                                uncertaintymodel,is_actm, nodeflowsolver, nodesrsolver,"",run_mode,
-                                "",Double.NaN ,null);
+                                uncertaintymodel, nodeflowsolver, nodesrsolver,"",run_mode,
+                                "",Double.NaN ,null,is_actm);
 
             scenario.run();
         } catch (BeatsException e) {
