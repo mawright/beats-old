@@ -99,6 +99,12 @@ public class LinkBehaviorCTM {
     }
 
     public void update_total_space_supply(){
+
+        if(myLink.issink) {
+            for (int e = 0; e < myScenario.getNumEnsemble(); e++)
+                total_space_supply[e] = Double.POSITIVE_INFINITY;
+            return;
+        }
         for(int e=0;e<myScenario.getNumEnsemble();e++)
             total_space_supply[e] = myLink.currentFD(e)._getDensityJamInVeh() - myLink.getTotalDensityInVeh(e);
     }
@@ -106,7 +112,11 @@ public class LinkBehaviorCTM {
     public void update_available_space_supply(){
         for(int e=0;e<myScenario.getNumEnsemble();e++){
             FundamentalDiagram FD = myLink.currentFD(e);
-            available_space_supply[e] = Math.min( FD.getWNormalized()*total_space_supply[e] , FD._getCapacityInVeh() );
+
+            if(myLink.issink)
+                available_space_supply[e] = FD._getCapacityInVeh();
+            else
+                available_space_supply[e] = Math.min( FD.getWNormalized()*total_space_supply[e] , FD._getCapacityInVeh() );
 
             // flow uncertainty model
             if(myScenario.isHas_flow_unceratinty()){
