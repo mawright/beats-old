@@ -23,7 +23,7 @@ public class SplitRatioPerturber {
 		for (v=0;v<params.getnVTypes();v++){
 			for (i=0;i<params.getnIn();i++){
 				for (o=0;o<params.getnOut();o++){
-					paramsForInputLink[o] = params.get(i, o, v);
+					paramsForInputLink[o] = params.get(i, o, v) + 1;
 				}
 				sample = BeatsMath.sampleDirichlet(paramsForInputLink, numEnsemble);
 				for (e=0;e<numEnsemble;e++){
