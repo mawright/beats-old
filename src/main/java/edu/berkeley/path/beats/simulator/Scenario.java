@@ -248,6 +248,10 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// reset demand profiles
 		if(demandSet!=null)
 			((DemandSet)demandSet).reset();
+		
+		// reset split ratios
+		if(splitRatioSet!=null)
+			((SplitRatioSet)splitRatioSet).reset();
 
 		// reset fundamental diagrams
 		if(fundamentalDiagramSet!=null)
