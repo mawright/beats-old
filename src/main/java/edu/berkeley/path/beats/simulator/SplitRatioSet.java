@@ -42,6 +42,11 @@ final public class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatio
 		for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
 			((SplitRatioProfile) sr).populate(myScenario);
 	}
+	
+	protected void reset() {
+		for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
+    		((SplitRatioProfile) sr).reset();
+	}
 
 	protected void validate() {
 
@@ -57,7 +62,7 @@ final public class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatio
 
 	protected void update() {
     	for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
-    		((SplitRatioProfile) sr).update(false);	
+    		((SplitRatioProfile) sr).update(false);
 	}
 
     @Override
