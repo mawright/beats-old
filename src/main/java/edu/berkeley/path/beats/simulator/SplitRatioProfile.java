@@ -125,6 +125,8 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 
 	protected void reset() {
         isdone = false;
+        if (myNode==null)
+        	return;
 		currentSplitRatio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
 		currentConcentrationParameters = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
 	}

@@ -248,6 +248,10 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// reset demand profiles
 		if(demandSet!=null)
 			((DemandSet)demandSet).reset();
+		
+		// reset split ratios
+		if(splitRatioSet!=null)
+			((SplitRatioSet)splitRatioSet).reset();
 
 		// reset fundamental diagrams
 		if(fundamentalDiagramSet!=null)
@@ -863,6 +867,21 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				inflow[i][e] = link.getTotalInflowInVeh(e);
 		}
 		return inflow;           
+	}
+	
+	public double [][] getTotalCumulativeInflow(long network_id) throws BeatsException{
+		Network network = getNetworkWithId(network_id);
+		if(network==null)
+			return null;
+		
+		double [][] cumInflow = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
+		int i,e;
+		for(i=0;i<network.getLinkList().getLink().size();i++){
+			Link link = (Link) network.getLinkList().getLink().get(i);
+			for(e=0;e<getNumEnsemble();e++)
+				cumInflow[i][e] = cumulatives.get(link).getCumulativeTotalInputFlowInVeh(e);
+		}
+		return cumInflow;
 	}
 
 	public Cumulatives getCumulatives() {
