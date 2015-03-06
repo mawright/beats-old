@@ -44,8 +44,12 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	/** Current link where the sensor is located. */
 	private Link myLink = null;
 
+    public boolean isgood;
+
 	/** Type of sensor. */
 	public static enum Type	{ loop }
+
+
 				   	   	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -59,6 +63,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 		this.jaxbSensor = jaxbS;
 		this.myType = myType;
 		this.id = jaxbS.getId();
+        this.isgood = jaxbS.isIsGood();
 		if(jaxbS.getLinkId()!=null)
 			myLink = myScenario.getLinkWithId(jaxbS.getLinkId());
 	}
@@ -101,8 +106,8 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	public double getTotalDensityInVeh(int ensemble) {
 		return Double.NaN;
 	}
-	
-	/////////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
 

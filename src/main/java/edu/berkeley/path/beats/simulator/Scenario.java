@@ -923,6 +923,10 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
+    public List<Sensor> getSensors(){
+        return sensorset==null ? null : sensorset.getSensors();
+    }
+
     public Sensor getSensorWithVDS(int vds) {
         if(sensorset==null)
             return null;
@@ -1016,6 +1020,24 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         }
         return null;
     }
+
+//    public Map<Sensor,Link> getSensorLinkMap(){
+//        Map<Sensor,Link> map = new HashMap<Sensor,Link>();
+//        for(Sensor sensor : sensorset.getSensors()){
+//
+//            System.out.println(sensor);
+//            System.out.println(sensor.getLinkId());
+//            System.out.println(sensor.getId());
+//
+//            Link link = getLinkWithId(sensor.getLinkId());
+//
+//            System.out.println(link);
+//
+//            if(link!=null)
+//                map.put(sensor,link);
+//        }
+//        return map;
+//    }
 
     /////////////////////////////////////////////////////////////////////
 	// scenario modification

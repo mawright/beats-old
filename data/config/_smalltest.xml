@@ -64,7 +64,7 @@
   </ActuatorSet>
 
   <SensorSet id="0" project_id="0">
-	<sensor id="-2" link_id="-2" sensor_id_original="100">
+	<sensor id="-2" is_good="true" link_id="-2" sensor_id_original="100">
 	   <sensor_type id="-1" name="loop"/>
 	</sensor>
   </SensorSet>

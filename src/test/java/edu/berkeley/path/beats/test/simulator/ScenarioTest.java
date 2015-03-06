@@ -8,6 +8,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.List;
+
 public class ScenarioTest {
 
 	private static Scenario static_scenario;
@@ -184,18 +186,6 @@ public class ScenarioTest {
 		assertEquals(names[0],"car");
 	}
 
-//	@Test
-//	public void test_getInitialDensityForNetwork() {
-//		double x =  static_scenario.getInitialDensityForNetwork(-1)[0][0];
-//		double exp = 0.0;
-//		assertEquals(x,exp,1e-4);
-//		
-//		// edge cases
-//		assertNull(static_scenario.getInitialDensityForNetwork(-100000));
-//		//x =  static_scenario.getInitialDensityForNetwork(null)[0][0];	// null works for single networks
-//		//assertEquals(x,exp,1e-4);
-//	}
-
 	@Test
 	public void test_getDensityForNetwork() {
 		double x = static_scenario.getDensityForNetwork(-1,0)[0][0];
@@ -262,27 +252,6 @@ public class ScenarioTest {
 		}
 	}
 
-	@Ignore
-	@Test
-	public void test_getSignalWithId_getSignalWithNodeId() {
-//		try {
-//			String config_file = "Albany-and-Berkeley.xml";
-//			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
-//			if(scenario==null)
-//				fail("scenario did not load");
-//
-//			assertNotNull(scenario.getSignalWithId(-12));
-//			assertNull(scenario.getSignalWithId(-100000));
-//
-//			assertNotNull(scenario.getSignalWithNodeId(-62));
-//			assertNull(scenario.getSignalWithNodeId(-100000));
-//
-//		} catch (BeatsException e) {
-//			fail("initialization failure.");
-//		}
-		
-	}
-
 	@Test
 	public void test_addController() {
 		
@@ -316,5 +285,10 @@ public class ScenarioTest {
 
     }
 
+    @Test
+    public void test_getSensors() {
+        List<Sensor> sensorlist = static_scenario.getSensors();
+        System.out.println(sensorlist);
+    }
 	
 }
