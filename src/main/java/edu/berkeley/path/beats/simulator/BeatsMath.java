@@ -358,6 +358,8 @@ public final class BeatsMath {
 	public static double[] betaParamsFromRVMeanAndVariance(double mean, double variance){
 		// The beta distribution is the special case of the Dirichlet distribution for k = 2
 		// k > 2 not implemented yet
+		if( mean>.99d)
+			mean = .95;
 		double[] params = new double[2];
 		double m = mean;
 		double v = variance;
