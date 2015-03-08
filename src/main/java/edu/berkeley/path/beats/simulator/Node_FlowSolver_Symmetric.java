@@ -11,11 +11,18 @@ import org.apache.log4j.Logger;
  * A generic class of first order node models
  * for dynamic macroscopic simulation of traffic flows.
  * Transportation Research Part B 45 (2011) 289-309
+ *
+ * The algorithm is improved to handle zero priorities of incoming links
+ * if for each outgoing link there is at most one zero-priority incoming link
+ * with strictly positive directed demand.
  */
 public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 
+	/** directed demands */
 	private double [][] directed_demand; // [nIn][nOut] S_{ij}
+	/** incoming link priorities */
 	double [] priority_i; // [nIn] C_i
+	/** directed flows */
 	private double [][] flow; // [nIn][nOut] q_{ij}
 
 	NodeModel model;
