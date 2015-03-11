@@ -367,4 +367,11 @@ public final class BeatsMath {
 		params[1] = (m-1) * (Math.pow(m, 2) - m + v) / v;
 		return params;
 	}
+
+    public static  double[] betaParamsFromRVModeAndSampleSize(double m, double n){
+        double[] params = new double[2];
+        params[0] = m*n - 2*m + 1;
+        params[1] = 2*m + n - m*n - 1;
+        return params;
+    }
 }
