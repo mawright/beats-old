@@ -61,7 +61,7 @@ public class SplitRatioPerturber {
 			}
             double[] params;
             if (profile.getSampleSize()!=null){
-                params = BeatsMath.betaParamsFromRVModeAndSampleSize(max, profile.getSampleSize());
+                params = BeatsMath.betaParamsFromRVMeanAndSampleSize(max, profile.getSampleSize());
             }
             else {
     			params = BeatsMath.betaParamsFromRVMeanAndVariance(max, profile.getVariance()); }

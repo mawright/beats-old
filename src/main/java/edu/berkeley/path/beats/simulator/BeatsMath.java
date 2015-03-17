@@ -368,10 +368,17 @@ public final class BeatsMath {
 		return params;
 	}
 
-    public static  double[] betaParamsFromRVModeAndSampleSize(double m, double n){
+    public static double[] betaParamsFromRVModeAndSampleSize(double m, double n){
         double[] params = new double[2];
         params[0] = m*n - 2*m + 1;
         params[1] = 2*m + n - m*n - 1;
+        return params;
+    }
+
+    public static double[] betaParamsFromRVMeanAndSampleSize(double m, double n){
+        double[] params = new double[2];
+        params[0] = m*n;
+        params[1] = (1-m)*n;
         return params;
     }
 }
