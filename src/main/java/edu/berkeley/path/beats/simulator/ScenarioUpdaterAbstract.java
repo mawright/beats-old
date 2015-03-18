@@ -65,6 +65,7 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
         Node_SplitRatioSolver node_sr_solver;
         switch(nodesrsolver){
             case A:
+            case greedy:
                 node_sr_solver = new Node_SplitRatioSolver_Greedy(node);
                 break;
             case HAMBURGER:
