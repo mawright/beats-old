@@ -6073,7 +6073,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-145" lanes="1" length="990" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6082,7 +6082,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-146" lanes="1" length="999" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6091,7 +6091,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-147" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6100,7 +6100,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-148" lanes="1" length="1000" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6109,7 +6109,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-149" lanes="1" length="997" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6118,7 +6118,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-150" lanes="1" length="994" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6127,7 +6127,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-151" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6136,7 +6136,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-152" lanes="1" length="1003" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6145,7 +6145,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-153" lanes="1" length="1000" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6154,7 +6154,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-154" lanes="1" length="999" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6163,7 +6163,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-155" lanes="1" length="1303" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6172,7 +6172,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-156" lanes="1" length="850" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6181,7 +6181,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-157" lanes="1" length="841" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6190,7 +6190,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-158" lanes="1" length="1212" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6199,7 +6199,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-159" lanes="1" length="753" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6208,7 +6208,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-160" lanes="1" length="997" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6217,7 +6217,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-161" lanes="1" length="1000" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6226,7 +6226,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-162" lanes="1" length="1001" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6235,7 +6235,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-163" lanes="1" length="840" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6244,7 +6244,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-164" lanes="1" length="797" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6253,7 +6253,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-165" lanes="1" length="785" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6262,7 +6262,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-166" lanes="1" length="802" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6271,7 +6271,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-167" lanes="1" length="1753" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6280,7 +6280,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-168" lanes="1" length="1002" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6289,7 +6289,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-169" lanes="1" length="1013" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6298,7 +6298,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-170" lanes="1" length="793" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6307,7 +6307,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-171" lanes="1" length="816" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6316,7 +6316,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-172" lanes="1" length="831" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6325,7 +6325,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-173" lanes="1" length="1520" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6334,7 +6334,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-174" lanes="1" length="1001" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6343,7 +6343,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-175" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6352,7 +6352,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-176" lanes="1" length="994" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6361,7 +6361,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-177" lanes="1" length="997" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6370,7 +6370,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-178" lanes="1" length="1000" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6379,7 +6379,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-179" lanes="1" length="996" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6388,7 +6388,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-180" lanes="1" length="1045" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6397,7 +6397,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-181" lanes="1" length="1115" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6406,7 +6406,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-182" lanes="1" length="829" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6415,7 +6415,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-183" lanes="1" length="991" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6424,7 +6424,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-184" lanes="1" length="1013" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6433,7 +6433,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-185" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6442,7 +6442,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-186" lanes="1" length="988" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6451,7 +6451,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-187" lanes="1" length="984" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6460,7 +6460,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-188" lanes="1" length="1014" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6469,7 +6469,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-189" lanes="1" length="995" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6478,7 +6478,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-190" lanes="1" length="908" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6487,7 +6487,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-191" lanes="1" length="846" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6496,7 +6496,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-192" lanes="1" length="1231" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6505,7 +6505,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-193" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6514,7 +6514,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-194" lanes="1" length="995" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6523,7 +6523,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-195" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6532,7 +6532,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-196" lanes="1" length="1001" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6541,7 +6541,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-197" lanes="1" length="995" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6550,7 +6550,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-198" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6559,7 +6559,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-199" lanes="1" length="1001" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6568,7 +6568,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-200" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6577,7 +6577,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-201" lanes="1" length="995" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6586,7 +6586,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-202" lanes="1" length="1001" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6595,7 +6595,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-203" lanes="1" length="961" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6604,7 +6604,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-204" lanes="1" length="1008" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6613,7 +6613,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-205" lanes="1" length="1064" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6622,7 +6622,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-206" lanes="1" length="948" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6631,7 +6631,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-207" lanes="1" length="1000" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6640,7 +6640,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-208" lanes="1" length="975" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6649,7 +6649,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-209" lanes="1" length="1021" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6658,7 +6658,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-210" lanes="1" length="992" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6667,7 +6667,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-211" lanes="1" length="993" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6676,7 +6676,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-212" lanes="1" length="1007" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6685,7 +6685,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-213" lanes="1" length="971" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6694,7 +6694,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-214" lanes="1" length="1242" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6703,7 +6703,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-215" lanes="1" length="754" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6712,7 +6712,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-216" lanes="1" length="996" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6721,7 +6721,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-217" lanes="1" length="994" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6730,7 +6730,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-218" lanes="1" length="1002" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6739,7 +6739,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-219" lanes="1" length="989" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6748,7 +6748,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-220" lanes="1" length="1126" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6757,7 +6757,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-221" lanes="1" length="859" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6766,7 +6766,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-222" lanes="1" length="1023" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6775,7 +6775,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-223" lanes="1" length="847" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6784,7 +6784,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-224" lanes="1" length="1133" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6793,7 +6793,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-225" lanes="1" length="1001" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6802,7 +6802,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-226" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6811,7 +6811,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-227" lanes="1" length="995" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6820,7 +6820,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-228" lanes="1" length="1001" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6829,7 +6829,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-229" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6838,7 +6838,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-230" lanes="1" length="789" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6847,7 +6847,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-231" lanes="1" length="801" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6856,7 +6856,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-232" lanes="1" length="1405" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6865,7 +6865,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-233" lanes="1" length="996" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6874,7 +6874,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-234" lanes="1" length="1295" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6883,7 +6883,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-235" lanes="1" length="833" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6892,7 +6892,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-236" lanes="1" length="859" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6901,7 +6901,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-237" lanes="1" length="996" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6910,7 +6910,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-238" lanes="1" length="973" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6919,7 +6919,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-239" lanes="1" length="1004" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6928,7 +6928,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-240" lanes="1" length="1001" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6937,7 +6937,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-241" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6946,7 +6946,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-242" lanes="1" length="1109" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6955,7 +6955,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-243" lanes="1" length="881" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6964,7 +6964,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-244" lanes="1" length="1002" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6973,7 +6973,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-245" lanes="1" length="986" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6982,7 +6982,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-246" lanes="1" length="818" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6991,7 +6991,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-247" lanes="1" length="1194" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7000,7 +7000,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-248" lanes="1" length="970" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7009,7 +7009,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-249" lanes="1" length="1005" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7018,7 +7018,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-250" lanes="1" length="1006" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7027,7 +7027,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-251" lanes="1" length="1001" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7036,7 +7036,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-252" lanes="1" length="995" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7045,7 +7045,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-253" lanes="1" length="1001" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7054,7 +7054,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-254" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7063,7 +7063,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-255" lanes="1" length="995" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7072,7 +7072,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-256" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7081,7 +7081,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-257" lanes="1" length="971" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7090,7 +7090,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-258" lanes="1" length="995" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7099,7 +7099,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-259" lanes="1" length="1000" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7108,7 +7108,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-260" lanes="1" length="1002" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7117,7 +7117,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-261" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7126,7 +7126,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-262" lanes="1" length="1003" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7135,7 +7135,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-263" lanes="1" length="1003" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7144,7 +7144,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-264" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7153,7 +7153,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-265" lanes="1" length="997" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7162,7 +7162,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-266" lanes="1" length="971" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7171,7 +7171,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-267" lanes="1" length="995" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7180,7 +7180,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-268" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7189,7 +7189,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-269" lanes="1" length="1002" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7198,7 +7198,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-270" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7207,7 +7207,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-271" lanes="1" length="1006" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7216,7 +7216,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-272" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7225,7 +7225,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-273" lanes="1" length="794" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7234,7 +7234,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-274" lanes="1" length="760" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7243,7 +7243,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-275" lanes="1" length="1447" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7252,7 +7252,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-276" lanes="1" length="1313" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7261,7 +7261,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-277" lanes="1" length="826" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7270,7 +7270,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-278" lanes="1" length="826" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7279,7 +7279,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-279" lanes="1" length="995" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7288,7 +7288,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-280" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7297,7 +7297,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-281" lanes="1" length="1001" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7306,7 +7306,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-282" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7315,7 +7315,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-283" lanes="1" length="995" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7324,7 +7324,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-284" lanes="1" length="998" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7333,7 +7333,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-285" lanes="1" length="1001" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7342,7 +7342,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-286" lanes="1" length="844" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7351,7 +7351,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-287" lanes="1" length="1008" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7360,7 +7360,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-288" lanes="1" length="1407" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7846,7 +7846,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-342" lanes="1" length="0.17826" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name="CA-134 E"/>
           </roads>
@@ -7855,7 +7855,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-343" lanes="1" length="0.27748" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name="California 210 E"/>
           </roads>

@@ -6522,7 +6522,7 @@
           <dynamics type="CTM"/>
         </link>
             <link id="-145" lanes="1" length="0.1875" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6531,7 +6531,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-146" lanes="1" length="0.189204545454545" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6540,7 +6540,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-147" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6549,7 +6549,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-148" lanes="1" length="0.189393939393939" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6558,7 +6558,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-149" lanes="1" length="0.188825757575758" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6567,7 +6567,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-150" lanes="1" length="0.188257575757576" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6576,7 +6576,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-151" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6585,7 +6585,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-152" lanes="1" length="0.189962121212121" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6594,7 +6594,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-153" lanes="1" length="0.189393939393939" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6603,7 +6603,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-154" lanes="1" length="0.189204545454545" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6612,7 +6612,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-155" lanes="1" length="0.246780303030303" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6621,7 +6621,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-156" lanes="1" length="0.160984848484848" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6630,7 +6630,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-157" lanes="1" length="0.159280303030303" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6639,7 +6639,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-158" lanes="1" length="0.229545454545455" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6648,7 +6648,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-159" lanes="1" length="0.142613636363636" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6657,7 +6657,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-160" lanes="1" length="0.188825757575758" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6666,7 +6666,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-161" lanes="1" length="0.189393939393939" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6675,7 +6675,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-162" lanes="1" length="0.189583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6684,7 +6684,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-163" lanes="1" length="0.159090909090909" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6693,7 +6693,7 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-164" lanes="1" length="0.15094696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -6702,745 +6702,745 @@
           <dynamics type="CTM"/>
             </link>
             <link id="-165" lanes="1" length="0.148674242424242" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-79"/>
                <end node_id="-80"/>
                <shape/>
             </link>
             <link id="-166" lanes="1" length="0.151893939393939" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-80"/>
                <end node_id="-81"/>
                <shape/>
             </link>
             <link id="-167" lanes="1" length="0.332007575757576" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-81"/>
                <end node_id="-82"/>
                <shape/>
             </link>
             <link id="-168" lanes="1" length="0.189772727272727" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-82"/>
                <end node_id="-83"/>
                <shape/>
             </link>
             <link id="-169" lanes="1" length="0.191856060606061" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-83"/>
                <end node_id="-84"/>
                <shape/>
             </link>
             <link id="-170" lanes="1" length="0.150189393939394" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-84"/>
                <end node_id="-85"/>
                <shape/>
             </link>
             <link id="-171" lanes="1" length="0.154545454545455" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-85"/>
                <end node_id="-86"/>
                <shape/>
             </link>
             <link id="-172" lanes="1" length="0.157386363636364" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-86"/>
                <end node_id="-87"/>
                <shape/>
             </link>
             <link id="-173" lanes="1" length="0.287878787878788" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-87"/>
                <end node_id="-88"/>
                <shape/>
             </link>
             <link id="-174" lanes="1" length="0.189583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-88"/>
                <end node_id="-89"/>
                <shape/>
             </link>
             <link id="-175" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-89"/>
                <end node_id="-90"/>
                <shape/>
             </link>
             <link id="-176" lanes="1" length="0.188257575757576" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-90"/>
                <end node_id="-91"/>
                <shape/>
             </link>
             <link id="-177" lanes="1" length="0.188825757575758" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-91"/>
                <end node_id="-92"/>
                <shape/>
             </link>
             <link id="-178" lanes="1" length="0.189393939393939" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-92"/>
                <end node_id="-93"/>
                <shape/>
             </link>
             <link id="-179" lanes="1" length="0.188636363636364" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-93"/>
                <end node_id="-94"/>
                <shape/>
             </link>
             <link id="-180" lanes="1" length="0.197916666666667" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-94"/>
                <end node_id="-95"/>
                <shape/>
             </link>
             <link id="-181" lanes="1" length="0.211174242424242" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-95"/>
                <end node_id="-96"/>
                <shape/>
             </link>
             <link id="-182" lanes="1" length="0.157007575757576" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-96"/>
                <end node_id="-97"/>
                <shape/>
             </link>
             <link id="-183" lanes="1" length="0.187689393939394" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-97"/>
                <end node_id="-98"/>
                <shape/>
             </link>
             <link id="-184" lanes="1" length="0.191856060606061" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-98"/>
                <end node_id="-99"/>
                <shape/>
             </link>
             <link id="-185" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-99"/>
                <end node_id="-100"/>
                <shape/>
             </link>
             <link id="-186" lanes="1" length="0.187121212121212" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-100"/>
                <end node_id="-101"/>
                <shape/>
             </link>
             <link id="-187" lanes="1" length="0.186363636363636" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-101"/>
                <end node_id="-102"/>
                <shape/>
             </link>
             <link id="-188" lanes="1" length="0.192045454545455" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-102"/>
                <end node_id="-103"/>
                <shape/>
             </link>
             <link id="-189" lanes="1" length="0.18844696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-103"/>
                <end node_id="-104"/>
                <shape/>
             </link>
             <link id="-190" lanes="1" length="0.171969696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-104"/>
                <end node_id="-105"/>
                <shape/>
             </link>
             <link id="-191" lanes="1" length="0.160227272727273" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-105"/>
                <end node_id="-106"/>
                <shape/>
             </link>
             <link id="-192" lanes="1" length="0.233143939393939" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-106"/>
                <end node_id="-107"/>
                <shape/>
             </link>
             <link id="-193" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-107"/>
                <end node_id="-108"/>
                <shape/>
             </link>
             <link id="-194" lanes="1" length="0.18844696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-108"/>
                <end node_id="-109"/>
                <shape/>
             </link>
             <link id="-195" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-109"/>
                <end node_id="-110"/>
                <shape/>
             </link>
             <link id="-196" lanes="1" length="0.189583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-110"/>
                <end node_id="-111"/>
                <shape/>
             </link>
             <link id="-197" lanes="1" length="0.18844696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-111"/>
                <end node_id="-112"/>
                <shape/>
             </link>
             <link id="-198" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-112"/>
                <end node_id="-113"/>
                <shape/>
             </link>
             <link id="-199" lanes="1" length="0.189583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-113"/>
                <end node_id="-114"/>
                <shape/>
             </link>
             <link id="-200" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-114"/>
                <end node_id="-115"/>
                <shape/>
             </link>
             <link id="-201" lanes="1" length="0.18844696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-115"/>
                <end node_id="-116"/>
                <shape/>
             </link>
             <link id="-202" lanes="1" length="0.189583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-116"/>
                <end node_id="-117"/>
                <shape/>
             </link>
             <link id="-203" lanes="1" length="0.182007575757576" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-117"/>
                <end node_id="-118"/>
                <shape/>
             </link>
             <link id="-204" lanes="1" length="0.190909090909091" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-118"/>
                <end node_id="-119"/>
                <shape/>
             </link>
             <link id="-205" lanes="1" length="0.201515151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-119"/>
                <end node_id="-120"/>
                <shape/>
             </link>
             <link id="-206" lanes="1" length="0.179545454545455" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-120"/>
                <end node_id="-121"/>
                <shape/>
             </link>
             <link id="-207" lanes="1" length="0.189393939393939" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-121"/>
                <end node_id="-122"/>
                <shape/>
             </link>
             <link id="-208" lanes="1" length="0.184659090909091" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-122"/>
                <end node_id="-123"/>
                <shape/>
             </link>
             <link id="-209" lanes="1" length="0.193371212121212" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-123"/>
                <end node_id="-124"/>
                <shape/>
             </link>
             <link id="-210" lanes="1" length="0.187878787878788" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-124"/>
                <end node_id="-125"/>
                <shape/>
             </link>
             <link id="-211" lanes="1" length="0.188068181818182" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-125"/>
                <end node_id="-126"/>
                <shape/>
             </link>
             <link id="-212" lanes="1" length="0.190719696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-126"/>
                <end node_id="-127"/>
                <shape/>
             </link>
             <link id="-213" lanes="1" length="0.183901515151515" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-127"/>
                <end node_id="-128"/>
                <shape/>
             </link>
             <link id="-214" lanes="1" length="0.235227272727273" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-128"/>
                <end node_id="-129"/>
                <shape/>
             </link>
             <link id="-215" lanes="1" length="0.14280303030303" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-129"/>
                <end node_id="-130"/>
                <shape/>
             </link>
             <link id="-216" lanes="1" length="0.188636363636364" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-130"/>
                <end node_id="-131"/>
                <shape/>
             </link>
             <link id="-217" lanes="1" length="0.188257575757576" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-131"/>
                <end node_id="-132"/>
                <shape/>
             </link>
             <link id="-218" lanes="1" length="0.189772727272727" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-132"/>
                <end node_id="-133"/>
                <shape/>
             </link>
             <link id="-219" lanes="1" length="0.187310606060606" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-133"/>
                <end node_id="-134"/>
                <shape/>
             </link>
             <link id="-220" lanes="1" length="0.213257575757576" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-134"/>
                <end node_id="-135"/>
                <shape/>
             </link>
             <link id="-221" lanes="1" length="0.162689393939394" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-135"/>
                <end node_id="-136"/>
                <shape/>
             </link>
             <link id="-222" lanes="1" length="0.19375" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-136"/>
                <end node_id="-137"/>
                <shape/>
             </link>
             <link id="-223" lanes="1" length="0.160416666666667" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-137"/>
                <end node_id="-138"/>
                <shape/>
             </link>
             <link id="-224" lanes="1" length="0.214583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-138"/>
                <end node_id="-139"/>
                <shape/>
             </link>
             <link id="-225" lanes="1" length="0.189583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-139"/>
                <end node_id="-140"/>
                <shape/>
             </link>
             <link id="-226" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-140"/>
                <end node_id="-141"/>
                <shape/>
             </link>
             <link id="-227" lanes="1" length="0.18844696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-141"/>
                <end node_id="-142"/>
                <shape/>
             </link>
             <link id="-228" lanes="1" length="0.189583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-142"/>
                <end node_id="-143"/>
                <shape/>
             </link>
             <link id="-229" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-143"/>
                <end node_id="-144"/>
                <shape/>
             </link>
             <link id="-230" lanes="1" length="0.149431818181818" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-144"/>
                <end node_id="-145"/>
                <shape/>
             </link>
             <link id="-231" lanes="1" length="0.151704545454545" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-145"/>
                <end node_id="-146"/>
                <shape/>
             </link>
             <link id="-232" lanes="1" length="0.266098484848485" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-146"/>
                <end node_id="-147"/>
                <shape/>
             </link>
             <link id="-233" lanes="1" length="0.188636363636364" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-147"/>
                <end node_id="-148"/>
                <shape/>
             </link>
             <link id="-234" lanes="1" length="0.245265151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-148"/>
                <end node_id="-149"/>
                <shape/>
             </link>
             <link id="-235" lanes="1" length="0.157765151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-149"/>
                <end node_id="-150"/>
                <shape/>
             </link>
             <link id="-236" lanes="1" length="0.162689393939394" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-150"/>
                <end node_id="-151"/>
                <shape/>
             </link>
             <link id="-237" lanes="1" length="0.188636363636364" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-151"/>
                <end node_id="-152"/>
                <shape/>
             </link>
             <link id="-238" lanes="1" length="0.184280303030303" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-152"/>
                <end node_id="-153"/>
                <shape/>
             </link>
             <link id="-239" lanes="1" length="0.190151515151515" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-153"/>
                <end node_id="-154"/>
                <shape/>
             </link>
             <link id="-240" lanes="1" length="0.189583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-154"/>
                <end node_id="-155"/>
                <shape/>
             </link>
             <link id="-241" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-155"/>
                <end node_id="-156"/>
                <shape/>
             </link>
             <link id="-242" lanes="1" length="0.210037878787879" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-156"/>
                <end node_id="-157"/>
                <shape/>
             </link>
             <link id="-243" lanes="1" length="0.166856060606061" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-157"/>
                <end node_id="-158"/>
                <shape/>
             </link>
             <link id="-244" lanes="1" length="0.189772727272727" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-158"/>
                <end node_id="-159"/>
                <shape/>
             </link>
             <link id="-245" lanes="1" length="0.186742424242424" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-159"/>
                <end node_id="-160"/>
                <shape/>
             </link>
             <link id="-246" lanes="1" length="0.154924242424242" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-160"/>
                <end node_id="-161"/>
                <shape/>
             </link>
             <link id="-247" lanes="1" length="0.226136363636364" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-161"/>
                <end node_id="-162"/>
                <shape/>
             </link>
             <link id="-248" lanes="1" length="0.183712121212121" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-162"/>
                <end node_id="-163"/>
                <shape/>
             </link>
             <link id="-249" lanes="1" length="0.190340909090909" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-163"/>
                <end node_id="-164"/>
                <shape/>
             </link>
             <link id="-250" lanes="1" length="0.190530303030303" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-164"/>
                <end node_id="-165"/>
                <shape/>
             </link>
             <link id="-251" lanes="1" length="0.189583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-165"/>
                <end node_id="-166"/>
                <shape/>
             </link>
             <link id="-252" lanes="1" length="0.18844696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-166"/>
                <end node_id="-167"/>
                <shape/>
             </link>
             <link id="-253" lanes="1" length="0.189583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-167"/>
                <end node_id="-168"/>
                <shape/>
             </link>
             <link id="-254" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-168"/>
                <end node_id="-169"/>
                <shape/>
             </link>
             <link id="-255" lanes="1" length="0.18844696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-169"/>
                <end node_id="-170"/>
                <shape/>
             </link>
             <link id="-256" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-170"/>
                <end node_id="-171"/>
                <shape/>
             </link>
             <link id="-257" lanes="1" length="0.183901515151515" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-171"/>
                <end node_id="-172"/>
                <shape/>
             </link>
             <link id="-258" lanes="1" length="0.18844696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-172"/>
                <end node_id="-173"/>
                <shape/>
             </link>
             <link id="-259" lanes="1" length="0.189393939393939" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-173"/>
                <end node_id="-174"/>
                <shape/>
             </link>
             <link id="-260" lanes="1" length="0.189772727272727" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-174"/>
                <end node_id="-175"/>
                <shape/>
             </link>
             <link id="-261" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-175"/>
                <end node_id="-176"/>
                <shape/>
             </link>
             <link id="-262" lanes="1" length="0.189962121212121" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-176"/>
                <end node_id="-177"/>
                <shape/>
             </link>
             <link id="-263" lanes="1" length="0.189962121212121" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-177"/>
                <end node_id="-178"/>
                <shape/>
             </link>
             <link id="-264" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-178"/>
                <end node_id="-179"/>
                <shape/>
             </link>
             <link id="-265" lanes="1" length="0.188825757575758" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-179"/>
                <end node_id="-180"/>
                <shape/>
             </link>
             <link id="-266" lanes="1" length="0.183901515151515" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-180"/>
                <end node_id="-181"/>
                <shape/>
             </link>
             <link id="-267" lanes="1" length="0.18844696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-181"/>
                <end node_id="-182"/>
                <shape/>
             </link>
             <link id="-268" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-182"/>
                <end node_id="-183"/>
                <shape/>
             </link>
             <link id="-269" lanes="1" length="0.189772727272727" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-183"/>
                <end node_id="-184"/>
                <shape/>
             </link>
             <link id="-270" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-184"/>
                <end node_id="-185"/>
                <shape/>
             </link>
             <link id="-271" lanes="1" length="0.190530303030303" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-185"/>
                <end node_id="-186"/>
                <shape/>
             </link>
             <link id="-272" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-186"/>
                <end node_id="-187"/>
                <shape/>
             </link>
             <link id="-273" lanes="1" length="0.150378787878788" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-187"/>
                <end node_id="-188"/>
                <shape/>
             </link>
             <link id="-274" lanes="1" length="0.143939393939394" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-188"/>
                <end node_id="-189"/>
                <shape/>
             </link>
             <link id="-275" lanes="1" length="0.27405303030303" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-189"/>
                <end node_id="-190"/>
                <shape/>
             </link>
             <link id="-276" lanes="1" length="0.248674242424242" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-190"/>
                <end node_id="-191"/>
                <shape/>
             </link>
             <link id="-277" lanes="1" length="0.156439393939394" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-191"/>
                <end node_id="-192"/>
                <shape/>
             </link>
             <link id="-278" lanes="1" length="0.156439393939394" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-192"/>
                <end node_id="-193"/>
                <shape/>
             </link>
             <link id="-279" lanes="1" length="0.18844696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-193"/>
                <end node_id="-194"/>
                <shape/>
             </link>
             <link id="-280" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-194"/>
                <end node_id="-195"/>
                <shape/>
             </link>
             <link id="-281" lanes="1" length="0.189583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-195"/>
                <end node_id="-196"/>
                <shape/>
             </link>
             <link id="-282" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-196"/>
                <end node_id="-197"/>
                <shape/>
             </link>
             <link id="-283" lanes="1" length="0.18844696969697" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-197"/>
                <end node_id="-198"/>
                <shape/>
             </link>
             <link id="-284" lanes="1" length="0.189015151515152" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-198"/>
                <end node_id="-199"/>
                <shape/>
             </link>
             <link id="-285" lanes="1" length="0.189583333333333" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-199"/>
                <end node_id="-200"/>
                <shape/>
             </link>
             <link id="-286" lanes="1" length="0.159848484848485" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-200"/>
                <end node_id="-201"/>
                <shape/>
             </link>
             <link id="-287" lanes="1" length="0.190909090909091" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
                <begin node_id="-201"/>
                <end node_id="-202"/>
                <shape/>
             </link>
             <link id="-288" lanes="1" length="0.266477272727273" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name=""/>
           </roads>
@@ -7926,7 +7926,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-342" lanes="1" length="0.17826" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name="CA-134 E"/>
           </roads>
@@ -7935,7 +7935,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-343" lanes="1" length="0.27748" >
-          <link_type id="-1" name="HOV"/>
+          <link_type id="-1" name="AUX"/>
           <roads>
             <road id="0" name="California 210 E"/>
           </roads>
