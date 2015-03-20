@@ -302,7 +302,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         		&& my_profile.isCurrentConcentrationParametersValid())
         	splitratio_selected_perturbed = SplitRatioPerturber.sampleFromConcentrationParameters(my_profile.getCurrentConcentrationParameters(), numEnsemble);
         else if(!isdeterministic && nOut==2 && nIn==1)
-            splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile.getVariance(), numEnsemble);
+            splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile, numEnsemble);
         else
             Arrays.fill(splitratio_selected_perturbed, 0, splitratio_selected_perturbed.length, splitratio_selected);
 
@@ -475,7 +475,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     public static double[][][] perturb2DSplitForTest(double[][][] splitData){
     	// implemented this way because Double3DMatrix is not public so not viewable in java/test/ package
     	Double3DMatrix split = new Double3DMatrix(splitData);
-    	Double3DMatrix[] perturbedSplit = SplitRatioPerturber.perturb2OutputSplit(split, .03, 1);
+        JaxbObjectFactory factory = new JaxbObjectFactory();
+        SplitRatioProfile profile = (SplitRatioProfile) factory.createSplitRatioProfile();
+        profile.setVariance(.03);
+    	Double3DMatrix[] perturbedSplit = SplitRatioPerturber.perturb2OutputSplit(split, profile, 1);
     	return perturbedSplit[0].cloneData();
     }
 

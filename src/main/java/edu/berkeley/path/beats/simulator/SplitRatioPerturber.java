@@ -38,7 +38,7 @@ public class SplitRatioPerturber {
 		return splitPerturbed;
 	}
 	
-	public static Double3DMatrix[] perturb2OutputSplit(Double3DMatrix split, double variance, int numEnsemble){
+	public static Double3DMatrix[] perturb2OutputSplit(Double3DMatrix split, SplitRatioProfile profile, int numEnsemble){
 		Double3DMatrix[] splitPerturbed = new Double3DMatrix[numEnsemble];
 		
 		if(split.getnIn()!=1 && split.getnOut()!=2){ // return non-perturbed if non 1 to 2 split given
@@ -59,14 +59,19 @@ public class SplitRatioPerturber {
 					max_index = o;
 				}
 			}
-			double[] params = BeatsMath.betaParamsFromRVMeanAndVariance(max, variance);
+            double[] params;
+            if (profile.getSampleSize()!=null){
+                params = BeatsMath.betaParamsFromRVMeanAndSampleSize(max, profile.getSampleSize());
+            }
+            else {
+    			params = BeatsMath.betaParamsFromRVMeanAndVariance(max, profile.getVariance()); }
 			double[][] sample;
 			try{
 				sample = BeatsMath.sampleDirichlet(params, numEnsemble);
 			}
 			catch (NotStrictlyPositiveException ex){
-				double newmax = max - variance*1.5; // 
-				params = BeatsMath.betaParamsFromRVMeanAndVariance(newmax, variance);
+				double newmax = max - profile.getVariance()*1.5; //
+				params = BeatsMath.betaParamsFromRVMeanAndVariance(newmax, profile.getVariance());
 				sample = BeatsMath.sampleDirichlet(params, numEnsemble);
 			}
 			for (e=0;e<numEnsemble;e++){
