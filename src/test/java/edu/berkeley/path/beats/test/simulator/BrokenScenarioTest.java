@@ -30,7 +30,8 @@ public class BrokenScenarioTest {
 													"_smalltest_multipletypes",
 		 											 "_scenario_2009_02_12",
 													 "testfwy_w",
-													 "test_event"
+													 "test_event",
+													 "_scenario_hovlanes_onevtype"
 													 };
 	
 //	private static String[] broken_config_names = { "_smalltest_nocontrol_broken, " +

@@ -31,6 +31,7 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut;        
     	int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
+        String [] vTypes = myNode.myNetwork.getMyScenario().getVehicleTypeNames();
     	Double3DMatrix splitratio_new = new Double3DMatrix(splitratio_selected.getData());
     	double remainingSplit;
     	double num;
@@ -83,8 +84,10 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
                     Double sr = splitratio_selected.get(i,j,k);
                     if(sr.isNaN()){
                         sr_new[j] = 0f;
-                        unknownind.add(j);						// index to unknown output
-                        unknown_dsratio.add(dsratio[j]);		// dsratio for unknown output
+                        if(myNode.getOutput_link()[j].canVTypeEnter(vTypes[k])) {
+                            unknownind.add(j);                        // index to unknown output
+                            unknown_dsratio.add(dsratio[j]);        // dsratio for unknown output
+                        }
                     }
                     else {
                         sr_new[j] = sr;

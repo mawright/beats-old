@@ -66,6 +66,7 @@ final public class Defaults {
     	aMap.put("test_event.xml",5d);
     	aMap.put("_scenario_2009_02_12.xml",5d);
     	aMap.put("_scenario_constantsplits.xml",5d);
+		aMap.put("_scenario_hovlanes_onevtype.xml",5d);
     	aMap.put("_smalltest.xml",5d);
     	aMap.put("_smalltest_MPC.xml",5d);
     	aMap.put("_smalltest_multipletypes.xml",5d);

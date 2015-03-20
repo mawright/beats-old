@@ -34,7 +34,7 @@ import java.math.BigDecimal;
  */
 public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
-    public enum Type {onramp,offramp,source,freeway,intersection_approach,street,other,undefined}
+    public enum Type {onramp,offramp,source,freeway,hov,intersection_approach,street,other,undefined}
 
     protected Scenario myScenario;
     protected Network myNetwork;
@@ -132,6 +132,8 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
                 link_type = Type.freeway;
             else if (name.compareToIgnoreCase("Source")==0)
                 link_type = Type.source;
+            else if (name.compareToIgnoreCase("HOV")==0)
+                link_type = Type.hov;
             else
                 link_type = Type.other;
         }
@@ -341,11 +343,23 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         return link_type==Type.freeway;
 	}
 
+    public boolean isHov(){
+        return link_type==Type.hov;
+    }
+
     public double computeTotalDelayInVeh(int e){
         double val=0d;
         for(int v=0;v<myScenario.getNumVehicleTypes();v++)
             val += link_behavior.compute_delay_in_veh(e, v);
         return val;
+    }
+
+    // generic method to check permissibility of entrance for vType
+    // to be expanded for more cases as needed (including querying controllers)
+    public boolean canVTypeEnter(String vType){
+        if(isHov() && vType.compareToIgnoreCase("hov")!=0)
+            return false;
+        return true;
     }
 
     // Link geometry ....................
