@@ -1,6 +1,8 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
+//import edu.berkeley.path.beats.control.adjoint.RampMeteringPolicyMakerAdjoint;
+//import edu.berkeley.path.beats.control.lp.RampMeteringPolicyMakerLp;
 import edu.berkeley.path.beats.control.rm_interface.*;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
 import edu.berkeley.path.beats.simulator.*;
@@ -113,16 +115,16 @@ public class Controller_CRM_MPC extends Controller {
                 case tester:
                     policy_maker = new PolicyMaker_Tester();
                     break;
-                case adjoint:
-                    pm_props = myScenario.get_auxiliary_properties("RAMP_METERING_ADJOINT");
-                    policy_maker = new RampMeteringPolicyMakerAdjoint();
-                    break;
-				case lp:
-                    pm_props = myScenario.get_auxiliary_properties("RAMP_METERING_LP");
-                    double K_cool_seconds = Double.parseDouble(pm_props.getProperty("K_cool_seconds"));
-                    double eta = Double.parseDouble(pm_props.getProperty("eta"));
-                    policy_maker = new RampMeteringPolicyMakerLp(myScenario,pm_horizon,K_cool_seconds,eta);
-					break;
+//                case adjoint:
+//                    pm_props = myScenario.get_auxiliary_properties("RAMP_METERING_ADJOINT");
+//                    policy_maker = new RampMeteringPolicyMakerAdjoint();
+//                    break;
+//				case lp:
+//                    pm_props = myScenario.get_auxiliary_properties("RAMP_METERING_LP");
+//                    double K_cool_seconds = Double.parseDouble(pm_props.getProperty("K_cool_seconds"));
+//                    double eta = Double.parseDouble(pm_props.getProperty("eta"));
+//                    policy_maker = new RampMeteringPolicyMakerLp(myScenario,pm_horizon,K_cool_seconds,eta);
+//					break;
                 case NULL:
                     break;
             }

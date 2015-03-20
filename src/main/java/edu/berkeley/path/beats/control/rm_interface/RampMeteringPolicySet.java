@@ -2,7 +2,7 @@ package edu.berkeley.path.beats.control.rm_interface;
 
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.lprm.rm.RampMeteringSolution;
+//import edu.berkeley.path.lprm.rm.RampMeteringSolution;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -23,16 +23,16 @@ public class RampMeteringPolicySet {
         profiles = new LinkedList<RampMeteringPolicyProfile>();
     }
 
-    public RampMeteringPolicySet(Scenario myScenario,RampMeteringSolution sol){
-        profiles = new LinkedList<RampMeteringPolicyProfile>();
-        HashMap<Long,Double[]> prof_map = null; //sol.get_   get_metering_profiles_in_vps();
-        for(Map.Entry<Long,Double[]> entry : prof_map.entrySet()){
-            Long or_id = entry.getKey();
-            Double [] policy = entry.getValue();
-            Link or = myScenario.getLinkWithId(or_id);
-            profiles.add(new RampMeteringPolicyProfile(or,policy));
-        }
-    }
+//    public RampMeteringPolicySet(Scenario myScenario,RampMeteringSolution sol){
+//        profiles = new LinkedList<RampMeteringPolicyProfile>();
+//        HashMap<Long,Double[]> prof_map = null; //sol.get_   get_metering_profiles_in_vps();
+//        for(Map.Entry<Long,Double[]> entry : prof_map.entrySet()){
+//            Long or_id = entry.getKey();
+//            Double [] policy = entry.getValue();
+//            Link or = myScenario.getLinkWithId(or_id);
+//            profiles.add(new RampMeteringPolicyProfile(or,policy));
+//        }
+//    }
 
     @Override
     public String toString() {
