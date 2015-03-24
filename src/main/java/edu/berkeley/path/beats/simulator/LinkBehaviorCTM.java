@@ -49,12 +49,16 @@ public class LinkBehaviorCTM {
             }
 
             // compute total flow leaving the link in the absence of flow control
-            if( totaldensity < FD.getDensityCriticalInVeh() ){
-                totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),external_max_speed);
+            if(myLink.issource){
+                totaloutflow = Math.min( totaldensity , FD._getCapacityInVeh() );
             }
-            else{
-                totaloutflow = Math.max(FD._getCapacityInVeh()-FD._getCapacityDropInVeh(),0d);
-                totaloutflow = Math.min(totaloutflow,external_max_speed*FD.getDensityCriticalInVeh());
+            else {
+                if( totaldensity < FD.getDensityCriticalInVeh() )
+                    totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),external_max_speed);
+                else{
+                    totaloutflow = Math.max(FD._getCapacityInVeh()-FD._getCapacityDropInVeh(),0d);
+                    totaloutflow = Math.min(totaloutflow,external_max_speed*FD.getDensityCriticalInVeh());
+                }
             }
 
             // capacity profile

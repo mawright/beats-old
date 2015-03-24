@@ -190,7 +190,7 @@ public class ScenarioTest {
 	public void test_getDensityForNetwork() {
 		double x = static_scenario.getDensityForNetwork(-1,0)[0][0];
 		double exp =0.4445728212287675;
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 
 		//x = static_scenario.getDensityForNetwork(null,0)[0][0];	// null works for single networks
 		//assertEquals(x,exp,1e-4);
