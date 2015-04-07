@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.control;
 
+import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.actuator.ActuatorCMS;
 import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.jaxb.DemandProfile;
@@ -9,7 +10,6 @@ import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.DemandSet;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Parameters;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
@@ -54,43 +54,13 @@ public class Controller_SR_Generator extends Controller {
         Parameters param = (Parameters) ((edu.berkeley.path.beats.jaxb.Controller)jaxbobject).getParameters();
         String configfilename = param.get("fr_flow_file");
 
-        JAXBContext context;
-        Unmarshaller u = null;
-
-        // create unmarshaller .......................................................
-        try {
-            //Reset the classloader for main thread; need this if I want to run properly
-            //with JAXB within MATLAB. (luis)
-            Thread.currentThread().setContextClassLoader(ObjectFactory.class.getClassLoader());
-            context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
-            u = context.createUnmarshaller();
-        } catch( JAXBException je ) {
-            System.err.print("Failed to create context for JAXB unmarshaller");
-        }
-
-        // schema assignment ..........................................................
-        try{
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            ClassLoader classLoader = ObjectFactory.class.getClassLoader();
-            Schema schema = factory.newSchema(classLoader.getResource("beats.xsd"));
-            u.setSchema(schema);
-        } catch(SAXException e){
-            System.err.print("Schema not found");
-        }
-
-        // process configuration file name ...........................................
-        if(!configfilename.endsWith(".xml"))
-            configfilename += ".xml";
-
         // read and return ...........................................................
         DemandSet demand_set = null;
         try {
-            demand_set = (DemandSet) u.unmarshal( new FileInputStream(configfilename) );
-        } catch( JAXBException je ) {
-            System.err.print("JAXB threw an exception when loading the configuration file");
-            System.err.println(je);
-        } catch (FileNotFoundException e) {
-            System.err.print("Configuration file not found");
+            demand_set = Jaxb.create_demand_set_from_xml(configfilename);
+        } catch (BeatsException e) {
+            e.printStackTrace();
+            return;
         }
 
         if(demand_set==null)
