@@ -31,9 +31,9 @@ import java.util.List;
 public class Controller_SR_Generator extends Controller {
 
     private List<NodeData> node_data;
-    private double dt_in_hr;
-    private int logger_id;
-    private int dt_log = 300;   // sec
+    protected double dt_in_hr;
+    protected int logger_id;
+    protected int dt_log = 300;   // sec
 
     /////////////////////////////////////////////////////////////////////
     // Construction
@@ -52,7 +52,7 @@ public class Controller_SR_Generator extends Controller {
 
         // load offramp flow information
         Parameters param = (Parameters) ((edu.berkeley.path.beats.jaxb.Controller)jaxbobject).getParameters();
-        String configfilename = param.get("fr_flow_file");
+        String configfilename = getConfigFilename(param);
 
         // read and return ...........................................................
         DemandSet demand_set = null;
@@ -68,12 +68,12 @@ public class Controller_SR_Generator extends Controller {
 
         demand_set.populate(myScenario);
 
-        node_data = new ArrayList<NodeData>();
+        initializeNodeData();
         for(Actuator act:actuators){
             ScenarioElement se = (ScenarioElement) act.getScenarioElement();
             if(se.getMyType()!=ScenarioElement.Type.node)
                 continue;
-            node_data.add(new NodeData(demand_set,(Node) se.getReference()));
+            appendNodeData(demand_set, se);
         }
 
         dt_in_hr = myScenario.getSimdtinseconds()/3600d;
@@ -82,6 +82,18 @@ public class Controller_SR_Generator extends Controller {
         String log_file = param.get("log_file");
         if(log_file!=null)
             logger_id = DebugLogger.add_writer(log_file);
+    }
+
+    protected String getConfigFilename(Parameters param) {
+        return param.get("fr_flow_file");
+    }
+
+    protected void initializeNodeData(){
+        node_data = new ArrayList<NodeData>();
+    }
+
+    protected void appendNodeData(DemandSet demand_set, ScenarioElement se) {
+        node_data.add(new NodeData(demand_set, (Node) se.getReference()));
     }
 
     @Override
