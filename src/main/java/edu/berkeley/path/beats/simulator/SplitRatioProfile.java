@@ -346,4 +346,15 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 		return !getConcentrationParameters().isEmpty();
 	}
 
+	public boolean isConstant(long inlink_id, long outlink_id, int vt_index) {
+		int in_index = myNode.getInputLinkIndex(inlink_id);
+		int out_index = myNode.getOutputLinkIndex(outlink_id);
+
+		if(in_index<0 || out_index<0)
+			return false;
+
+		return (profile[in_index][out_index][vt_index].getNumTime() == 1);
+
+	}
+
 }
