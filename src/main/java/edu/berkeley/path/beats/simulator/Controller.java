@@ -66,7 +66,8 @@ public class Controller {
         FRR_MPC,
         SIG_Pretimed,
         SIG_MaxPressure,
-        SR_Generator }
+        SR_Generator,
+		HOV_SR_Generator}
 
     public static enum ActuatorType {
 		ramp_meter,
