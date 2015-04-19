@@ -1,7 +1,6 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorCMS;
-import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.DemandSet;
 import edu.berkeley.path.beats.simulator.Link;
@@ -20,13 +19,15 @@ import org.apache.commons.math3.stat.descriptive.moment.GeometricMean;
  */
 public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 
-	private long hovVtypeId;
+	private long hov_vtype_id;
+	protected int hov_vtype_index;
 
 	private List<HOVNodeData> node_data;
 
 	public Controller_HOV_SR_Generator(Scenario myScenario, edu.berkeley.path.beats.jaxb.Controller c) {
 		super(myScenario,c);
-		hovVtypeId = myScenario.getVehicleTypeIdForIndex(node_data.get(0).hov_vehtype_index);
+		hov_vtype_index = myScenario.getVehicleTypeIndexForName("HOV");
+		hov_vtype_id = myScenario.getVehicleTypeIdForIndex(hov_vtype_index);
 		dt_in_hr = myScenario.getSimdtinseconds()/3600d;
 	}
 
@@ -42,7 +43,7 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 
 	@Override
 	protected void appendNodeData(DemandSet demand_set, ScenarioElement se) {
-		node_data.add(new HOVNodeData(demand_set, (Node) se.getReference(), this));
+		node_data.add(new HOVNodeData(demand_set, (Node) se.getReference()));
 	}
 
 	@Override
@@ -63,13 +64,13 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 								nd.getId(),
 								nd.link_or.get(i).getId(),
 								nd.link_fr.get(j).getId(),
-								hovVtypeId,
+								hov_vtype_id,
 								0d));
 
 						((ActuatorCMS)actuators.get(n)).set_split(
 								nd.link_or.get(i).getId(),
 								nd.link_fr.get(j).getId(),
-								hovVtypeId,
+								hov_vtype_id,
 								0d);
 						}
 
@@ -81,13 +82,13 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 							nd.getId(),
 							nd.link_or.get(i).getId(),
 							nd.link_hov_out.getId(),
-							hovVtypeId,
+							hov_vtype_id,
 							0d));
 
 					((ActuatorCMS)actuators.get(n)).set_split(
 							nd.link_or.get(i).getId(),
 							nd.link_hov_out.getId(),
-							hovVtypeId,
+							hov_vtype_id,
 							0d);
 					}
 
@@ -99,13 +100,13 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 							nd.getId(),
 							nd.link_hov_in.getId(),
 							nd.link_fr.get(j).getId(),
-							hovVtypeId,
+							hov_vtype_id,
 							0d));
 
 					((ActuatorCMS)actuators.get(n)).set_split(
 							nd.link_hov_in.getId(),
 							nd.link_fr.get(j).getId(),
-							hovVtypeId,
+							hov_vtype_id,
 							0d);
 					}
 
@@ -116,13 +117,13 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 						nd.getId(),
 						nd.link_hov_in.getId(),
 						nd.link_gp_out.getId(),
-						hovVtypeId,
+						hov_vtype_id,
 						nd.beta_hov_gp));
 
 				((ActuatorCMS) actuators.get(n)).set_split(
 						nd.link_hov_in.getId(),
 						nd.link_gp_out.getId(),
-						hovVtypeId,
+						hov_vtype_id,
 						nd.beta_hov_gp);
 			}
 
@@ -136,13 +137,13 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 						nd.getId(),
 						nd.link_gp_in.getId(),
 						nd.link_hov_out.getId(),
-						hovVtypeId,
+						hov_vtype_id,
 						beta ));
 
 				((ActuatorCMS)actuators.get(n)).set_split(
 						nd.link_gp_in.getId() ,
 						nd.link_hov_out.getId() ,
-						hovVtypeId ,
+						hov_vtype_id,
 						beta );
 				}
 
@@ -157,13 +158,13 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 							nd.getId(),
 							nd.link_gp_in.getId() ,
 							nd.link_fr.get(j).getId() ,
-							hovVtypeId ,
+							hov_vtype_id,
 							r*alpha ));
 
 				((ActuatorCMS)actuators.get(n)).set_split(
 						nd.link_gp_in.getId() ,
 						nd.link_fr.get(j).getId() ,
-						hovVtypeId ,
+						hov_vtype_id,
 						r*alpha );
 			}
 		}
@@ -228,7 +229,7 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 		protected List<Link> next_downstream_offramp_gps;
 
 
-		public HOVNodeData(DemandSet demand_set, Node myNode, Controller_HOV_SR_Generator controller) {
+		public HOVNodeData(DemandSet demand_set, Node myNode) {
 			this.id = myNode.getId();
 			this.myNode = myNode;
 			this.hov_vehtype_index = myScenario.getVehicleTypeIndexForName("HOV");
@@ -336,6 +337,9 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 			}
 
 			// find the next downstream offramps for plugging in splits if HOV out splits unset
+			next_downstream_offramp_nodes = new ArrayList<Node>();
+			next_downstream_offramp_gps = new ArrayList<Link>();
+			next_downstream_offramps = new ArrayList<Link>();
 			for(Link link : link_gp) {
 				for(Link nextLink : link.getEnd_node().getOutput_link()) {
 					if(nextLink.isOfframp()) {
