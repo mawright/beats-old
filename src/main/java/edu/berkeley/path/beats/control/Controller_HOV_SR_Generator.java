@@ -111,7 +111,7 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 					}
 
 			// HOV->GP, apply beta if unset
-			if(nd.get_SRP_hov_out_split()==Double.NaN) {
+			if(Double.isNaN(nd.get_SRP_hov_out_split())) {
 				DebugLogger.write(logger_id, String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
 						getMyScenario().getCurrentTimeInSeconds(),
 						nd.getId(),
@@ -323,17 +323,15 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 				}
 			}
 
-			// find the demand profile for the downstream HOV links
+			// find the demand profile for the downstream HOV link
 			hov_downstream_flow = new ArrayList<BeatsTimeProfile>();
 			List<Double> start_time = new ArrayList<Double>();
-			for(Link link : link_hov){
-				edu.berkeley.path.beats.jaxb.DemandProfile dp = demand_set.get_demand_profile_for_link_id(link.getId());
-				if(dp==null)
-					hov_downstream_flow.add(new BeatsTimeProfile("0",true));
-				else{
-					hov_downstream_flow.add(new BeatsTimeProfile(dp.getDemand().get(0).getContent(),true));
-					start_time.add(Double.isInfinite(dp.getStartTime()) ? 0d : dp.getStartTime());
-				}
+			edu.berkeley.path.beats.jaxb.DemandProfile dp = demand_set.get_demand_profile_for_link_id(link_hov_out.getId());
+			if(dp==null)
+				hov_downstream_flow.add(new BeatsTimeProfile("0",true));
+			else{
+				hov_downstream_flow.add(new BeatsTimeProfile(dp.getDemand().get(0).getContent(),true));
+				start_time.add(Double.isInfinite(dp.getStartTime()) ? 0d : dp.getStartTime());
 			}
 
 			// find the next downstream offramps for plugging in splits if HOV out splits unset
@@ -414,7 +412,7 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 
 			// if HOV outflow not set, find downstream FR split(s)
 			beta_hov_gp = get_SRP_hov_out_split();
-			if (beta_hov_gp==Double.NaN) {
+			if (Double.isNaN(beta_hov_gp)) {
 				if(next_downstream_offramp_nodes.isEmpty()) {
 					beta_hov_gp = 0d; }
 				else {
@@ -437,7 +435,7 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 			for (j=0;j<link_fr.size();j++) {
 				int jj = ind_fr.get(j);
 				beta_gp_frs[j] = get_sr(ind_gp_in,jj,hov_vehtype_index);
-				gp_to_fr_demand[j] = link_gp_in.get_out_demand_in_veh(0)[hov_vehtype_index] * beta_gp_frs[jj];
+				gp_to_fr_demand[j] = link_gp_in.get_out_demand_in_veh(0)[hov_vehtype_index] * beta_gp_frs[j];
 			}
 
 			double gp_to_gp_demand = link_gp_in.get_out_demand_in_veh(0)[hov_vehtype_index] * get_sr(ind_gp_in,ind_gp_out,hov_vehtype_index);
@@ -479,6 +477,9 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 			}
 			if ((upstream_hov_link==null) || (downstream_gp_link==null))
 					return 0d;
+			if (myNode.getSplitRatioProfile().isConstant(
+					upstream_hov_link.getId(), downstream_gp_link.getId(), hov_vehtype_index))
+				return Double.NaN;
 			return get_sr(myNode.getInputLinkIndex(upstream_hov_link.getId()),
 					myNode.getOutputLinkIndex(downstream_gp_link.getId()),
 					hov_vehtype_index);
