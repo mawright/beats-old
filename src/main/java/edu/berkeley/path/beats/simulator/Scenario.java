@@ -729,7 +729,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(getVehicleTypeSet().getVehicleType()==null)
 			return 0;
 		for(int i=0;i<getVehicleTypeSet().getVehicleType().size();i++)
-			if(getVehicleTypeSet().getVehicleType().get(i).getName().equals(name))
+			if(getVehicleTypeSet().getVehicleType().get(i).getName().equalsIgnoreCase(name))
 				return i;
 		return -1;
 	}
