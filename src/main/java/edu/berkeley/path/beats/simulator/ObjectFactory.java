@@ -108,6 +108,10 @@ final public class ObjectFactory {
                 C = new Controller_SR_Generator(myScenario, jaxbC);
 				break;
 
+			case HOV_SR_Generator:
+				C = new Controller_HOV_SR_Generator(myScenario, jaxbC);
+				break;
+
 			default:
 				C = null;
 				break;
