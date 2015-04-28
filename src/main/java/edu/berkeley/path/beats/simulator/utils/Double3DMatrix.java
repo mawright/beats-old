@@ -33,14 +33,13 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 // 3D matrix class used for representing time-invariant split ratio matrices.
-
-final class Double3DMatrix {
+public final class Double3DMatrix {
 	
-	private int nIn;			// [1st dimension] number of input links
-	private int nOut;			// [2nd dimension] number of columns
-	private int nVTypes;		// [3rd dimension] number of slices
-	private boolean isempty;	// true if there is no data;
-	private double [][][] data;
+	protected int nIn;			// [1st dimension] number of input links
+    protected int nOut;			// [2nd dimension] number of columns
+    protected int nVTypes;		// [3rd dimension] number of slices
+    protected boolean isempty;	// true if there is no data;
+    protected double [][][] data;
     
 	/////////////////////////////////////////////////////////////////////
 	// construction

@@ -1,5 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
+
 public abstract class Node_FlowSolver {
 
 	protected Node myNode;

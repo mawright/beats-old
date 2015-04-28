@@ -2,6 +2,7 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 	

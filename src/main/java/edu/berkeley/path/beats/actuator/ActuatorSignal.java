@@ -31,6 +31,7 @@ import edu.berkeley.path.beats.jaxb.Phase;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.DebugFlags;
 
 import java.util.*;
 

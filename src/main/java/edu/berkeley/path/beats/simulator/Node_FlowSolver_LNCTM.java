@@ -27,6 +27,7 @@
 package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
 

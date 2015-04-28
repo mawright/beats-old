@@ -28,6 +28,7 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile {
 

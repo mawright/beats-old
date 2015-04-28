@@ -26,11 +26,9 @@
 
 package edu.berkeley.path.beats.simulator.utils;
 
-import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
-
 import java.util.StringTokenizer;
 
-final class Double2DMatrix {
+public final class Double2DMatrix {
 	
 	private int nTime;			// number of time slices
 	private int nVTypes;		// number of vehicle types
