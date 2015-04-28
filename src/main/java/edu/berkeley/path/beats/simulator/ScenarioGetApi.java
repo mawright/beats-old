@@ -1,10 +1,13 @@
 package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
+import edu.berkeley.path.beats.jaxb.Density;
+import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by gomes on 4/28/2015.
@@ -361,4 +364,82 @@ public class ScenarioGetApi {
         return null;
     }
 
+
+
+
+    public void setUncertaintyModel(String uncertaintyModel) {
+        this.uncertaintyModel = TypeUncertainty.valueOf(uncertaintyModel);
+    }
+
+
+    public FundamentalDiagramSet get_current_fds_si(double time_current){
+        Network network = (Network) getNetworkSet().getNetwork().get(0);
+        JaxbObjectFactory factory = new JaxbObjectFactory();
+        FundamentalDiagramSet fd_set = factory.createFundamentalDiagramSet();
+        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
+            Link L = (Link) jaxbL;
+            FundamentalDiagramProfile fdp = (FundamentalDiagramProfile) factory.createFundamentalDiagramProfile();
+            fd_set.getFundamentalDiagramProfile().add(fdp);
+
+            // set values
+            fdp.setLinkId(L.getId());
+            //fdp.setDt(-1d);
+            FundamentalDiagram fd = new FundamentalDiagram(L);
+
+            if(L.getFundamentalDiagramProfile()==null)
+                fd.settoDefault();
+            else
+                fd.copyfrom(L.getFundamentalDiagramProfile().getFDforTime(time_current));
+            fd.setOrder(0);
+            fdp.getFundamentalDiagram().add(fd);
+        }
+        return fd_set;
+    }
+
+
+
+    public InitialDensitySet get_current_densities_si(){
+        Network network = (Network) getNetworkSet().getNetwork().get(0);
+        JaxbObjectFactory factory = new JaxbObjectFactory();
+        InitialDensitySet init_dens_set = (InitialDensitySet) factory.createInitialDensitySet();
+        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
+            Link L = (Link) jaxbL;
+            for(int v=0;v<getNumVehicleTypes();v++){
+                Density den = factory.createDensity();
+                den.setLinkId(jaxbL.getId());
+                den.setVehicleTypeId(getVehicleTypeIdForIndex(v));
+                den.setContent(String.format("%f",L.getDensityInVeh(0,v)/L.getLengthInMeters()));
+                init_dens_set.getDensity().add(den);
+            }
+        }
+        return init_dens_set;
+    }
+
+
+    public DemandProfile get_current_demand_for_link(long link_id){
+        if(demandSet==null)
+            return null;
+        return ((DemandSet) demandSet).get_demand_profile_for_link_id(link_id);
+    }
+
+
+    public Properties auxiliary_properties(String group_name){
+        return scenario.aux_props.get(group_name);
+    }
+
+    protected edu.berkeley.path.beats.simulator.ControllerSet controllerset() {
+        return scenario.controllerset;
+    }
+
+
+    public edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile getFDprofileForLinkId(long link_id){
+        if(getFundamentalDiagramSet()==null)
+            return null;
+        if(getFundamentalDiagramSet().getFundamentalDiagramProfile()==null)
+            return null;
+        for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdp : getFundamentalDiagramSet().getFundamentalDiagramProfile())
+            if(fdp.getLinkId()==link_id)
+                return fdp;
+        return null;
+    }
 }
