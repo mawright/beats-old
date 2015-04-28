@@ -34,6 +34,7 @@ import edu.berkeley.path.beats.actuator.NEMA;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.Table;
 
 public class Controller_SIG_Pretimed extends Controller {
 

@@ -24,18 +24,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.output;
 
-//import edu.berkeley.path.beats.simulator.Scenario.SignalPhases;
-
+import edu.berkeley.path.beats.simulator.LinkCumulativeData;
+import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-public abstract class OutputWriterBase implements InterfaceOutputWriter{
+public abstract class OutputWriterBase implements InterfaceOutputWriter {
 	
-	protected Scenario scenario;
-    protected double outStart;      // time to start writing output
-	protected double outDt;			// output frequency in seconds
-	protected int outSteps;			// output frequency in simulation steps
+	public Scenario scenario;
+    public double outStart;      // time to start writing output
+    public double outDt;			// output frequency in seconds
+    public int outSteps;			// output frequency in simulation steps
 
 	/////////////////////////////////////////////////////////////////////
 	// construction

@@ -1,4 +1,4 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.utils;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 

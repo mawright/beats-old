@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorCTM;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
@@ -46,22 +47,22 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// does not change ....................................
     protected Node begin_node;
     protected Node end_node;
-    protected Type link_type;
+    public Type link_type;
 
     // in/out flows (from node model or demand profiles)
-    protected double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
-    protected double [][] outflow;    				    // [veh]	numEnsemble x numVehTypes
+    public double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
+    public double [][] outflow;    				    // [veh]	numEnsemble x numVehTypes
 
     // link geometry
-    protected double _lanes;							// [-]
+    public double _lanes;							// [-]
 
 	// source/sink indicators
-    protected boolean issource; 						// [boolean]
-    protected boolean issink;     					    // [boolean]
+    public boolean issource; 						// [boolean]
+    public boolean issink;     					    // [boolean]
 
-    protected FundamentalDiagramProfile myFDprofile;	// fundamental diagram profile (used to rescale future FDs upon lane change event)
-    protected CapacityProfile myCapacityProfile; 		// capacity profile
-    protected DemandProfile myDemandProfile;  		    // demand profiles
+    public FundamentalDiagramProfile myFDprofile;	// fundamental diagram profile (used to rescale future FDs upon lane change event)
+    public CapacityProfile myCapacityProfile; 		// capacity profile
+    public DemandProfile myDemandProfile;  		    // demand profiles
 	
 	// Actuation
     protected boolean has_flow_controller;
@@ -72,7 +73,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// does change ........................................
 	
 	// link geometry
-    protected double _length;							// [meters]
+    public double _length;							// [meters]
 
 	// FDs
     protected FundamentalDiagram [] FDfromProfile;	    // profile fundamental diagram
@@ -85,7 +86,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     protected double [] initial_density;			    // [veh]  	numVehTypes
 
     // link behavior
-    protected LinkBehaviorCTM link_behavior;
+    public LinkBehaviorCTM link_behavior;
 
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -187,7 +188,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		activeFDevent = false;
 	}
 
-	protected void update_densities() {
+	public void update_densities() {
 
         // behavior for all sink links
         if(issink)
@@ -201,7 +202,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         link_behavior.update_state(inflow,outflow);
 	}
 
-    protected void updateOutflowDemand(){
+    public void updateOutflowDemand(){
         link_behavior.update_outflow_demand(external_max_speed, external_max_flow);
     }
 
@@ -237,16 +238,16 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         initial_density  = d==null ? BeatsMath.zeros(myScenario.getNumVehicleTypes()) : d.clone();
     }
 
-    protected void setInflow(int ensemble,double[] inflow) {
+    public void setInflow(int ensemble,double[] inflow) {
         this.inflow[ensemble] = inflow;
     }
 
-    protected void setOutflow(int ensemble,double[] outflow) {
+    public void setOutflow(int ensemble,double[] outflow) {
         this.outflow[ensemble] = outflow;
     }
 
     // getter for the currently active fundamental diagram
-    protected FundamentalDiagram currentFD(int ensemble){
+    public FundamentalDiagram currentFD(int ensemble){
         if(activeFDevent)
             return FDfromEvent;
         return FDfromProfile==null ? null : FDfromProfile[ensemble];
@@ -329,6 +330,10 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
     public Network getMyNetwork(){
         return myNetwork;
+    }
+
+    public Scenario getMyScenario(){
+        return myScenario;
     }
 
 	public static boolean haveSameType(Link linkA,Link linkB){

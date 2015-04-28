@@ -1,6 +1,4 @@
-package edu.berkeley.path.beats.simulator;
-
-import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
+package edu.berkeley.path.beats.simulator.utils;
 
 public class BeatsTimeProfile {
 

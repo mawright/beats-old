@@ -24,8 +24,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
+import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
@@ -49,19 +50,19 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
-	protected void reset() {
+	public void reset() {
 		iscontributor = new boolean[myNode.nIn][myNode.nOut];
 		dsratio 		= new double[myNode.nOut];
 		outDemandKnown 	= new double[myNode.nOut];
 	}
 	
 	@Override
-	protected IOFlow computeLinkFlows(final Double3DMatrix sr,final int ensemble_index){
+    public IOFlow computeLinkFlows(final Double3DMatrix sr,final int ensemble_index){
 
     	int i,j,k;
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut;        
-    	int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
+    	int numVehicleTypes = myNode.getMyNetwork().getMyScenario().getNumVehicleTypes();
 
         double [][] demand = myNode.node_behavior.getDemand(ensemble_index);
         double [] supply = myNode.node_behavior.getAvailableSupply(ensemble_index);

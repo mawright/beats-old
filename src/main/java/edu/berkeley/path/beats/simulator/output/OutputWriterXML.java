@@ -38,7 +38,6 @@ import javax.xml.stream.*;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;

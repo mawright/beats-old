@@ -27,6 +27,8 @@
 package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.jaxb.Splitratio;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.NodeBehavior;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_FlowSolver;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
@@ -46,22 +48,22 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	protected Network myNetwork;
 
 	// connectivity
-	protected int nIn;
-	protected int nOut;
+    public int nIn;
+    public int nOut;
 
-    protected boolean istrivialsplit;
+    public boolean istrivialsplit;
 	protected boolean isTerminal;
 
 	// link references
-	protected Link [] output_link;
-	protected Link [] input_link;
+	public Link [] output_link;
+    public Link [] input_link;
 
 	// split ratio from profile
 	protected SplitRatioProfile my_profile;
 	protected boolean has_profile;
 
     // node behavior
-    protected NodeBehavior node_behavior;
+    public NodeBehavior node_behavior;
 	
 	// does change ........................................
 
@@ -168,7 +170,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
             node_behavior.sr_solver.reset();
 	}
 	
-	protected void update_flows() {
+	public void update_flows() {
 		
         if(isTerminal)
             return;
@@ -282,7 +284,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 
 
-    protected Double3DMatrix[] select_and_perturb_split_ratio(){
+    public Double3DMatrix[] select_and_perturb_split_ratio(){
     	
     	int numVTypes = getMyNetwork().getMyScenario().getNumVehicleTypes();
 

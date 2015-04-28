@@ -56,7 +56,7 @@ public class CapacitySet extends DownstreamBoundaryCapacitySet {
             ((CapacityProfile) ((Map.Entry)it.next()).getValue()).validate();
     }
 
-    protected void update() {
+    public void update() {
         Iterator it = link_id_to_capacityprofile.entrySet().iterator();
         while (it.hasNext())
             ((CapacityProfile) ((Map.Entry)it.next()).getValue()).update(false);

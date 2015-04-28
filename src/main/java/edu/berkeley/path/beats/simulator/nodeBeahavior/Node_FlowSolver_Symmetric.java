@@ -1,7 +1,8 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
 import java.util.Set;
 
+import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 import edu.berkeley.path.beats.util.ArraySet;
 import org.apache.log4j.Logger;
@@ -41,7 +42,7 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 	/////////////////////////////////////////////////////////////////////
 	
 	@Override
-	protected void reset() {
+    public void reset() {
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut;
 		directed_demand = new double[nIn][nOut];
@@ -51,11 +52,11 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 	}
 
 	@Override
-    protected IOFlow computeLinkFlows(final Double3DMatrix splitratio,final int ensemble_index){
+    public IOFlow computeLinkFlows(final Double3DMatrix splitratio,final int ensemble_index){
 
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut; 
-    	int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
+    	int numVehicleTypes = myNode.getMyNetwork().getMyScenario().getNumVehicleTypes();
 		IOFlow ioflow = new IOFlow(nIn,nOut,numVehicleTypes);
 
         double [][] demand = myNode.node_behavior.getDemand(ensemble_index);

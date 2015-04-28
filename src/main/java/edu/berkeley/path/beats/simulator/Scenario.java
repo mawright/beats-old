@@ -36,6 +36,12 @@ import javax.xml.bind.Marshaller;
 import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.jaxb.*;
+import edu.berkeley.path.beats.simulator.output.OutputWriterBase;
+import edu.berkeley.path.beats.simulator.output.OutputWriterFactory;
+import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterACTM;
+import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterAbstract;
+import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterFrFlow;
+import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterStandard;
 import edu.berkeley.path.beats.simulator.utils.*;
 import org.apache.log4j.Logger;
 
@@ -48,19 +54,19 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 @SuppressWarnings("restriction")
 public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
-    protected static Logger logger = Logger.getLogger(Scenario.class);
+    public static Logger logger = Logger.getLogger(Scenario.class);
 
     protected String split_logger_prefix;
     protected Double split_logger_dt;
-	protected Cumulatives cumulatives;
-    protected PerformanceCalculator perf_calc;
-	protected Clock clock;
+    public Cumulatives cumulatives;
+    public PerformanceCalculator perf_calc;
+    public Clock clock;
 	protected int numVehicleTypes;			// number of vehicle types
 	protected double global_demand_knob;	// scale factor for all demands
-	protected edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
-	protected EventSet eventset = new EventSet();	// holds time sorted list of events
-	protected SensorSet sensorset = new SensorSet();
-	protected ActuatorSet actuatorset = new ActuatorSet();
+    public edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
+    public EventSet eventset = new EventSet();	// holds time sorted list of events
+    public SensorSet sensorset = new SensorSet();
+    public ActuatorSet actuatorset = new ActuatorSet();
 	protected boolean started_writing;
 
 	protected String configfilename;
@@ -512,7 +518,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 			OutputWriterBase outputwriter = null;
 			if (runParam.writefiles){
-				outputwriter = OutputWriterFactory.getWriter(this, owr_props, runParam.dt_output,runParam.outsteps,runParam.t_start_output);
+				outputwriter = OutputWriterFactory.getWriter(this, owr_props, runParam.dt_output, runParam.outsteps, runParam.t_start_output);
 				outputwriter.open(i);
 			}
 
@@ -600,7 +606,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		this.global_demand_knob = global_demand_knob;
 	}
 
-    protected edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile getFDprofileForLinkId(long link_id){
+    public edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile getFDprofileForLinkId(long link_id){
         if(getFundamentalDiagramSet()==null)
             return null;
         if(getFundamentalDiagramSet().getFundamentalDiagramProfile()==null)
@@ -1259,7 +1265,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		cumulatives.reset();
 	}
 
-	protected class RunParameters{
+	public class RunParameters{
 		
 		// prescribed
 		public double dt_sim;				// [sec] simulation time step
@@ -1348,7 +1354,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 	}
 
-	protected static class Cumulatives {
+	public static class Cumulatives {
 
         Scenario scenario;
 		java.util.Map<Long, LinkCumulativeData> links = null;

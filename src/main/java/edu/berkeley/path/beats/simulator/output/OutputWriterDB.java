@@ -33,7 +33,6 @@ package edu.berkeley.path.beats.simulator.output;
 
 //import edu.berkeley.path.beats.db.BaseTypes;
 //import edu.berkeley.path.beats.om.*;
-import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
         import edu.berkeley.path.beats.simulator.utils.BeatsException;
 

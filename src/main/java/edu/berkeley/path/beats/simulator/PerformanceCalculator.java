@@ -78,7 +78,7 @@ public class PerformanceCalculator {
             log.reset();
     }
 
-    protected void update(){
+    public void update(){
         for(Logger log : loggers){
             log.update();
             if(!log.agg_time && myScenario.getClock().getRelativeTimeStep()%log.dt_steps==0)

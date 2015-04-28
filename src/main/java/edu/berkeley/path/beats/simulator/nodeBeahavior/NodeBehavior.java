@@ -1,14 +1,16 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.nodeBeahavior;
+
+import edu.berkeley.path.beats.simulator.Node;
 
 /**
  * Created by gomes on 10/28/14.
  */
 public class NodeBehavior {
 
-    protected Node node;
-    protected Node_SplitRatioSolver sr_solver;
-    protected Node_FlowSolver flow_solver;
-    protected Node_SupplyPartitioner supply_partitioner;
+    public Node node;
+    public Node_SplitRatioSolver sr_solver;
+    public Node_FlowSolver flow_solver;
+    public Node_SupplyPartitioner supply_partitioner;
 
     public NodeBehavior(Node node,Node_SplitRatioSolver sr_solver,Node_FlowSolver flow_solver,Node_SupplyPartitioner supply_partitioner){
         this.node = node;
@@ -19,7 +21,7 @@ public class NodeBehavior {
 
     protected double [][] getDemand(int e){
         int nIn = node.getnIn();
-        int nVT = node.myNetwork.getMyScenario().getNumVehicleTypes();
+        int nVT = node.getMyNetwork().getMyScenario().getNumVehicleTypes();
         double [][] x = new double[nIn][nVT];
         for(int i=0;i<nIn;i++)
             for(int k=0;k<nVT;k++)

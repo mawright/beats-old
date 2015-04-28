@@ -12,6 +12,8 @@ import java.util.List;
 
 import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorCTM;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_SplitRatioSolver_HAMBURGER;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -22,7 +24,7 @@ import edu.berkeley.path.beats.jaxb.LinkType;
 import edu.berkeley.path.beats.jaxb.NodeType;
 import edu.berkeley.path.beats.jaxb.VehicleType;
 import edu.berkeley.path.beats.jaxb.VehicleTypeSet;
-import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_Greedy;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_SplitRatioSolver_Greedy;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog.BeatsError;
 
 public class Node_SplitRatioSolver_HAMBURGER_Test {
@@ -370,7 +372,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 						// Generate input parameters for computeAppliedSplitRatio
 						Class[] parameterType =new Class[3];
 						parameterType[0] = sr_local_avg.get(node).getClass();
-						parameterType[1] = Class.forName("edu.berkeley.path.beats.simulator.Node_FlowSolver$SupplyDemand");
+						parameterType[1] = Class.forName("edu.berkeley.path.beats.simulator.nodeBeahavior.Node_FlowSolver$SupplyDemand");
 						parameterType[2] = Integer.TYPE; 
 						
 						// Invoke computeAppliedSplitRatio
@@ -558,7 +560,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		// Generate input parameters for computeAppliedSplitRatio
 		Class[] parameterType =new Class[3];
 		parameterType[0] = sr_local_avg.getClass();
-		parameterType[1] = Class.forName("edu.berkeley.path.beats.simulator.Node_FlowSolver$SupplyDemand");
+		parameterType[1] = Class.forName("edu.berkeley.path.beats.simulator.nodeBeahavior.Node_FlowSolver$SupplyDemand");
 		parameterType[2] = Integer.TYPE; 
 		
 		// Invoke computeAppliedSplitRatio

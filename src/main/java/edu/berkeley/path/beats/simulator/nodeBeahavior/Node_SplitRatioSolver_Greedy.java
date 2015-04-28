@@ -1,5 +1,6 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
+import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
@@ -15,26 +16,26 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
 	}
 
 	@Override
-	protected void validate() {
+    public void validate() {
 		// TODO Auto-generated method stu
 	}
 	
 	@Override
-	protected void reset() {
+    public void reset() {
 		dsratio 		= new double[myNode.nOut];
 		outDemandKnown 	= new double[myNode.nOut];
 	}
 	
 	@Override
-	protected Double3DMatrix computeAppliedSplitRatio(final Double3DMatrix splitratio_selected,final int e) {
+    public Double3DMatrix computeAppliedSplitRatio(final Double3DMatrix splitratio_selected,final int e) {
 
     	int i,j,k;
     	int numunknown;	
     	double dsmax, dsmin;
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut;        
-    	int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
-        String [] vTypes = myNode.myNetwork.getMyScenario().getVehicleTypeNames();
+    	int numVehicleTypes = myNode.getMyNetwork().getMyScenario().getNumVehicleTypes();
+        String [] vTypes = myNode.getMyNetwork().getMyScenario().getVehicleTypeNames();
     	Double3DMatrix splitratio_new = new Double3DMatrix(splitratio_selected.getData());
     	double remainingSplit;
     	double num;

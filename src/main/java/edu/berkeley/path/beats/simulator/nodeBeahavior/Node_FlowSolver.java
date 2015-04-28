@@ -1,21 +1,22 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
+import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 public abstract class Node_FlowSolver {
 
-	protected Node myNode;
-	
-    protected abstract IOFlow computeLinkFlows(final Double3DMatrix sr,final int ensemble_index);
+    public Node myNode;
 
-    protected abstract void reset();
+    public abstract IOFlow computeLinkFlows(final Double3DMatrix sr,final int ensemble_index);
+
+    public abstract void reset();
     
 	public Node_FlowSolver(Node myNode) {
 		super();
 		this.myNode = myNode;
 	}
 
-	protected static class SupplyDemand {
+	public static class SupplyDemand {
 		// input to node model, copied from link suppy/demand
 		protected double [][] demand;    // [nIn][nTypes]
 		protected double [] supply;		// [nOut]
@@ -47,7 +48,7 @@ public abstract class Node_FlowSolver {
 		}
 	}
 	
-	protected static class IOFlow {
+	public static class IOFlow {
 		// input to node model, copied from link suppy/demand
 		protected double [][] in;		// [nIn][nTypes]
 		protected double [][] out;	// [ensemble][nOut][nTypes]

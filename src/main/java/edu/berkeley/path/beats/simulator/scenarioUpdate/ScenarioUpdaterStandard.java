@@ -1,5 +1,7 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.scenarioUpdate;
 
+import edu.berkeley.path.beats.simulator.Network;
+import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 /**

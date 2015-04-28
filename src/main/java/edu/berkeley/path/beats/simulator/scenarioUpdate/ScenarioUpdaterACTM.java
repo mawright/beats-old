@@ -1,5 +1,9 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.scenarioUpdate;
 
+import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorACTM;
+import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorCTM;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_FlowSolver;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
@@ -157,7 +161,6 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
                 double [] fin = {(1-beta)*fout[0]+fwy_node.r};
                 fwy_node.dn_ml.setInflow(e,fin);
             }
-
         }
 
         // update density

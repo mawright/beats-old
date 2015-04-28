@@ -31,7 +31,7 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 import java.util.ArrayList;
 
-final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
+public final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 
 //	private enum OperationType {Deactivate,Activate}
 
@@ -180,8 +180,8 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 //		}
 //
 //	}
-	
-	protected void update() throws BeatsException {
+
+    public void update() throws BeatsException {
 
 //        // turn active controllers on
 //		processActivations(myScenario.getClock().getT());

@@ -137,7 +137,7 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
 		
 	}
 
-	protected void update(boolean forcesample) throws BeatsException {
+    public void update(boolean forcesample) throws BeatsException {
 		if(myLink==null)
 			return;
 		if(isdone || FD.isEmpty())

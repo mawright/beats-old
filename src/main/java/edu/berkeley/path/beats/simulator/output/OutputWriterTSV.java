@@ -10,7 +10,6 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Network;
-import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 public class OutputWriterTSV extends OutputWriterBase {

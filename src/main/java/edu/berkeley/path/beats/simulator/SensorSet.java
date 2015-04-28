@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import edu.berkeley.path.beats.jaxb.SensorType;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-final class SensorSet extends edu.berkeley.path.beats.jaxb.SensorSet  {
+public final class SensorSet extends edu.berkeley.path.beats.jaxb.SensorSet  {
 
 	private ArrayList<Sensor> sensors = new ArrayList<Sensor>();
 
@@ -80,12 +80,12 @@ final class SensorSet extends edu.berkeley.path.beats.jaxb.SensorSet  {
 			sensor.validate();
 	}
 	
-	protected void reset() throws BeatsException {
+	public void reset() throws BeatsException {
 		for(Sensor sensor : sensors)
 			sensor.reset();
 	}
 
-	protected void update() throws BeatsException {
+    public void update() throws BeatsException {
 
         // NOTE: ensembles have not been implemented for sensors. They do not apply
         // to the loop sensor, but would make a difference for floating sensors.

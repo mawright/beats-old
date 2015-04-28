@@ -1,7 +1,6 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.Jaxb;
-import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.DemandSet;
@@ -13,6 +12,7 @@ import edu.berkeley.path.beats.simulator.ScenarioElement;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfile;
 
 import java.util.ArrayList;
 import java.util.List;

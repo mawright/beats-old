@@ -227,27 +227,27 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 	// to links, these are initialized with default values, and 
 	// copyfrom only replaces with non-nan values.
 
-	protected double _getDensityJamInVeh() {
+    public double _getDensityJamInVeh() {
 		return _densityJam;
 	}
 
-	protected double _getCapacityInVeh() {
+    public double _getCapacityInVeh() {
 		return _capacity;
 	}
 
-	protected double _getCapacityDropInVeh() {
+    public double _getCapacityDropInVeh() {
 		return _capacityDrop;
 	}
 
-	protected double getVfNormalized() {
+    public double getVfNormalized() {
         return _vf;
 	}
 
-	protected double getWNormalized() {
+    public double getWNormalized() {
         return _w;
 	}
 
-	protected double getDensityCriticalInVeh() {
+	public double getDensityCriticalInVeh() {
 		return _capacity/_vf;
 	}
 

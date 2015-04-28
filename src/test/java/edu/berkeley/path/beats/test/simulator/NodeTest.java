@@ -6,11 +6,12 @@ import java.lang.reflect.Field;
 
 import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_SplitRatioSolver_HAMBURGER;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_Greedy;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_SplitRatioSolver_Greedy;
 
 public class NodeTest {
 

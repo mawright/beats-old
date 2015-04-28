@@ -33,6 +33,7 @@ import java.util.Map;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.Table;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.jaxb.FeedbackSensor;

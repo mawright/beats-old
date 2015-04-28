@@ -36,8 +36,8 @@ import java.util.List;
 */
 public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 
-	protected boolean isempty;
-    private Scenario myScenario;
+	public boolean isempty;
+    public Scenario myScenario;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update

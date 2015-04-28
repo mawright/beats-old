@@ -1,4 +1,6 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.nodeBeahavior;
+
+import edu.berkeley.path.beats.simulator.Node;
 
 /**
  * Created by gomes on 10/28/14.

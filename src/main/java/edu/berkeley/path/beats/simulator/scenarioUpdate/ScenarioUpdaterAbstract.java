@@ -1,5 +1,10 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.scenarioUpdate;
 
+import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorCTM;
+import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorQueue;
+import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorQueueAndTravelTime;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 /**

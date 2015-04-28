@@ -1,5 +1,8 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.linkBehavior;
 
+import edu.berkeley.path.beats.simulator.FundamentalDiagram;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 /**
@@ -7,19 +10,19 @@ import edu.berkeley.path.beats.simulator.utils.BeatsMath;
  */
 public class LinkBehaviorCTM {
 
-    protected Link myLink;
-    protected Scenario myScenario;
-    protected double [][] density;                  // [veh] numEnsemble x numVehTypes
-    protected double [] total_space_supply;         // [veh]	numEnsemble (typically njam-n)
-    protected double [] available_space_supply;     // [veh]	numEnsemble (typically min(w*(njam-n),F))
-    protected double [][] flow_demand;              // [veh] 	numEnsemble x numVehTypes (typically min(vn,F,c))
+    public Link myLink;
+    public Scenario myScenario;
+    public double [][] density;                  // [veh] numEnsemble x numVehTypes
+    public double [] total_space_supply;         // [veh]	numEnsemble (typically njam-n)
+    public double [] available_space_supply;     // [veh]	numEnsemble (typically min(w*(njam-n),F))
+    public double [][] flow_demand;              // [veh] 	numEnsemble x numVehTypes (typically min(vn,F,c))
 
     public LinkBehaviorCTM(Link link){
         this.myLink = link;
-        this.myScenario = myLink.myScenario;
+        this.myScenario = myLink.getMyScenario();
     }
 
-    protected void reset(double [] initial_density) {
+    public void reset(double [] initial_density) {
         int n1 = myScenario.getNumEnsemble();
         int n2 = myScenario.getNumVehicleTypes();
         flow_demand = BeatsMath.zeros(n1, n2);

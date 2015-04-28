@@ -1,5 +1,7 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.linkBehavior;
 
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 import java.util.ArrayList;
@@ -15,7 +17,7 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
     public LinkBehaviorTravelTime(Link link){
         super(link);
 
-        Scenario scenario = link.myScenario;
+        Scenario scenario = link.getMyScenario();
         int num_ensemble = scenario.getNumEnsemble();
 
         double L = link.getLengthInMeters();

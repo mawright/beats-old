@@ -28,6 +28,7 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfile;
 
 final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
@@ -37,7 +38,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	private double dtinseconds;				// not really necessary
 	private int samplesteps;				// [sim steps] profile sample period
 	private int step_initial_abs;
-    private BeatsTimeProfile [] demand_nominal;	// [veh] demand profile per vehicle type
+    private BeatsTimeProfile[] demand_nominal;	// [veh] demand profile per vehicle type
 	private int [] vehicle_type_index;		// vehicle type indices for demand_nominal
 	private double std_dev_add;				// [veh]
 	private double std_dev_mult;			// [veh]

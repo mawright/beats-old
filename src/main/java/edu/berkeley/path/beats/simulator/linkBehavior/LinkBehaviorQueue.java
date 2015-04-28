@@ -1,5 +1,7 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.linkBehavior;
 
+import edu.berkeley.path.beats.simulator.FundamentalDiagram;
+import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 /**
