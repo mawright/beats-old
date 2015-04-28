@@ -1,4 +1,4 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.utils;
 
 /**
  * Created by gomes on 6/2/14.

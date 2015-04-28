@@ -1,4 +1,4 @@
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.utils;
 
 import java.io.File;
 import java.io.FileWriter;
