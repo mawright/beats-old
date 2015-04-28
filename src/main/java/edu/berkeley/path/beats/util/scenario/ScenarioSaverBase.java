@@ -6,7 +6,7 @@ import javax.xml.bind.Marshaller;
 import edu.berkeley.path.beats.util.SchemaUtil;
 import org.apache.log4j.Logger;
 
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 abstract class ScenarioSaverBase implements ScenarioSaverIF {
 

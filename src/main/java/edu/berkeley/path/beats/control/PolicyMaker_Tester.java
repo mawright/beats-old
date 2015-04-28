@@ -6,6 +6,7 @@ import edu.berkeley.path.beats.control.rm_interface.RampMeteringPolicyProfile;
 import edu.berkeley.path.beats.control.rm_interface.RampMeteringPolicySet;
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
 
 import java.util.Properties;
 

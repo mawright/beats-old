@@ -6,7 +6,7 @@ import java.util.Vector;
 
 import edu.berkeley.path.beats.jaxb.ObjectFactory;
 import edu.berkeley.path.beats.jaxb.Point;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 //** Decodes a path from a string */
 public class GoogleDecoder extends DecoderBase implements DecoderIF {

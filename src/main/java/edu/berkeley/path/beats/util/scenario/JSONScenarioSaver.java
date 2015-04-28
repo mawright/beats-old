@@ -10,7 +10,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 
 import edu.berkeley.path.beats.jaxb.Scenario;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 class JSONScenarioSaver extends ScenarioSaverBase implements ScenarioSaverIF {
 

@@ -26,6 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
 
     // used in update()
@@ -82,7 +84,7 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
                     outDemandKnown[j] += demand[i][k]*sr.get(i,j,k);
 
             // compute and sort output demand/supply ratio .............
-            if(BeatsMath.greaterthan(supply[j],0d))
+            if(BeatsMath.greaterthan(supply[j], 0d))
                 dsratio[j] = Math.max( outDemandKnown[j] / supply[j] , 1d );
             else
 	            dsratio[j] = Double.POSITIVE_INFINITY;

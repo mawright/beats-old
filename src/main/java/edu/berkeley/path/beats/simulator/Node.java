@@ -27,6 +27,8 @@
 package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.jaxb.Splitratio;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 import java.util.Arrays;
 import java.util.List;
@@ -369,7 +371,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 					sum += X.get(i,idxNegative,k);
 				}
 				
-				if ( !hasNaN && BeatsMath.equals(sum,0.0) ) {	
+				if ( !hasNaN && BeatsMath.equals(sum, 0.0) ) {
 					X.set(i,0,k,1d);
 					//for (j=0; j<n2; j++)			
 					//	data[i][j][k] = 1/((double) n2);

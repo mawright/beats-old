@@ -40,7 +40,7 @@ import javax.measure.unit.Unit;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.jaxb.*;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
 import edu.berkeley.path.beats.util.scenario.ScenarioSaver;
 

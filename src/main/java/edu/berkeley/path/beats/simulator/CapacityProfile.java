@@ -26,6 +26,9 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile {
 
 	// does not change ....................................
@@ -70,7 +73,7 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
+			samplesteps = BeatsMath.round(dtinseconds / myScenario.getSimdtinseconds());
 		}
 		else{ 	// allow only if it contains one time step
 			if(capacity.getNumTime()==1){

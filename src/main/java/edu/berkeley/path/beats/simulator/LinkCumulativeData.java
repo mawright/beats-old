@@ -1,5 +1,8 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 /**
  * Link cumulative data storage
  */

@@ -27,6 +27,7 @@
 package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.jaxb.Splitratio;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 
 import java.util.List;
 import java.util.StringTokenizer;

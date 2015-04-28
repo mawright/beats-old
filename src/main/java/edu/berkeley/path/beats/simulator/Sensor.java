@@ -26,7 +26,9 @@
 
 package edu.berkeley.path.beats.simulator;
 
-/** Base class for sensors. 
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+
+/** Base class for sensors.
  * Provides a default implementation of <code>InterfaceSensor</code>.
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)

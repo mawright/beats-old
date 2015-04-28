@@ -1,5 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 /**
  * Created by gomes on 3/12/14.
  */
@@ -20,7 +22,7 @@ public class LinkBehaviorCTM {
     protected void reset(double [] initial_density) {
         int n1 = myScenario.getNumEnsemble();
         int n2 = myScenario.getNumVehicleTypes();
-        flow_demand = BeatsMath.zeros(n1,n2);
+        flow_demand = BeatsMath.zeros(n1, n2);
         total_space_supply = BeatsMath.zeros(n1);
         available_space_supply = BeatsMath.zeros(n1);
         reset_density();

@@ -1,5 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
+
 public class BeatsTimeProfile {
 
 	private double [] data;

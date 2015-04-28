@@ -1,9 +1,6 @@
 package edu.berkeley.path.beats.util.scenario;
 
-import java.io.File;
-
-import edu.berkeley.path.beats.jaxb.Scenario;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 /**
  * Loads a scenario from a file or from a database.

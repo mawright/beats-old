@@ -26,6 +26,10 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 import java.util.ArrayList;
 
 /** Base class for events. 
@@ -69,7 +73,7 @@ public class Event implements Comparable {
 		this.jaxbEvent = jaxbE;
 		this.myScenario = myScenario;
 		this.myType = myType;
-		this.abs_time_step = BeatsMath.round(jaxbE.getTstamp()/myScenario.getSimdtinseconds());		// assume in seconds
+		this.abs_time_step = BeatsMath.round(jaxbE.getTstamp() / myScenario.getSimdtinseconds());		// assume in seconds
 		this.targets = new ArrayList<ScenarioElement>();
 		if(jaxbE.getTargetElements()!=null)
 			for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() )
@@ -133,7 +137,7 @@ public class Event implements Comparable {
 
 	}
 	
-	protected void activate() throws BeatsException {		
+	protected void activate() throws BeatsException {
 	}
 
 	/////////////////////////////////////////////////////////////////////

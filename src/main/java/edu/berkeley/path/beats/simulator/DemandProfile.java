@@ -26,7 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.util.HashMap;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
@@ -113,7 +114,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
+			samplesteps = BeatsMath.round(dtinseconds / myScenario.getSimdtinseconds());
 		}
 		else{ 	// allow only if it contains one time step
 			if(all_demands_scalar){

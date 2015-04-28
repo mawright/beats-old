@@ -26,6 +26,9 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalDiagram{
 
 	// does not change ....................................
@@ -251,7 +254,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 	protected void setLanes(double newlanes){
 		if(newlanes<=0)
 			return;
-		if(BeatsMath.equals(newlanes,lanes))
+		if(BeatsMath.equals(newlanes, lanes))
 			return;
 		double alpha = newlanes/lanes;
 		_densityJam 	  *= alpha; 

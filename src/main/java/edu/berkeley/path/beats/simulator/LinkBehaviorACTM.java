@@ -1,5 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 /**
  * Created by gomes on 11/3/2014.
  */
@@ -38,7 +40,7 @@ public class LinkBehaviorACTM extends LinkBehaviorCTM {
             totaldensity = myLink.getTotalDensityInVeh(e);
 
             // case empty link
-            if( BeatsMath.lessorequalthan(totaldensity,0d) ){
+            if( BeatsMath.lessorequalthan(totaldensity, 0d) ){
                 flow_demand[e] =  BeatsMath.zeros(numVehicleTypes);
                 continue;
             }

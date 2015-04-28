@@ -13,15 +13,10 @@ import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Parameters;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
-import org.xml.sax.SAXException;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -297,7 +292,7 @@ public class Controller_SR_Generator extends Controller {
             if(!all_same)
                 start_time = null;
             else{
-                step_initial_abs = BeatsMath.round(start_time.get(0)/myScenario.getSimdtinseconds());
+                step_initial_abs = BeatsMath.round(start_time.get(0) / myScenario.getSimdtinseconds());
                 isdone = false;
             }
 

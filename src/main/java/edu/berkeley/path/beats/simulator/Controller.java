@@ -27,11 +27,12 @@
 package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.jaxb.FeedbackSensor;
@@ -120,7 +121,7 @@ public class Controller {
             if(myScenario==null)
                 return;
 
-            samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
+            samplesteps = BeatsMath.round(dtinseconds / myScenario.getSimdtinseconds());
 
             // read target actuators
 			actuators = new ArrayList<Actuator>();

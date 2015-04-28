@@ -28,6 +28,8 @@ package edu.berkeley.path.beats.simulator;
 
 //import edu.berkeley.path.beats.simulator.Scenario.SignalPhases;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+
 public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	
 	protected Scenario scenario;
@@ -101,7 +103,7 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	 * Retrieves link cumulative data for the given link
 	 * @param link
 	 * @return link cumulative data
-	 * @throws BeatsException if the link cumulative data storage has not been initialized
+	 * @throws edu.berkeley.path.beats.simulator.utils.BeatsException if the link cumulative data storage has not been initialized
 	 */
 	protected LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws BeatsException {
 		return scenario.getCumulatives().get(link);

@@ -5,6 +5,8 @@ import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Parameters;
 import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 public class ActuatorRampMeter extends Actuator {
 
@@ -82,7 +84,7 @@ public class ActuatorRampMeter extends Actuator {
 	@Override
 	protected void validate() {
 		if(myLink==null)
-			BeatsErrorLog.addError("Bad link ID in ramp metering actuator ID="+getId());
+			BeatsErrorLog.addError("Bad link ID in ramp metering actuator ID=" + getId());
 		if(max_rate_in_veh<0)
 			BeatsErrorLog.addError("Negative max rate in ramp metering actuator ID="+getId());
 		if(min_rate_in_veh<0)
@@ -132,7 +134,7 @@ public class ActuatorRampMeter extends Actuator {
                 case none:
                     return Double.NEGATIVE_INFINITY;
                 case max_rate:
-                    if(BeatsMath.greaterorequalthan(current_veh,max_vehicles))
+                    if(BeatsMath.greaterorequalthan(current_veh, max_vehicles))
                         return max_rate_in_veh;
                     else
                         return Double.NEGATIVE_INFINITY;

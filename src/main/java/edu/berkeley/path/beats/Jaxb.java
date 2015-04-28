@@ -1,6 +1,8 @@
 package edu.berkeley.path.beats;
 
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -18,7 +20,7 @@ public class Jaxb {
 
     /* READ */
 
-    public static Scenario create_scenario_from_xml(String configfilename,Object object_factory) throws BeatsException{
+    public static Scenario create_scenario_from_xml(String configfilename,Object object_factory) throws BeatsException {
         BeatsErrorLog.clearErrorMessage();
         Unmarshaller u = create_unmarshaller(object_factory);
         Scenario S = (Scenario) unmarshall(u,configfilename);

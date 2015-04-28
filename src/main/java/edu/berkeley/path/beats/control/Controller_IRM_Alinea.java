@@ -26,14 +26,11 @@
 
 package edu.berkeley.path.beats.control;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 
 import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 
 public class Controller_IRM_Alinea extends Controller {
 

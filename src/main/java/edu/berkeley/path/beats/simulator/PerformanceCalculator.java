@@ -4,6 +4,8 @@ import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.actuator.NEMA;
 import edu.berkeley.path.beats.jaxb.OutputRequest;
 import edu.berkeley.path.beats.jaxb.SimulationOutput;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -118,7 +120,7 @@ public class PerformanceCalculator {
 
             // dt
             sim_dt = myScenario.getSimdtinseconds();
-            dt_steps = out_dt==null?1:BeatsMath.round(out_dt/sim_dt);
+            dt_steps = out_dt==null?1: BeatsMath.round(out_dt / sim_dt);
         }
 
         protected final void open_output_file() {

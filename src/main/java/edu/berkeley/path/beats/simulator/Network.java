@@ -26,6 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+
 import java.util.ArrayList;
 import java.util.List;
 

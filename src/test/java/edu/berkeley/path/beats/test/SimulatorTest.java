@@ -42,9 +42,9 @@ import org.junit.runners.Parameterized.Parameters;
 
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.simulator.BeatsFormatter;
-import edu.berkeley.path.beats.simulator.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 @RunWith(Parameterized.class)
 public class SimulatorTest {

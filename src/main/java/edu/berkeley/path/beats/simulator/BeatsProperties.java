@@ -1,5 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;

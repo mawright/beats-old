@@ -29,6 +29,7 @@ package edu.berkeley.path.beats.simulator;
 import java.util.ArrayList;
 
 import edu.berkeley.path.beats.jaxb.SensorType;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 final class SensorSet extends edu.berkeley.path.beats.jaxb.SensorSet  {
 

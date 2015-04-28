@@ -1,5 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +53,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
             double queue_length = caq.get_total_queue_veh();
 
             // case empty link
-            if( BeatsMath.lessorequalthan(queue_length,0d) ){
+            if( BeatsMath.lessorequalthan(queue_length, 0d) ){
                 flow_demand[e] =  BeatsMath.zeros(numVehicleTypes);
                 continue;
             }

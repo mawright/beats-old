@@ -32,6 +32,8 @@ import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.actuator.NEMA;
 
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 public class Controller_SIG_Pretimed extends Controller {
 
@@ -189,7 +191,7 @@ public class Controller_SIG_Pretimed extends Controller {
         // time to switch plans .....................................
         if( !done ){
             PlanScheduleEntry next_entry = plan_schedule.get(cplan_index+1);
-            if( BeatsMath.greaterorequalthan(sim_time,next_entry.start_time) ){
+            if( BeatsMath.greaterorequalthan(sim_time, next_entry.start_time) ){
                 cplan_index++;
                 done = cplan_index==plan_schedule.size()-1;
 //				if(null == plansequence[cperiod]){

@@ -26,6 +26,9 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile {
 
 	// does not change ...................................
@@ -68,7 +71,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
+			samplesteps = BeatsMath.round(dtinseconds / myScenario.getSimdtinseconds());
 		}
 		else{ 	// only allow if it contains only one splitratio
 			if(getSplitratio().size()==1){
@@ -134,7 +137,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 	protected void validate() {
 
 		if(getSplitratio().isEmpty()){
-			BeatsErrorLog.addWarning("Split ratio ID=" + this.getId()  + " has no data.");
+			BeatsErrorLog.addWarning("Split ratio ID=" + this.getId() + " has no data.");
 			return;
 		}
 		

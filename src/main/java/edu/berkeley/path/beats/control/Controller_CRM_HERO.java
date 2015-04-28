@@ -32,13 +32,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import edu.berkeley.path.beats.simulator.Controller;
-import edu.berkeley.path.beats.control.Controller_CRM_HERO;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 
 public class Controller_CRM_HERO extends Controller {
 

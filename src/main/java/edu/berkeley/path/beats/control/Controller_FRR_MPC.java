@@ -5,12 +5,14 @@ import edu.berkeley.path.beats.actuator.ActuatorCMS;
 import edu.berkeley.path.beats.control.rr_interface.ReroutePolicyMaker;
 import edu.berkeley.path.beats.control.rr_interface.ReroutePolicyProfile;
 import edu.berkeley.path.beats.control.rr_interface.ReroutePolicySet;
-import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 import java.util.HashMap;
 import java.util.Properties;

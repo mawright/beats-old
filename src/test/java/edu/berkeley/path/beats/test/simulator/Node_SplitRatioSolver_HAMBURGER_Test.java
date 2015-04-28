@@ -12,6 +12,7 @@ import java.util.List;
 
 import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -22,7 +23,7 @@ import edu.berkeley.path.beats.jaxb.NodeType;
 import edu.berkeley.path.beats.jaxb.VehicleType;
 import edu.berkeley.path.beats.jaxb.VehicleTypeSet;
 import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_Greedy;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog.BeatsError;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog.BeatsError;
 
 public class Node_SplitRatioSolver_HAMBURGER_Test {
 

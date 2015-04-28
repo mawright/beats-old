@@ -29,6 +29,8 @@ package edu.berkeley.path.beats.actuator;
 import edu.berkeley.path.beats.control.SignalCommand;
 import edu.berkeley.path.beats.jaxb.Phase;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 import java.util.*;
 
@@ -532,7 +534,7 @@ public final class ActuatorSignal extends Actuator {
 //					permitopposinghold = true;
 
                         // yellow time over, go immediately to red if redcleartime==0
-                        if( BeatsMath.greaterorequalthan(bulbt,actualyellowtime) ){
+                        if( BeatsMath.greaterorequalthan(bulbt, actualyellowtime) ){
                             next_color = ActuatorSignal.BulbColor.RED;
                             bulbtimer.reset();
                             done = redcleartime>0;

@@ -32,6 +32,7 @@ import java.util.Properties;
 import edu.berkeley.path.beats.simulator.output.OutputWriterTSV;
 import edu.berkeley.path.beats.simulator.output.OutputWriterTXT;
 import edu.berkeley.path.beats.simulator.output.OutputWriterXML;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 /**
  *
@@ -43,7 +44,7 @@ final public class OutputWriterFactory {
 	 * @param scenario
 	 * @param props output writer properties (type, prefix)
 	 * @return an output writer
-	 * @throws BeatsException
+	 * @throws edu.berkeley.path.beats.simulator.utils.BeatsException
 	 */
 	public static OutputWriterBase getWriter(Scenario scenario, Properties props,double outDt,int outsteps,double outStart) throws BeatsException {
 		final String type = props.getProperty("type");

@@ -26,6 +26,10 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 import java.math.BigDecimal;
 
 /** Link class.
@@ -162,7 +166,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
         int n1 = myScenario.getNumEnsemble();
         int n2 = myScenario.getNumVehicleTypes();
-        inflow = BeatsMath.zeros(n1,n2);
+        inflow = BeatsMath.zeros(n1, n2);
         outflow = BeatsMath.zeros(n1,n2);
 
 		this.external_max_flow = Double.POSITIVE_INFINITY;
@@ -215,7 +219,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
     // used by FundamentalDiagramProfile to set the FD
-    protected void setFDFromProfile(FundamentalDiagram fd) throws BeatsException{
+    protected void setFDFromProfile(FundamentalDiagram fd) throws BeatsException {
         if(fd==null)
             return;
 

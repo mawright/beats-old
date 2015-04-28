@@ -5,6 +5,9 @@ import java.lang.Math;
 import edu.berkeley.path.beats.actuator.ActuatorSignalStageSplits;
 import edu.berkeley.path.beats.actuator.StageSplit;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 public class Controller_SIG_CycleMP extends Controller_SIG {
 
@@ -70,7 +73,7 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 	protected void validate() {
 		super.validate();
 
-        if(!BeatsMath.equals(dtinseconds,cycle_time)){
+        if(!BeatsMath.equals(dtinseconds, cycle_time)){
             BeatsErrorLog.addError("Controller_SIG_CycleMP requires dt==cycle_time");
         }
 	}

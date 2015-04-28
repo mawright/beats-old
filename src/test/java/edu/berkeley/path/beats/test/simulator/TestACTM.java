@@ -1,12 +1,10 @@
 package edu.berkeley.path.beats.test.simulator;
 
 import edu.berkeley.path.beats.Jaxb;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.Scenario;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.junit.Assert.fail;
 

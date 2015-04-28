@@ -1,5 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+
 public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 	
 	/* Fields */
@@ -67,7 +69,7 @@ public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 			// Handles illegal split ratios by round them to a legal one and sends a warning.
 			if (diverging_ratio < 0)
 			{
-				BeatsErrorLog.addWarning("Split ratio at node ID = " + myNode.getId() + " has been adjusted to an illegal ratio (" + diverging_ratio +") it has been ceiled to 0.");
+				BeatsErrorLog.addWarning("Split ratio at node ID = " + myNode.getId() + " has been adjusted to an illegal ratio (" + diverging_ratio + ") it has been ceiled to 0.");
 				diverging_ratio = 0;
 			}
 			else if (diverging_ratio > 1)

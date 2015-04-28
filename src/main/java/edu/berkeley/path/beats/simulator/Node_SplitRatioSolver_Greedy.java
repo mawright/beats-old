@@ -1,5 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 import java.util.ArrayList;
 
 public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
@@ -97,7 +99,7 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
 
                 // distribute remaining split until there is none left or
                 // all dsratios are equalized
-                while(BeatsMath.greaterthan(remainingSplit,0d)){
+                while(BeatsMath.greaterthan(remainingSplit, 0d)){
 
                     // find most and least "congested" destinations
                     dsmax = Double.NEGATIVE_INFINITY;

@@ -27,6 +27,8 @@
 package edu.berkeley.path.beats.simulator;
 
 
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+
 /**
  * Output writer interface
  */
@@ -35,7 +37,7 @@ public interface InterfaceOutputWriter {
 	/**
 	 * Opens the output writer
 	 * @param run_id the run number
-	 * @throws BeatsException
+	 * @throws edu.berkeley.path.beats.simulator.utils.BeatsException
 	 */
 	void open(int run_id) throws BeatsException;
 	

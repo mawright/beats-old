@@ -36,6 +36,10 @@ import javax.xml.bind.Marshaller;
 import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.jaxb.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
@@ -47,18 +51,14 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 @SuppressWarnings("restriction")
 public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
-//	public static enum ModeType { on_init_dens,left_of_init_dens,right_of_init_dens}
-
     protected static Logger logger = Logger.getLogger(Scenario.class);
 
-    //protected RunMode run_mode;
     protected String split_logger_prefix;
     protected Double split_logger_dt;
 	protected Cumulatives cumulatives;
     protected PerformanceCalculator perf_calc;
 	protected Clock clock;
 	protected int numVehicleTypes;			// number of vehicle types
-	//protected boolean global_control_on;	// global control switch
 	protected double global_demand_knob;	// scale factor for all demands
 	protected edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
 	protected EventSet eventset = new EventSet();	// holds time sorted list of events
@@ -94,7 +94,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	    // initialize scenario attributes ..............................................
 		this.global_demand_knob = 1d;
-		this.has_flow_unceratinty = BeatsMath.greaterthan(getStd_dev_flow(),0.0);
+		this.has_flow_unceratinty = BeatsMath.greaterthan(getStd_dev_flow(), 0.0);
 
 		this.numVehicleTypes = 1;
 		if(getVehicleTypeSet()!=null && getVehicleTypeSet().getVehicleType()!=null)
@@ -162,7 +162,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public static void validate(Scenario S) {
 
 		if(S.getSimdtinseconds()<=0)
-			BeatsErrorLog.addError("Non-positive simulation step size (" + S.getSimdtinseconds() +").");
+			BeatsErrorLog.addError("Non-positive simulation step size (" + S.getSimdtinseconds() + ").");
 
 		// should have a network
 		if(S.networkSet==null || S.networkSet.getNetwork().isEmpty())
@@ -1727,6 +1727,10 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         // add the capacity profile to the capacity set
         ((CapacitySet)downstreamBoundaryCapacitySet).add_or_replace_profile(cp);
+
+    }
+
+    public void set_knob_for_demand_id(int demand_id,double newknob){
 
     }
 

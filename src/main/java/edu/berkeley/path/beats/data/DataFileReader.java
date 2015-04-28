@@ -33,7 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import edu.berkeley.path.beats.sensor.DataSource;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 /** Use the Read5minData() method of this class to read five-minute data from data sources.
 * @author Gabriel Gomes

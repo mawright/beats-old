@@ -26,12 +26,9 @@
 
 package edu.berkeley.path.beats.simulator;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import edu.berkeley.path.beats.jaxb.ColumnName;
-import edu.berkeley.path.beats.jaxb.Row;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 
 /** 
  * @author Gabriel Gomes (gomes@path.berkeley.edu)

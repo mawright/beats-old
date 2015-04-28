@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import edu.berkeley.path.beats.jaxb.ActuatorType;
 import edu.berkeley.path.beats.jaxb.Signal;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 
