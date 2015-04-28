@@ -63,11 +63,13 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     public Clock clock;
 	protected int numVehicleTypes;			// number of vehicle types
 	protected double global_demand_knob;	// scale factor for all demands
+
     public edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
     public EventSet eventset = new EventSet();	// holds time sorted list of events
     public SensorSet sensorset = new SensorSet();
     public ActuatorSet actuatorset = new ActuatorSet();
-	protected boolean started_writing;
+
+    protected boolean started_writing;
 
 	protected String configfilename;
 
@@ -88,6 +90,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     // auxiliary properties, used by control algorithms
     protected HashMap<String,Properties> aux_props;
+
+    // api
+    public ScenarioGetApi get;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate
@@ -617,28 +622,28 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return null;
     }
 
-	/////////////////////////////////////////////////////////////////////
-	// complex getters
-	/////////////////////////////////////////////////////////////////////
-
-	/** Retrieve a network with a given ID.
-	 * @param id The string ID of the network
-	 * @return The corresponding network if it exists, <code>null</code> otherwise.
-	 * 
-	 */
-	protected Network getNetworkWithId(long id){
-		if(networkSet==null)
-			return null;
-		if(networkSet.getNetwork()==null)
-			return null;
-		if(networkSet.getNetwork().size()>1)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
-			if(network.getId()==id)
-				return (Network) network;
-		}
-		return null;
-	}
+//	/////////////////////////////////////////////////////////////////////
+//	// complex getters
+//	/////////////////////////////////////////////////////////////////////
+//
+//	/** Retrieve a network with a given ID.
+//	 * @param id The string ID of the network
+//	 * @return The corresponding network if it exists, <code>null</code> otherwise.
+//	 *
+//	 */
+//	protected Network getNetworkWithId(long id){
+//		if(networkSet==null)
+//			return null;
+//		if(networkSet.getNetwork()==null)
+//			return null;
+//		if(networkSet.getNetwork().size()>1)
+//			return null;
+//		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
+//			if(network.getId()==id)
+//				return (Network) network;
+//		}
+//		return null;
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// public API
@@ -670,396 +675,396 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 	
 	// getters ........................................................
-
-    public String getOutputPrefix(){ return runParam.outprefix; }
-
-	public TypeUncertainty getUncertaintyModel() {
-		return uncertaintyModel;
-	}
-
-	public double getGlobal_demand_knob() {
-		return global_demand_knob;
-	}
-
-	public double getStd_dev_flow() {
-		return std_dev_flow;
-	}
-	
-	public boolean isHas_flow_unceratinty() {
-		return has_flow_unceratinty;
-	}
-
-	/** Current simulation time in seconds.
-	 * @return Simulation time in seconds after midnight.
-	 */
-	public double getCurrentTimeInSeconds() {
-		if(clock==null)
-			return Double.NaN;
-		return clock.getT();
-	}
-
-	/** Time elapsed since the beginning of the simulation in seconds.
-	 * @return Simulation time in seconds after start time.
-	 */
-	public double getTimeElapsedInSeconds() {
-		if(clock==null)
-			return Double.NaN;
-		return clock.getTElapsed();
-	}
-
-	/** Number of vehicle types included in the scenario.
-	 * @return Integer number of vehicle types
-	 */
-	public int getNumVehicleTypes() {
-		return numVehicleTypes;
-	}
-	
-	/** Number of ensembles in the run.
-	 * @return Integer number of elements in the ensemble.
-	 */
-	public int getNumEnsemble() {
-		return runParam.numEnsemble;
-	}
-
-	/** Vehicle type index from name
-	 * @return integer index of the vehicle type.
-	 */
-	public int getVehicleTypeIndexForName(String name){
-		if(name==null)
-			return -1;
-		if(getVehicleTypeSet()==null)
-			return 0;
-		if(getVehicleTypeSet().getVehicleType()==null)
-			return 0;
-		for(int i=0;i<getVehicleTypeSet().getVehicleType().size();i++)
-			if(getVehicleTypeSet().getVehicleType().get(i).getName().equalsIgnoreCase(name))
-				return i;
-		return -1;
-	}
-
-	/** Vehicle type index from ID
-	 * @return integer index of the vehicle type.
-	 */
-	public int getVehicleTypeIndexForId(long id){
-		if(getVehicleTypeSet()==null)
-			return 0;
-		if(getVehicleTypeSet().getVehicleType()==null)
-			return 0;
-		for(int i=0;i<getVehicleTypeSet().getVehicleType().size();i++)
-			if(getVehicleTypeSet().getVehicleType().get(i).getId()==id)
-				return i;
-		return -1;
-	}
-
-    public long getVehicleTypeIdForIndex(int index){
-        if(getVehicleTypeSet()==null)
-            return 0;
-        if(getVehicleTypeSet().getVehicleType()==null)
-            return 0;
-        return getVehicleTypeSet().getVehicleType().get(index).getId();
-    }
-	
-	/** Size of the simulation time step in seconds.
-	 * @return Simulation time step in seconds. 
-	 */
-	public double getSimdtinseconds() {
-		return runParam.dt_sim;
-	}
-
-	/** Start time of the simulation.
-	 * @return Start time in seconds. 
-	 */
-	public double getTimeStart() {
-		if(clock==null)
-			return Double.NaN;
-		return this.clock.getStartTime();
-	}
-
-	/** End time of the simulation.
-	 * @return End time in seconds. 
-	 * @return			XXX
-	 */
-	public double getTimeEnd() {
-		if(clock==null)
-			return Double.NaN;
-		return this.clock.getEndTime();
-	}
-	
-	/** Get configuration file name */
-	public String getConfigFilename() {
-		return configfilename;
-	}
-	
-//	public TypeNodeFlowSolver getNodeFlowSolver(){
-//		return this.updater.nodeflowsolver;
+//
+//    public String getOutputPrefix(){ return runParam.outprefix; }
+//
+//	public TypeUncertainty getUncertaintyModel() {
+//		return uncertaintyModel;
 //	}
 //
-//	public TypeNodeSplitSolver getNodeSRSolver(){
-//		return this.updater.nodesrsolver;
+//	public double getGlobal_demand_knob() {
+//		return global_demand_knob;
 //	}
-
-	/** Vehicle type names.
-	 * @return	Array of strings with the names of the vehicles types.
-	 */
-	public String [] getVehicleTypeNames(){
-		String [] vehtypenames = new String [numVehicleTypes];
-		if(getVehicleTypeSet()==null || getVehicleTypeSet().getVehicleType()==null)
-			vehtypenames[0] = Defaults.vehicleType;
-		else
-			for(int i=0;i<numVehicleTypes;i++)
-				vehtypenames[i] = getVehicleTypeSet().getVehicleType().get(i).getName();
-		return vehtypenames;
-	}
-
-	/** Get the current density state for the network with given ID.
-	 * @param network_id String ID of the network
-	 * @return A two-dimensional array of doubles where the first dimension is the
-	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
-	 * (ordered as in {@link Scenario#getVehicleTypeNames})
-	 */
-	public double [][] getDensityForNetwork(long network_id,int ensemble){
-		
-		if(ensemble<0 || ensemble>=runParam.numEnsemble)
-			return null;
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
-
-		int i,j;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			Link link = (Link) network.getLinkList().getLink().get(i);
-			double [] linkdensity = link.getDensityInVeh(ensemble);
-			if(linkdensity==null)
-				for(j=0;j<numVehicleTypes;j++)
-					density[i][j] = 0d;
-			else
-				for(j=0;j<numVehicleTypes;j++)
-					density[i][j] = linkdensity[j];
-		}
-		return density;           
-		
-	}
-
-	public double [][] getTotalDensity(long network_id){
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] density = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
-		int i,e;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			Link link = (Link) network.getLinkList().getLink().get(i);
-			for(e=0;e<getNumEnsemble();e++)
-				density[i][e] = link.getTotalDensityInVeh(e);
-		}
-		return density;           
-	}
-	
-	public double [][] getTotalInflow(long network_id){
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] inflow = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
-		int i,e;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			Link link = (Link) network.getLinkList().getLink().get(i);
-			for(e=0;e<getNumEnsemble();e++)
-				inflow[i][e] = link.getTotalInflowInVeh(e);
-		}
-		return inflow;           
-	}
-	
-	public double [][] getTotalCumulativeInflow(long network_id) throws BeatsException{
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] cumInflow = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
-		int i,e;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			Link link = (Link) network.getLinkList().getLink().get(i);
-			for(e=0;e<getNumEnsemble();e++)
-				cumInflow[i][e] = cumulatives.get(link).getCumulativeTotalInputFlowInVeh(e);
-		}
-		return cumInflow;
-	}
-
-	public Cumulatives getCumulatives() {
-        return cumulatives;
-	}
-
-	public Clock getClock() {
-		return clock;
-	}
-	
-	/** Get a reference to a link by its composite ID.
-	 * 
-	 * @param id String ID of the link.
-	 * @return Reference to the link if it exists, <code>null</code> otherwise
-	 */
-	public Link getLinkWithId(long id) {
-		if(getNetworkSet()==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : getNetworkSet().getNetwork())
-			for(edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink())
-				if(link.getId()==id)
-					return (Link) link;
-		return null;
-	}
-	
-	/** Get a reference to a node by its ID.
-	 * 
-	 * @param id String ID of the node.
-	 * @return Reference to the node if it exists, <code>null</code> otherwise
-	 */
-	public Node getNodeWithId(long id) {
-		if(getNetworkSet()==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : getNetworkSet().getNetwork())
-			for(edu.berkeley.path.beats.jaxb.Node node : network.getNodeList().getNode())
-				if(node.getId()==id)
-					return (Node) node;
-		return null;
-	}
-
-    public Sensor getSensorWithLinkId(long link_id){
-        if(sensorset==null)
-            return null;
-        for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
-            if(sensor.getMyLink()!=null && sensor.getMyLink().getId()==link_id)
-                return sensor;
-        }
-        return null;
-    }
-
-	public Sensor getSensorWithId(long id) {
-		if(sensorset==null)
-			return null;
-		for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
-			if(sensor.getId()==id)
-				return sensor;
-		}
-		return null;
-	}
-
-    public List<Sensor> getSensors(){
-        return sensorset==null ? null : sensorset.getSensors();
-    }
-
-    public Sensor getSensorWithVDS(int vds) {
-        if(sensorset==null)
-            return null;
-        for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() )
-            if(sensor.get_VDS()==vds)
-                return sensor;
-        return null;
-    }
-
-	/** Get actuator with given ID.
-	 * @param id String ID of the actuator.
-	 * @return Actuator object.
-	 */
-	public Actuator getActuatorWithId(long id) {
-		if(actuatorset==null)
-			return null;
-		for(edu.berkeley.path.beats.simulator.Actuator actuator : actuatorset.getActuators() ){
-			if(actuator.getId()==id)
-				return actuator;
-		}
-		return null;
-	}
-
-    public ActuatorSignal get_signal_for_node(long node_id){
-        if(actuatorset==null)
-            return null;
-        for(Actuator actuator : actuatorset.getActuators()){
-            if(actuator.myType==Actuator.Type.signal){
-                ActuatorSignal signal = (ActuatorSignal) actuator;
-                Long signal_node_id = signal.get_node_id();
-                if(signal_node_id!=null && node_id==signal_node_id)
-                    return signal;
-            }
-        }
-        return null;
-    }
-
-    public List<Actuator> get_signal_actuators(){
-        List<Actuator> x = new ArrayList<Actuator>();
-        if(actuatorset==null)
-            return x;
-        for(Actuator actuator : actuatorset.getActuators()){
-            if(actuator.myType==Actuator.Type.signal)
-                x.add(actuator);
-        }
-        return x;
-    }
-		
-	/** Get a reference to a controller by its ID.
-	 * @param id Id of the controller.
-	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
-	 */
-	public Controller getControllerWithId(long id) {
-		if(!initialized){
-			logger.error("Initialize the scenario before calling this method.");
-			return null;
-		}
-		if(controllerset==null)
-			return null;
-		for(Controller c : controllerset.get_Controllers()){
-			if(c.getId()==id)
-				return c;
-		}
-		return null;
-	}
-	
-	/** Get a reference to an event by its ID.
-	 * @param id Id of the event.
-	 * @return A reference to the event if it exists, <code>null</code> otherwise.
-	 */
-	public Event getEventWithId(long id) {
-		if(!initialized){
-			logger.error("Initialize the scenario before calling this method.");
-			return null;
-		}
-		if(eventset==null)
-			return null;
-		for(Event e : eventset.getSortedevents()){
-			if(e.getId()==id)
-				return e;
-		}
-		return null;
-	}
-
-    public Route getRouteWithId(long id) {
-        if(getRouteSet()==null)
-            return null;
-        for(edu.berkeley.path.beats.jaxb.Route route : getRouteSet().getRoute()){
-            if(route.getId()==id)
-                return (Route)route;
-        }
-        return null;
-    }
-
-//    public Map<Sensor,Link> getSensorLinkMap(){
-//        Map<Sensor,Link> map = new HashMap<Sensor,Link>();
-//        for(Sensor sensor : sensorset.getSensors()){
 //
-//            System.out.println(sensor);
-//            System.out.println(sensor.getLinkId());
-//            System.out.println(sensor.getId());
+//	public double getStd_dev_flow() {
+//		return std_dev_flow;
+//	}
 //
-//            Link link = getLinkWithId(sensor.getLinkId());
+//	public boolean isHas_flow_unceratinty() {
+//		return has_flow_unceratinty;
+//	}
 //
-//            System.out.println(link);
+//	/** Current simulation time in seconds.
+//	 * @return Simulation time in seconds after midnight.
+//	 */
+//	public double getCurrentTimeInSeconds() {
+//		if(clock==null)
+//			return Double.NaN;
+//		return clock.getT();
+//	}
 //
-//            if(link!=null)
-//                map.put(sensor,link);
-//        }
-//        return map;
+//	/** Time elapsed since the beginning of the simulation in seconds.
+//	 * @return Simulation time in seconds after start time.
+//	 */
+//	public double getTimeElapsedInSeconds() {
+//		if(clock==null)
+//			return Double.NaN;
+//		return clock.getTElapsed();
+//	}
+//
+//	/** Number of vehicle types included in the scenario.
+//	 * @return Integer number of vehicle types
+//	 */
+//	public int getNumVehicleTypes() {
+//		return numVehicleTypes;
+//	}
+//
+//	/** Number of ensembles in the run.
+//	 * @return Integer number of elements in the ensemble.
+//	 */
+//	public int getNumEnsemble() {
+//		return runParam.numEnsemble;
+//	}
+//
+//	/** Vehicle type index from name
+//	 * @return integer index of the vehicle type.
+//	 */
+//	public int getVehicleTypeIndexForName(String name){
+//		if(name==null)
+//			return -1;
+//		if(getVehicleTypeSet()==null)
+//			return 0;
+//		if(getVehicleTypeSet().getVehicleType()==null)
+//			return 0;
+//		for(int i=0;i<getVehicleTypeSet().getVehicleType().size();i++)
+//			if(getVehicleTypeSet().getVehicleType().get(i).getName().equals(name))
+//				return i;
+//		return -1;
+//	}
+//
+//	/** Vehicle type index from ID
+//	 * @return integer index of the vehicle type.
+//	 */
+//	public int getVehicleTypeIndexForId(long id){
+//		if(getVehicleTypeSet()==null)
+//			return 0;
+//		if(getVehicleTypeSet().getVehicleType()==null)
+//			return 0;
+//		for(int i=0;i<getVehicleTypeSet().getVehicleType().size();i++)
+//			if(getVehicleTypeSet().getVehicleType().get(i).getId()==id)
+//				return i;
+//		return -1;
+//	}
+//
+//    public long getVehicleTypeIdForIndex(int index){
+//        if(getVehicleTypeSet()==null)
+//            return 0;
+//        if(getVehicleTypeSet().getVehicleType()==null)
+//            return 0;
+//        return getVehicleTypeSet().getVehicleType().get(index).getId();
 //    }
+//
+//	/** Size of the simulation time step in seconds.
+//	 * @return Simulation time step in seconds.
+//	 */
+//	public double getSimdtinseconds() {
+//		return runParam.dt_sim;
+//	}
+//
+//	/** Start time of the simulation.
+//	 * @return Start time in seconds.
+//	 */
+//	public double getTimeStart() {
+//		if(clock==null)
+//			return Double.NaN;
+//		return this.clock.getStartTime();
+//	}
+//
+//	/** End time of the simulation.
+//	 * @return End time in seconds.
+//	 * @return			XXX
+//	 */
+//	public double getTimeEnd() {
+//		if(clock==null)
+//			return Double.NaN;
+//		return this.clock.getEndTime();
+//	}
+//
+//	/** Get configuration file name */
+//	public String getConfigFilename() {
+//		return configfilename;
+//	}
+//
+////	public TypeNodeFlowSolver getNodeFlowSolver(){
+////		return this.updater.nodeflowsolver;
+////	}
+////
+////	public TypeNodeSplitSolver getNodeSRSolver(){
+////		return this.updater.nodesrsolver;
+////	}
+//
+//	/** Vehicle type names.
+//	 * @return	Array of strings with the names of the vehicles types.
+//	 */
+//	public String [] getVehicleTypeNames(){
+//		String [] vehtypenames = new String [numVehicleTypes];
+//		if(getVehicleTypeSet()==null || getVehicleTypeSet().getVehicleType()==null)
+//			vehtypenames[0] = Defaults.vehicleType;
+//		else
+//			for(int i=0;i<numVehicleTypes;i++)
+//				vehtypenames[i] = getVehicleTypeSet().getVehicleType().get(i).getName();
+//		return vehtypenames;
+//	}
+//
+//	/** Get the current density state for the network with given ID.
+//	 * @param network_id String ID of the network
+//	 * @return A two-dimensional array of doubles where the first dimension is the
+//	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type
+//	 * (ordered as in {@link Scenario#getVehicleTypeNames})
+//	 */
+//	public double [][] getDensityForNetwork(long network_id,int ensemble){
+//
+//		if(ensemble<0 || ensemble>=runParam.numEnsemble)
+//			return null;
+//		Network network = getNetworkWithId(network_id);
+//		if(network==null)
+//			return null;
+//
+//		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
+//
+//		int i,j;
+//		for(i=0;i<network.getLinkList().getLink().size();i++){
+//			Link link = (Link) network.getLinkList().getLink().get(i);
+//			double [] linkdensity = link.getDensityInVeh(ensemble);
+//			if(linkdensity==null)
+//				for(j=0;j<numVehicleTypes;j++)
+//					density[i][j] = 0d;
+//			else
+//				for(j=0;j<numVehicleTypes;j++)
+//					density[i][j] = linkdensity[j];
+//		}
+//		return density;
+//
+//	}
+//
+//	public double [][] getTotalDensity(long network_id){
+//		Network network = getNetworkWithId(network_id);
+//		if(network==null)
+//			return null;
+//
+//		double [][] density = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
+//		int i,e;
+//		for(i=0;i<network.getLinkList().getLink().size();i++){
+//			Link link = (Link) network.getLinkList().getLink().get(i);
+//			for(e=0;e<getNumEnsemble();e++)
+//				density[i][e] = link.getTotalDensityInVeh(e);
+//		}
+//		return density;
+//	}
+//
+//	public double [][] getTotalInflow(long network_id){
+//		Network network = getNetworkWithId(network_id);
+//		if(network==null)
+//			return null;
+//
+//		double [][] inflow = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
+//		int i,e;
+//		for(i=0;i<network.getLinkList().getLink().size();i++){
+//			Link link = (Link) network.getLinkList().getLink().get(i);
+//			for(e=0;e<getNumEnsemble();e++)
+//				inflow[i][e] = link.getTotalInflowInVeh(e);
+//		}
+//		return inflow;
+//	}
+//
+//	public double [][] getTotalCumulativeInflow(long network_id) throws BeatsException{
+//		Network network = getNetworkWithId(network_id);
+//		if(network==null)
+//			return null;
+//
+//		double [][] cumInflow = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
+//		int i,e;
+//		for(i=0;i<network.getLinkList().getLink().size();i++){
+//			Link link = (Link) network.getLinkList().getLink().get(i);
+//			for(e=0;e<getNumEnsemble();e++)
+//				cumInflow[i][e] = cumulatives.get(link).getCumulativeTotalInputFlowInVeh(e);
+//		}
+//		return cumInflow;
+//	}
+//
+//	public Cumulatives getCumulatives() {
+//        return cumulatives;
+//	}
+//
+//	public Clock getClock() {
+//		return clock;
+//	}
+//
+//	/** Get a reference to a link by its composite ID.
+//	 *
+//	 * @param id String ID of the link.
+//	 * @return Reference to the link if it exists, <code>null</code> otherwise
+//	 */
+//	public Link getLinkWithId(long id) {
+//		if(getNetworkSet()==null)
+//			return null;
+//		for(edu.berkeley.path.beats.jaxb.Network network : getNetworkSet().getNetwork())
+//			for(edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink())
+//				if(link.getId()==id)
+//					return (Link) link;
+//		return null;
+//	}
+//
+//	/** Get a reference to a node by its ID.
+//	 *
+//	 * @param id String ID of the node.
+//	 * @return Reference to the node if it exists, <code>null</code> otherwise
+//	 */
+//	public Node getNodeWithId(long id) {
+//		if(getNetworkSet()==null)
+//			return null;
+//		for(edu.berkeley.path.beats.jaxb.Network network : getNetworkSet().getNetwork())
+//			for(edu.berkeley.path.beats.jaxb.Node node : network.getNodeList().getNode())
+//				if(node.getId()==id)
+//					return (Node) node;
+//		return null;
+//	}
+//
+//    public Sensor getSensorWithLinkId(long link_id){
+//        if(sensorset==null)
+//            return null;
+//        for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
+//            if(sensor.getMyLink()!=null && sensor.getMyLink().getId()==link_id)
+//                return sensor;
+//        }
+//        return null;
+//    }
+//
+//	public Sensor getSensorWithId(long id) {
+//		if(sensorset==null)
+//			return null;
+//		for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
+//			if(sensor.getId()==id)
+//				return sensor;
+//		}
+//		return null;
+//	}
+//
+//    public List<Sensor> getSensors(){
+//        return sensorset==null ? null : sensorset.getSensors();
+//    }
+//
+//    public Sensor getSensorWithVDS(int vds) {
+//        if(sensorset==null)
+//            return null;
+//        for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() )
+//            if(sensor.get_VDS()==vds)
+//                return sensor;
+//        return null;
+//    }
+//
+//	/** Get actuator with given ID.
+//	 * @param id String ID of the actuator.
+//	 * @return Actuator object.
+//	 */
+//	public Actuator getActuatorWithId(long id) {
+//		if(actuatorset==null)
+//			return null;
+//		for(edu.berkeley.path.beats.simulator.Actuator actuator : actuatorset.getActuators() ){
+//			if(actuator.getId()==id)
+//				return actuator;
+//		}
+//		return null;
+//	}
+//
+//    public ActuatorSignal get_signal_for_node(long node_id){
+//        if(actuatorset==null)
+//            return null;
+//        for(Actuator actuator : actuatorset.getActuators()){
+//            if(actuator.myType==Actuator.Type.signal){
+//                ActuatorSignal signal = (ActuatorSignal) actuator;
+//                Long signal_node_id = signal.get_node_id();
+//                if(signal_node_id!=null && node_id==signal_node_id)
+//                    return signal;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    public List<Actuator> get_signal_actuators(){
+//        List<Actuator> x = new ArrayList<Actuator>();
+//        if(actuatorset==null)
+//            return x;
+//        for(Actuator actuator : actuatorset.getActuators()){
+//            if(actuator.myType==Actuator.Type.signal)
+//                x.add(actuator);
+//        }
+//        return x;
+//    }
+//
+//	/** Get a reference to a controller by its ID.
+//	 * @param id Id of the controller.
+//	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
+//	 */
+//	public Controller getControllerWithId(long id) {
+//		if(!initialized){
+//			logger.error("Initialize the scenario before calling this method.");
+//			return null;
+//		}
+//		if(controllerset==null)
+//			return null;
+//		for(Controller c : controllerset.get_Controllers()){
+//			if(c.getId()==id)
+//				return c;
+//		}
+//		return null;
+//	}
+//
+//	/** Get a reference to an event by its ID.
+//	 * @param id Id of the event.
+//	 * @return A reference to the event if it exists, <code>null</code> otherwise.
+//	 */
+//	public Event getEventWithId(long id) {
+//		if(!initialized){
+//			logger.error("Initialize the scenario before calling this method.");
+//			return null;
+//		}
+//		if(eventset==null)
+//			return null;
+//		for(Event e : eventset.getSortedevents()){
+//			if(e.getId()==id)
+//				return e;
+//		}
+//		return null;
+//	}
+//
+//    public Route getRouteWithId(long id) {
+//        if(getRouteSet()==null)
+//            return null;
+//        for(edu.berkeley.path.beats.jaxb.Route route : getRouteSet().getRoute()){
+//            if(route.getId()==id)
+//                return (Route)route;
+//        }
+//        return null;
+//    }
+//
+////    public Map<Sensor,Link> getSensorLinkMap(){
+////        Map<Sensor,Link> map = new HashMap<Sensor,Link>();
+////        for(Sensor sensor : sensorset.getSensors()){
+////
+////            System.out.println(sensor);
+////            System.out.println(sensor.getLinkId());
+////            System.out.println(sensor.getId());
+////
+////            Link link = getLinkWithId(sensor.getLinkId());
+////
+////            System.out.println(link);
+////
+////            if(link!=null)
+////                map.put(sensor,link);
+////        }
+////        return map;
+////    }
 
     /////////////////////////////////////////////////////////////////////
 	// scenario modification
