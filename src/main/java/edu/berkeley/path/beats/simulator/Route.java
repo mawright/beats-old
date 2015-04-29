@@ -27,7 +27,7 @@ public class Route extends edu.berkeley.path.beats.jaxb.Route {
                     rlink = r;
                     break;
                 }
-            ordered_links.add(rlink==null?null:scenario.getLinkWithId(rlink.getLinkId()));
+            ordered_links.add(rlink==null?null:scenario.get.linkWithId(rlink.getLinkId()));
         }
     }
 

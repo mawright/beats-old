@@ -77,7 +77,7 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter {
 	 * Calling this method multiple times is safe
 	 */
 	protected void requestLinkCumulatives() {
-		scenario.getCumulatives().storeLinks();
+		scenario.get.cumulatives().storeLinks();
 	}
 	
 //	/**
@@ -106,7 +106,7 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter {
 	 * @throws edu.berkeley.path.beats.simulator.utils.BeatsException if the link cumulative data storage has not been initialized
 	 */
 	protected LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws BeatsException {
-		return scenario.getCumulatives().get(link);
+		return scenario.get.cumulatives().get(link);
 	}
 
 }

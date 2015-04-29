@@ -294,7 +294,7 @@ public final class Double3DMatrix {
         for(Splitratio sr : srs){
             int in_index = node.getInputLinkIndex(sr.getLinkIn());
             int out_index = node.getOutputLinkIndex(sr.getLinkOut());
-            int vt_index = node.getMyNetwork().getMyScenario().getVehicleTypeIndexForId(sr.getVehicleTypeId());
+            int vt_index = node.getMyNetwork().getMyScenario().get.vehicleTypeIndexForId(sr.getVehicleTypeId());
 
             if(in_index<0 || out_index<0 || vt_index<0)
                 continue;

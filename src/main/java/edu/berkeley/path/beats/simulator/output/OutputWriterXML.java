@@ -116,8 +116,8 @@ public final class OutputWriterXML extends OutputWriterBase {
 
 	@Override
 	public void recordstate(double time, boolean exportflows, int outsteps) throws BeatsException {
-		boolean firststep = 0 == scenario.getClock().getRelativeTimeStep();
-		String dt = String.format(SEC_FORMAT, firststep ? .0d : scenario.getSimdtinseconds() * outsteps);
+		boolean firststep = 0 == scenario.get.clock().getRelativeTimeStep();
+		String dt = String.format(SEC_FORMAT, firststep ? .0d : scenario.get.simdtinseconds() * outsteps);
 		try {
 			xmlsw.writeStartElement("ts");
 			xmlsw.writeAttribute("sec", String.format(SEC_FORMAT, time));
@@ -145,12 +145,12 @@ public final class OutputWriterXML extends OutputWriterBase {
 						double mean_total_density = link_cum_data.getMeanTotalDensityInVeh(0);
 						if (0 >= mean_total_density) {
 							if (!Double.isNaN(ffspeed))
-								for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind)
+								for (int vt_ind = 0; vt_ind < scenario.get.numVehicleTypes(); ++vt_ind)
 									speed_formatter.add(ffspeed);
 						} else {
 							double mean_speed = link_cum_data.getCumulativeTotalOutputFlowInVeh(0) * _link.getLengthInMeters() / (mean_total_density * outDt);
 							if (!Double.isNaN(ffspeed) && ffspeed < mean_speed) mean_speed = ffspeed;
-							for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind) {
+							for (int vt_ind = 0; vt_ind < scenario.get.numVehicleTypes(); ++vt_ind) {
 								double density = link_cum_data.getMeanDensityInVeh(0, vt_ind);
 								double speed = mean_speed;
 								if (0 < density) {
@@ -184,7 +184,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 							xmlsw.writeAttribute("il", Long.toString(_node.getInput_link()[ili].getId()));
 							xmlsw.writeAttribute("ol", Long.toString(_node.getOutput_link()[oli].getId()));
 							sr_formatter.clear();
-							for (int vti = 0; vti < scenario.getNumVehicleTypes(); ++vti)
+							for (int vti = 0; vti < scenario.get.numVehicleTypes(); ++vti)
 								sr_formatter.add(_node.getSplitRatio(ili, oli, vti));
 							xmlsw.writeAttribute("r", sr_formatter.getResult());
 							xmlsw.writeEndElement(); // io

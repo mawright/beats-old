@@ -122,14 +122,14 @@ public class Controller {
             if(myScenario==null)
                 return;
 
-            samplesteps = BeatsMath.round(dtinseconds / myScenario.getSimdtinseconds());
+            samplesteps = BeatsMath.round(dtinseconds / myScenario.get.simdtinseconds());
 
             // read target actuators
 			actuators = new ArrayList<Actuator>();
 			actuator_usage = new ArrayList<String>();
 			if(jaxbC.getTargetActuators()!=null && jaxbC.getTargetActuators().getTargetActuator()!=null){
 				for(TargetActuator ta : jaxbC.getTargetActuators().getTargetActuator()){
-                    Actuator act = myScenario.getActuatorWithId(ta.getId());
+                    Actuator act = myScenario.get.actuatorWithId(ta.getId());
                     actuators.add(act);
                     act.myController = this;
 					actuator_usage.add(ta.getUsage()==null ? "" : ta.getUsage());
@@ -141,7 +141,7 @@ public class Controller {
 			sensor_usage = new ArrayList<String>();
 			if(jaxbC.getFeedbackSensors()!=null && jaxbC.getFeedbackSensors().getFeedbackSensor()!=null){
 				for(FeedbackSensor fs : jaxbC.getFeedbackSensors().getFeedbackSensor()){
-					sensors.add(getMyScenario().getSensorWithId(fs.getId()));
+					sensors.add(getMyScenario().get.sensorWithId(fs.getId()));
 					sensor_usage.add(fs.getUsage()==null ? "" : fs.getUsage());
 				}
 			}
@@ -196,7 +196,7 @@ public class Controller {
             return;
 
 		// check that sample dt is an integer multiple of network dt
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.get.simdtinseconds()))
 			BeatsErrorLog.addError("Time step for controller ID=" +getId() + " is not a multiple of the simulation time step.");
 
 //		// check that activation times are valid.

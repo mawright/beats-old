@@ -66,7 +66,7 @@ public class Event_Global_Control_Toggle extends Event {
 
 	@Override
 	protected void activate() throws BeatsException{
-        myScenario.setGlobal_control_on(ison);
+        myScenario.set.global_control_on(ison);
 	}
 
 }

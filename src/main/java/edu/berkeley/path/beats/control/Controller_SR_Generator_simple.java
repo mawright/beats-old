@@ -87,7 +87,7 @@ public class Controller_SR_Generator_simple extends Controller {
     protected void update() throws BeatsException {
 
         double beta;
-        double dt_in_hr = myScenario.getSimdtinseconds()/3600d;
+        double dt_in_hr = myScenario.get.simdtinseconds()/3600d;
 
         for(int i=0;i<node_data.size();i++){
             NodeData nd = node_data.get(i);
@@ -176,7 +176,7 @@ public class Controller_SR_Generator_simple extends Controller {
             if(!all_same)
                 start_time = null;
             else{
-                step_initial_abs = BeatsMath.round(start_time.get(0)/myScenario.getSimdtinseconds());
+                step_initial_abs = BeatsMath.round(start_time.get(0)/myScenario.get.simdtinseconds());
                 isdone = false;
             }
 
@@ -190,14 +190,14 @@ public class Controller_SR_Generator_simple extends Controller {
 
                 BeatsTimeProfile profile = fr_flow.get(i);
 
-                if( !isdone && myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
+                if( !isdone && myScenario.get.clock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
 
                     // REMOVE THESE
                     int n = profile.getNumTime()-1;
-                    int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
+                    int step = myScenario.get.clock().sample_index_abs(samplesteps,step_initial_abs);
 
                     // demand is zero before step_initial_abs
-                    if(myScenario.getClock().getAbsoluteTimeStep()< step_initial_abs)
+                    if(myScenario.get.clock().getAbsoluteTimeStep()< step_initial_abs)
                         val[i] = 0d;
 
                     // sample the profile

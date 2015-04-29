@@ -93,7 +93,7 @@ public final class ActuatorSignal extends Actuator {
 
         edu.berkeley.path.beats.jaxb.Signal jaxbSignal = (edu.berkeley.path.beats.jaxb.Signal)jaxbobject;
 
-		myNode = myScenario.getNodeWithId(jaxbSignal.getNodeId());
+		myNode = myScenario.get.nodeWithId(jaxbSignal.getNodeId());
 		
 		if(myNode==null)
 			return;
@@ -106,7 +106,7 @@ public final class ActuatorSignal extends Actuator {
             NEMA.ID nema = NEMA.int_to_nema(jphase.getNema().intValue());
             //List<Link> link_list = nema_to_linklist.get( nema );
 
-            SignalPhase sp = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
+            SignalPhase sp = new SignalPhase(myNode,this,myScenario.get.simdtinseconds());
             sp.populateFromJaxb(myScenario,jphase);
             phases.add(sp);
             nema2phase.put(nema,sp);
@@ -226,7 +226,7 @@ public final class ActuatorSignal extends Actuator {
 
                 if(DebugFlags.signal_events)
                     System.out.println(
-                            myNode.getMyNetwork().getMyScenario().getCurrentTimeInSeconds() + "\t" +
+                            myNode.getMyNetwork().getMyScenario().get.currentTimeInSeconds() + "\t" +
                             "signal=" + getId() + "\t" +
                             "phase=" + phase.myNEMA + "\t" +
                             "color=" + phase.bulbcolor );

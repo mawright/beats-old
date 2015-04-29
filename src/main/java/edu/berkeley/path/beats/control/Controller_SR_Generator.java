@@ -68,7 +68,7 @@ public class Controller_SR_Generator extends Controller {
             appendNodeData(demand_set, se);
         }
 
-        dt_in_hr = myScenario.getSimdtinseconds()/3600d;
+        dt_in_hr = myScenario.get.simdtinseconds()/3600d;
 
         // logger
         String log_file = param.get("log_file");
@@ -127,9 +127,9 @@ public class Controller_SR_Generator extends Controller {
                 for(int j=0;j<nd.ind_fr.size();j++)
                     for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType())
 
-                        if(getMyScenario().getCurrentTimeInSeconds()%dt_log==0){
+                        if(getMyScenario().get.currentTimeInSeconds()%dt_log==0){
                             DebugLogger.write(logger_id,String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
-                                    getMyScenario().getCurrentTimeInSeconds(),
+                                    getMyScenario().get.currentTimeInSeconds(),
                                     nd.getId(),
                                     nd.link_or.get(i).getId(),
                                     nd.link_fr.get(j).getId(),
@@ -153,9 +153,9 @@ public class Controller_SR_Generator extends Controller {
                 for(int j=0;j<nd.ind_fr.size();j++)
                     for(VehicleType vt : myScenario.getVehicleTypeSet().getVehicleType())
 
-                        if(getMyScenario().getCurrentTimeInSeconds()%dt_log==0){
+                        if(getMyScenario().get.currentTimeInSeconds()%dt_log==0){
                             DebugLogger.write(logger_id,String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
-                                    getMyScenario().getCurrentTimeInSeconds(),
+                                    getMyScenario().get.currentTimeInSeconds(),
                                     nd.getId(),
                                     nd.link_not_or.get(i).getId(),
                                     nd.link_fr.get(j).getId(),
@@ -174,23 +174,23 @@ public class Controller_SR_Generator extends Controller {
                 int ii = nd.ind_not_or.get(i);
                 for(int j=0;j<nd.ind_not_fr.size();j++){
                     int jj = nd.ind_not_fr.get(j);
-                    for(int k=0;k<myScenario.getNumVehicleTypes();k++){
+                    for(int k=0;k<myScenario.get.numVehicleTypes();k++){
                         double alpha = nd.get_sr(ii,jj,k);
                         double r = (1d-beta)/nd.non_onramp_splits[i][k];
 
-                        if(getMyScenario().getCurrentTimeInSeconds()%dt_log==0)
+                        if(getMyScenario().get.currentTimeInSeconds()%dt_log==0)
                             DebugLogger.write(logger_id,String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
-                                    getMyScenario().getCurrentTimeInSeconds(),
+                                    getMyScenario().get.currentTimeInSeconds(),
                                     nd.getId(),
                                     nd.link_not_or.get(i).getId() ,
                                     nd.link_not_fr.get(j).getId() ,
-                                    myScenario.getVehicleTypeIdForIndex(k) ,
+                                    myScenario.get.vehicleTypeIdForIndex(k) ,
                                     r*alpha ));
 
                         ((ActuatorCMS)actuators.get(n)).set_split(
                                 nd.link_not_or.get(i).getId() ,
                                 nd.link_not_fr.get(j).getId() ,
-                                myScenario.getVehicleTypeIdForIndex(k) ,
+                                myScenario.get.vehicleTypeIdForIndex(k) ,
                                 r*alpha );
                     }
                 }
@@ -289,7 +289,7 @@ public class Controller_SR_Generator extends Controller {
             if(!all_same)
                 start_time = null;
             else{
-                step_initial_abs = BeatsMath.round(start_time.get(0) / myScenario.getSimdtinseconds());
+                step_initial_abs = BeatsMath.round(start_time.get(0) / myScenario.get.simdtinseconds());
                 isdone = false;
             }
 
@@ -312,18 +312,18 @@ public class Controller_SR_Generator extends Controller {
                 for(i=0;i<ind_or.size();i++){
                     int ii = ind_or.get(i);
                     double [] Si = link_or.get(i).get_out_demand_in_veh(0);
-                    for(k=0;k<myScenario.getNumVehicleTypes();k++)
+                    for(k=0;k<myScenario.get.numVehicleTypes();k++)
                         known_non_offramp_demand[j] += Si[k]*get_sr(ii,jj,k);
                 }
             }
 
             // non_onramp_splits
-            non_onramp_splits = new double[link_not_or.size()][myScenario.getNumVehicleTypes()];
+            non_onramp_splits = new double[link_not_or.size()][myScenario.get.numVehicleTypes()];
             for(i=0;i<ind_not_or.size();i++){
                 int ii = ind_not_or.get(i);
                 for(j=0;j<ind_not_fr.size();j++){
                     int jj = ind_not_fr.get(j);
-                    for(k=0;k<myScenario.getNumVehicleTypes();k++)
+                    for(k=0;k<myScenario.get.numVehicleTypes();k++)
                         non_onramp_splits[i][k] += get_sr(ii,jj,k);
                 }
             }
@@ -335,7 +335,7 @@ public class Controller_SR_Generator extends Controller {
                 for(i=0;i<ind_not_or.size();i++){
                     int ii = ind_not_or.get(i);
                     double [] Si = link_not_or.get(i).get_out_demand_in_veh(0);
-                    for(k=0;k<myScenario.getNumVehicleTypes();k++){
+                    for(k=0;k<myScenario.get.numVehicleTypes();k++){
                         double alpha = get_sr(ii,jj,k);
                         non_offramp_phi[j] += alpha*Si[k]/non_onramp_splits[i][k];
                     }
@@ -379,7 +379,7 @@ public class Controller_SR_Generator extends Controller {
             double [] val = new double [link_fr.size()];
             int prof_sample_steps = 60;         ///// HACK!!!!
 
-            if( !isdone && myScenario.getClock().is_time_to_sample_abs(prof_sample_steps, step_initial_abs)){
+            if( !isdone && myScenario.get.clock().is_time_to_sample_abs(prof_sample_steps, step_initial_abs)){
 
                 for(int i=0;i<link_fr.size();i++){
 
@@ -387,10 +387,10 @@ public class Controller_SR_Generator extends Controller {
 
                     // REMOVE THESE
                     int n = profile.getNumTime()-1;
-                    int step = myScenario.getClock().sample_index_abs(prof_sample_steps,step_initial_abs);
+                    int step = myScenario.get.clock().sample_index_abs(prof_sample_steps,step_initial_abs);
 
                     // demand is zero before step_initial_abs
-                    if(myScenario.getClock().getAbsoluteTimeStep()< step_initial_abs)
+                    if(myScenario.get.clock().getAbsoluteTimeStep()< step_initial_abs)
                         val[i] = 0d;
 
                     // sample the profile

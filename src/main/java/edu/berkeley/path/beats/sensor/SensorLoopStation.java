@@ -108,7 +108,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 
 	@Override
 	protected void reset() {
-		int numEnsemble = getMyScenario().getNumEnsemble();
+		int numEnsemble = getMyScenario().get.numEnsemble();
 		cumulative_inflow = new Double [numEnsemble];
 		cumulative_outflow = new Double [numEnsemble];
 		for(int i=0;i<numEnsemble;i++){
@@ -122,7 +122,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	protected void update() {		
 		if(getMyLink()==null)
 			return;
-		for(int i=0;i<this.getMyScenario().getNumEnsemble();i++){
+		for(int i=0;i<this.getMyScenario().get.numEnsemble();i++){
 			cumulative_inflow[i] += getMyLink().getTotalInflowInVeh(i);
 			cumulative_outflow[i] += getMyLink().getTotalOutflowInVeh(i);
 		}
@@ -155,12 +155,12 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	
 	@Override
 	public double[] getFlowInVPS(int ensemble) {
-		return BeatsMath.times(getMyLink().getOutflowInVeh(ensemble), 1 / getMyScenario().getSimdtinseconds());
+		return BeatsMath.times(getMyLink().getOutflowInVeh(ensemble), 1 / getMyScenario().get.simdtinseconds());
 	}
 
 	@Override
 	public double getTotalFlowInVPS(int ensemble) {
-		return getMyLink().getTotalOutflowInVeh(ensemble) / getMyScenario().getSimdtinseconds();
+		return getMyLink().getTotalOutflowInVeh(ensemble) / getMyScenario().get.simdtinseconds();
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}
 
 	public void resetCumulativeInflowInVeh(){
-		for(int i=0;i<getMyScenario().getNumEnsemble();i++)
+		for(int i=0;i<getMyScenario().get.numEnsemble();i++)
 			cumulative_inflow[i] = 0d;
 	}
 	
@@ -186,7 +186,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}
 
 	public void resetCumulativeOutflowInVeh(){
-		for(int i=0;i<getMyScenario().getNumEnsemble();i++)
+		for(int i=0;i<getMyScenario().get.numEnsemble();i++)
 			cumulative_outflow[i] = 0d;
 	}
 	

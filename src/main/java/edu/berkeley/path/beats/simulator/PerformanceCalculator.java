@@ -47,21 +47,21 @@ public class PerformanceCalculator {
                 case speed_contour :
                     loggers.add( new CumulativeMeasure(
                                     myScenario,
-                                    myScenario.getOutputPrefix() + "_" + sim_out.getFile(),
+                                    myScenario.get.outputPrefix() + "_" + sim_out.getFile(),
                                     sim_out.getDt(),
                                     sim_out.isAggTime(),
                                     sim_out.isAggLinks(),
                                     sim_out.isAggEnsemble(),
                                     sim_out.isAggVehicleType(),
-                                    myScenario.getRouteWithId(sim_out.getRouteId()),
-                                    myScenario.getVehicleTypeIndexForId(sim_out.getVehicleTypeId()),
+                                    myScenario.get.routeWithId(sim_out.getRouteId()),
+                                    myScenario.get.vehicleTypeIndexForId(sim_out.getVehicleTypeId()),
                                     cpm));
                     break;
                 case travel_time:
                     break;
                 case signal_events:
                     loggers.add( new SignalLogger( myScenario,
-                                                   myScenario.getOutputPrefix() + "_" + sim_out.getFile(),
+                                                   myScenario.get.outputPrefix() + "_" + sim_out.getFile(),
                                                    sim_out.getDt(),
                                                    sim_out.isAggTime() ) );
             }
@@ -81,15 +81,15 @@ public class PerformanceCalculator {
     public void update(){
         for(Logger log : loggers){
             log.update();
-            if(!log.agg_time && myScenario.getClock().getRelativeTimeStep()%log.dt_steps==0)
-                log.write_output(myScenario.getClock().getT());
+            if(!log.agg_time && myScenario.get.clock().getRelativeTimeStep()%log.dt_steps==0)
+                log.write_output(myScenario.get.clock().getT());
         }
     }
 
     protected void close_output(){
         for(Logger log : loggers){
             if(log.agg_time)
-                log.write_output(myScenario.getClock().getT());
+                log.write_output(myScenario.get.clock().getT());
             log.close_output_file();
         }
     }
@@ -119,7 +119,7 @@ public class PerformanceCalculator {
             filename = fname+".txt";
 
             // dt
-            sim_dt = myScenario.getSimdtinseconds();
+            sim_dt = myScenario.get.simdtinseconds();
             dt_steps = out_dt==null?1: BeatsMath.round(out_dt / sim_dt);
         }
 
@@ -205,7 +205,7 @@ public class PerformanceCalculator {
             agg_ensemble = agg_e;
             agg_vehicle_type = agg_vt;
             pm = pmname;
-            num_ensemble = scenario.getNumEnsemble();
+            num_ensemble = scenario.get.numEnsemble();
             vt_index = vehicle_type_index;
 
             // special for speed contour
@@ -340,12 +340,12 @@ public class PerformanceCalculator {
 
         public SignalLogger(Scenario scenario,String fname,Double out_dt,boolean agg_t){
             super(agg_t,fname,scenario,out_dt);
-            for( Actuator actuator : scenario.get_signal_actuators())
+            for( Actuator actuator : scenario.get.signal_actuators())
                 ((ActuatorSignal) actuator).register_event_logger(this);
         }
 
         public void send_event(long signal_id,NEMA.ID nema, ActuatorSignal.BulbColor bulbcolor){
-            double timestamp = myScenario.getCurrentTimeInSeconds();
+            double timestamp = myScenario.get.currentTimeInSeconds();
             signal_events.add(new SignalEvent(timestamp,signal_id,nema,bulbcolor));
         }
 

@@ -34,8 +34,8 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
     	double dsmax, dsmin;
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut;        
-    	int numVehicleTypes = myNode.getMyNetwork().getMyScenario().getNumVehicleTypes();
-        String [] vTypes = myNode.getMyNetwork().getMyScenario().getVehicleTypeNames();
+    	int numVehicleTypes = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
+        String [] vTypes = myNode.getMyNetwork().getMyScenario().get.vehicleTypeNames();
     	Double3DMatrix splitratio_new = new Double3DMatrix(splitratio_selected.getData());
     	double remainingSplit;
     	double num;

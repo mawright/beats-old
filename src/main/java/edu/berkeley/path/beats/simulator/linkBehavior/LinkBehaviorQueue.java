@@ -23,13 +23,13 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
     @Override
     public void update_outflow_demand(double external_max_speed, double external_max_flow){
 
-        int numVehicleTypes = myScenario.getNumVehicleTypes();
+        int numVehicleTypes = myScenario.get.numVehicleTypes();
 
         double totaldensity;
         double totaloutflow;
         FundamentalDiagram FD;
 
-        for(int e=0;e<myScenario.getNumEnsemble();e++){
+        for(int e=0;e<myScenario.get.numEnsemble();e++){
 
             FD = myLink.currentFD(e);
 
@@ -52,12 +52,12 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
             totaloutflow = Math.min( totaloutflow , external_max_flow );
 
             // flow uncertainty model
-            if(myScenario.isHas_flow_unceratinty()){
+            if(myScenario.get.has_flow_unceratinty()){
 
                 double delta_flow=0.0;
-                double std_dev_flow = myScenario.getStd_dev_flow();
+                double std_dev_flow = myScenario.get.std_dev_flow();
 
-                switch(myScenario.getUncertaintyModel()){
+                switch(myScenario.get.uncertaintyModel()){
                     case uniform:
                         delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
                         break;
@@ -73,7 +73,7 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
 
             // split among types
             double alpha = totaloutflow/totaldensity;
-            for(int j=0;j<myScenario.getNumVehicleTypes();j++)
+            for(int j=0;j<myScenario.get.numVehicleTypes();j++)
                 flow_demand[e][j] = get_density_in_veh(e, j)*alpha;
 
         }
@@ -116,12 +116,12 @@ public class LinkBehaviorQueue extends LinkBehaviorCTM {
     @Override
     public double compute_speed_in_mps(int ensemble){
         try{
-            if(myScenario.getClock().getRelativeTimeStep()==0)
+            if(myScenario.get.clock().getRelativeTimeStep()==0)
                 return Double.NaN;
             double totaldensity = BeatsMath.sum(density[ensemble]);
             double speed = BeatsMath.greaterthan(totaldensity,0d) ?
                            BeatsMath.sum(myLink.outflow[ensemble])/totaldensity : 1d;
-            return speed * myLink._length / myScenario.getSimdtinseconds();
+            return speed * myLink._length / myScenario.get.simdtinseconds();
         } catch(Exception e){
             return Double.NaN;
         }

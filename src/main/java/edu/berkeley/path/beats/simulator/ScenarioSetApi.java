@@ -1,6 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.jaxb.Demand;
+import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacitySet;
 import edu.berkeley.path.beats.jaxb.VehicleType;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
@@ -13,8 +14,6 @@ public class ScenarioSetApi {
 
     public ScenarioSetApi(Scenario scenario){
         this.scenario = scenario;
-        this.numVehTypes = scenario.numVehicleTypes;
-        this.numEnsemble = scenario.runParam.numEnsemble;
     }
 
     // SIMULATION PARAMETERS ------------------------------------------------------
@@ -99,7 +98,7 @@ public class ScenarioSetApi {
         dp.setStartTime(scenario.get.currentTimeInSeconds());
 
         double [] demand_per_vt = BeatsMath.times(demands, 1d / ((double) scenario.get.numVehTypes));
-        for(VehicleType vt : getVehicleTypeSet().getVehicleType()){
+        for(VehicleType vt : scenario.getVehicleTypeSet().getVehicleType()){
             Demand d = new Demand();
             d.setVehicleTypeId(vt.getId());
             d.setContent(BeatsFormatter.csv(demand_per_vt, ","));
@@ -117,13 +116,13 @@ public class ScenarioSetApi {
         dp.reset();
 
         // check wheter I have a demandSet, otherwise create one
-        if(demandSet==null){
-            demandSet = new DemandSet();
-            ((DemandSet)demandSet).populate(this);
+        if(scenario.demandset==null){
+            scenario.demandset = new DemandSet();
+            scenario.demandset.populate(scenario);
         }
 
         // add the demand profile to the demand set
-        ((DemandSet)demandSet).add_or_replace_profile(dp);
+        scenario.demandset.add_or_replace_profile(dp);
 
     }
 
@@ -150,7 +149,7 @@ public class ScenarioSetApi {
 
     // FD ------------------------------------------------------
 
-    public void capacity_for_link_si(long link_id,double dt,double [] capacity) throws Exception {
+    public void capacity_for_sink_si(long link_id,double dt,double [] capacity) throws Exception {
 
         if(capacity.length<=1)
             dt = Double.POSITIVE_INFINITY;
@@ -175,14 +174,16 @@ public class ScenarioSetApi {
         }
         cp.reset();
 
-        // check wheter I have a demandSet, otherwise create one
-        if(downstreamBoundaryCapacitySet==null){
-            downstreamBoundaryCapacitySet = new CapacitySet();
-            ((CapacitySet)downstreamBoundaryCapacitySet).populate(this);
+        // check wheter I have a capacity, otherwise create one
+        if(scenario.getDownstreamBoundaryCapacitySet()==null){
+            DownstreamBoundaryCapacitySet d = new CapacitySet();
+            scenario.setDownstreamBoundaryCapacitySet(d);
+            ((CapacitySet)d).populate(scenario);
         }
 
         // add the capacity profile to the capacity set
-        ((CapacitySet)downstreamBoundaryCapacitySet).add_or_replace_profile(cp);
+        DownstreamBoundaryCapacitySet dbcp = scenario.getDownstreamBoundaryCapacitySet();
+        ((CapacitySet)dbcp).add_or_replace_profile(cp);
 
     }
 
@@ -191,18 +192,19 @@ public class ScenarioSetApi {
     public void initial_state() throws BeatsException {
 
         // initial density set time stamp
-        double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp() : Double.POSITIVE_INFINITY;  // [sec]
+        edu.berkeley.path.beats.jaxb.InitialDensitySet ids = scenario.getInitialDensitySet();
+        double time_ic = ids!=null ? ids.getTstamp() : Double.POSITIVE_INFINITY;  // [sec]
 
         // determine the simulation mode and sim_start time
         double sim_start;
         TypeMode simulationMode;
-        if(BeatsMath.equals(runParam.t_start_output,time_ic)){
-            sim_start = runParam.t_start_output;
+        if(BeatsMath.equals(scenario.runParam.t_start_output,time_ic)){
+            sim_start = scenario.runParam.t_start_output;
             simulationMode = TypeMode.on_init_dens;
         }
         else{
             // it is a warmup. we need to decide on start and end times
-            if(BeatsMath.lessthan(time_ic, runParam.t_start_output) ){	// go from ic to timestart
+            if(BeatsMath.lessthan(time_ic, scenario.runParam.t_start_output) ){	// go from ic to timestart
                 sim_start = time_ic;
                 simulationMode = TypeMode.right_of_init_dens;
             }
@@ -210,69 +212,69 @@ public class ScenarioSetApi {
 
                 // find earliest demand profile ...
                 double demand_start = Double.POSITIVE_INFINITY;
-                if(demandSet!=null)
-                    for(edu.berkeley.path.beats.jaxb.DemandProfile D : demandSet.getDemandProfile())
+                if(scenario.demandset!=null)
+                    for(edu.berkeley.path.beats.jaxb.DemandProfile D : scenario.demandset.getDemandProfile())
                         demand_start = Math.min(demand_start,D.getStartTime());
                 if(Double.isInfinite(demand_start))
                     demand_start = 0d;
 
                 // ... start simulation there or at output start time
-                sim_start = Math.min(runParam.t_start_output,demand_start);
+                sim_start = Math.min(scenario.runParam.t_start_output,demand_start);
                 simulationMode = TypeMode.left_of_init_dens;
 
             }
         }
 
         // copy InitialDensityState to initial_state if starting from or to the right of InitialDensitySet time stamp
-        if(simulationMode!=TypeMode.left_of_init_dens && getInitialDensitySet()!=null){
-            for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
+        if(simulationMode!=TypeMode.left_of_init_dens && ids!=null){
+            for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworks())
                 for(edu.berkeley.path.beats.jaxb.Link jlink:network.getLinkList().getLink()){
-                    double [] density = ((InitialDensitySet)getInitialDensitySet()).getDensityForLinkIdInVeh(network.getId(),jlink.getId());
+                    double [] density = ((InitialDensitySet)ids).getDensityForLinkIdInVeh(network.getId(),jlink.getId());
                     if(density!=null)
                         ((Link) jlink).set_initial_state(density);
                     else
-                        ((Link) jlink).set_initial_state(BeatsMath.zeros(numVehicleTypes));
+                        ((Link) jlink).set_initial_state(BeatsMath.zeros(scenario.numVehicleTypes));
                 }
         }
         else {
-            for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
+            for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworks())
                 for(edu.berkeley.path.beats.jaxb.Link jlink:network.getLinkList().getLink())
-                    ((Link) jlink).set_initial_state(BeatsMath.zeros(numVehicleTypes));
+                    ((Link) jlink).set_initial_state(BeatsMath.zeros(scenario.numVehicleTypes));
         }
 
         // warmup
 
         // temporary warmup clock
-        clock = new Clock(sim_start,runParam.t_end_output,runParam.dt_sim);
+        scenario.clock = new Clock(sim_start,scenario.runParam.t_end_output,scenario.runParam.dt_sim);
 
         // advance a point ensemble to start_output time
-        int original_numEnsemble = runParam.numEnsemble;
-        runParam.numEnsemble = 1;
+        int original_numEnsemble = scenario.runParam.numEnsemble;
+        scenario.runParam.numEnsemble = 1;
 
         // reset the simulation (copy initial_density to density)
-        reset();
+        scenario.reset();
 
         // advance to start of output time
-        while( BeatsMath.lessthan(getCurrentTimeInSeconds(),runParam.t_start_output) )
-            updater.update();
+        while( BeatsMath.lessthan(scenario.get.currentTimeInSeconds(),scenario.runParam.t_start_output) )
+            scenario.updater.update();
 
         // copy the result to the initial density
-        for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
+        for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworks())
             for(edu.berkeley.path.beats.jaxb.Link link:network.getLinkList().getLink())
                 ((Link) link).copy_state_to_initial_state();
 
         // revert numEnsemble
-        runParam.numEnsemble = original_numEnsemble;
+        scenario.runParam.numEnsemble = original_numEnsemble;
 
         // delete the warmup clock
-        clock = null;
+        scenario.clock = null;
 
     }
 
     // set density indexed by [link][ensemble]
     public boolean totalDensity(double [][] d){
 
-        if(getNetworkSet().getNetwork().size()>1){
+        if(scenario.getNetworks().size()>1){
             System.err.println("This methos works only with single network scenarios.");
             return false;
         }
@@ -282,7 +284,7 @@ public class ScenarioSetApi {
             return false;
         }
 
-        Network network = (Network) getNetworkSet().getNetwork().get(0);
+        Network network = (Network) scenario.getNetworks().get(0);
         int numLinks = network.getLinkList().getLink().size();
 
         if(numLinks!=d.length){
@@ -304,6 +306,12 @@ public class ScenarioSetApi {
                 success &= ((Link)network.getLinkList().getLink().get(i)).set_density_in_veh(e,val);
             }
         return success;
+    }
+
+
+
+    public void uncertaintyModel(String uncertaintyModel) {
+        scenario.uncertaintyModel = TypeUncertainty.valueOf(uncertaintyModel);
     }
 
 }

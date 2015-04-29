@@ -54,7 +54,7 @@ public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 		Double3DMatrix splitratio_new = new Double3DMatrix(splitratio_selected.getData());
 		
 		// Get index for general vehicle type.
-		int vehicle_index = myNode.getMyNetwork().getMyScenario().getVehicleTypeIndexForId(1);
+		int vehicle_index = myNode.getMyNetwork().getMyScenario().get.vehicleTypeIndexForId(1);
 		
 		// Get downstream mainline density and local split ratio for the off-ramp
 		double mainline_density = getMainlineDensity(ensemble_index);

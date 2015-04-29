@@ -21,7 +21,7 @@ public class NodeBehavior {
 
     protected double [][] getDemand(int e){
         int nIn = node.getnIn();
-        int nVT = node.getMyNetwork().getMyScenario().getNumVehicleTypes();
+        int nVT = node.getMyNetwork().getMyScenario().get.numVehicleTypes();
         double [][] x = new double[nIn][nVT];
         for(int i=0;i<nIn;i++)
             for(int k=0;k<nVT;k++)

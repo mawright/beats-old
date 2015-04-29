@@ -18,16 +18,16 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
         super(link);
 
         Scenario scenario = link.getMyScenario();
-        int num_ensemble = scenario.getNumEnsemble();
+        int num_ensemble = scenario.get.numEnsemble();
 
         double L = link.getLengthInMeters();
         double vf = link.getVfInMPS(0);
-        double dt = link.getMyNetwork().getMyScenario().getSimdtinseconds();
+        double dt = link.getMyNetwork().getMyScenario().get.simdtinseconds();
 
         int num_cells = (int) Math.ceil(L/(vf*dt));
         ensemble = new ArrayList<CellArray>();
         for(int e=0;e<num_ensemble;e++)
-            ensemble.add(new CellArray(num_cells,scenario.getNumVehicleTypes()));
+            ensemble.add(new CellArray(num_cells,scenario.get.numVehicleTypes()));
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
 
     @Override
     public void update_outflow_demand(double external_max_speed, double external_max_flow){
-        for(int e=0;e<myScenario.getNumEnsemble();e++)
+        for(int e=0;e<myScenario.get.numEnsemble();e++)
             flow_demand[e] = ensemble.get(e).cell_array.get(0).n;
     }
 
@@ -88,7 +88,7 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
     public boolean set_density_in_veh(int e,double [] d){
         if(e<0 || e>=ensemble.size())
             return false;
-        if(d.length!=myScenario.getNumVehicleTypes())
+        if(d.length!=myScenario.get.numVehicleTypes())
             return false;
         if(!BeatsMath.all_non_negative(d))
             return false;

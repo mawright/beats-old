@@ -74,7 +74,7 @@ public class Controller_CRM_MPC extends Controller {
         for(Actuator act : actuators){
             ScenarioElement se =  (ScenarioElement) act.getScenarioElement();
             if(se.getMyType()==ScenarioElement.Type.link){
-                Link link = myScenario.getLinkWithId(se.getId());
+                Link link = myScenario.get.linkWithId(se.getId());
                 link_actuator_map.put(link,act);
                 Parameters param = (Parameters) act.getParameters();
                 RampMeteringControl con = new RampMeteringControl(link);
@@ -91,12 +91,12 @@ public class Controller_CRM_MPC extends Controller {
         // read timing parameters
         if(params!=null){
             pm_period = params.readParameter("dt_optimize", getDtinseconds());
-            pm_dt = params.readParameter("policy_maker_timestep", getMyScenario().getSimdtinseconds());
+            pm_dt = params.readParameter("policy_maker_timestep", getMyScenario().get.simdtinseconds());
             pm_horizon = params.readParameter("policy_maker_horizon",Double.NaN);
         }
         else{
             pm_period = getDtinseconds();
-            pm_dt = getMyScenario().getSimdtinseconds();
+            pm_dt = getMyScenario().get.simdtinseconds();
             pm_horizon = Double.NaN;
         }
 
@@ -181,17 +181,17 @@ public class Controller_CRM_MPC extends Controller {
     @Override
     protected void update() throws BeatsException {
 
-        double time_current = getMyScenario().getCurrentTimeInSeconds();
+        double time_current = getMyScenario().get.currentTimeInSeconds();
 
         // if it is time to optimize, update metering rate profile
         if(BeatsMath.greaterorequalthan(time_current-time_last_opt, pm_period)){
 
             // call policy maker (everything in SI units)
             policy = policy_maker.givePolicy( network,
-                    myScenario.get_current_fds_si(time_current),
+                    myScenario.get.current_fds_si(time_current),
                     myScenario.predict_demands_si(time_current, pm_dt, pm_horizon),
                     myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon),
-                    myScenario.get_current_densities_si(),
+                    myScenario.get.current_densities_si(),
                     controller_parameters,
                     pm_dt,
                     pm_props);

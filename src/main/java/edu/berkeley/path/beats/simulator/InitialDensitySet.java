@@ -60,8 +60,8 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 		// copy profile information to arrays in extended object
 		for(int i=0;i<numLinks;i++){
 			edu.berkeley.path.beats.jaxb.Density density = getDensity().get(i);
-			link[i] = myScenario.getLinkWithId(density.getLinkId());
-			vehicle_type_index[i] = myScenario.getVehicleTypeIndexForId(density.getVehicleTypeId());
+			link[i] = myScenario.get.linkWithId(density.getLinkId());
+			vehicle_type_index[i] = myScenario.get.vehicleTypeIndexForId(density.getVehicleTypeId());
 			if(link[i]!=null && vehicle_type_index[i]>=0){
 				initial_density[i] = Double.parseDouble(density.getContent()); 
 			}
@@ -137,7 +137,7 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 	 * @return array of intitial densities in [veh/link]
 	 */
 	public double [] getDensityForLinkIdInVeh(long network_id,long linkid){
-		double [] d = BeatsMath.zeros(myScenario.getNumVehicleTypes());
+		double [] d = BeatsMath.zeros(myScenario.get.numVehicleTypes());
 		boolean foundit = false;
 		for(int i=0;i<link.length;i++){
 			if(link[i]!=null && link[i].getId()==linkid && link[i].myNetwork.getId()==network_id){

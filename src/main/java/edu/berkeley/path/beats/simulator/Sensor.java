@@ -68,7 +68,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
         if(jaxbS.isIsGood()!=null)
             this.isgood = jaxbS.isIsGood();
 		if(jaxbS.getLinkId()!=null)
-			myLink = myScenario.getLinkWithId(jaxbS.getLinkId());
+			myLink = myScenario.get.linkWithId(jaxbS.getLinkId());
 	}
 	
 	/////////////////////////////////////////////////////////////////////

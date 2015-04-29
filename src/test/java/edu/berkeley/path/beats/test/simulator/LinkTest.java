@@ -23,7 +23,7 @@ public class LinkTest {
 		if(scenario==null)
 			fail("scenario did not load");
 		
-		link = scenario.getLinkWithId(-4);		
+		link = scenario.get.linkWithId(-4);
 
 		// initialize
 		double timestep = Defaults.getTimestepFor(config_file);
@@ -72,14 +72,14 @@ public class LinkTest {
 	
 	@Test
 	public void test_isSource() {
-		Link linksource = scenario.getLinkWithId(-6);
+		Link linksource = scenario.get.linkWithId(-6);
 		assertFalse(link.isSource());
 		assertTrue(linksource.isSource());
 	}
 
 	@Test
 	public void test_isSink() {
-		Link linksink = scenario.getLinkWithId(-7);
+		Link linksink = scenario.get.linkWithId(-7);
 		assertFalse(link.isSink());
 		assertTrue(linksink.isSink());
 	}

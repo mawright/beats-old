@@ -22,10 +22,10 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
         switch(Actuator.Type.valueOf(parent.getActuatorType().getName())){
             case ramp_meter:
             case vsl:
-                target = scenario.getLinkWithId(se.getId());
+                target = scenario.get.linkWithId(se.getId());
                 break;
             case cms:
-                target = scenario.getNodeWithId(se.getId());
+                target = scenario.get.nodeWithId(se.getId());
                 break;
             case signal:
                 break;
@@ -39,7 +39,7 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
             List linklist = new ArrayList<Link>();
             if(phase.getLinkReferences()!=null && phase.getLinkReferences().getLinkReference()!=null)
                 for(LinkReference linkref : phase.getLinkReferences().getLinkReference())
-                    linklist.add(scenario.getLinkWithId(linkref.getId()));
+                    linklist.add(scenario.get.linkWithId(linkref.getId()));
             targ.put( NEMA.int_to_nema(phase.getNema().intValue()) , linklist );
         }
         target = targ;

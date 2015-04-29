@@ -18,18 +18,18 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
     public LinkBehaviorQueueAndTravelTime(Link link){
         super(link);
 
-        int num_ensemble = myScenario.getNumEnsemble();
+        int num_ensemble = myScenario.get.numEnsemble();
 
         double L = myLink.getLengthInMeters();
 
-        edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdp = myScenario.getFDprofileForLinkId(myLink.getId());
+        edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdp = myScenario.get.FDprofileForLinkId(myLink.getId());
         double vf = fdp==null ? Defaults.vf : fdp.getFundamentalDiagram().get(0).getFreeFlowSpeed();
-        double dt = myLink.getMyNetwork().getMyScenario().getSimdtinseconds();
+        double dt = myLink.getMyNetwork().getMyScenario().get.simdtinseconds();
 
         int num_cells = (int) Math.ceil(L/(vf*dt));
         ensemble = new ArrayList<CellArrayAndQueue>();
         for(int e=0;e<num_ensemble;e++)
-            ensemble.add(new CellArrayAndQueue(num_cells,myScenario.getNumVehicleTypes()));
+            ensemble.add(new CellArrayAndQueue(num_cells,myScenario.get.numVehicleTypes()));
     }
 
     // UPDATE
@@ -43,7 +43,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
     @Override
     public void update_outflow_demand(double external_max_speed, double external_max_flow) {
 
-        int numVehicleTypes = myScenario.getNumVehicleTypes();
+        int numVehicleTypes = myScenario.get.numVehicleTypes();
 
         double totaloutflow;
         FundamentalDiagram FD;
@@ -72,12 +72,12 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
             totaloutflow = Math.min( totaloutflow , external_max_flow );
 
             // flow uncertainty model (unless controller wants zero flow)
-            if(myScenario.isHas_flow_unceratinty() && BeatsMath.greaterthan(external_max_flow,0d) ){
+            if(myScenario.get.has_flow_unceratinty() && BeatsMath.greaterthan(external_max_flow,0d) ){
 
                 double delta_flow=0.0;
-                double std_dev_flow = myScenario.getStd_dev_flow();
+                double std_dev_flow = myScenario.get.std_dev_flow();
 
-                switch(myScenario.getUncertaintyModel()){
+                switch(myScenario.get.uncertaintyModel()){
                     case uniform:
                         delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
                         break;
@@ -93,7 +93,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
 
             // split among types
             double alpha = totaloutflow/queue_length;
-            for(int j=0;j<myScenario.getNumVehicleTypes();j++)
+            for(int j=0;j<myScenario.get.numVehicleTypes();j++)
                 flow_demand[e][j] = caq.get_queue_for_vehicletype_in_veh(j)*alpha;
 
         }
@@ -143,7 +143,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
     public boolean set_density_in_veh(int e, double[] d) {
         if(e<0 || e>=ensemble.size())
             return false;
-        if(d.length!=myScenario.getNumVehicleTypes())
+        if(d.length!=myScenario.get.numVehicleTypes())
             return false;
         if(!BeatsMath.all_non_negative(d))
             return false;
@@ -172,7 +172,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
         double avg_norm_speed = BeatsMath.greaterthan(total_veh,0d) ?
                                 (queue_speed_times_veh+tt_speed_time_veh)/total_veh :
                                 1d;
-        return avg_norm_speed * myLink._length / myScenario.getSimdtinseconds();
+        return avg_norm_speed * myLink._length / myScenario.get.simdtinseconds();
     }
 
     @Override

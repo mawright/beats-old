@@ -18,7 +18,7 @@ public class SplitRatioLogger  {
     public SplitRatioLogger(Node node){
         Scenario myScenario = node.myNetwork.getMyScenario();
         myNode = node;
-        dt_steps = (int) Math.round(myScenario.split_logger_dt/myScenario.getSimdtinseconds());
+        dt_steps = (int) Math.round(myScenario.split_logger_dt/myScenario.get.simdtinseconds());
         try{
             writer = new BufferedWriter(new FileWriter(myScenario.split_logger_prefix+node.getId()+".txt"));
         } catch (IOException e){
@@ -30,20 +30,20 @@ public class SplitRatioLogger  {
 
         Scenario myScenario = myNode.getMyNetwork().getMyScenario();
 
-        if(myScenario.getClock().getRelativeTimeStep()%dt_steps!=0)
+        if(myScenario.get.clock().getRelativeTimeStep()%dt_steps!=0)
             return;
 
         int i,j,k;
         for(i=0;i<myNode.getnIn();i++)
             for(j=0;j<myNode.getnOut();j++)
-                for(k=0;k<myScenario.getNumVehicleTypes();k++){
+                for(k=0;k<myScenario.get.numVehicleTypes();k++){
                     try{
                         writer.write(
                                 String.format("%.1f\t%d\t%d\t%d\t%f\n",
-                                        myScenario.getCurrentTimeInSeconds(),
+                                        myScenario.get.currentTimeInSeconds(),
                                         myNode.getInput_link()[i].getId(),
                                         myNode.getOutput_link()[j].getId(),
-                                        myScenario.getVehicleTypeIdForIndex(k),
+                                        myScenario.get.vehicleTypeIdForIndex(k),
                                         splitratio_applied.get(i,j,k)));
                     } catch(IOException ioe){
                         System.out.println(ioe.getMessage());

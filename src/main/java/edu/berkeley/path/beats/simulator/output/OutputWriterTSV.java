@@ -46,7 +46,7 @@ public class OutputWriterTSV extends OutputWriterBase {
 			double flow;
 			double speed;
 			
-			String timestr = String.format("%.0f", scenario.getCurrentTimeInSeconds()) ;
+			String timestr = String.format("%.0f", scenario.get.currentTimeInSeconds()) ;
 			Writer out = new OutputStreamWriter(new FileOutputStream(prefix+"_"+timestr+".txt"));
 		
 			for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){				

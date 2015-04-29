@@ -23,8 +23,8 @@ public class LinkBehaviorCTM {
     }
 
     public void reset(double [] initial_density) {
-        int n1 = myScenario.getNumEnsemble();
-        int n2 = myScenario.getNumVehicleTypes();
+        int n1 = myScenario.get.numEnsemble();
+        int n2 = myScenario.get.numVehicleTypes();
         flow_demand = BeatsMath.zeros(n1, n2);
         total_space_supply = BeatsMath.zeros(n1);
         available_space_supply = BeatsMath.zeros(n1);
@@ -35,13 +35,13 @@ public class LinkBehaviorCTM {
 
     public void update_outflow_demand(double external_max_speed, double external_max_flow){
 
-        int numVehicleTypes = myScenario.getNumVehicleTypes();
+        int numVehicleTypes = myScenario.get.numVehicleTypes();
 
         double totaldensity;
         double totaloutflow;
         FundamentalDiagram FD;
 
-        for(int e=0;e<myScenario.getNumEnsemble();e++){
+        for(int e=0;e<myScenario.get.numEnsemble();e++){
 
             FD = myLink.currentFD(e);
 
@@ -70,12 +70,12 @@ public class LinkBehaviorCTM {
             totaloutflow = Math.min( totaloutflow , external_max_flow );
 
             // flow uncertainty model (unless controller wants zero flow)
-            if(myScenario.isHas_flow_unceratinty() && BeatsMath.greaterthan(external_max_flow,0d) ){
+            if(myScenario.get.has_flow_unceratinty() && BeatsMath.greaterthan(external_max_flow,0d) ){
 
                 double delta_flow=0.0;
-                double std_dev_flow = myScenario.getStd_dev_flow();
+                double std_dev_flow = myScenario.get.std_dev_flow();
 
-                switch(myScenario.getUncertaintyModel()){
+                switch(myScenario.get.uncertaintyModel()){
                     case uniform:
                         delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
                         break;
@@ -90,11 +90,11 @@ public class LinkBehaviorCTM {
             }
 
             // split among types
-            if(myScenario.getNumVehicleTypes()==1)
+            if(myScenario.get.numVehicleTypes()==1)
                 flow_demand[e][0] = totaloutflow;
             else{
                 double alpha = totaloutflow/totaldensity;
-                for(int j=0;j<myScenario.getNumVehicleTypes();j++)
+                for(int j=0;j<myScenario.get.numVehicleTypes();j++)
                     flow_demand[e][j] = get_density_in_veh(e, j)*alpha;
             }
 
@@ -106,16 +106,16 @@ public class LinkBehaviorCTM {
     public void update_total_space_supply(){
 
         if(myLink.issink) {
-            for (int e = 0; e < myScenario.getNumEnsemble(); e++)
+            for (int e = 0; e < myScenario.get.numEnsemble(); e++)
                 total_space_supply[e] = Double.POSITIVE_INFINITY;
             return;
         }
-        for(int e=0;e<myScenario.getNumEnsemble();e++)
+        for(int e=0;e<myScenario.get.numEnsemble();e++)
             total_space_supply[e] = myLink.currentFD(e)._getDensityJamInVeh() - myLink.getTotalDensityInVeh(e);
     }
 
     public void update_available_space_supply(){
-        for(int e=0;e<myScenario.getNumEnsemble();e++){
+        for(int e=0;e<myScenario.get.numEnsemble();e++){
             FundamentalDiagram FD = myLink.currentFD(e);
 
             if(myLink.issink)
@@ -124,10 +124,10 @@ public class LinkBehaviorCTM {
                 available_space_supply[e] = Math.min( FD.getWNormalized()*total_space_supply[e] , FD._getCapacityInVeh() );
 
             // flow uncertainty model
-            if(myScenario.isHas_flow_unceratinty()){
+            if(myScenario.get.has_flow_unceratinty()){
                 double delta_flow=0.0;
-                double std_dev_flow = myScenario.getStd_dev_flow();
-                switch(myScenario.getUncertaintyModel()){
+                double std_dev_flow = myScenario.get.std_dev_flow();
+                switch(myScenario.get.uncertaintyModel()){
                     case uniform:
                         delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
                         break;
@@ -143,8 +143,8 @@ public class LinkBehaviorCTM {
     }
 
     protected void reset_density(){
-        int n1 = myScenario.getNumEnsemble();
-        int n2 = myScenario.getNumVehicleTypes();
+        int n1 = myScenario.get.numEnsemble();
+        int n2 = myScenario.get.numVehicleTypes();
         density = BeatsMath.zeros(n1,n2);
     }
 
@@ -152,8 +152,8 @@ public class LinkBehaviorCTM {
 
     public void update_state(double [][] inflow,double [][] outflow){
         int e,j;
-        for(e=0;e<myScenario.getNumEnsemble();e++)
-            for(j=0;j<myScenario.getNumVehicleTypes();j++)
+        for(e=0;e<myScenario.get.numEnsemble();e++)
+            for(j=0;j<myScenario.get.numVehicleTypes();j++)
                 density[e][j] += inflow[e][j] - outflow[e][j];
     }
 
@@ -168,7 +168,7 @@ public class LinkBehaviorCTM {
             return false;
         if(e<0 || e>=density.length)
             return false;
-        if(d.length!=myScenario.getNumVehicleTypes())
+        if(d.length!=myScenario.get.numVehicleTypes())
             return false;
         if(!BeatsMath.all_non_negative(d))
             return false;
@@ -181,13 +181,13 @@ public class LinkBehaviorCTM {
 
     public double compute_speed_in_mps(int ensemble){
         try{
-            if(myScenario.getClock().getRelativeTimeStep()==0)
+            if(myScenario.get.clock().getRelativeTimeStep()==0)
                 return Double.NaN;
             double totaldensity = BeatsMath.sum(density[ensemble]);
             double speed = BeatsMath.greaterthan(totaldensity,0d) ?
                     BeatsMath.sum(myLink.outflow[ensemble])/totaldensity :
                     myLink.currentFD(ensemble).getVfNormalized();
-            return speed * myLink._length / myScenario.getSimdtinseconds();
+            return speed * myLink._length / myScenario.get.simdtinseconds();
         } catch(Exception e){
             return Double.NaN;
         }

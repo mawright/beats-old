@@ -62,7 +62,7 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
     	int i,j,k;
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut;        
-    	int numVehicleTypes = myNode.getMyNetwork().getMyScenario().getNumVehicleTypes();
+    	int numVehicleTypes = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
 
         double [][] demand = myNode.node_behavior.getDemand(ensemble_index);
         double [] supply = myNode.node_behavior.getAvailableSupply(ensemble_index);

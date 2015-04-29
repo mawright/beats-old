@@ -56,7 +56,7 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut; 
-    	int numVehicleTypes = myNode.getMyNetwork().getMyScenario().getNumVehicleTypes();
+    	int numVehicleTypes = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
 		IOFlow ioflow = new IOFlow(nIn,nOut,numVehicleTypes);
 
         double [][] demand = myNode.node_behavior.getDemand(ensemble_index);

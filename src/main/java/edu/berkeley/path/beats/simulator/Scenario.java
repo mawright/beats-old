@@ -54,42 +54,52 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 @SuppressWarnings("restriction")
 public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
-    public static Logger logger = Logger.getLogger(Scenario.class);
+    protected String configfilename;
+    public Clock clock;
+    protected int numVehicleTypes;			// number of vehicle types
 
+
+    // run parameters
+    protected RunParameters runParam;
+    protected boolean initialized = false;
+    protected boolean scenario_locked=false;				// true when the simulation is running
+
+
+    // output
+    public static Logger logger = Logger.getLogger(Scenario.class);
     protected String split_logger_prefix;
     protected Double split_logger_dt;
     public Cumulatives cumulatives;
-    public PerformanceCalculator perf_calc;
-    public Clock clock;
-	protected int numVehicleTypes;			// number of vehicle types
-	protected double global_demand_knob;	// scale factor for all demands
-
-    public edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
-    public EventSet eventset = new EventSet();	// holds time sorted list of events
-    public SensorSet sensorset = new SensorSet();
-    public ActuatorSet actuatorset = new ActuatorSet();
-
     protected boolean started_writing;
 
-	protected String configfilename;
+    // performance calculator
+    public PerformanceCalculator perf_calc;
 
+    // demands
+    public DemandSet demandset = new DemandSet();
+    protected double global_demand_knob;	// scale factor for all demands
+
+    // sensors
+    public SensorSet sensorset = new SensorSet();
+    protected boolean sensor_data_loaded = false;
+
+    // actuators
+    public ActuatorSet actuatorset = new ActuatorSet();
+
+    // controllers
+    public ControllerSet controllerset = new ControllerSet();
+    protected HashMap<String,Properties> aux_props;
+
+    // events
+    public EventSet eventset = new EventSet();	// holds time sorted list of events
+
+    // scenario update
     protected ScenarioUpdaterAbstract updater;
 
 	// Model uncertainty
 	protected TypeUncertainty uncertaintyModel;
 	protected double std_dev_flow = 0.0d;	// [veh]
 	protected boolean has_flow_unceratinty;
-
-	// data
-	protected boolean sensor_data_loaded = false;
-
-	// run parameters
-	protected RunParameters runParam;
-	protected boolean initialized = false;
-	protected boolean scenario_locked=false;				// true when the simulation is running
-
-    // auxiliary properties, used by control algorithms
-    protected HashMap<String,Properties> aux_props;
 
     // api
     public ScenarioGetApi get;
@@ -103,7 +113,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	    // initialize scenario attributes ..............................................
 		this.global_demand_knob = 1d;
-		this.has_flow_unceratinty = BeatsMath.greaterthan(getStd_dev_flow(), 0.0);
+		this.has_flow_unceratinty = BeatsMath.greaterthan(get.std_dev_flow(), 0.0);
 
 		this.numVehicleTypes = 1;
 		if(getVehicleTypeSet()!=null && getVehicleTypeSet().getVehicleType()!=null)
@@ -135,8 +145,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //			for( edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile() )
 //				((CapacityProfile) capacityProfile).populate(this);
 
-		if(demandSet!=null)
-			((DemandSet) demandSet).populate(this);
+//		if(demandSet!=null)
+//			((DemandSet) demandSet).populate(this);
+        demandset.populate(this);
 
 		// fundamental diagram profiles
 		if(fundamentalDiagramSet!=null)
@@ -170,8 +181,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	public static void validate(Scenario S) {
 
-		if(S.getSimdtinseconds()<=0)
-			BeatsErrorLog.addError("Non-positive simulation step size (" + S.getSimdtinseconds() + ").");
+		if(S.get.simdtinseconds()<=0)
+			BeatsErrorLog.addError("Non-positive simulation step size (" + S.get.simdtinseconds() + ").");
 
 		// should have a network
 		if(S.networkSet==null || S.networkSet.getNetwork().isEmpty())
@@ -203,8 +214,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             ((CapacitySet)S.downstreamBoundaryCapacitySet).validate();
 
 		// validate demand profiles
-		if(S.demandSet!=null)
-			((DemandSet)S.demandSet).validate();
+//		if(S.demandSet!=null)
+//			((DemandSet)S.demandSet).validate();
+        S.demandset.validate();
 
 		// validate split ratio profiles
 		if(S.splitRatioSet!=null)
@@ -255,9 +267,10 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		actuatorset.reset();
 
 		// reset demand profiles
-		if(demandSet!=null)
-			((DemandSet)demandSet).reset();
-		
+//		if(demandSet!=null)
+//			((DemandSet)demandSet).reset();
+        demandset.reset();
+
 		// reset split ratios
 		if(splitRatioSet!=null)
 			((SplitRatioSet)splitRatioSet).reset();
@@ -390,9 +403,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                            HashMap<String,Properties> aux_props,boolean is_actm) throws BeatsException {
 
         // set stuff
-        setUncertaintyModel(uncertaintymodel);
-        setSplitLoggerPrefix(split_logger_prefix);
-        setSplitLoggerDt(split_logger_dt);
+        set.uncertaintyModel(uncertaintymodel);
+        set.splitLoggerPrefix(split_logger_prefix);
+        set.splitLoggerDt(split_logger_dt);
         this.aux_props = aux_props;
 
         // create scenario updater
@@ -408,7 +421,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         // create performance calculator
         if(!performance_config.isEmpty())
-            set_performance_calculator(Jaxb.create_performance_calculator(performance_config));
+            set.performance_calculator(Jaxb.create_performance_calculator(performance_config));
 
 		// create run parameters object
 		boolean writeoutput = true;
@@ -432,7 +445,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		populate_validate();
 
 		// compute the initial state by running the simulator to the start time
-		assign_initial_state();
+		set.initial_state();
 
 		// create the clock
 		clock = new Clock(runParam.t_start_output,runParam.t_end_output,runParam.dt_sim);
@@ -474,8 +487,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //	    	throw new BeatsException("ActuatorSignal registration failure");
 //	    }
 
-	    if(getControllerset()!=null)
-	    	if(!getControllerset().register()){
+	    if(get.controllerset()!=null)
+	    	if(!get.controllerset().register()){
 	    		throw new BeatsException("Controller registration failure");
 		    }
 
@@ -581,8 +594,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     protected boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter) throws BeatsException{
 
-        if(DebugFlags.time_print>0 && getCurrentTimeInSeconds()%DebugFlags.time_print == 0)
-            System.out.println(getCurrentTimeInSeconds());
+        if(DebugFlags.time_print>0 && get.currentTimeInSeconds()%DebugFlags.time_print == 0)
+            System.out.println(get.currentTimeInSeconds());
 
         // advance n steps
         for(int k=0;k<n;k++){
@@ -726,14 +739,14 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             srp.setNodeId(N.getId());
             for(Input in : N.getInputs().getInput()){
                 for(Output out : N.getOutputs().getOutput()){
-                    for(int v=0;v<getNumVehicleTypes();v++)    {
+                    for(int v=0;v<get.numVehicleTypes();v++)    {
 
                         Splitratio splitratio = factory.createSplitratio();
 
                         // set values
                         splitratio.setLinkIn(in.getLinkId());
                         splitratio.setLinkOut(out.getLinkId());
-                        splitratio.setVehicleTypeId(getVehicleTypeIdForIndex(v));
+                        splitratio.setVehicleTypeId(get.vehicleTypeIdForIndex(v));
                         double [] sr = sr_profile.predict(
                                 in.getLinkId(),
                                 out.getLinkId(),
@@ -771,12 +784,12 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
                 dp.setLinkIdOrg(L.getId());
                 dp.setDt(dp_sample_dt);
-                for(int v=0;v<getNumVehicleTypes();v++){
+                for(int v=0;v<get.numVehicleTypes();v++){
                     Demand dem = factory.createDemand();
                     dp.getDemand().add(dem);
 
                     // set values
-                    dem.setVehicleTypeId(getVehicleTypeIdForIndex(v));
+                    dem.setVehicleTypeId(get.vehicleTypeIdForIndex(v));
                     double [] x = dem_profile.predict_in_VPS(v, time_current, dp_sample_dt, horizon_steps);
                     dem.setContent(BeatsFormatter.csv(x, ","));
                 }
@@ -938,4 +951,24 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //		}
     }
 
+
+    /// TEMPORARY GETTERS FOR THE API CLASSES
+    public List<edu.berkeley.path.beats.jaxb.Network> getNetworks(){
+        return this.networkSet.getNetwork();
+    }
+
+    @Override
+    public edu.berkeley.path.beats.jaxb.InitialDensitySet getInitialDensitySet() {
+        return super.getInitialDensitySet();
+    }
+
+    @Override
+    public DownstreamBoundaryCapacitySet getDownstreamBoundaryCapacitySet() {
+        return super.getDownstreamBoundaryCapacitySet();
+    }
+
+    @Override
+    public void setDownstreamBoundaryCapacitySet(DownstreamBoundaryCapacitySet value) {
+        super.setDownstreamBoundaryCapacitySet(value);
+    }
 }

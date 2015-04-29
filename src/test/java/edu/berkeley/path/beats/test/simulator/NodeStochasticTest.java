@@ -27,7 +27,7 @@ public class NodeStochasticTest {
 		double endtime = 300;
 		int numEnsemble = 2;
 		scenario.initialize(timestep,starttime,endtime,numEnsemble);
-		node = scenario.getNodeWithId(-4);
+		node = scenario.get.nodeWithId(-4);
 	}
 
 	@Test

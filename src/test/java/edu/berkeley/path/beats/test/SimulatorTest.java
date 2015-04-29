@@ -132,7 +132,7 @@ public class SimulatorTest {
 			System.out.println("\tRunning");
 			scenario.run();
 			
-			String [] vehicleTypes = scenario.getVehicleTypeNames();
+			String [] vehicleTypes = scenario.get.vehicleTypeNames();
 							
 			// compare output
 			System.out.println("\tComparing outputS");

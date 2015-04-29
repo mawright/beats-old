@@ -58,8 +58,8 @@ public final class OutputWriterTXT extends OutputWriterBase {
 	@Override
 	public void open(int run_id) throws BeatsException {
 		String suffix = String.format("_%d.txt", run_id);
-		String [] VTnames = scenario.getVehicleTypeNames();
-		numVT = scenario.getNumVehicleTypes();
+		String [] VTnames = scenario.get.vehicleTypeNames();
+		numVT = scenario.get.numVehicleTypes();
 		try {
 			out_time = new OutputStreamWriter(new FileOutputStream(prefix+"_time"+suffix));
 			out_density = new Writer[numVT];

@@ -163,7 +163,7 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
         scenario.controllerset.update();
 
         // update and deploy actuators
-        scenario.actuatorset.deploy(scenario.getCurrentTimeInSeconds());
+        scenario.actuatorset.deploy(scenario.get.currentTimeInSeconds());
 
         // update events
         scenario.eventset.update();

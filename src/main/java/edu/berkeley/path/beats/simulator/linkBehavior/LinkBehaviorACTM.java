@@ -30,14 +30,14 @@ public class LinkBehaviorACTM extends LinkBehaviorCTM {
     public void update_outflow_demand(double external_max_speed, double external_max_flow) {
 
 
-        int numVehicleTypes = myScenario.getNumVehicleTypes();
+        int numVehicleTypes = myScenario.get.numVehicleTypes();
 
         double totaldensity;
         double totaloutflow;
         FundamentalDiagram FD;
         double betabar  = fr_link_ind>=0? 1 - my_end_node.getSplitRatio(my_link_ind,fr_link_ind,0) : 1d;
 
-        for(int e=0;e<myScenario.getNumEnsemble();e++){
+        for(int e=0;e<myScenario.get.numEnsemble();e++){
 
             FD = myLink.currentFD(e);
 
@@ -62,12 +62,12 @@ public class LinkBehaviorACTM extends LinkBehaviorCTM {
             totaloutflow = Math.min( totaloutflow , external_max_flow );
 
             // flow uncertainty model (unless controller wants zero flow)
-            if(myScenario.isHas_flow_unceratinty() && BeatsMath.greaterthan(external_max_flow,0d) ){
+            if(myScenario.get.has_flow_unceratinty() && BeatsMath.greaterthan(external_max_flow,0d) ){
 
                 double delta_flow=0.0;
-                double std_dev_flow = myScenario.getStd_dev_flow();
+                double std_dev_flow = myScenario.get.std_dev_flow();
 
-                switch(myScenario.getUncertaintyModel()){
+                switch(myScenario.get.uncertaintyModel()){
                     case uniform:
                         delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
                         break;
@@ -82,11 +82,11 @@ public class LinkBehaviorACTM extends LinkBehaviorCTM {
             }
 
             // split among types
-            if(myScenario.getNumVehicleTypes()==1)
+            if(myScenario.get.numVehicleTypes()==1)
                 flow_demand[e][0] = totaloutflow;
             else{
                 double alpha = totaloutflow/totaldensity;
-                for(int j=0;j<myScenario.getNumVehicleTypes();j++)
+                for(int j=0;j<myScenario.get.numVehicleTypes();j++)
                     flow_demand[e][j] = get_density_in_veh(e, j)*alpha;
             }
 

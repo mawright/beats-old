@@ -141,7 +141,7 @@ public final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 		}
 
 		// check whether next event is due
-		while(myScenario.getClock().getAbsoluteTimeStep()>=sortedevents.get(currentevent).getAbsTimeStep()){
+		while(myScenario.get.clock().getAbsoluteTimeStep()>=sortedevents.get(currentevent).getAbsTimeStep()){
 			
 			Event event =  sortedevents.get(currentevent);
 			

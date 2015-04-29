@@ -52,16 +52,16 @@ public final class ScenarioElement extends edu.berkeley.path.beats.jaxb.Scenario
 		
 		switch(myType){
 		case link:
-			this.reference = myScenario.getLinkWithId(id);
+			this.reference = myScenario.get.linkWithId(id);
 			break;
 		case node:
-			this.reference = myScenario.getNodeWithId(id);
+			this.reference = myScenario.get.nodeWithId(id);
 			break;
 		case sensor:
-			this.reference = myScenario.getSensorWithId(id);
+			this.reference = myScenario.get.sensorWithId(id);
 			break;
 		case controller:
-			this.reference = myScenario.getControllerWithId(id);
+			this.reference = myScenario.get.controllerWithId(id);
 			break;
 		default:
 			this.reference = null;	

@@ -89,7 +89,7 @@ public class Controller_SIG_Pretimed extends Controller {
             int plan_id = Integer.parseInt(row.get_value_for_column_name("Plan ID"));
             PretimedPlan pp = plan_map.get(plan_id);
             int signal_id = Integer.parseInt(row.get_value_for_column_name("Signal"));
-            ActuatorSignal signal = (ActuatorSignal) myScenario.getActuatorWithId(signal_id);
+            ActuatorSignal signal = (ActuatorSignal) myScenario.get.actuatorWithId(signal_id);
             double offset = Double.parseDouble(row.get_value_for_column_name("Offset"));
             pp.add_signal_with_offset(signal_id, signal, offset);
         }
@@ -134,8 +134,8 @@ public class Controller_SIG_Pretimed extends Controller {
         PretimedPlan current_plan = plan_schedule.get(cplan_index).plan;
 
         // mimic a 1 cycle run
-        double init_time = myScenario.getCurrentTimeInSeconds();
-        for(double sim_time=init_time;sim_time<init_time+current_plan.cycle;sim_time+=myScenario.getSimdtinseconds()){
+        double init_time = myScenario.get.currentTimeInSeconds();
+        for(double sim_time=init_time;sim_time<init_time+current_plan.cycle;sim_time+=myScenario.get.simdtinseconds()){
 
             // controller "update"
             current_plan.send_commands_to_signal(sim_time, false);
@@ -187,7 +187,7 @@ public class Controller_SIG_Pretimed extends Controller {
     @Override
     protected void update() {
 
-        double sim_time = getMyScenario().getCurrentTimeInSeconds();
+        double sim_time = getMyScenario().get.currentTimeInSeconds();
 
         // time to switch plans .....................................
         if( !done ){
