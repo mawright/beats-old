@@ -97,7 +97,7 @@ public class ScenarioSetApi {
         dp.setKnob(1d);
         dp.setStartTime(scenario.get.currentTimeInSeconds());
 
-        double [] demand_per_vt = BeatsMath.times(demands, 1d / ((double) scenario.get.numVehTypes));
+        double [] demand_per_vt = BeatsMath.times(demands, 1d / ((double) scenario.get.numVehicleTypes()));
         for(VehicleType vt : scenario.getVehicleTypeSet().getVehicleType()){
             Demand d = new Demand();
             d.setVehicleTypeId(vt.getId());
@@ -279,7 +279,7 @@ public class ScenarioSetApi {
             return false;
         }
 
-        if(scenario.get.numVehTypes>1){
+        if(scenario.get.numVehicleTypes()>1){
             System.err.println("This methos works only with single vehicle type scenarios.");
             return false;
         }

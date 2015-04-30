@@ -23,7 +23,7 @@ public class RampMeteringPolicyMakerLp implements RampMeteringPolicyMaker {
 
     public RampMeteringPolicyMakerLp(Scenario myScenario,double K_dem_seconds,double K_cool_seconds,double eta){
         this.myScenario = myScenario;
-        sim_dt_in_seconds = myScenario.getSimdtinseconds();
+        sim_dt_in_seconds = myScenario.get.simdtinseconds();
         int K_dem = (int) Math.round(K_dem_seconds / sim_dt_in_seconds);
         int K_cool = (int) Math.round(K_cool_seconds / sim_dt_in_seconds);
         try {

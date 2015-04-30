@@ -15,13 +15,9 @@ import java.util.Properties;
 public class ScenarioGetApi {
 
     Scenario scenario;
-    int numVehTypes;
-    int numEnsemble;
 
     public ScenarioGetApi(Scenario scenario){
         this.scenario = scenario;
-        this.numVehTypes = scenario.numVehicleTypes;
-        this.numEnsemble = scenario.runParam.numEnsemble;
     }
 
     // SIMULATION PARAMETERS ------------------------------------------------------
@@ -59,7 +55,7 @@ public class ScenarioGetApi {
     }
 
     public int numEnsemble() {
-        return  numEnsemble;
+        return  scenario.runParam.numEnsemble;
     }
 
     public double simdtinseconds() {
@@ -83,6 +79,7 @@ public class ScenarioGetApi {
     }
 
     public String [] vehicleTypeNames(){
+        int numVehTypes = this.scenario.get.numVehicleTypes();
         String [] vehtypenames = new String [numVehTypes];
         if(scenario.getVehicleTypeSet()==null || scenario.getVehicleTypeSet().getVehicleType()==null)
             vehtypenames[0] = Defaults.vehicleType;
@@ -99,7 +96,7 @@ public class ScenarioGetApi {
     // VEHICLE TYPES ------------------------------------------------------
 
     public int numVehicleTypes() {
-        return  numVehTypes;
+        return  scenario.numVehicleTypes;
     }
 
     public int vehicleTypeIndexForName(String name){
@@ -285,6 +282,7 @@ public class ScenarioGetApi {
         if(network==null)
             return null;
 
+        int numVehTypes = this.scenario.get.numVehicleTypes();
         double [][] density = new double [network.getLinkList().getLink().size()][numVehTypes];
 
         int i,j;
@@ -307,6 +305,7 @@ public class ScenarioGetApi {
         if(network==null)
             return null;
 
+        int numEnsemble = this.scenario.get.numEnsemble();
         double [][] density = new double [network.getLinkList().getLink().size()][numEnsemble];
         int i,e;
         for(i=0;i<network.getLinkList().getLink().size();i++){
@@ -322,6 +321,7 @@ public class ScenarioGetApi {
         if(network==null)
             return null;
 
+        int numEnsemble = this.scenario.get.numEnsemble();
         double [][] inflow = new double [network.getLinkList().getLink().size()][numEnsemble];
         int i,e;
         for(i=0;i<network.getLinkList().getLink().size();i++){
@@ -337,6 +337,7 @@ public class ScenarioGetApi {
         if(network==null)
             return null;
 
+        int numEnsemble = this.scenario.get.numEnsemble();
         double [][] cumInflow = new double [network.getLinkList().getLink().size()][numEnsemble];
         int i,e;
         for(i=0;i<network.getLinkList().getLink().size();i++){
@@ -391,6 +392,7 @@ public class ScenarioGetApi {
         Network network = (Network) scenario.getNetworks().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
         InitialDensitySet init_dens_set = (InitialDensitySet) factory.createInitialDensitySet();
+        int numVehTypes = this.scenario.get.numVehicleTypes();
         for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
             Link L = (Link) jaxbL;
             for(int v=0;v<numVehTypes;v++){

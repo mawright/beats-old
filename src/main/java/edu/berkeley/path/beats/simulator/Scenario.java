@@ -58,12 +58,10 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     public Clock clock;
     protected int numVehicleTypes;			// number of vehicle types
 
-
     // run parameters
     protected RunParameters runParam;
     protected boolean initialized = false;
     protected boolean scenario_locked=false;				// true when the simulation is running
-
 
     // output
     public static Logger logger = Logger.getLogger(Scenario.class);
@@ -953,6 +951,13 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 
     /// TEMPORARY GETTERS FOR THE API CLASSES
+
+
+    @Override
+    public edu.berkeley.path.beats.jaxb.DemandSet getDemandSet() {
+        return this.demandset;
+    }
+
     public List<edu.berkeley.path.beats.jaxb.Network> getNetworks(){
         return this.networkSet.getNetwork();
     }

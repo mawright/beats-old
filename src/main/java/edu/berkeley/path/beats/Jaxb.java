@@ -24,6 +24,8 @@ public class Jaxb {
         BeatsErrorLog.clearErrorMessage();
         Unmarshaller u = create_unmarshaller(object_factory);
         Scenario S = (Scenario) unmarshall(u,configfilename);
+        S.get = new ScenarioGetApi(S);
+        S.set = new ScenarioSetApi(S);
         S.set.configfilename(configfilename);
         return S;
     }
