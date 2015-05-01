@@ -116,13 +116,13 @@ public class ScenarioSetApi {
         dp.reset();
 
         // check wheter I have a demandSet, otherwise create one
-        if(scenario.demandset==null){
-            scenario.demandset = new DemandSet();
-            scenario.demandset.populate(scenario);
+        if(scenario.getDemandSet()==null){
+            scenario.setDemandSet(new DemandSet());
+            ((DemandSet)scenario.getDemandSet()).populate(scenario);
         }
 
         // add the demand profile to the demand set
-        scenario.demandset.add_or_replace_profile(dp);
+        ((DemandSet)scenario.getDemandSet()).add_or_replace_profile(dp);
 
     }
 
@@ -212,8 +212,8 @@ public class ScenarioSetApi {
 
                 // find earliest demand profile ...
                 double demand_start = Double.POSITIVE_INFINITY;
-                if(scenario.demandset!=null)
-                    for(edu.berkeley.path.beats.jaxb.DemandProfile D : scenario.demandset.getDemandProfile())
+                if(scenario.getDemandSet()!=null)
+                    for(edu.berkeley.path.beats.jaxb.DemandProfile D : scenario.getDemandSet().getDemandProfile())
                         demand_start = Math.min(demand_start,D.getStartTime());
                 if(Double.isInfinite(demand_start))
                     demand_start = 0d;

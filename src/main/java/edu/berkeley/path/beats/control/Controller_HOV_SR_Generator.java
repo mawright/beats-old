@@ -1,7 +1,6 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorCMS;
-import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.DemandSet;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
@@ -12,6 +11,10 @@ import edu.berkeley.path.beats.simulator.ScenarioElement;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfile;
+import edu.berkeley.path.beats.simulator.utils.DebugLogger;
 import org.apache.commons.math3.stat.descriptive.moment.GeometricMean;
 
 /**
@@ -26,9 +29,9 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 
 	public Controller_HOV_SR_Generator(Scenario myScenario, edu.berkeley.path.beats.jaxb.Controller c) {
 		super(myScenario,c);
-		hov_vtype_index = myScenario.getVehicleTypeIndexForName("HOV");
-		hov_vtype_id = myScenario.getVehicleTypeIdForIndex(hov_vtype_index);
-		dt_in_hr = myScenario.getSimdtinseconds()/3600d;
+		hov_vtype_index = myScenario.get.vehicleTypeIndexForName("HOV");
+		hov_vtype_id = myScenario.get.vehicleTypeIdForIndex(hov_vtype_index);
+		dt_in_hr = myScenario.get.simdtinseconds()/3600d;
 	}
 
 	@Override
@@ -58,14 +61,14 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 			// OR->FR => beta = 0;
 			for(int i=0;i<nd.ind_or.size();i++)
 				for(int j=0;j<nd.ind_fr.size();j++)
-					if(getMyScenario().getCurrentTimeInSeconds()%dt_log==0){
-						DebugLogger.write(logger_id,String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
-								getMyScenario().getCurrentTimeInSeconds(),
-								nd.getId(),
-								nd.link_or.get(i).getId(),
-								nd.link_fr.get(j).getId(),
-								hov_vtype_id,
-								0d));
+					if(getMyScenario().get.currentTimeInSeconds()%dt_log==0){
+						DebugLogger.write(logger_id, String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
+                                getMyScenario().get.currentTimeInSeconds(),
+                                nd.getId(),
+                                nd.link_or.get(i).getId(),
+                                nd.link_fr.get(j).getId(),
+                                hov_vtype_id,
+                                0d));
 
 						((ActuatorCMS)actuators.get(n)).set_split(
 								nd.link_or.get(i).getId(),
@@ -76,9 +79,9 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 
 			// OR->HOV => beta = 0
 			for(int i=0;i<nd.ind_or.size();i++)
-				if(getMyScenario().getCurrentTimeInSeconds()%dt_log==0){
+				if(getMyScenario().get.currentTimeInSeconds()%dt_log==0){
 					DebugLogger.write(logger_id,String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
-							getMyScenario().getCurrentTimeInSeconds(),
+							getMyScenario().get.currentTimeInSeconds(),
 							nd.getId(),
 							nd.link_or.get(i).getId(),
 							nd.link_hov_out.getId(),
@@ -94,9 +97,9 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 
 			// HOV->FR => beta = 0
 			for(int j=0;j<nd.ind_fr.size();j++)
-				if(getMyScenario().getCurrentTimeInSeconds()%dt_log==0){
+				if(getMyScenario().get.currentTimeInSeconds()%dt_log==0){
 					DebugLogger.write(logger_id,String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
-							getMyScenario().getCurrentTimeInSeconds(),
+							getMyScenario().get.currentTimeInSeconds(),
 							nd.getId(),
 							nd.link_hov_in.getId(),
 							nd.link_fr.get(j).getId(),
@@ -113,7 +116,7 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 			// HOV->GP, apply beta if unset
 			if(Double.isNaN(nd.get_SRP_hov_out_split())) {
 				DebugLogger.write(logger_id, String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
-						getMyScenario().getCurrentTimeInSeconds(),
+						getMyScenario().get.currentTimeInSeconds(),
 						nd.getId(),
 						nd.link_hov_in.getId(),
 						nd.link_gp_out.getId(),
@@ -131,9 +134,9 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 			double beta = nd.gp_to_hov_flow_demand_ratio;
 			beta = Math.min(beta,1d);
 
-			if(getMyScenario().getCurrentTimeInSeconds()%dt_log==0){
+			if(getMyScenario().get.currentTimeInSeconds()%dt_log==0){
 				DebugLogger.write(logger_id, String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
-						getMyScenario().getCurrentTimeInSeconds(),
+						getMyScenario().get.currentTimeInSeconds(),
 						nd.getId(),
 						nd.link_gp_in.getId(),
 						nd.link_hov_out.getId(),
@@ -152,9 +155,9 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 				double alpha = nd.beta_gp_frs[j];
 				double r = (1d-beta);
 
-				if(getMyScenario().getCurrentTimeInSeconds()%dt_log==0)
+				if(getMyScenario().get.currentTimeInSeconds()%dt_log==0)
 					DebugLogger.write(logger_id,String.format("%f\t%d\t%d\t%d\t%d\t%f\n",
-							getMyScenario().getCurrentTimeInSeconds(),
+							getMyScenario().get.currentTimeInSeconds(),
 							nd.getId(),
 							nd.link_gp_in.getId() ,
 							nd.link_fr.get(j).getId() ,
@@ -232,7 +235,7 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 		public HOVNodeData(DemandSet demand_set, Node myNode) {
 			this.id = myNode.getId();
 			this.myNode = myNode;
-			this.hov_vehtype_index = myScenario.getVehicleTypeIndexForName("HOV");
+			this.hov_vehtype_index = myScenario.get.vehicleTypeIndexForName("HOV");
 
 			//  link references
 			for(int i=0;i<myNode.getnIn();i++){
@@ -375,7 +378,7 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 			if(!all_same)
 				start_time = null;
 			else {
-				step_initial_abs = BeatsMath.round(start_time.get(0) / myScenario.getSimdtinseconds());
+				step_initial_abs = BeatsMath.round(start_time.get(0) / myScenario.get.simdtinseconds());
 				isdone = false;
 			}
 
@@ -494,7 +497,7 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 			double [] val = new double [link_hov.size()];
 			int prof_sample_steps = 60;         ///// HACK!!!!
 
-			if( !isdone && myScenario.getClock().is_time_to_sample_abs(prof_sample_steps, step_initial_abs)){
+			if( !isdone && myScenario.get.clock().is_time_to_sample_abs(prof_sample_steps, step_initial_abs)){
 
 				for(int i=0;i<link_hov.size();i++){
 
@@ -502,10 +505,10 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 
 					// REMOVE THESE
 					int n = profile.getNumTime()-1;
-					int step = myScenario.getClock().sample_index_abs(prof_sample_steps,step_initial_abs);
+					int step = myScenario.get.clock().sample_index_abs(prof_sample_steps,step_initial_abs);
 
 					// demand is zero before step_initial_abs
-					if(myScenario.getClock().getAbsoluteTimeStep()< step_initial_abs)
+					if(myScenario.get.clock().getAbsoluteTimeStep()< step_initial_abs)
 						val[i] = 0d;
 
 					// sample the profile

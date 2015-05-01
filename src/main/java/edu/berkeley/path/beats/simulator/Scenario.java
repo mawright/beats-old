@@ -74,7 +74,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     public PerformanceCalculator perf_calc;
 
     // demands
-    public DemandSet demandset = new DemandSet();
+//    public DemandSet demandset = new DemandSet();
     protected double global_demand_knob;	// scale factor for all demands
 
     // sensors
@@ -143,9 +143,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //			for( edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile() )
 //				((CapacityProfile) capacityProfile).populate(this);
 
-//		if(demandSet!=null)
-//			((DemandSet) demandSet).populate(this);
-        demandset.populate(this);
+		if(demandSet!=null)
+			((DemandSet) demandSet).populate(this);
+//        demandset.populate(this);
 
 		// fundamental diagram profiles
 		if(fundamentalDiagramSet!=null)
@@ -212,9 +212,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             ((CapacitySet)S.downstreamBoundaryCapacitySet).validate();
 
 		// validate demand profiles
-//		if(S.demandSet!=null)
-//			((DemandSet)S.demandSet).validate();
-        S.demandset.validate();
+		if(S.demandSet!=null)
+			((DemandSet)S.demandSet).validate();
+//        S.demandset.validate();
 
 		// validate split ratio profiles
 		if(S.splitRatioSet!=null)
@@ -265,9 +265,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		actuatorset.reset();
 
 		// reset demand profiles
-//		if(demandSet!=null)
-//			((DemandSet)demandSet).reset();
-        demandset.reset();
+		if(demandSet!=null)
+			((DemandSet)demandSet).reset();
+//        demandset.reset();
 
 		// reset split ratios
 		if(splitRatioSet!=null)
@@ -953,10 +953,10 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     /// TEMPORARY GETTERS FOR THE API CLASSES
 
 
-    @Override
-    public edu.berkeley.path.beats.jaxb.DemandSet getDemandSet() {
-        return this.demandset;
-    }
+//    @Override
+//    public edu.berkeley.path.beats.jaxb.DemandSet getDemandSet() {
+//        return this.demandset;
+//    }
 
     public List<edu.berkeley.path.beats.jaxb.Network> getNetworks(){
         return this.networkSet.getNetwork();

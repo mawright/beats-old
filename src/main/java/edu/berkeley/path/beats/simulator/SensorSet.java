@@ -65,7 +65,6 @@ public final class SensorSet extends edu.berkeley.path.beats.jaxb.SensorSet  {
 				
 				// generate sensor
 				if(myType!=null){
-                    System.out.println("SensorSet : " + sensorjaxb.isIsGood());
 					Sensor S = ObjectFactory.createSensorFromJaxb(myScenario,sensorjaxb,myType);
 					if(S!=null)
 						sensors.add(S);

@@ -407,9 +407,9 @@ public class ScenarioGetApi {
     }
 
     public DemandProfile current_demand_for_link(long link_id){
-        if(scenario.demandset==null)
+        if(scenario.getDemandSet()==null)
             return null;
-        return scenario.demandset.get_demand_profile_for_link_id(link_id);
+        return ((DemandSet)scenario.getDemandSet()).get_demand_profile_for_link_id(link_id);
     }
 
     public Properties auxiliary_properties(String group_name){
