@@ -232,4 +232,12 @@ public final class ControllerSet extends edu.berkeley.path.beats.jaxb.Controller
 //		}
 //
 //	}
+
+    protected ArrayList<Controller> getControllersOfType(String ctype){
+        ArrayList<Controller> X = new ArrayList<Controller>();
+        for(Controller C : controllers)
+            if( C.getClass().getCanonicalName().equalsIgnoreCase(ctype))
+                X.add(C);
+        return X;
+    }
 }

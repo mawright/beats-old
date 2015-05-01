@@ -54,12 +54,14 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 @SuppressWarnings("restriction")
 public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
+    public enum RunMode {NORMAL,ACTM,FRDEMANDS};
     protected String configfilename;
     public Clock clock;
     protected int numVehicleTypes;			// number of vehicle types
 
     // run parameters
     protected RunParameters runParam;
+    public RunMode runMode;
     protected boolean initialized = false;
     protected boolean scenario_locked=false;				// true when the simulation is running
 
@@ -408,13 +410,18 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         // create scenario updater
         if(is_actm){
+            runMode = RunMode.ACTM;
             updater = new ScenarioUpdaterACTM(this);
         }
         else{
-            if(run_mode.compareToIgnoreCase("fw_fr_split_output")==0)
-                updater = new ScenarioUpdaterFrFlow(this,nodeflowsolver,nodesrsolver);
-            else
-                updater = new ScenarioUpdaterStandard(this,nodeflowsolver,nodesrsolver);
+            if(run_mode.compareToIgnoreCase("fw_fr_split_output")==0) {
+                runMode = RunMode.FRDEMANDS;
+                updater = new ScenarioUpdaterFrFlow(this, nodeflowsolver, nodesrsolver);
+            }
+            else {
+                runMode = RunMode.NORMAL;
+                updater = new ScenarioUpdaterStandard(this, nodeflowsolver, nodesrsolver);
+            }
         }
 
         // create performance calculator

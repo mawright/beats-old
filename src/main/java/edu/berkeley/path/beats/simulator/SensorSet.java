@@ -71,7 +71,6 @@ public final class SensorSet extends edu.berkeley.path.beats.jaxb.SensorSet  {
 				}		    	
 			}
 		}
-	
 	}
 
 	protected void validate() {

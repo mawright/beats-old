@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.control.Controller_SR_Generator;
 import edu.berkeley.path.beats.jaxb.Demand;
 import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacitySet;
 import edu.berkeley.path.beats.jaxb.VehicleType;
@@ -7,6 +8,8 @@ import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
+import java.util.ArrayList;
 
 public class ScenarioSetApi {
 
@@ -126,8 +129,32 @@ public class ScenarioSetApi {
 
     }
 
-    public void knob_for_demand_id(int demand_id,double newknob){
+    public void demand_knob_for_link_id(long link_id,double newknob){
+        DemandSet demandSet = (DemandSet) scenario.getDemandSet();
+        if(demandSet==null)
+            return;
+        DemandProfile dp = demandSet.get_demand_profile_for_link_id(link_id);
+        if(dp==null)
+            return;
+        dp.set_knob(newknob);
+    }
 
+    public void knob_for_offramp_link_id(int link_id,double newknob){
+
+        if(scenario.runMode.compareTo(Scenario.RunMode.FRDEMANDS)!=0) {
+            System.err.println("This only works in fr demand run mode");
+            return;
+        }
+
+        // get the SR generator controller
+        ArrayList<Controller> SRControllers = ((ControllerSet)scenario.getControllerSet()).getControllersOfType("Controller_SR_Generator");
+
+        if(SRControllers.size()!=1) {
+            System.err.println("Did not find a unique SR controller in this scenario");
+            return;
+        }
+
+        ((Controller_SR_Generator)SRControllers.get(0)).setKnobForLink(link_id,newknob);
     }
 
     // SPLITS ------------------------------------------------------
@@ -307,8 +334,6 @@ public class ScenarioSetApi {
             }
         return success;
     }
-
-
 
     public void uncertaintyModel(String uncertaintyModel) {
         scenario.uncertaintyModel = TypeUncertainty.valueOf(uncertaintyModel);

@@ -198,6 +198,34 @@ public class Controller_SR_Generator extends Controller {
         }
     }
 
+    /////////////////////////////////////////////////////////////////////
+    // api
+    /////////////////////////////////////////////////////////////////////
+
+    public void setKnobForLink(long link_id,double newknob){
+
+        // get NodeData corresponding to this link
+        NodeData node = null;
+        for(NodeData N : node_data){
+            for(Link link : N.link_fr)
+                if(link.getId()==link_id) {
+                    node = N;
+                    break;
+                }
+        }
+
+        if(node==null)
+            return;
+
+        // set knob in node
+        node.set_knob_for_fr_link(link_id,newknob);
+
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // inner classes
+    /////////////////////////////////////////////////////////////////////
+
     class NodeData {
 
         Node myNode;
@@ -205,6 +233,7 @@ public class Controller_SR_Generator extends Controller {
         protected long id;
         protected int step_initial_abs;
         protected boolean isdone;
+        protected List<Double> knob;
         protected List<BeatsTimeProfile> fr_flow;	// [veh] demand profile per vehicle type
 
         protected List<Link> link_or;
@@ -265,12 +294,16 @@ public class Controller_SR_Generator extends Controller {
 
             // find the demand profile for the offramps
             fr_flow = new ArrayList<BeatsTimeProfile>();
+            knob = new ArrayList<Double>();
             List<Double> start_time = new ArrayList<Double>();
             for(Link link : link_fr){
                 DemandProfile dp = demand_set.get_demand_profile_for_link_id(link.getId());
-                if(dp==null)
-                    fr_flow.add(new BeatsTimeProfile("0",true));
+                if(dp==null) {
+                    knob.add(1d);
+                    fr_flow.add(new BeatsTimeProfile("0", true));
+                }
                 else{
+                    knob.add(dp.getKnob());
                     fr_flow.add(new BeatsTimeProfile(dp.getDemand().get(0).getContent(),true));
                     start_time.add(Double.isInfinite(dp.getStartTime()) ? 0d : dp.getStartTime());
                 }
@@ -298,7 +331,6 @@ public class Controller_SR_Generator extends Controller {
         public void update_info(){
 
             int i,j,k;
-
             // total_non_onramp_demand [veh]
             total_non_onramp_demand = 0d;
             for(Link link : link_not_or)
@@ -404,7 +436,7 @@ public class Controller_SR_Generator extends Controller {
                     }
                     val[i] = Math.abs(val[i]);
                     val[i] *= dt_in_hr;
-
+                    val[i] *= knob.get(i);
                 }
                 return val;
             }
@@ -416,6 +448,13 @@ public class Controller_SR_Generator extends Controller {
             return id;
         }
 
+        protected void set_knob_for_fr_link(long link_id,double newknob){
+            for(int i=0;i<link_fr.size();i++)
+                if(link_fr.get(i).getId()==link_id){
+                    knob.set(i,newknob);
+                    break;
+                }
+        }
     }
 
 }
