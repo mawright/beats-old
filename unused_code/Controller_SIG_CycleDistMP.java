@@ -1,13 +1,5 @@
 package edu.berkeley.path.beats.control;
 
-import java.lang.Math;
-
-import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.simulator.Controller;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.Scenario;
-
 //public class Controller_SIG_CycleDistMP extends Controller_SIG {
 //
 //    private Node myNode;

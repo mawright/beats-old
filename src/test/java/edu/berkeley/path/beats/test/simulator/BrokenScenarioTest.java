@@ -12,8 +12,8 @@ import org.junit.runners.Parameterized;
 
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.ScenarioValidationError;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.ScenarioValidationError;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 @RunWith(Parameterized.class)
 @Ignore

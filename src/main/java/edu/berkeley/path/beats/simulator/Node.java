@@ -27,6 +27,11 @@
 package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.jaxb.Splitratio;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.NodeBehavior;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_FlowSolver;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,22 +48,22 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	protected Network myNetwork;
 
 	// connectivity
-	protected int nIn;
-	protected int nOut;
+    public int nIn;
+    public int nOut;
 
-    protected boolean istrivialsplit;
+    public boolean istrivialsplit;
 	protected boolean isTerminal;
 
 	// link references
-	protected Link [] output_link;
-	protected Link [] input_link;
+	public Link [] output_link;
+    public Link [] input_link;
 
 	// split ratio from profile
 	protected SplitRatioProfile my_profile;
 	protected boolean has_profile;
 
     // node behavior
-    protected NodeBehavior node_behavior;
+    public NodeBehavior node_behavior;
 	
 	// does change ........................................
 
@@ -124,7 +129,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
 		// initialize the split ratio matrix
 		// NOTE: SHOULD THIS GO IN RESET?
-		splitratio_selected = new Double3DMatrix(nIn,nOut,myScenario.getNumVehicleTypes(),0d);
+		splitratio_selected = new Double3DMatrix(nIn,nOut,myScenario.get.numVehicleTypes(),0d);
 		normalizeSplitRatioMatrix(splitratio_selected);
 
 		// default node flow and split solvers
@@ -165,14 +170,14 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
             node_behavior.sr_solver.reset();
 	}
 	
-	protected void update_flows() {
+	public void update_flows() {
 		
         if(isTerminal)
             return;
 
         int e,i,j;
         Scenario myScenario = myNetwork.getMyScenario();
-        int numEnsemble = myScenario.getNumEnsemble();
+        int numEnsemble = myScenario.get.numEnsemble();
 
         // update split ratio matrix
         Double3DMatrix[] splitratio_selected_perturbed = select_and_perturb_split_ratio();
@@ -279,9 +284,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 
 
-    protected Double3DMatrix[] select_and_perturb_split_ratio(){
+    public Double3DMatrix[] select_and_perturb_split_ratio(){
     	
-    	int numVTypes = getMyNetwork().getMyScenario().getNumVehicleTypes();
+    	int numVTypes = getMyNetwork().getMyScenario().get.numVehicleTypes();
 
         // Select a split ratio from profile, event, or controller
         if(istrivialsplit)
@@ -296,7 +301,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         }
 
         // perturb split ratio
-        int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
+        int numEnsemble = myNetwork.getMyScenario().get.numEnsemble();
         Double3DMatrix[] splitratio_selected_perturbed = new Double3DMatrix[numEnsemble];
         if(!isdeterministic && my_profile.hasConcentrationParameters() 
         		&& my_profile.isCurrentConcentrationParametersValid())
@@ -320,7 +325,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		double value;
 		
 		// dimension
-		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.getMyScenario().getNumVehicleTypes()){
+		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.getMyScenario().get.numVehicleTypes()){
 			BeatsErrorLog.addError("Split ratio for node " + getId() + " has incorrect dimensions.");
 			return false;
 		}
@@ -349,7 +354,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		double sum;
     	
     	for(i=0;i<X.getnIn();i++)
-    		for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++){
+    		for(k=0;k<myNetwork.getMyScenario().get.numVehicleTypes();k++){
 				hasNaN = false;
 				countNaN = 0;
 				idxNegative = -1;
@@ -369,7 +374,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 					sum += X.get(i,idxNegative,k);
 				}
 				
-				if ( !hasNaN && BeatsMath.equals(sum,0.0) ) {	
+				if ( !hasNaN && BeatsMath.equals(sum, 0.0) ) {
 					X.set(i,0,k,1d);
 					//for (j=0; j<n2; j++)			
 					//	data[i][j][k] = 1/((double) n2);

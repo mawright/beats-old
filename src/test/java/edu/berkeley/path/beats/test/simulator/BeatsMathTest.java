@@ -7,8 +7,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import edu.berkeley.path.beats.simulator.BeatsFormatter;
-import edu.berkeley.path.beats.simulator.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 

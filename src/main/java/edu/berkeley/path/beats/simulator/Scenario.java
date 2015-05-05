@@ -36,6 +36,13 @@ import javax.xml.bind.Marshaller;
 import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
 import edu.berkeley.path.beats.jaxb.*;
+import edu.berkeley.path.beats.simulator.output.OutputWriterBase;
+import edu.berkeley.path.beats.simulator.output.OutputWriterFactory;
+import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterACTM;
+import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterAbstract;
+import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterFrFlow;
+import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterStandard;
+import edu.berkeley.path.beats.simulator.utils.*;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
@@ -47,27 +54,44 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 @SuppressWarnings("restriction")
 public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
-//	public static enum ModeType { on_init_dens,left_of_init_dens,right_of_init_dens}
+    protected String configfilename;
+    public Clock clock;
+    protected int numVehicleTypes;			// number of vehicle types
 
-    protected static Logger logger = Logger.getLogger(Scenario.class);
+    // run parameters
+    protected RunParameters runParam;
+    protected boolean initialized = false;
+    protected boolean scenario_locked=false;				// true when the simulation is running
 
-    //protected RunMode run_mode;
+    // output
+    public static Logger logger = Logger.getLogger(Scenario.class);
     protected String split_logger_prefix;
     protected Double split_logger_dt;
-	protected Cumulatives cumulatives;
-    protected PerformanceCalculator perf_calc;
-	protected Clock clock;
-	protected int numVehicleTypes;			// number of vehicle types
-	//protected boolean global_control_on;	// global control switch
-	protected double global_demand_knob;	// scale factor for all demands
-	protected edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
-	protected EventSet eventset = new EventSet();	// holds time sorted list of events
-	protected SensorSet sensorset = new SensorSet();
-	protected ActuatorSet actuatorset = new ActuatorSet();
-	protected boolean started_writing;
+    public Cumulatives cumulatives;
+    protected boolean started_writing;
 
-	protected String configfilename;
+    // performance calculator
+    public PerformanceCalculator perf_calc;
 
+    // demands
+//    public DemandSet demandset = new DemandSet();
+    protected double global_demand_knob;	// scale factor for all demands
+
+    // sensors
+    public SensorSet sensorset = new SensorSet();
+    protected boolean sensor_data_loaded = false;
+
+    // actuators
+    public ActuatorSet actuatorset = new ActuatorSet();
+
+    // controllers
+    public ControllerSet controllerset = new ControllerSet();
+    protected HashMap<String,Properties> aux_props;
+
+    // events
+    public EventSet eventset = new EventSet();	// holds time sorted list of events
+
+    // scenario update
     protected ScenarioUpdaterAbstract updater;
 
 	// Model uncertainty
@@ -75,16 +99,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	protected double std_dev_flow = 0.0d;	// [veh]
 	protected boolean has_flow_unceratinty;
 
-	// data
-	protected boolean sensor_data_loaded = false;
-
-	// run parameters
-	protected RunParameters runParam;
-	protected boolean initialized = false;
-	protected boolean scenario_locked=false;				// true when the simulation is running
-
-    // auxiliary properties, used by control algorithms
-    protected HashMap<String,Properties> aux_props;
+    // api
+    public ScenarioGetApi get;
+    public ScenarioSetApi set;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate
@@ -94,7 +111,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	    // initialize scenario attributes ..............................................
 		this.global_demand_knob = 1d;
-		this.has_flow_unceratinty = BeatsMath.greaterthan(getStd_dev_flow(),0.0);
+		this.has_flow_unceratinty = BeatsMath.greaterthan(get.std_dev_flow(), 0.0);
 
 		this.numVehicleTypes = 1;
 		if(getVehicleTypeSet()!=null && getVehicleTypeSet().getVehicleType()!=null)
@@ -128,6 +145,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		if(demandSet!=null)
 			((DemandSet) demandSet).populate(this);
+//        demandset.populate(this);
 
 		// fundamental diagram profiles
 		if(fundamentalDiagramSet!=null)
@@ -161,8 +179,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	public static void validate(Scenario S) {
 
-		if(S.getSimdtinseconds()<=0)
-			BeatsErrorLog.addError("Non-positive simulation step size (" + S.getSimdtinseconds() +").");
+		if(S.get.simdtinseconds()<=0)
+			BeatsErrorLog.addError("Non-positive simulation step size (" + S.get.simdtinseconds() + ").");
 
 		// should have a network
 		if(S.networkSet==null || S.networkSet.getNetwork().isEmpty())
@@ -196,6 +214,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// validate demand profiles
 		if(S.demandSet!=null)
 			((DemandSet)S.demandSet).validate();
+//        S.demandset.validate();
 
 		// validate split ratio profiles
 		if(S.splitRatioSet!=null)
@@ -248,7 +267,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// reset demand profiles
 		if(demandSet!=null)
 			((DemandSet)demandSet).reset();
-		
+//        demandset.reset();
+
 		// reset split ratios
 		if(splitRatioSet!=null)
 			((SplitRatioSet)splitRatioSet).reset();
@@ -381,9 +401,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                            HashMap<String,Properties> aux_props,boolean is_actm) throws BeatsException {
 
         // set stuff
-        setUncertaintyModel(uncertaintymodel);
-        setSplitLoggerPrefix(split_logger_prefix);
-        setSplitLoggerDt(split_logger_dt);
+        set.uncertaintyModel(uncertaintymodel);
+        set.splitLoggerPrefix(split_logger_prefix);
+        set.splitLoggerDt(split_logger_dt);
         this.aux_props = aux_props;
 
         // create scenario updater
@@ -399,7 +419,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         // create performance calculator
         if(!performance_config.isEmpty())
-            set_performance_calculator(Jaxb.create_performance_calculator(performance_config));
+            set.performance_calculator(Jaxb.create_performance_calculator(performance_config));
 
 		// create run parameters object
 		boolean writeoutput = true;
@@ -423,7 +443,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		populate_validate();
 
 		// compute the initial state by running the simulator to the start time
-		assign_initial_state();
+		set.initial_state();
 
 		// create the clock
 		clock = new Clock(runParam.t_start_output,runParam.t_end_output,runParam.dt_sim);
@@ -465,8 +485,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //	    	throw new BeatsException("ActuatorSignal registration failure");
 //	    }
 
-	    if(getControllerset()!=null)
-	    	if(!getControllerset().register()){
+	    if(get.controllerset()!=null)
+	    	if(!get.controllerset().register()){
 	    		throw new BeatsException("Controller registration failure");
 		    }
 
@@ -515,7 +535,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 			OutputWriterBase outputwriter = null;
 			if (runParam.writefiles){
-				outputwriter = OutputWriterFactory.getWriter(this, owr_props, runParam.dt_output,runParam.outsteps,runParam.t_start_output);
+				outputwriter = OutputWriterFactory.getWriter(this, owr_props, runParam.dt_output, runParam.outsteps, runParam.t_start_output);
 				outputwriter.open(i);
 			}
 
@@ -540,7 +560,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// step-by-step run
 	/////////////////////////////////////////////////////////////////////
 
-	/** Advance the simulation <i>nsec</i> seconds.
+    /** Advance the simulation <i>nsec</i> seconds.
 	 *
 	 * <p> Move the simulation forward <i>nsec</i> seconds and stops.
 	 * Returns <code>true</code> if the operation completes succesfully. Returns <code>false</code>
@@ -570,84 +590,37 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return advanceNSteps_internal(nsteps,true,outputwriter);
     }
 
-	/////////////////////////////////////////////////////////////////////
-	// protected simple getters and setters
-	/////////////////////////////////////////////////////////////////////
+    protected boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter) throws BeatsException{
 
-    public Properties get_auxiliary_properties(String group_name){
-        return aux_props.get(group_name);
-    }
+        if(DebugFlags.time_print>0 && get.currentTimeInSeconds()%DebugFlags.time_print == 0)
+            System.out.println(get.currentTimeInSeconds());
 
-	protected edu.berkeley.path.beats.simulator.ControllerSet getControllerset() {
-		return controllerset;
-	}
+        // advance n steps
+        for(int k=0;k<n;k++){
 
-	public void setConfigfilename(String configfilename) {
-		this.configfilename = configfilename;
-	}
+            // export initial condition
+            if(outputwriter!=null && !started_writing && BeatsMath.equals(clock.getT(),outputwriter.outStart) ){
+                recordstate(writefiles,outputwriter,false);
+                started_writing = true;
+            }
 
-    protected void setSplitLoggerPrefix(String split_logger_prefix){
-        this.split_logger_prefix = split_logger_prefix;
-    }
+            // update scenario
+            updater.update();
 
-    protected void setSplitLoggerDt(Double split_logger_dt){
-        this.split_logger_dt = split_logger_dt;
-    }
-	
-	public void setGlobal_control_on(boolean global_control_on) {
-        for(Controller c : controllerset.get_Controllers())
-            c.setIson(global_control_on);
-	}
+            if(outputwriter!=null && started_writing && clock.getRelativeTimeStep()%outputwriter.outSteps == 0 )
+                recordstate(writefiles,outputwriter,true);
 
-	public void setGlobal_demand_knob(double global_demand_knob) {
-		this.global_demand_knob = global_demand_knob;
-	}
+            if(clock.expired())
+                return false;
+        }
 
-    protected edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile getFDprofileForLinkId(long link_id){
-        if(getFundamentalDiagramSet()==null)
-            return null;
-        if(getFundamentalDiagramSet().getFundamentalDiagramProfile()==null)
-            return null;
-        for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdp : getFundamentalDiagramSet().getFundamentalDiagramProfile())
-            if(fdp.getLinkId()==link_id)
-                return fdp;
-        return null;
+        return true;
     }
 
 	/////////////////////////////////////////////////////////////////////
-	// complex getters
+	// serialization
 	/////////////////////////////////////////////////////////////////////
 
-	/** Retrieve a network with a given ID.
-	 * @param id The string ID of the network
-	 * @return The corresponding network if it exists, <code>null</code> otherwise.
-	 * 
-	 */
-	protected Network getNetworkWithId(long id){
-		if(networkSet==null)
-			return null;
-		if(networkSet.getNetwork()==null)
-			return null;
-		if(networkSet.getNetwork().size()>1)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
-			if(network.getId()==id)
-				return (Network) network;
-		}
-		return null;
-	}
-	
-	/////////////////////////////////////////////////////////////////////
-	// public API
-	/////////////////////////////////////////////////////////////////////
-
-	// serialization .................................................
-	
-	/** Save the scenario to XML.
-	 * 
-	 * @param filename The name of the configuration file.
-	 * @throws BeatsException 
-	 */
 	public void saveToXML(String filename) throws BeatsException{
         try {
         	
@@ -665,432 +638,12 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         	throw new BeatsException(e.getMessage());
         }
 	}
-	
-	// getters ........................................................
-
-    public String getOutputPrefix(){ return runParam.outprefix; }
-
-	public TypeUncertainty getUncertaintyModel() {
-		return uncertaintyModel;
-	}
-
-	public double getGlobal_demand_knob() {
-		return global_demand_knob;
-	}
-
-	public double getStd_dev_flow() {
-		return std_dev_flow;
-	}
-	
-	public boolean isHas_flow_unceratinty() {
-		return has_flow_unceratinty;
-	}
-
-	/** Current simulation time in seconds.
-	 * @return Simulation time in seconds after midnight.
-	 */
-	public double getCurrentTimeInSeconds() {
-		if(clock==null)
-			return Double.NaN;
-		return clock.getT();
-	}
-
-	/** Time elapsed since the beginning of the simulation in seconds.
-	 * @return Simulation time in seconds after start time.
-	 */
-	public double getTimeElapsedInSeconds() {
-		if(clock==null)
-			return Double.NaN;
-		return clock.getTElapsed();
-	}
-
-	/** Number of vehicle types included in the scenario.
-	 * @return Integer number of vehicle types
-	 */
-	public int getNumVehicleTypes() {
-		return numVehicleTypes;
-	}
-	
-	/** Number of ensembles in the run.
-	 * @return Integer number of elements in the ensemble.
-	 */
-	public int getNumEnsemble() {
-		return runParam.numEnsemble;
-	}
-
-	/** Vehicle type index from name
-	 * @return integer index of the vehicle type.
-	 */
-	public int getVehicleTypeIndexForName(String name){
-		if(name==null)
-			return -1;
-		if(getVehicleTypeSet()==null)
-			return 0;
-		if(getVehicleTypeSet().getVehicleType()==null)
-			return 0;
-		for(int i=0;i<getVehicleTypeSet().getVehicleType().size();i++)
-			if(getVehicleTypeSet().getVehicleType().get(i).getName().equalsIgnoreCase(name))
-				return i;
-		return -1;
-	}
-
-	/** Vehicle type index from ID
-	 * @return integer index of the vehicle type.
-	 */
-	public int getVehicleTypeIndexForId(long id){
-		if(getVehicleTypeSet()==null)
-			return 0;
-		if(getVehicleTypeSet().getVehicleType()==null)
-			return 0;
-		for(int i=0;i<getVehicleTypeSet().getVehicleType().size();i++)
-			if(getVehicleTypeSet().getVehicleType().get(i).getId()==id)
-				return i;
-		return -1;
-	}
-
-    public long getVehicleTypeIdForIndex(int index){
-        if(getVehicleTypeSet()==null)
-            return 0;
-        if(getVehicleTypeSet().getVehicleType()==null)
-            return 0;
-        return getVehicleTypeSet().getVehicleType().get(index).getId();
-    }
-	
-	/** Size of the simulation time step in seconds.
-	 * @return Simulation time step in seconds. 
-	 */
-	public double getSimdtinseconds() {
-		return runParam.dt_sim;
-	}
-
-	/** Start time of the simulation.
-	 * @return Start time in seconds. 
-	 */
-	public double getTimeStart() {
-		if(clock==null)
-			return Double.NaN;
-		return this.clock.getStartTime();
-	}
-
-	/** End time of the simulation.
-	 * @return End time in seconds. 
-	 * @return			XXX
-	 */
-	public double getTimeEnd() {
-		if(clock==null)
-			return Double.NaN;
-		return this.clock.getEndTime();
-	}
-	
-	/** Get configuration file name */
-	public String getConfigFilename() {
-		return configfilename;
-	}
-	
-//	public TypeNodeFlowSolver getNodeFlowSolver(){
-//		return this.updater.nodeflowsolver;
-//	}
-//
-//	public TypeNodeSplitSolver getNodeSRSolver(){
-//		return this.updater.nodesrsolver;
-//	}
-
-	/** Vehicle type names.
-	 * @return	Array of strings with the names of the vehicles types.
-	 */
-	public String [] getVehicleTypeNames(){
-		String [] vehtypenames = new String [numVehicleTypes];
-		if(getVehicleTypeSet()==null || getVehicleTypeSet().getVehicleType()==null)
-			vehtypenames[0] = Defaults.vehicleType;
-		else
-			for(int i=0;i<numVehicleTypes;i++)
-				vehtypenames[i] = getVehicleTypeSet().getVehicleType().get(i).getName();
-		return vehtypenames;
-	}
-
-	/** Get the current density state for the network with given ID.
-	 * @param network_id String ID of the network
-	 * @return A two-dimensional array of doubles where the first dimension is the
-	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
-	 * (ordered as in {@link Scenario#getVehicleTypeNames})
-	 */
-	public double [][] getDensityForNetwork(long network_id,int ensemble){
-		
-		if(ensemble<0 || ensemble>=runParam.numEnsemble)
-			return null;
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
-
-		int i,j;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			Link link = (Link) network.getLinkList().getLink().get(i);
-			double [] linkdensity = link.getDensityInVeh(ensemble);
-			if(linkdensity==null)
-				for(j=0;j<numVehicleTypes;j++)
-					density[i][j] = 0d;
-			else
-				for(j=0;j<numVehicleTypes;j++)
-					density[i][j] = linkdensity[j];
-		}
-		return density;           
-		
-	}
-
-	public double [][] getTotalDensity(long network_id){
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] density = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
-		int i,e;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			Link link = (Link) network.getLinkList().getLink().get(i);
-			for(e=0;e<getNumEnsemble();e++)
-				density[i][e] = link.getTotalDensityInVeh(e);
-		}
-		return density;           
-	}
-	
-	public double [][] getTotalInflow(long network_id){
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] inflow = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
-		int i,e;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			Link link = (Link) network.getLinkList().getLink().get(i);
-			for(e=0;e<getNumEnsemble();e++)
-				inflow[i][e] = link.getTotalInflowInVeh(e);
-		}
-		return inflow;           
-	}
-	
-	public double [][] getTotalCumulativeInflow(long network_id) throws BeatsException{
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] cumInflow = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
-		int i,e;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			Link link = (Link) network.getLinkList().getLink().get(i);
-			for(e=0;e<getNumEnsemble();e++)
-				cumInflow[i][e] = cumulatives.get(link).getCumulativeTotalInputFlowInVeh(e);
-		}
-		return cumInflow;
-	}
-
-	public Cumulatives getCumulatives() {
-        return cumulatives;
-	}
-
-	public Clock getClock() {
-		return clock;
-	}
-	
-	/** Get a reference to a link by its composite ID.
-	 * 
-	 * @param id String ID of the link.
-	 * @return Reference to the link if it exists, <code>null</code> otherwise
-	 */
-	public Link getLinkWithId(long id) {
-		if(getNetworkSet()==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : getNetworkSet().getNetwork())
-			for(edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink())
-				if(link.getId()==id)
-					return (Link) link;
-		return null;
-	}
-	
-	/** Get a reference to a node by its ID.
-	 * 
-	 * @param id String ID of the node.
-	 * @return Reference to the node if it exists, <code>null</code> otherwise
-	 */
-	public Node getNodeWithId(long id) {
-		if(getNetworkSet()==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : getNetworkSet().getNetwork())
-			for(edu.berkeley.path.beats.jaxb.Node node : network.getNodeList().getNode())
-				if(node.getId()==id)
-					return (Node) node;
-		return null;
-	}
-
-    public Sensor getSensorWithLinkId(long link_id){
-        if(sensorset==null)
-            return null;
-        for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
-            if(sensor.getMyLink()!=null && sensor.getMyLink().getId()==link_id)
-                return sensor;
-        }
-        return null;
-    }
-
-	public Sensor getSensorWithId(long id) {
-		if(sensorset==null)
-			return null;
-		for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
-			if(sensor.getId()==id)
-				return sensor;
-		}
-		return null;
-	}
-
-    public List<Sensor> getSensors(){
-        return sensorset==null ? null : sensorset.getSensors();
-    }
-
-    public Sensor getSensorWithVDS(int vds) {
-        if(sensorset==null)
-            return null;
-        for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() )
-            if(sensor.get_VDS()==vds)
-                return sensor;
-        return null;
-    }
-
-	/** Get actuator with given ID.
-	 * @param id String ID of the actuator.
-	 * @return Actuator object.
-	 */
-	public Actuator getActuatorWithId(long id) {
-		if(actuatorset==null)
-			return null;
-		for(edu.berkeley.path.beats.simulator.Actuator actuator : actuatorset.getActuators() ){
-			if(actuator.getId()==id)
-				return actuator;
-		}
-		return null;
-	}
-
-    public ActuatorSignal get_signal_for_node(long node_id){
-        if(actuatorset==null)
-            return null;
-        for(Actuator actuator : actuatorset.getActuators()){
-            if(actuator.myType==Actuator.Type.signal){
-                ActuatorSignal signal = (ActuatorSignal) actuator;
-                Long signal_node_id = signal.get_node_id();
-                if(signal_node_id!=null && node_id==signal_node_id)
-                    return signal;
-            }
-        }
-        return null;
-    }
-
-    public List<Actuator> get_signal_actuators(){
-        List<Actuator> x = new ArrayList<Actuator>();
-        if(actuatorset==null)
-            return x;
-        for(Actuator actuator : actuatorset.getActuators()){
-            if(actuator.myType==Actuator.Type.signal)
-                x.add(actuator);
-        }
-        return x;
-    }
-		
-	/** Get a reference to a controller by its ID.
-	 * @param id Id of the controller.
-	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
-	 */
-	public Controller getControllerWithId(long id) {
-		if(!initialized){
-			logger.error("Initialize the scenario before calling this method.");
-			return null;
-		}
-		if(controllerset==null)
-			return null;
-		for(Controller c : controllerset.get_Controllers()){
-			if(c.getId()==id)
-				return c;
-		}
-		return null;
-	}
-	
-	/** Get a reference to an event by its ID.
-	 * @param id Id of the event.
-	 * @return A reference to the event if it exists, <code>null</code> otherwise.
-	 */
-	public Event getEventWithId(long id) {
-		if(!initialized){
-			logger.error("Initialize the scenario before calling this method.");
-			return null;
-		}
-		if(eventset==null)
-			return null;
-		for(Event e : eventset.getSortedevents()){
-			if(e.getId()==id)
-				return e;
-		}
-		return null;
-	}
-
-    public Route getRouteWithId(long id) {
-        if(getRouteSet()==null)
-            return null;
-        for(edu.berkeley.path.beats.jaxb.Route route : getRouteSet().getRoute()){
-            if(route.getId()==id)
-                return (Route)route;
-        }
-        return null;
-    }
-
-//    public Map<Sensor,Link> getSensorLinkMap(){
-//        Map<Sensor,Link> map = new HashMap<Sensor,Link>();
-//        for(Sensor sensor : sensorset.getSensors()){
-//
-//            System.out.println(sensor);
-//            System.out.println(sensor.getLinkId());
-//            System.out.println(sensor.getId());
-//
-//            Link link = getLinkWithId(sensor.getLinkId());
-//
-//            System.out.println(link);
-//
-//            if(link!=null)
-//                map.put(sensor,link);
-//        }
-//        return map;
-//    }
 
     /////////////////////////////////////////////////////////////////////
-	// scenario modification
-	/////////////////////////////////////////////////////////////////////
+    // data / calibration
+    /////////////////////////////////////////////////////////////////////
 
-    public void set_performance_calculator(PerformanceCalculator pcalc){
-        this.perf_calc = pcalc;
-    }
-
-	/** Add an event to the scenario.
-	 * 
-	 * <p>Events are not added if the scenario is running. This method does not validate the event.
-	 * @param E The event
-	 * @return <code>true</code> if the event was successfully added, <code>false</code> otherwise. 
-	 */
-	public boolean addEvent(Event E){
-		if(scenario_locked)
-			return false;
-		if(E==null)
-			return false;
-		if(E.getMyType()==null)
-			return false;
-		
-		// add event to list
-		eventset.addEvent(E);
-		
-		return true;
-	}
-
-	/////////////////////////////////////////////////////////////////////
-	// calibration
-	/////////////////////////////////////////////////////////////////////
-	
-	public void loadSensorData() throws BeatsException {
+    public void loadSensorData() throws BeatsException {
 
 		if(sensorset.getSensors().isEmpty())
 			return;
@@ -1148,318 +701,19 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		FDCalibrator.calibrate(this);
 	}
 
-	protected void assign_initial_state() throws BeatsException {
-		
-		// initial density set time stamp
-        double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp() : Double.POSITIVE_INFINITY;  // [sec]        
-		
-		// determine the simulation mode and sim_start time
-        double sim_start;
-        TypeMode simulationMode;
-		if(BeatsMath.equals(runParam.t_start_output,time_ic)){
-			sim_start = runParam.t_start_output;
-			simulationMode = TypeMode.on_init_dens;
-		}
-		else{
-			// it is a warmup. we need to decide on start and end times
-			if(BeatsMath.lessthan(time_ic, runParam.t_start_output) ){	// go from ic to timestart
-				sim_start = time_ic;
-				simulationMode = TypeMode.right_of_init_dens;
-			}
-			else{							
-				
-				// find earliest demand profile ...
-				double demand_start = Double.POSITIVE_INFINITY;
-				if(demandSet!=null)
-					for(edu.berkeley.path.beats.jaxb.DemandProfile D : demandSet.getDemandProfile())
-						demand_start = Math.min(demand_start,D.getStartTime());					
-				if(Double.isInfinite(demand_start))
-					demand_start = 0d;
-				
-				// ... start simulation there or at output start time
-				sim_start = Math.min(runParam.t_start_output,demand_start);
-				simulationMode = TypeMode.left_of_init_dens;
-				
-			}		
-		}
-				
-		// copy InitialDensityState to initial_state if starting from or to the right of InitialDensitySet time stamp
-		if(simulationMode!=TypeMode.left_of_init_dens && getInitialDensitySet()!=null){
-			for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
-				for(edu.berkeley.path.beats.jaxb.Link jlink:network.getLinkList().getLink()){
-					double [] density = ((InitialDensitySet)getInitialDensitySet()).getDensityForLinkIdInVeh(network.getId(),jlink.getId());
-					if(density!=null)
-						((Link) jlink).set_initial_state(density);
-					else
-						((Link) jlink).set_initial_state(BeatsMath.zeros(numVehicleTypes));
-				}
-		}
-		else {
-			for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
-				for(edu.berkeley.path.beats.jaxb.Link jlink:network.getLinkList().getLink())
-					((Link) jlink).set_initial_state(BeatsMath.zeros(numVehicleTypes));
-		}
-			
-        // warmup
+    /////////////////////////////////////////////////////////////////////
+    // writer
+    /////////////////////////////////////////////////////////////////////
 
-        // temporary warmup clock
-        clock = new Clock(sim_start,runParam.t_end_output,runParam.dt_sim);
-
-        // advance a point ensemble to start_output time
-        int original_numEnsemble = runParam.numEnsemble;
-        runParam.numEnsemble = 1;
-
-        // reset the simulation (copy initial_density to density)
-        reset();
-
-        // advance to start of output time
-        while( BeatsMath.lessthan(getCurrentTimeInSeconds(),runParam.t_start_output) )
-            updater.update();
-
-        // copy the result to the initial density
-        for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
-            for(edu.berkeley.path.beats.jaxb.Link link:network.getLinkList().getLink())
-                ((Link) link).copy_state_to_initial_state();
-
-        // revert numEnsemble
-        runParam.numEnsemble = original_numEnsemble;
-
-        // delete the warmup clock
-        clock = null;
-
-	}
-
-	protected boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter) throws BeatsException{
-
-        if(DebugFlags.time_print>0 && getCurrentTimeInSeconds()%DebugFlags.time_print == 0)
-            System.out.println(getCurrentTimeInSeconds());
-
-		// advance n steps
-		for(int k=0;k<n;k++){
-
-            // export initial condition
-	        if(outputwriter!=null && !started_writing && BeatsMath.equals(clock.getT(),outputwriter.outStart) ){
-	        	recordstate(writefiles,outputwriter,false);
-	        	started_writing = true;
-	        }
-
-        	// update scenario
-        	updater.update();
-
-            if(outputwriter!=null && started_writing && clock.getRelativeTimeStep()%outputwriter.outSteps == 0 )
-                recordstate(writefiles,outputwriter,true);
-
-        	if(clock.expired())
-        		return false;
-		}
-	      
-		return true;
-	}
-	
-	protected void recordstate(boolean writefiles,OutputWriterBase outputwriter,boolean exportflows) throws BeatsException {
+    protected void recordstate(boolean writefiles,OutputWriterBase outputwriter,boolean exportflows) throws BeatsException {
 		if(writefiles)
 			outputwriter.recordstate(clock.getT(),exportflows,outputwriter.outSteps);
 		cumulatives.reset();
 	}
 
-	protected class RunParameters{
-		
-		// prescribed
-		public double dt_sim;				// [sec] simulation time step
-		public double t_start_output;		// [sec] start outputing data
-		public double t_end_output;			// [sec] end of the simulation
-		public double dt_output;				// [sec] output sampling time
-		
-		public boolean writefiles;
-		public String outtype;
-		public String outprefix;
-		public int numReps;
-		public int numEnsemble;
-
-		// derived
-		public int outsteps;				// [-] number of simulation steps per output step
-		  
-		// input parameter outdt [sec] output sampling time
-		public RunParameters(double simdt,double tstart,double tend,double outdt, boolean dowrite,String outtype,String outprefix,int numReps,int numEnsemble) throws BeatsException{
-			
-			// round to the nearest decisecond
-			simdt = round(simdt);
-			tstart = round(tstart);
-			tend = round(tend);
-			outdt = round(outdt);
-
-			this.dt_sim = simdt;
-			this.t_start_output = tstart;
-			this.t_end_output = tend;
-			this.numReps = numReps;
-			this.numEnsemble = numEnsemble;
-			
-			this.writefiles = Double.isInfinite(outdt)||Double.isNaN(outdt) ? false : dowrite;
-			
-			if(writefiles){
-				this.outtype = outtype;
-				this.outprefix = outprefix;
-		        this.outsteps = BeatsMath.round(outdt/simdt);
-				this.dt_output = outsteps*simdt;
-			}
-			else{
-				this.outtype = "";
-				this.outprefix = "";
-		        this.outsteps = -1;
-				this.dt_output = Double.POSITIVE_INFINITY;
-			}			
-		}
-		
-		public void validate() throws BeatsException{
-
-			// check simdt non-negative
-			if( BeatsMath.lessthan(dt_sim,0d))
-				throw new BeatsException("Negative time step.");
-			
-			// check tstart non-negative
-			if( BeatsMath.lessthan(t_start_output,0d))
-				throw new BeatsException("Negative start time.");
-
-			// check timestart < timeend
-			if( BeatsMath.greaterorequalthan(t_start_output,t_end_output))
-				throw new BeatsException("Empty simulation period.");
-
-			// check that outdt is a multiple of simdt
-			if(!Double.isInfinite(dt_output) && !BeatsMath.isintegermultipleof(dt_output,dt_sim))
-				throw new BeatsException("outdt (" + dt_output + ") must be an interger multiple of simulation dt (" + dt_sim + ").");
-					
-			// initial density set time stamp
-	        double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp() : Double.POSITIVE_INFINITY;  // [sec]        
-	        
-	        // check values
-	        if(BeatsMath.lessthan(t_start_output,time_ic) && BeatsMath.lessthan(time_ic,t_end_output))
-				throw new BeatsException("Illegal start/end time: start<i.c.<end is not allowed");
-	        
-		}
-
-		/**
-		 * Rounds the double value, precision: .1
-		 * @param val
-		 * @return the "rounded" value
-		 */
-		protected double round(double val) {
-			if(Double.isInfinite(val))
-				return val;
-			if(Double.isNaN(val))
-				return val;
-			return BeatsMath.round(val * 10.0) / 10.0;
-		}
-	}
-
-	protected static class Cumulatives {
-
-        Scenario scenario;
-		java.util.Map<Long, LinkCumulativeData> links = null;
-
-		protected static Logger logger = Logger.getLogger(Cumulatives.class);
-
-		public Cumulatives(Scenario scenario) {
-			this.scenario = scenario;
-		}
-
-		public void storeLinks() {
-			if (null == links) {
-				links = new java.util.HashMap<Long, LinkCumulativeData>();
-				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
-					if(((edu.berkeley.path.beats.simulator.Network) network).isEmpty())
-						continue;
-					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
-						if (links.containsKey(link.getId()))
-							logger.warn("Duplicate link: ID=" + link.getId());
-						links.put(link.getId(), new LinkCumulativeData((edu.berkeley.path.beats.simulator.Link) link));
-					}
-				}
-				logger.info("Link cumulative data have been requested");
-			}
-		}
-
-		public void reset() {
-			if (null != links) {
-				Iterator<LinkCumulativeData> iter = links.values().iterator();
-				while (iter.hasNext()) iter.next().reset();
-			}
-//			if (null != phases) {
-//				Iterator<SignalPhases> iter = phases.values().iterator();
-//				while (iter.hasNext()) iter.next().reset();
-//			}
-		}
-
-		public void update() throws BeatsException {
-			if (null != links) {
-				java.util.Iterator<LinkCumulativeData> iter = links.values().iterator();
-				while (iter.hasNext()) iter.next().update();
-			}
-//			if (null != phases) {
-//				Iterator<SignalPhases> iter = phases.values().iterator();
-//				while (iter.hasNext()) iter.next().update();
-//			}
-		}
-
-		public LinkCumulativeData get(edu.berkeley.path.beats.jaxb.Link link) throws BeatsException {
-			if (null == links) throw new BeatsException("Link cumulative data were not requested");
-			return links.get(link.getId());
-		}
-
-//		public SignalPhases get(edu.berkeley.path.beats.jaxb.Signal signal) throws BeatsException {
-//			if (null == phases) throw new BeatsException("ActuatorSignal phases were not requested");
-//			return phases.get(signal.getId());
-//		}
-	}
-
-//	/**
-//	 * ActuatorSignal phase storage
-//	 */
-//	public static class SignalPhases {
-//		edu.berkeley.path.beats.actuator.ActuatorSignal signal;
-//		List<ActuatorSignal.PhaseData> phases;
-//
-//		SignalPhases(edu.berkeley.path.beats.jaxb.Signal signal) {
-//			this.signal = signal;
-//			phases = new java.util.ArrayList<ActuatorSignal.PhaseData>();
-//		}
-//
-//		public List<ActuatorSignal.PhaseData> getPhaseList() {
-//			return phases;
-//		}
-//
-//		void update() {
-//			phases.addAll(signal.getCompletedPhases());
-//		}
-//
-//		void reset() {
-//			phases.clear();
-//		}
-//	}
-
-	public void setUncertaintyModel(String uncertaintyModel) {
-		this.uncertaintyModel = TypeUncertainty.valueOf(uncertaintyModel);
-	}
-
     /////////////////////////////////////////////////////////////////////
     // predictors
     /////////////////////////////////////////////////////////////////////
-
-    public InitialDensitySet get_current_densities_si(){
-        Network network = (Network) getNetworkSet().getNetwork().get(0);
-        JaxbObjectFactory factory = new JaxbObjectFactory();
-        InitialDensitySet init_dens_set = (InitialDensitySet) factory.createInitialDensitySet();
-        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
-            Link L = (Link) jaxbL;
-            for(int v=0;v<getNumVehicleTypes();v++){
-                Density den = factory.createDensity();
-                den.setLinkId(jaxbL.getId());
-                den.setVehicleTypeId(getVehicleTypeIdForIndex(v));
-                den.setContent(String.format("%f",L.getDensityInVeh(0,v)/L.getLengthInMeters()));
-                init_dens_set.getDensity().add(den);
-            }
-        }
-        return init_dens_set;
-    }
 
     public SplitRatioSet predict_split_ratios(double time_current,double sample_dt,double horizon){
 
@@ -1483,14 +737,14 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             srp.setNodeId(N.getId());
             for(Input in : N.getInputs().getInput()){
                 for(Output out : N.getOutputs().getOutput()){
-                    for(int v=0;v<getNumVehicleTypes();v++)    {
+                    for(int v=0;v<get.numVehicleTypes();v++)    {
 
                         Splitratio splitratio = factory.createSplitratio();
 
                         // set values
                         splitratio.setLinkIn(in.getLinkId());
                         splitratio.setLinkOut(out.getLinkId());
-                        splitratio.setVehicleTypeId(getVehicleTypeIdForIndex(v));
+                        splitratio.setVehicleTypeId(get.vehicleTypeIdForIndex(v));
                         double [] sr = sr_profile.predict(
                                 in.getLinkId(),
                                 out.getLinkId(),
@@ -1506,30 +760,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             }
         }
         return split_ratio_set;
-    }
-
-    public FundamentalDiagramSet get_current_fds_si(double time_current){
-        Network network = (Network) getNetworkSet().getNetwork().get(0);
-        JaxbObjectFactory factory = new JaxbObjectFactory();
-        FundamentalDiagramSet fd_set = factory.createFundamentalDiagramSet();
-        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
-            Link L = (Link) jaxbL;
-            FundamentalDiagramProfile fdp = (FundamentalDiagramProfile) factory.createFundamentalDiagramProfile();
-            fd_set.getFundamentalDiagramProfile().add(fdp);
-
-            // set values
-            fdp.setLinkId(L.getId());
-            //fdp.setDt(-1d);
-            FundamentalDiagram fd = new FundamentalDiagram(L);
-
-            if(L.getFundamentalDiagramProfile()==null)
-                fd.settoDefault();
-            else
-                fd.copyfrom(L.getFundamentalDiagramProfile().getFDforTime(time_current));
-            fd.setOrder(0);
-            fdp.getFundamentalDiagram().add(fd);
-        }
-        return fd_set;
     }
 
     public DemandSet predict_demands_si(double time_current, double sample_dt, double horizon){
@@ -1552,12 +782,12 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
                 dp.setLinkIdOrg(L.getId());
                 dp.setDt(dp_sample_dt);
-                for(int v=0;v<getNumVehicleTypes();v++){
+                for(int v=0;v<get.numVehicleTypes();v++){
                     Demand dem = factory.createDemand();
                     dp.getDemand().add(dem);
 
                     // set values
-                    dem.setVehicleTypeId(getVehicleTypeIdForIndex(v));
+                    dem.setVehicleTypeId(get.vehicleTypeIdForIndex(v));
                     double [] x = dem_profile.predict_in_VPS(v, time_current, dp_sample_dt, horizon_steps);
                     dem.setContent(BeatsFormatter.csv(x, ","));
                 }
@@ -1567,167 +797,183 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     }
 
     /////////////////////////////////////////////////////////////////////
-    // used for estimation
+    // inner classes
     /////////////////////////////////////////////////////////////////////
 
-    // set density indexed by [link][ensemble]
-    public boolean setTotalDensity(double [][] d){
+    public class RunParameters{
 
-        if(getNetworkSet().getNetwork().size()>1){
-            System.err.println("This methos works only with single network scenarios.");
-            return false;
-        }
+        // prescribed
+        public double dt_sim;				// [sec] simulation time step
+        public double t_start_output;		// [sec] start outputing data
+        public double t_end_output;			// [sec] end of the simulation
+        public double dt_output;				// [sec] output sampling time
 
-        if(getNumVehicleTypes()>1){
-            System.err.println("This methos works only with single vehicle type scenarios.");
-            return false;
-        }
+        public boolean writefiles;
+        public String outtype;
+        public String outprefix;
+        public int numReps;
+        public int numEnsemble;
 
-        Network network = (Network) getNetworkSet().getNetwork().get(0);
-        int numLinks = network.getLinkList().getLink().size();
+        // derived
+        public int outsteps;				// [-] number of simulation steps per output step
 
-        if(numLinks!=d.length){
-            System.err.println("The 1st dimension of the input should equal the number of links in the scenario.");
-            return false;
-        }
+        // input parameter outdt [sec] output sampling time
+        public RunParameters(double simdt,double tstart,double tend,double outdt, boolean dowrite,String outtype,String outprefix,int numReps,int numEnsemble) throws BeatsException{
 
-        if(getNumEnsemble()!=d[0].length){
-            System.err.println("The 2nd dimension of the input should equal the number of links in the scenario.");
-            return false;
-        }
+            // round to the nearest decisecond
+            simdt = round(simdt);
+            tstart = round(tstart);
+            tend = round(tend);
+            outdt = round(outdt);
 
-        int i,e;
-        boolean success = true;
-        for(i=0;i<numLinks;i++)
-            for(e=0;e<getNumEnsemble();e++){
-                double [] val = new double[1];
-                val[0] = d[i][e];
-                success &= ((Link)network.getLinkList().getLink().get(i)).set_density_in_veh(e,val);
+            this.dt_sim = simdt;
+            this.t_start_output = tstart;
+            this.t_end_output = tend;
+            this.numReps = numReps;
+            this.numEnsemble = numEnsemble;
+
+            this.writefiles = Double.isInfinite(outdt)||Double.isNaN(outdt) ? false : dowrite;
+
+            if(writefiles){
+                this.outtype = outtype;
+                this.outprefix = outprefix;
+                this.outsteps = BeatsMath.round(outdt/simdt);
+                this.dt_output = outsteps*simdt;
             }
-        return success;
-    }
-    
-    // set the clock to a specific time
-    public void setTimeInSeconds(int timeInSecs) throws BeatsException{
-    	
-    	if(!BeatsMath.isintegermultipleof((double) timeInSecs,runParam.dt_sim))
-			throw new BeatsException("nsec (" + timeInSecs + ") must be an interger multiple of simulation dt (" + runParam.dt_sim + ").");
-		int timestep = BeatsMath.round(timeInSecs/runParam.dt_sim);
-		
-		try{
-			reset();
-			
-			clock.setRelativeTimeStep(timestep);
-			
-			if(downstreamBoundaryCapacitySet!=null)
-	        	for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
-	        		((CapacityProfile) capacityProfile).update(true);
-		
-			if(demandSet!=null){
-				for(edu.berkeley.path.beats.jaxb.DemandProfile dp : ((DemandSet) demandSet).getDemandProfile())
-					((DemandProfile) dp).update(true);
-			
-			if(splitRatioSet!=null)
-	    		for(edu.berkeley.path.beats.jaxb.SplitRatioProfile srp : ((SplitRatioSet) splitRatioSet).getSplitRatioProfile())
-	    			((SplitRatioProfile) srp).update(true);
-
-			if(fundamentalDiagramSet!=null)
-	        	for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdProfile : fundamentalDiagramSet.getFundamentalDiagramProfile())
-	        		((FundamentalDiagramProfile) fdProfile).update(true);
-				
-			}
-		} catch( BeatsException bex){
-			bex.printStackTrace();
-			throw bex;
-		}
-    }
-
-    public DemandProfile get_current_demand_for_link(long link_id){
-        if(demandSet==null)
-            return null;
-        return ((DemandSet) demandSet).get_demand_profile_for_link_id(link_id);
-    }
-
-    /* override the demand profile on a given link.
-       The demand is provided as an array, and split evenly over all vehicle types
-       Units are veh/second.
-     */
-    public void set_demand_for_link_si(long link_id, double dt, double[] demands) throws Exception{
-    //public void set_demand_for_link_si(long link_id, double dt, HashMap<Long, double[]> demands) throws Exception{
-
-        if(demands.length<=1)
-            dt = Double.POSITIVE_INFINITY;
-
-        // put the given demands into a DemandProfile
-        DemandProfile dp = new DemandProfile();
-        dp.setLinkIdOrg(link_id);
-        dp.setDt(dt);
-        dp.setKnob(1d);
-        dp.setStartTime(getCurrentTimeInSeconds());
-
-        double [] demand_per_vt = BeatsMath.times(demands,1d/((double)numVehicleTypes));
-        for(VehicleType vt : getVehicleTypeSet().getVehicleType()){
-            Demand d = new Demand();
-            d.setVehicleTypeId(vt.getId());
-            d.setContent(BeatsFormatter.csv(demand_per_vt, ","));
-            dp.getDemand().add(d);
+            else{
+                this.outtype = "";
+                this.outprefix = "";
+                this.outsteps = -1;
+                this.dt_output = Double.POSITIVE_INFINITY;
+            }
         }
 
-        // populate, validate, reset
-        dp.populate(this);
-        BeatsErrorLog.clearErrorMessage();
-        dp.validate();
-        if(BeatsErrorLog.haserror()){
-            BeatsErrorLog.print();
-            throw new Exception("Failed in set_demand_for_link_si()");
+        public void validate() throws BeatsException{
+
+            // check simdt non-negative
+            if( BeatsMath.lessthan(dt_sim,0d))
+                throw new BeatsException("Negative time step.");
+
+            // check tstart non-negative
+            if( BeatsMath.lessthan(t_start_output,0d))
+                throw new BeatsException("Negative start time.");
+
+            // check timestart < timeend
+            if( BeatsMath.greaterorequalthan(t_start_output,t_end_output))
+                throw new BeatsException("Empty simulation period.");
+
+            // check that outdt is a multiple of simdt
+            if(!Double.isInfinite(dt_output) && !BeatsMath.isintegermultipleof(dt_output,dt_sim))
+                throw new BeatsException("outdt (" + dt_output + ") must be an interger multiple of simulation dt (" + dt_sim + ").");
+
+            // initial density set time stamp
+            double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp() : Double.POSITIVE_INFINITY;  // [sec]
+
+            // check values
+            if(BeatsMath.lessthan(t_start_output,time_ic) && BeatsMath.lessthan(time_ic,t_end_output))
+                throw new BeatsException("Illegal start/end time: start<i.c.<end is not allowed");
+
         }
-        dp.reset();
 
-        // check wheter I have a demandSet, otherwise create one
-        if(demandSet==null){
-            demandSet = new DemandSet();
-            ((DemandSet)demandSet).populate(this);
+        /**
+         * Rounds the double value, precision: .1
+         * @param val
+         * @return the "rounded" value
+         */
+        protected double round(double val) {
+            if(Double.isInfinite(val))
+                return val;
+            if(Double.isNaN(val))
+                return val;
+            return BeatsMath.round(val * 10.0) / 10.0;
         }
-
-        // add the demand profile to the demand set
-        ((DemandSet)demandSet).add_or_replace_profile(dp);
-
     }
 
-    public void set_capacity_for_link_si(long link_id,double dt,double [] capacity) throws Exception {
+    public static class Cumulatives {
 
-        if(capacity.length<=1)
-            dt = Double.POSITIVE_INFINITY;
+        Scenario scenario;
+        java.util.Map<Long, LinkCumulativeData> links = null;
 
-        // put the given capacity into a profile
-        CapacityProfile cp = new CapacityProfile();
-        cp.setStartTime(getCurrentTimeInSeconds());
-        cp.setDt(dt);
-        cp.setLinkId(link_id);
-        cp.setContent(BeatsFormatter.csv(capacity,","));
+        protected static Logger logger = Logger.getLogger(Cumulatives.class);
 
-        // populate, validate, reset
-        cp.populate(this);
-
-        // populate, validate, reset
-        cp.populate(this);
-        BeatsErrorLog.clearErrorMessage();
-        cp.validate();
-        if(BeatsErrorLog.haserror()){
-            BeatsErrorLog.print();
-            throw new Exception("Failed in set_demand_for_link_si()");
-        }
-        cp.reset();
-
-        // check wheter I have a demandSet, otherwise create one
-        if(downstreamBoundaryCapacitySet==null){
-            downstreamBoundaryCapacitySet = new CapacitySet();
-            ((CapacitySet)downstreamBoundaryCapacitySet).populate(this);
+        public Cumulatives(Scenario scenario) {
+            this.scenario = scenario;
         }
 
-        // add the capacity profile to the capacity set
-        ((CapacitySet)downstreamBoundaryCapacitySet).add_or_replace_profile(cp);
+        public void storeLinks() {
+            if (null == links) {
+                links = new java.util.HashMap<Long, LinkCumulativeData>();
+                for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
+                    if(((edu.berkeley.path.beats.simulator.Network) network).isEmpty())
+                        continue;
+                    for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
+                        if (links.containsKey(link.getId()))
+                            logger.warn("Duplicate link: ID=" + link.getId());
+                        links.put(link.getId(), new LinkCumulativeData((edu.berkeley.path.beats.simulator.Link) link));
+                    }
+                }
+                logger.info("Link cumulative data have been requested");
+            }
+        }
 
+        public void reset() {
+            if (null != links) {
+                Iterator<LinkCumulativeData> iter = links.values().iterator();
+                while (iter.hasNext()) iter.next().reset();
+            }
+//			if (null != phases) {
+//				Iterator<SignalPhases> iter = phases.values().iterator();
+//				while (iter.hasNext()) iter.next().reset();
+//			}
+        }
+
+        public void update() throws BeatsException {
+            if (null != links) {
+                java.util.Iterator<LinkCumulativeData> iter = links.values().iterator();
+                while (iter.hasNext()) iter.next().update();
+            }
+//			if (null != phases) {
+//				Iterator<SignalPhases> iter = phases.values().iterator();
+//				while (iter.hasNext()) iter.next().update();
+//			}
+        }
+
+        public LinkCumulativeData get(edu.berkeley.path.beats.jaxb.Link link) throws BeatsException {
+            if (null == links) throw new BeatsException("Link cumulative data were not requested");
+            return links.get(link.getId());
+        }
+
+//		public SignalPhases get(edu.berkeley.path.beats.jaxb.Signal signal) throws BeatsException {
+//			if (null == phases) throw new BeatsException("ActuatorSignal phases were not requested");
+//			return phases.get(signal.getId());
+//		}
     }
 
+
+    /// TEMPORARY GETTERS FOR THE API CLASSES
+
+
+//    @Override
+//    public edu.berkeley.path.beats.jaxb.DemandSet getDemandSet() {
+//        return this.demandset;
+//    }
+
+    public List<edu.berkeley.path.beats.jaxb.Network> getNetworks(){
+        return this.networkSet.getNetwork();
+    }
+
+    @Override
+    public edu.berkeley.path.beats.jaxb.InitialDensitySet getInitialDensitySet() {
+        return super.getInitialDensitySet();
+    }
+
+    @Override
+    public DownstreamBoundaryCapacitySet getDownstreamBoundaryCapacitySet() {
+        return super.getDownstreamBoundaryCapacitySet();
+    }
+
+    @Override
+    public void setDownstreamBoundaryCapacitySet(DownstreamBoundaryCapacitySet value) {
+        super.setDownstreamBoundaryCapacitySet(value);
+    }
 }

@@ -26,21 +26,11 @@
 
 package edu.berkeley.path.beats.db;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
 
 import edu.berkeley.path.beats.om.*;
-import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.util.Data1D;
-import edu.berkeley.path.beats.util.Data2D;
 
 /**
  * Imports a scenario

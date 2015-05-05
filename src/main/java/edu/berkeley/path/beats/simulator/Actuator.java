@@ -1,5 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+
 public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 
     protected Controller myController;

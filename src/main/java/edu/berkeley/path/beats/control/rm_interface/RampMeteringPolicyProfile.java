@@ -3,6 +3,7 @@ package edu.berkeley.path.beats.control.rm_interface;
 import edu.berkeley.path.beats.simulator.Link;
 //import scala.actors.threadpool.Arrays;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,10 +22,10 @@ public class RampMeteringPolicyProfile {
         rampMeteringPolicy = new LinkedList<Double>();
     }
 
-//    public RampMeteringPolicyProfile(Link sensorLink,Double [] policy){
-//        this.sensorLink = sensorLink;
-//        this.rampMeteringPolicy = Arrays.asList(policy);
-//    }
+    public RampMeteringPolicyProfile(Link sensorLink,Double [] policy){
+        this.sensorLink = sensorLink;
+        this.rampMeteringPolicy = Arrays.asList(policy);
+    }
 
     @Override
     public String toString() {

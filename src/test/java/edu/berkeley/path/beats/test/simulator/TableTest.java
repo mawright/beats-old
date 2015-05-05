@@ -1,13 +1,6 @@
 package edu.berkeley.path.beats.test.simulator;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import edu.berkeley.path.beats.simulator.Table;
+import edu.berkeley.path.beats.simulator.utils.Table;
 
 public class TableTest {
 	

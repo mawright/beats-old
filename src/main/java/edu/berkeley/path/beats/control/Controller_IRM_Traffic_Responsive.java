@@ -30,8 +30,8 @@ import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.Table;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.Table;
 
 public class Controller_IRM_Traffic_Responsive extends Controller {
 	
@@ -119,7 +119,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		// There should be only one target element, and it is the onramp
 		if(jaxbc.getTargetActuators().getTargetActuator().size()==1){
 			edu.berkeley.path.beats.jaxb.TargetActuator s = jaxbc.getTargetActuators().getTargetActuator().get(0);
-			onramplink = getMyScenario().getLinkWithId(s.getId());	
+			onramplink = getMyScenario().get.linkWithId(s.getId());
 		}
 		
 		// Feedback elements can be "mainlinesensor","mainlinelink", and "queuesensor"
@@ -131,7 +131,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 					return;
 				
 				if( s.getUsage().equalsIgnoreCase("mainlinesensor") && mainlinesensor==null){
-					mainlinesensor=getMyScenario().getSensorWithId(s.getId());
+					mainlinesensor=getMyScenario().get.sensorWithId(s.getId());
 					hasmainlinesensor = true;
 				}
 
@@ -142,7 +142,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 //				}
 
 				if( s.getUsage().equalsIgnoreCase("queuesensor") && queuesensor==null){
-					queuesensor=getMyScenario().getSensorWithId(s.getId());
+					queuesensor=getMyScenario().get.sensorWithId(s.getId());
 					hasqueuesensor = true;
 				}				
 			}

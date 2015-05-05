@@ -1,7 +1,7 @@
 package edu.berkeley.path.beats.util.scenario;
 
 import edu.berkeley.path.beats.jaxb.Scenario;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 class DBScenarioSaver implements ScenarioSaverIF {
 

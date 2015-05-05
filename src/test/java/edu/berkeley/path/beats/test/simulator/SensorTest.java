@@ -29,7 +29,7 @@ public class SensorTest {
 		int numEnsemble = 1;
 		scenario.initialize(timestep,starttime,endtime,numEnsemble);
 		
-		sensor = scenario.getSensorWithId(1);
+		sensor = scenario.get.sensorWithId(1);
 	}
 
 	@Test

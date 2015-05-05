@@ -26,8 +26,7 @@
 
 package edu.berkeley.path.beats.event;
 
-import edu.berkeley.path.beats.jaxb.Actuator;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Scenario;
 
@@ -67,7 +66,7 @@ public class Event_Global_Control_Toggle extends Event {
 
 	@Override
 	protected void activate() throws BeatsException{
-        myScenario.setGlobal_control_on(ison);
+        myScenario.set.global_control_on(ison);
 	}
 
 }

@@ -31,8 +31,8 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.data.FiveMinuteData;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
 
@@ -83,7 +83,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 		
 //		if (null != jaxbs.getTable()) {
 //			if ("data_sources".equals(jaxbs.getTable().getName())) {
-//				edu.berkeley.path.beats.simulator.Table table = new edu.berkeley.path.beats.simulator.Table(jaxbs.getTable());
+//				edu.berkeley.path.beats.simulator.utils.Table table = new edu.berkeley.path.beats.simulator.utils.Table(jaxbs.getTable());
 //				final String[] colname = {"url", "format"};
 //				int[] colnum = new int[2];
 //				boolean colnotfound = false;
@@ -108,7 +108,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 
 	@Override
 	protected void reset() {
-		int numEnsemble = getMyScenario().getNumEnsemble();
+		int numEnsemble = getMyScenario().get.numEnsemble();
 		cumulative_inflow = new Double [numEnsemble];
 		cumulative_outflow = new Double [numEnsemble];
 		for(int i=0;i<numEnsemble;i++){
@@ -122,7 +122,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	protected void update() {		
 		if(getMyLink()==null)
 			return;
-		for(int i=0;i<this.getMyScenario().getNumEnsemble();i++){
+		for(int i=0;i<this.getMyScenario().get.numEnsemble();i++){
 			cumulative_inflow[i] += getMyLink().getTotalInflowInVeh(i);
 			cumulative_outflow[i] += getMyLink().getTotalOutflowInVeh(i);
 		}
@@ -155,12 +155,12 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	
 	@Override
 	public double[] getFlowInVPS(int ensemble) {
-		return BeatsMath.times(getMyLink().getOutflowInVeh(ensemble), 1 / getMyScenario().getSimdtinseconds());
+		return BeatsMath.times(getMyLink().getOutflowInVeh(ensemble), 1 / getMyScenario().get.simdtinseconds());
 	}
 
 	@Override
 	public double getTotalFlowInVPS(int ensemble) {
-		return getMyLink().getTotalOutflowInVeh(ensemble) / getMyScenario().getSimdtinseconds();
+		return getMyLink().getTotalOutflowInVeh(ensemble) / getMyScenario().get.simdtinseconds();
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}
 
 	public void resetCumulativeInflowInVeh(){
-		for(int i=0;i<getMyScenario().getNumEnsemble();i++)
+		for(int i=0;i<getMyScenario().get.numEnsemble();i++)
 			cumulative_inflow[i] = 0d;
 	}
 	
@@ -186,7 +186,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}
 
 	public void resetCumulativeOutflowInVeh(){
-		for(int i=0;i<getMyScenario().getNumEnsemble();i++)
+		for(int i=0;i<getMyScenario().get.numEnsemble();i++)
 			cumulative_outflow[i] = 0d;
 	}
 	

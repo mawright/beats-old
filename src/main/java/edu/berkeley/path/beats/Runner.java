@@ -27,6 +27,8 @@
 package edu.berkeley.path.beats;
 
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 /**
  * @author Gabriel Gomes (gomes@path.berkeley.edu)

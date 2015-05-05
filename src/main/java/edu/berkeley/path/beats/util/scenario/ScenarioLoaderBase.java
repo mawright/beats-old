@@ -5,8 +5,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 
-import edu.berkeley.path.beats.Jaxb;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.util.SchemaUtil;
 
 abstract class ScenarioLoaderBase implements ScenarioLoaderIF {

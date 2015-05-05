@@ -26,10 +26,12 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
+import java.util.ArrayList;
+
+public final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 
 //	private enum OperationType {Deactivate,Activate}
 
@@ -178,15 +180,15 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 //		}
 //
 //	}
-	
-	protected void update() throws BeatsException {
+
+    public void update() throws BeatsException {
 
 //        // turn active controllers on
 //		processActivations(myScenario.getClock().getT());
 
         // update
     	for(Controller controller : controllers){
-    		if(controller.isIson() && myScenario.getClock().is_time_to_sample_abs(controller.getSamplesteps(),0))
+    		if(controller.isIson() && myScenario.get.clock().is_time_to_sample_abs(controller.getSamplesteps(),0))
     			controller.update();
     	}
 	}

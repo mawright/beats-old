@@ -44,12 +44,12 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 	public void populate(Scenario myScenario) {
 		
 		this.myScenario = myScenario;
+        link_id_to_demandprofile = new HashMap<Long,DemandProfile>();
 
 		if(getDemandProfile().isEmpty())
 			return;
 		
 		// link to demand profile map
-		link_id_to_demandprofile = new HashMap<Long,DemandProfile>();
 		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile()){
 			
 			DemandProfile sdp = (DemandProfile) dp;
@@ -83,7 +83,7 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 
     }
 
-    protected void update() {
+    public void update() {
         Iterator it = link_id_to_demandprofile.entrySet().iterator();
         while (it.hasNext())
             ((DemandProfile) ((Map.Entry)it.next()).getValue()).update(false);

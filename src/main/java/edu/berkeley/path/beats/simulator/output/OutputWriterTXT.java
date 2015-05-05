@@ -36,9 +36,8 @@ import java.util.Properties;
 
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkCumulativeData;
-import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 public final class OutputWriterTXT extends OutputWriterBase {
 	protected Writer out_time = null;
@@ -59,8 +58,8 @@ public final class OutputWriterTXT extends OutputWriterBase {
 	@Override
 	public void open(int run_id) throws BeatsException {
 		String suffix = String.format("_%d.txt", run_id);
-		String [] VTnames = scenario.getVehicleTypeNames();
-		numVT = scenario.getNumVehicleTypes();
+		String [] VTnames = scenario.get.vehicleTypeNames();
+		numVT = scenario.get.numVehicleTypes();
 		try {
 			out_time = new OutputStreamWriter(new FileOutputStream(prefix+"_time"+suffix));
 			out_density = new Writer[numVT];

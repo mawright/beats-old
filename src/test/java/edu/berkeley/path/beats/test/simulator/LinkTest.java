@@ -23,7 +23,7 @@ public class LinkTest {
 		if(scenario==null)
 			fail("scenario did not load");
 		
-		link = scenario.getLinkWithId(-4);		
+		link = scenario.get.linkWithId(-4);
 
 		// initialize
 		double timestep = Defaults.getTimestepFor(config_file);
@@ -72,14 +72,14 @@ public class LinkTest {
 	
 	@Test
 	public void test_isSource() {
-		Link linksource = scenario.getLinkWithId(-6);
+		Link linksource = scenario.get.linkWithId(-6);
 		assertFalse(link.isSource());
 		assertTrue(linksource.isSource());
 	}
 
 	@Test
 	public void test_isSink() {
-		Link linksink = scenario.getLinkWithId(-7);
+		Link linksink = scenario.get.linkWithId(-7);
 		assertFalse(link.isSink());
 		assertTrue(linksink.isSink());
 	}
@@ -90,7 +90,7 @@ public class LinkTest {
 		double x = link.getDensityInVeh(0)[0]; 
 		double exp = 15.008704188738106;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 
 		// edge cases
 		assertNull(link.getDensityInVeh(-1));
@@ -103,7 +103,7 @@ public class LinkTest {
 		double x = link.getDensityInVeh(0,0); 
 		double exp = 15.008704188738106;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getDensityInVeh(-1,0)));
@@ -117,7 +117,7 @@ public class LinkTest {
 		double x = link.getTotalDensityInVeh(0); 
 		double exp = 15.008704188738106;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 
 		// edge cases
 		assertTrue(Double.isNaN(link.getTotalDensityInVeh(-1)));
@@ -130,7 +130,7 @@ public class LinkTest {
 		double x = link.getTotalDensityInVPMeter(0); 
 		double exp = 0.017679766286842164;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getTotalDensityInVPMeter(-1)));
@@ -143,7 +143,7 @@ public class LinkTest {
 		double x = link.getOutflowInVeh(0)[0]; 
 		double exp = 0.39459704442691024;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 
 		// edge cases 
 		assertNull(link.getOutflowInVeh(-1));
@@ -156,7 +156,7 @@ public class LinkTest {
 		double x = link.getTotalOutflowInVeh(0); 
 		double exp = 0.39459704442691024;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 
 		// edge cases
 		assertTrue(Double.isNaN(link.getTotalOutflowInVeh(-1)));
@@ -169,7 +169,7 @@ public class LinkTest {
 		double x = link.getInflowInVeh(0)[0]; 
 		double exp = 0.41666666666666663;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 
 		// edge cases
 		assertNull(link.getInflowInVeh(-1));
@@ -181,7 +181,7 @@ public class LinkTest {
 		double x = link.getTotalInflowInVeh(0); 
 		double exp = 0.41666666666666663;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 
 		// edge cases
 		assertTrue(Double.isNaN(link.getTotalInflowInVeh(-1)));
@@ -193,7 +193,7 @@ public class LinkTest {
 		double x = link.computeSpeedInMPS(0); 
 		double exp = 4.463826478527397;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 
 		// edge cases
 		assertTrue(Double.isNaN(link.computeSpeedInMPS(-1)));
@@ -205,7 +205,7 @@ public class LinkTest {
 		double x = link.getDensityJamInVeh(0); 
 		double exp = 79.12414902198975;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 
 		// edge cases
 		assertTrue(Double.isNaN(link.getDensityJamInVeh(-1)));
@@ -217,7 +217,7 @@ public class LinkTest {
 		double x = link.getDensityCriticalInVeh(0); 
 		double exp = 15.824829804397952;
 
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 
 		// edge cases
 		assertTrue(Double.isNaN(link.getDensityCriticalInVeh(-1)));
@@ -229,7 +229,7 @@ public class LinkTest {
 		double x = link.getCapacityDropInVeh(0);
 		double exp = 0.0;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getCapacityDropInVeh(-1)));
@@ -241,7 +241,7 @@ public class LinkTest {
 		double x = link.getCapacityInVeh(0);
 		double exp = 0.41666666666666663;
 
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getCapacityInVeh(-1)));
@@ -253,7 +253,7 @@ public class LinkTest {
 		double x = link.getDensityJamInVPMPL(0);
 		double exp = 0.09320567883560009;
 
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getDensityJamInVPMPL(-1)));
@@ -265,7 +265,7 @@ public class LinkTest {
 		double x = link.getDensityCriticalInVPMPL(0);
 		double exp = 0.01864113576712002;
 
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getDensityCriticalInVPMPL(-1)));
@@ -277,7 +277,7 @@ public class LinkTest {
 		double x = link.getCapacityDropInVPSPL(0);
 		double exp = 0.0;
 
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getCapacityDropInVPSPL(-1)));
@@ -289,7 +289,7 @@ public class LinkTest {
 		double x = link.getCapacityInVPS(0);
 		double exp = 0.08333333333333333;
 
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getCapacityInVPS(-1)));
@@ -301,7 +301,7 @@ public class LinkTest {
 		double x = link.getCapacityInVPSPL(0);
 		double exp = 0.08333333333333333;
 
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getCapacityInVPSPL(-1)));
@@ -313,7 +313,7 @@ public class LinkTest {
 		double x = link.getNormalizedVf(0);
 		double exp = 0.026329930357346962;
 
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getNormalizedVf(-1)));
@@ -325,7 +325,7 @@ public class LinkTest {
 		double x = link.getVfInMPS(0);
 		double exp = 4.4704;
 
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getVfInMPS(-1)));
@@ -337,7 +337,7 @@ public class LinkTest {
 		double x = link.getCriticalSpeedInMPS(0);
 		double exp = 4.4704;
 
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getCriticalSpeedInMPS(-1)));
@@ -349,7 +349,7 @@ public class LinkTest {
 		double x = link.getNormalizedW(0);
 		double exp = 0.006582482589336741;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getNormalizedW(-1)));
@@ -361,7 +361,7 @@ public class LinkTest {
 		double x = link.getWInMPS(0);
 		double exp = 1.1176;
 
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getWInMPS(-1)));
@@ -385,7 +385,7 @@ public class LinkTest {
 		double x = link.getDensityInVeh(0)[0];
 		double exp = 15.008704188738106;
 		
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 
 		// edge case
 		assertNull(link.getDensityInVeh(-1));
@@ -396,7 +396,7 @@ public class LinkTest {
 	public void test_getInputFlow() {
 		double x = link.getInflowInVeh(0,0);
 		double exp = 0.41666666666666663;
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 		
 		// edge cases
 		assertTrue(Double.isNaN(link.getInflowInVeh(-1,0)));
@@ -409,7 +409,7 @@ public class LinkTest {
 	public void test_getOutputFlow() {
 		double x = link.getOutflowInVeh(0,0);
 		double exp = 0.39459704442691024;
-		assertEquals(x,exp,1e-4);
+		assertEquals(exp,x,1e-4);
 
 		// edge cases
 		assertTrue(Double.isNaN(link.getOutflowInVeh(-1,0)));

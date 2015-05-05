@@ -26,6 +26,9 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalDiagram{
 
 	// does not change ....................................
@@ -95,7 +98,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 	    // record jaxbfd values and undefined parameters
 	    int nummissing = 0;
 	    boolean missing_capacity, missing_vf, missing_w, missing_densityJam;
-	    double simDtInSeconds = myLink.myScenario.getSimdtinseconds();
+	    double simDtInSeconds = myLink.myScenario.get.simdtinseconds();
 
         conv_spd = simDtInSeconds / myLink.getLengthInMeters();
         conv_dty = lanes * myLink.getLengthInMeters();
@@ -224,34 +227,34 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 	// to links, these are initialized with default values, and 
 	// copyfrom only replaces with non-nan values.
 
-	protected double _getDensityJamInVeh() {
+    public double _getDensityJamInVeh() {
 		return _densityJam;
 	}
 
-	protected double _getCapacityInVeh() {
+    public double _getCapacityInVeh() {
 		return _capacity;
 	}
 
-	protected double _getCapacityDropInVeh() {
+    public double _getCapacityDropInVeh() {
 		return _capacityDrop;
 	}
 
-	protected double getVfNormalized() {
+    public double getVfNormalized() {
         return _vf;
 	}
 
-	protected double getWNormalized() {
+    public double getWNormalized() {
         return _w;
 	}
 
-	protected double getDensityCriticalInVeh() {
+	public double getDensityCriticalInVeh() {
 		return _capacity/_vf;
 	}
 
 	protected void setLanes(double newlanes){
 		if(newlanes<=0)
 			return;
-		if(BeatsMath.equals(newlanes,lanes))
+		if(BeatsMath.equals(newlanes, lanes))
 			return;
 		double alpha = newlanes/lanes;
 		_densityJam 	  *= alpha; 
@@ -268,7 +271,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
  	protected void settoDefault(){
 		if(myLink==null)
 			return;
-		double simDtInSeconds = myLink.myScenario.getSimdtinseconds();
+		double simDtInSeconds = myLink.myScenario.get.simdtinseconds();
 		double lengthInMeters = myLink.getLengthInMeters();
 		_densityJam 	  = Defaults.densityJam		* lanes * lengthInMeters;
 		_capacity  		  = Defaults.capacity		* lanes * simDtInSeconds;
@@ -291,7 +294,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 			return;
 		
 		double value;
-		double simDtInSeconds = myLink.myScenario.getSimdtinseconds();
+		double simDtInSeconds = myLink.myScenario.get.simdtinseconds();
 
 		if(fd.getJamDensity()!=null){
 			value = fd.getJamDensity().doubleValue();		// [veh/meter/lane]
@@ -367,7 +370,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		
 		// perturb it
 		if(!Double.isNaN(std_dev_capacity) && std_dev_capacity>0){
-			switch(myLink.myScenario.getUncertaintyModel()){
+			switch(myLink.myScenario.get.uncertaintyModel()){
 			case uniform:
 				samp._capacity += BeatsMath.sampleZeroMeanUniform(std_dev_capacity);
 				break;

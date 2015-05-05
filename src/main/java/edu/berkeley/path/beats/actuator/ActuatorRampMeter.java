@@ -5,6 +5,8 @@ import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Parameters;
 import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 public class ActuatorRampMeter extends Actuator {
 
@@ -25,7 +27,7 @@ public class ActuatorRampMeter extends Actuator {
         metering_rate_in_veh = rate_in_veh;
         // round to the nearest time increment
         if(!Double.isNaN(cycle_increment) & cycle_increment>0){
-            double dt = myController.getMyScenario().getSimdtinseconds();
+            double dt = myController.getMyScenario().get.simdtinseconds();
             double sec_per_veh = dt/metering_rate_in_veh;
             double sec_per_veh_round = Math.round(sec_per_veh/cycle_increment)*cycle_increment;
             metering_rate_in_veh = dt/sec_per_veh_round;
@@ -35,7 +37,7 @@ public class ActuatorRampMeter extends Actuator {
     }
 
 	public void setMeteringRateInVPH(Double rate_in_vph){
-        setMeteringRateInVeh(rate_in_vph*myController.getMyScenario().getSimdtinseconds()/3600d);
+        setMeteringRateInVeh(rate_in_vph*myController.getMyScenario().get.simdtinseconds()/3600d);
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -54,8 +56,8 @@ public class ActuatorRampMeter extends Actuator {
 	protected void populate(Object jaxb,Scenario myScenario) {
 
         edu.berkeley.path.beats.jaxb.Actuator jaxbA = (edu.berkeley.path.beats.jaxb.Actuator) jaxb;
-		myLink = myScenario.getLinkWithId(jaxbA.getScenarioElement().getId());
-        double dt_in_hours = myScenario.getSimdtinseconds()/3600d;
+		myLink = myScenario.get.linkWithId(jaxbA.getScenarioElement().getId());
+        double dt_in_hours = myScenario.get.simdtinseconds()/3600d;
 
         Parameters params = (Parameters) jaxbA.getParameters();
 
@@ -82,7 +84,7 @@ public class ActuatorRampMeter extends Actuator {
 	@Override
 	protected void validate() {
 		if(myLink==null)
-			BeatsErrorLog.addError("Bad link ID in ramp metering actuator ID="+getId());
+			BeatsErrorLog.addError("Bad link ID in ramp metering actuator ID=" + getId());
 		if(max_rate_in_veh<0)
 			BeatsErrorLog.addError("Negative max rate in ramp metering actuator ID="+getId());
 		if(min_rate_in_veh<0)
@@ -132,7 +134,7 @@ public class ActuatorRampMeter extends Actuator {
                 case none:
                     return Double.NEGATIVE_INFINITY;
                 case max_rate:
-                    if(BeatsMath.greaterorequalthan(current_veh,max_vehicles))
+                    if(BeatsMath.greaterorequalthan(current_veh, max_vehicles))
                         return max_rate_in_veh;
                     else
                         return Double.NEGATIVE_INFINITY;

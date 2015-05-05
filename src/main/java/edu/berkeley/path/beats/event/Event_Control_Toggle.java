@@ -26,8 +26,8 @@
 
 package edu.berkeley.path.beats.event;
 
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -89,7 +89,7 @@ public class Event_Control_Toggle extends Event {
 	@Override
 	protected void activate() throws BeatsException{
 		for(ScenarioElement s : getTargets()){
-			Controller c = getMyScenario().getControllerWithId(s.getId());
+			Controller c = getMyScenario().get.controllerWithId(s.getId());
             if(c!=null)
                 c.setIson(ison);
 		}

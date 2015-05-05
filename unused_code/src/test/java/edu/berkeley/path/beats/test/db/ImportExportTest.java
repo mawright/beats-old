@@ -43,8 +43,8 @@ import org.junit.runners.Parameterized.Parameters;
 import org.xml.sax.SAXException;
 
 import edu.berkeley.path.beats.jaxb.Scenario;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
 import edu.berkeley.path.beats.util.scenario.ScenarioSaver;
 
