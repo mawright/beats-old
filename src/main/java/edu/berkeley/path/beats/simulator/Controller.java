@@ -101,7 +101,8 @@ public class Controller {
 			this.jaxbController = jaxbC;
 			this.ison = false;
 //			this.activationTimes=new ArrayList<ActivationTimes>();
-			this.dtinseconds = jaxbC.getDt();		// assume given in seconds
+			this.dtinseconds = jaxbC.getDt()>0 ? jaxbC.getDt() : myScenario.get.simdtinseconds();
+
 
 			// Copy tables
 			tables = new java.util.HashMap<String, Table>();
@@ -151,16 +152,7 @@ public class Controller {
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset  / update
 	/////////////////////////////////////////////////////////////////////
-	 
-	/** Populate the component with configuration data. 
-	 * 
-	 * <p> Called once by {@link ObjectFactory#createAndLoadScenario}.
-	 * It is passed a JAXB object with data. 
-	 * Use this method to populate and initialize all fields of the
-	 * component. 
-	 * 
-	 * @param jaxbobject Object
-	 */
+
 	protected void populate(Object jaxbobject) {
 	}
 
@@ -177,14 +169,7 @@ public class Controller {
 	protected void update() throws BeatsException {
 	}
 
-	/** Validate the component.
-	 * 
-	 * <p> Called once by {@link ObjectFactory#createAndLoadScenario}.
-	 * It checks the validity of the configuration parameters.
-	 * Events are validated at their activation time. All other components
-	 * are validated when the scenario is loaded. 
-	 * 
-	 */
+
 	protected void validate() {
 
 		// check that type was read correctly
