@@ -30,6 +30,7 @@ import edu.berkeley.path.beats.control.SignalCommand;
 import edu.berkeley.path.beats.jaxb.Phase;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.DebugFlags;
 
@@ -118,7 +119,8 @@ public final class ActuatorSignal extends Actuator {
 	}
 
     @Override
-	protected void reset() {
+	protected void reset() throws BeatsException {
+        super.reset();
 		if(myNode==null)
 			return;
 		for(SignalPhase p : phases)

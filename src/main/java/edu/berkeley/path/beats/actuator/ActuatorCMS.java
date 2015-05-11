@@ -61,6 +61,7 @@ public class ActuatorCMS extends Actuator {
     @Override
     protected void reset() throws BeatsException {
         splits = new ArrayList<Splitratio>();
+        super.reset();
     }
 
     @Override

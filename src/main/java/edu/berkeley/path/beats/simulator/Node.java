@@ -228,7 +228,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
     public double getSplitRatioProfileValue(int i,int j,int k){
         if(my_profile==null || my_profile.getCurrentSplitRatio()==null)
-            return 0d;
+            return Double.NaN;
         return my_profile.getCurrentSplitRatio().get(i,j,k);
     }
 

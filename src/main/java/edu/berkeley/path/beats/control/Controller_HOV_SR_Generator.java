@@ -31,7 +31,6 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 		super(myScenario,c);
 		hov_vtype_index = myScenario.get.vehicleTypeIndexForName("HOV");
 		hov_vtype_id = myScenario.get.vehicleTypeIdForIndex(hov_vtype_index);
-		dt_in_hr = myScenario.get.simdtinseconds()/3600d;
 	}
 
 	@Override
@@ -45,7 +44,7 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 	}
 
 	@Override
-	protected void appendNodeData(DemandSet demand_set, ScenarioElement se) {
+	protected void appendNodeData(DemandSet demand_set, ScenarioElement se, Scenario scenario) {
 		node_data.add(new HOVNodeData(demand_set, (Node) se.getReference()));
 	}
 
@@ -521,7 +520,7 @@ public class Controller_HOV_SR_Generator extends Controller_SR_Generator {
 						val[i] = profile.get(n);
 					}
 					val[i] = Math.abs(val[i]);
-					val[i] *= dt_in_hr;
+					val[i] *= myScenario.get.simdtinseconds();
 
 				}
 				return val;

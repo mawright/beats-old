@@ -23,7 +23,6 @@ import java.util.List;
 public class Controller_SR_Generator extends Controller {
 
     private List<NodeData> node_data;
-    protected double dt_in_hr;
     protected int logger_id;
     protected int dt_log = 300;   // sec
 
@@ -65,10 +64,8 @@ public class Controller_SR_Generator extends Controller {
             ScenarioElement se = (ScenarioElement) act.getScenarioElement();
             if(se.getMyType()!=ScenarioElement.Type.node)
                 continue;
-            appendNodeData(demand_set, se);
+            appendNodeData(demand_set, se, myScenario);
         }
-
-        dt_in_hr = myScenario.get.simdtinseconds()/3600d;
 
         // logger
         String log_file = param.get("log_file");
@@ -84,8 +81,8 @@ public class Controller_SR_Generator extends Controller {
         node_data = new ArrayList<NodeData>();
     }
 
-    protected void appendNodeData(DemandSet demand_set, ScenarioElement se) {
-        node_data.add(new NodeData(demand_set, (Node) se.getReference()));
+    protected void appendNodeData(DemandSet demand_set, ScenarioElement se, Scenario scneario) {
+        node_data.add(new NodeData(demand_set, (Node) se.getReference(), scneario));
     }
 
     @Override
@@ -119,7 +116,10 @@ public class Controller_SR_Generator extends Controller {
         for(int n=0;n<node_data.size();n++){
             NodeData nd = node_data.get(n);
 
-            // update node informatio
+            if( !nd.link_fr.isEmpty())
+                System.out.println(n+"\t"+nd.link_fr.get(0).getId());
+
+            // update node information
             nd.update_info();
 
             // OR->FR => beta = 0;
@@ -254,7 +254,7 @@ public class Controller_SR_Generator extends Controller {
         double [] non_offramp_xi;
         double [] fr_flow_veh;
 
-        public NodeData(DemandSet demand_set,Node myNode){
+        public NodeData(DemandSet demand_set,Node myNode, Scenario scenario){
 
             this.id = myNode.getId();
             this.myNode = myNode;
@@ -300,11 +300,11 @@ public class Controller_SR_Generator extends Controller {
                 DemandProfile dp = demand_set.get_demand_profile_for_link_id(link.getId());
                 if(dp==null) {
                     knob.add(1d);
-                    fr_flow.add(new BeatsTimeProfile("0", true));
+                    fr_flow.add(new BeatsTimeProfile("0", true, scenario));
                 }
                 else{
                     knob.add(dp.getKnob());
-                    fr_flow.add(new BeatsTimeProfile(dp.getDemand().get(0).getContent(),true));
+                    fr_flow.add(new BeatsTimeProfile(dp.getDemand().get(0).getContent(),true, scenario));
                     start_time.add(Double.isInfinite(dp.getStartTime()) ? 0d : dp.getStartTime());
                 }
             }
@@ -331,6 +331,7 @@ public class Controller_SR_Generator extends Controller {
         public void update_info(){
 
             int i,j,k;
+
             // total_non_onramp_demand [veh]
             total_non_onramp_demand = 0d;
             for(Link link : link_not_or)
@@ -349,7 +350,7 @@ public class Controller_SR_Generator extends Controller {
                 }
             }
 
-            // non_onramp_splits
+            // non_onramp_splits (alpha^tilde_i)
             non_onramp_splits = new double[link_not_or.size()][myScenario.get.numVehicleTypes()];
             for(i=0;i<ind_not_or.size();i++){
                 int ii = ind_not_or.get(i);
@@ -360,7 +361,7 @@ public class Controller_SR_Generator extends Controller {
                 }
             }
 
-            // non_offramp_phi
+            // non_offramp_phi (phi_j)
             non_offramp_phi = new double[link_not_fr.size()];
             for(j=0;j<ind_not_fr.size();j++){
                 int jj = ind_not_fr.get(j);
@@ -402,14 +403,20 @@ public class Controller_SR_Generator extends Controller {
 
         }
 
+        // NOTE: returns 1 if no split ratio is defined.
         public double get_sr(int ii,int jj,int kk){
-            return myNode.getSplitRatioProfileValue(ii,jj,kk);
+            double val = myNode.getSplitRatioProfileValue(ii,jj,kk);
+            return Double.isNaN(val) ? 1d : val;
         }
 
         protected double [] get_fr_flow_in_veh(){
 
             double [] val = new double [link_fr.size()];
-            int prof_sample_steps = 60;         ///// HACK!!!!
+
+            if(fr_flow.isEmpty())
+                return val;
+
+            int prof_sample_steps = fr_flow.get(0).getSampleSteps();
 
             if( !isdone && myScenario.get.clock().is_time_to_sample_abs(prof_sample_steps, step_initial_abs)){
 
@@ -435,7 +442,7 @@ public class Controller_SR_Generator extends Controller {
                         val[i] = profile.get(n);
                     }
                     val[i] = Math.abs(val[i]);
-                    val[i] *= dt_in_hr;
+                    val[i] *= myScenario.get.simdtinseconds();
                     val[i] *= knob.get(i);
                 }
                 return val;

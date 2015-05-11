@@ -1,8 +1,12 @@
 package edu.berkeley.path.beats.simulator.utils;
 
+import edu.berkeley.path.beats.simulator.Scenario;
+
 public class BeatsTimeProfile {
 
 	private double [] data;
+    private double dt = 300d;  // time step in seconds (TEMPORARY)
+    private int sampleSteps;
 	
 	/////////////////////////////////////////////////////////////////////
 	// construction
@@ -16,9 +20,17 @@ public class BeatsTimeProfile {
 
     public BeatsTimeProfile(String str,boolean allownegative) {
         if(allownegative)
+            data = BeatsFormatter.readCSVstring(str, ",");
+        else
+            data = BeatsFormatter.readCSVstring_nonnegative(str, ",");
+    }
+
+    public BeatsTimeProfile(String str,boolean allownegative,Scenario scenario) {
+        if(allownegative)
     	    data = BeatsFormatter.readCSVstring(str, ",");
         else
             data = BeatsFormatter.readCSVstring_nonnegative(str, ",");
+        this.sampleSteps = (int) (dt/scenario.get.simdtinseconds());
     }    
 
     // initialize a 1D vector from comma separated string of positive numbers
@@ -53,6 +65,10 @@ public class BeatsTimeProfile {
     	if(data.length==0)
     		return Double.NaN;
    		return data[i];
+    }
+
+    public int getSampleSteps(){
+        return sampleSteps;
     }
 
 	/////////////////////////////////////////////////////////////////////
