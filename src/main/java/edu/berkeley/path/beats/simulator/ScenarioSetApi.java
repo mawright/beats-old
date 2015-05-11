@@ -141,10 +141,10 @@ public class ScenarioSetApi {
 
     public void knob_for_offramp_link_id(int link_id,double newknob){
 
-        if(scenario.runMode.compareTo(Scenario.RunMode.FRDEMANDS)!=0) {
-            System.err.println("This only works in fr demand run mode");
-            return;
-        }
+//        if(scenario.runMode.compareTo(Scenario.RunMode.FRDEMANDS)!=0) {
+//            System.err.println("This only works in fr demand run mode");
+//            return;
+//        }
 
         // get the SR generator controller
         ArrayList<Controller> SRControllers = ((ControllerSet)scenario.getControllerSet()).getControllersOfType("Controller_SR_Generator");
