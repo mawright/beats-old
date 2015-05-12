@@ -25,13 +25,14 @@ public class Controller_SR_Generator extends Controller {
     private List<NodeData> node_data;
     protected int logger_id;
     protected int dt_log = 300;   // sec
-
+    protected boolean in_fr_demands_mode;
     /////////////////////////////////////////////////////////////////////
     // Construction
     /////////////////////////////////////////////////////////////////////
 
     public Controller_SR_Generator(Scenario myScenario, edu.berkeley.path.beats.jaxb.Controller c) {
         super(myScenario,c,Algorithm.SR_Generator);
+        in_fr_demands_mode = myScenario.runMode== Scenario.RunMode.FRDEMANDS;
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -40,6 +41,9 @@ public class Controller_SR_Generator extends Controller {
 
     @Override
     protected void populate(Object jaxbobject) {
+
+        if(!in_fr_demands_mode)
+            return;
 
         // load offramp flow information
         Parameters param = (Parameters) ((edu.berkeley.path.beats.jaxb.Controller)jaxbobject).getParameters();
@@ -88,6 +92,9 @@ public class Controller_SR_Generator extends Controller {
     @Override
     protected void validate() {
 
+        if(!in_fr_demands_mode)
+            return;
+
         // check node data
         for(Actuator act:actuators){
             ScenarioElement se = (ScenarioElement) act.getScenarioElement();
@@ -107,11 +114,16 @@ public class Controller_SR_Generator extends Controller {
 
     @Override
     protected void reset() {
+        if(!in_fr_demands_mode)
+            return;
         super.reset();
     }
 
     @Override
     protected void update() throws BeatsException {
+
+        if(!in_fr_demands_mode)
+            return;
 
         for(int n=0;n<node_data.size();n++){
             NodeData nd = node_data.get(n);

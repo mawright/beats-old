@@ -134,8 +134,11 @@ public class ScenarioSetApi {
         if(demandSet==null)
             return;
         DemandProfile dp = demandSet.get_demand_profile_for_link_id(link_id);
-        if(dp==null)
+        if(dp==null) {
+            System.out.println("Did not find a demand profile for link " + link_id);
             return;
+        }
+        System.out.println("Found a demand profile for link " + link_id);
         dp.set_knob(newknob);
     }
 
