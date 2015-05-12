@@ -116,9 +116,6 @@ public class Controller_SR_Generator extends Controller {
         for(int n=0;n<node_data.size();n++){
             NodeData nd = node_data.get(n);
 
-            if( !nd.link_fr.isEmpty())
-                System.out.println(n+"\t"+nd.link_fr.get(0).getId());
-
             // update node information
             nd.update_info();
 

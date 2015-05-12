@@ -147,7 +147,7 @@ public class ScenarioSetApi {
 //        }
 
         // get the SR generator controller
-        ArrayList<Controller> SRControllers = ((ControllerSet)scenario.getControllerSet()).getControllersOfType("Controller_SR_Generator");
+        ArrayList<Controller> SRControllers = scenario.get.controllerset().getControllersOfType("Controller_SR_Generator");
 
         if(SRControllers.size()!=1) {
             System.err.println("Did not find a unique SR controller in this scenario");
