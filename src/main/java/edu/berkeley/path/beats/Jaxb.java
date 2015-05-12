@@ -70,14 +70,14 @@ public class Jaxb {
         } catch( JAXBException je ) {
             throw new BeatsException("Failed to create context for JAXB unmarshaller", je);
         }
-        try{
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            ClassLoader classLoader = ObjectFactory.class.getClassLoader();
-            Schema schema = factory.newSchema(classLoader.getResource("beats_output.xsd"));
-            u.setSchema(schema);
-        } catch(SAXException e){
-            throw new BeatsException("Schema not found", e);
-        }
+//        try{
+//            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+//            ClassLoader classLoader = ObjectFactory.class.getClassLoader();
+//            Schema schema = factory.newSchema(classLoader.getResource("beats_output.xsd"));
+//            u.setSchema(schema);
+//        } catch(SAXException e){
+//            throw new BeatsException("Schema not found", e);
+//        }
         return u;
     }
 
