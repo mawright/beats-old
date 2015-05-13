@@ -26,6 +26,7 @@ public class Controller_SR_Generator extends Controller {
     protected int logger_id;
     protected int dt_log = 300;   // sec
     protected boolean in_fr_demands_mode;
+
     /////////////////////////////////////////////////////////////////////
     // Construction
     /////////////////////////////////////////////////////////////////////
@@ -107,7 +108,7 @@ public class Controller_SR_Generator extends Controller {
 //                BeatsErrorLog.addError("In Controller_SR_Generator, must have exactly one downstream mainline link.");
 //            if(nd.link_fw_up.size()!=1)
 //                BeatsErrorLog.addError("In Controller_SR_Generator, must have exactly one upstream mainline link.");
-//            if(nd.link_fr.size()<1)
+//            if(nd.fr.size()<1)
 //                BeatsErrorLog.addError("In Controller_SR_Generator, must have at least one offramp link.");
 //        }
     }
@@ -341,12 +342,12 @@ public class Controller_SR_Generator extends Controller {
 
             int i,j,k;
 
-            // total_non_onramp_demand [veh]
+            // Sml [veh]
             total_non_onramp_demand = 0d;
             for(Link link : link_not_or)
                 total_non_onramp_demand += BeatsMath.sum(link.get_out_demand_in_veh(0));
 
-            // known_non_offramp_demand [veh]
+            // Sor [veh]
             known_non_offramp_demand = new double[link_not_fr.size()];
             for(j=0;j<ind_not_fr.size();j++){
                 known_non_offramp_demand[j] = 0d;
@@ -396,11 +397,12 @@ public class Controller_SR_Generator extends Controller {
             else
                 offramp_flow_demand_ratio = tot_fr_flow_veh / total_non_onramp_demand;
 
+
             // non_offramp_xi
             non_offramp_xi = new double[link_not_fr.size()];
             for(j=0;j<ind_not_fr.size();j++){
                 double num = offramp_flow_demand_ratio*(known_non_offramp_demand[j] + non_offramp_phi[j]);
-                double Rj = link_not_fr.get(j).get_total_space_supply_in_veh(0);
+                double Rj = link_not_fr.get(j).get_available_space_supply_in_veh(0);
                 double den = Rj + offramp_flow_demand_ratio * non_offramp_phi[j];
                 if(BeatsMath.equals(num,0d))
                     non_offramp_xi[j] = 0d;

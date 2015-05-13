@@ -91,6 +91,7 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
             else
 	            dsratio[j] = Double.POSITIVE_INFINITY;
 
+
             // reflect ratios back on inputs
             for(i=0;i<nIn;i++)
                 if(iscontributor[i][j])

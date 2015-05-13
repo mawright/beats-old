@@ -69,6 +69,7 @@ public class Controller {
         SIG_Pretimed,
         SIG_MaxPressure,
         SR_Generator,
+		SR_Generator_Fw,
 		HOV_SR_Generator}
 
     public static enum ActuatorType {
