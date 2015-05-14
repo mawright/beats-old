@@ -1,6 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.control.Controller_SR_Generator;
+import edu.berkeley.path.beats.control.Controller_SR_Generator_Fw;
 import edu.berkeley.path.beats.jaxb.Demand;
 import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacitySet;
 import edu.berkeley.path.beats.jaxb.VehicleType;
@@ -150,14 +151,14 @@ public class ScenarioSetApi {
 //        }
 
         // get the SR generator controller
-        ArrayList<Controller> SRControllers = scenario.get.controllerset().getControllersOfType("Controller_SR_Generator");
+        ArrayList<Controller> SRControllers = scenario.get.controllerset().getControllersOfType("Controller_SR_Generator_Fw");
 
         if(SRControllers.size()!=1) {
             System.err.println("Did not find a unique SR controller in this scenario");
             return;
         }
 
-        ((Controller_SR_Generator)SRControllers.get(0)).setKnobForLink(link_id,newknob);
+        ((Controller_SR_Generator_Fw)SRControllers.get(0)).setKnobForLink(link_id,newknob);
     }
 
     // SPLITS ------------------------------------------------------
