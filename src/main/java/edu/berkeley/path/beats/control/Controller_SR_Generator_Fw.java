@@ -117,7 +117,11 @@ public class Controller_SR_Generator_Fw extends Controller {
     protected void reset() {
         if(!in_fr_demands_mode)
             return;
+
         super.reset();
+
+        for(NodeData node : node_data)
+            node.reset();
     }
 
     @Override
@@ -269,6 +273,10 @@ public class Controller_SR_Generator_Fw extends Controller {
             }
 
 
+        }
+
+        public void reset(){
+            isdone = false;
         }
 
         public void update_info(){

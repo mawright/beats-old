@@ -118,6 +118,8 @@ public class Controller_SR_Generator extends Controller {
         if(!in_fr_demands_mode)
             return;
         super.reset();
+        for(NodeData node : node_data)
+            node.reset();
     }
 
     @Override
@@ -336,6 +338,10 @@ public class Controller_SR_Generator extends Controller {
                 isdone = false;
             }
 
+        }
+
+        public void reset(){
+            isdone = false;
         }
 
         public void update_info(){
