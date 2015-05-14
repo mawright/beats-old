@@ -49,7 +49,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	// does change ........................................
 	private boolean isdone; 
 	private double [][] current_sample;		// sample per [ensemble][vehicle type]
-	private double _knob;
+	public double _knob;
 
 	/////////////////////////////////////////////////////////////////////
 	// protected interface

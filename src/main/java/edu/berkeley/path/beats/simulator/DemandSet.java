@@ -160,7 +160,7 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
             for(edu.berkeley.path.beats.jaxb.DemandProfile dp : this.getDemandProfile())
                 if(dp.getDemand()!=null)
                     for(Demand d : dp.getDemand())
-                        str += String.format("%d\t%d\t%s\n",dp.getLinkIdOrg(),d.getVehicleTypeId(),d.getContent());
+                        str += String.format("%d\t%d\t%f\t%s\n",dp.getLinkIdOrg(),d.getVehicleTypeId(),((DemandProfile)dp)._knob,d.getContent());
         return str;
     }
 }
