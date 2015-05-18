@@ -29,7 +29,7 @@ public class RampMeteringPolicySet {
 //        for(Map.Entry<Long,Double[]> entry : prof_map.entrySet()){
 //            Long or_id = entry.getKey();
 //            Double [] policy = entry.getValue();
-//            Link or = myScenario.getLinkWithId(or_id);
+//            Link or = myScenario.get.linkWithId(or_id);
 //            profiles.add(new RampMeteringPolicyProfile(or,policy));
 //        }
 //    }

@@ -26,6 +26,11 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorCTM;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 import java.math.BigDecimal;
 
 /** Link class.
@@ -42,22 +47,22 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// does not change ....................................
     protected Node begin_node;
     protected Node end_node;
-    protected Type link_type;
+    public Type link_type;
 
     // in/out flows (from node model or demand profiles)
-    protected double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
-    protected double [][] outflow;    				    // [veh]	numEnsemble x numVehTypes
+    public double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
+    public double [][] outflow;    				    // [veh]	numEnsemble x numVehTypes
 
     // link geometry
-    protected double _lanes;							// [-]
+    public double _lanes;							// [-]
 
 	// source/sink indicators
-    protected boolean issource; 						// [boolean]
-    protected boolean issink;     					    // [boolean]
+    public boolean issource; 						// [boolean]
+    public boolean issink;     					    // [boolean]
 
-    protected FundamentalDiagramProfile myFDprofile;	// fundamental diagram profile (used to rescale future FDs upon lane change event)
-    protected CapacityProfile myCapacityProfile; 		// capacity profile
-    protected DemandProfile myDemandProfile;  		    // demand profiles
+    public FundamentalDiagramProfile myFDprofile;	// fundamental diagram profile (used to rescale future FDs upon lane change event)
+    public CapacityProfile myCapacityProfile; 		// capacity profile
+    public DemandProfile myDemandProfile;  		    // demand profiles
 	
 	// Actuation
     protected boolean has_flow_controller;
@@ -68,7 +73,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// does change ........................................
 	
 	// link geometry
-    protected double _length;							// [meters]
+    public double _length;							// [meters]
 
 	// FDs
     protected FundamentalDiagram [] FDfromProfile;	    // profile fundamental diagram
@@ -81,7 +86,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     protected double [] initial_density;			    // [veh]  	numVehTypes
 
     // link behavior
-    protected LinkBehaviorCTM link_behavior;
+    public LinkBehaviorCTM link_behavior;
 
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -160,9 +165,9 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		resetFD();
         link_behavior.reset(initial_density);
 
-        int n1 = myScenario.getNumEnsemble();
-        int n2 = myScenario.getNumVehicleTypes();
-        inflow = BeatsMath.zeros(n1,n2);
+        int n1 = myScenario.get.numEnsemble();
+        int n2 = myScenario.get.numVehicleTypes();
+        inflow = BeatsMath.zeros(n1, n2);
         outflow = BeatsMath.zeros(n1,n2);
 
 		this.external_max_flow = Double.POSITIVE_INFINITY;
@@ -174,7 +179,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 
 	private void resetFD(){
-		FDfromProfile = new FundamentalDiagram [myScenario.getNumEnsemble()];
+		FDfromProfile = new FundamentalDiagram [myScenario.get.numEnsemble()];
 		for(int i=0;i<FDfromProfile.length;i++){
 			FDfromProfile[i] = new FundamentalDiagram(this);
 			FDfromProfile[i].settoDefault();
@@ -183,7 +188,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 		activeFDevent = false;
 	}
 
-	protected void update_densities() {
+	public void update_densities() {
 
         // behavior for all sink links
         if(issink)
@@ -191,13 +196,13 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
         // behavior for all source links
         if(issource && myDemandProfile!=null)
-            for(int e=0;e<myScenario.getNumEnsemble();e++)
+            for(int e=0;e<myScenario.get.numEnsemble();e++)
                 inflow[e] = myDemandProfile.getCurrentValue(e);
 
         link_behavior.update_state(inflow,outflow);
 	}
 
-    protected void updateOutflowDemand(){
+    public void updateOutflowDemand(){
         link_behavior.update_outflow_demand(external_max_speed, external_max_flow);
     }
 
@@ -215,12 +220,12 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
     // used by FundamentalDiagramProfile to set the FD
-    protected void setFDFromProfile(FundamentalDiagram fd) throws BeatsException{
+    protected void setFDFromProfile(FundamentalDiagram fd) throws BeatsException {
         if(fd==null)
             return;
 
         // sample the fundamental digram
-        for(int e=0;e<myScenario.getNumEnsemble();e++)
+        for(int e=0;e<myScenario.get.numEnsemble();e++)
             FDfromProfile[e] = fd.perturb();
     }
 
@@ -230,19 +235,19 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
     protected void set_initial_state(double [] d){
-        initial_density  = d==null ? BeatsMath.zeros(myScenario.getNumVehicleTypes()) : d.clone();
+        initial_density  = d==null ? BeatsMath.zeros(myScenario.get.numVehicleTypes()) : d.clone();
     }
 
-    protected void setInflow(int ensemble,double[] inflow) {
+    public void setInflow(int ensemble,double[] inflow) {
         this.inflow[ensemble] = inflow;
     }
 
-    protected void setOutflow(int ensemble,double[] outflow) {
+    public void setOutflow(int ensemble,double[] outflow) {
         this.outflow[ensemble] = outflow;
     }
 
     // getter for the currently active fundamental diagram
-    protected FundamentalDiagram currentFD(int ensemble){
+    public FundamentalDiagram currentFD(int ensemble){
         if(activeFDevent)
             return FDfromEvent;
         return FDfromProfile==null ? null : FDfromProfile[ensemble];
@@ -281,13 +286,13 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	// used by Event.setLinkLanes
 	public void set_Lanes(double newlanes) throws BeatsException{
-		for(int e=0;e<myScenario.getNumEnsemble();e++)
+		for(int e=0;e<myScenario.get.numEnsemble();e++)
 			if(getDensityJamInVeh(e)*newlanes/get_Lanes() < getTotalDensityInVeh(e))
 				throw new BeatsException("ERROR: Lanes could not be set.");
 
 		if(myFDprofile!=null)
 			myFDprofile.set_Lanes(newlanes);	// adjust present and future fd's
-		for(int e=0;e<myScenario.getNumEnsemble();e++)
+		for(int e=0;e<myScenario.get.numEnsemble();e++)
 			FDfromProfile[e].setLanes(newlanes);
 		_lanes = newlanes;					// adjust local copy of lane count
 	}
@@ -315,7 +320,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	public void set_external_max_flow_in_vph(double value_in_vph){
         if(has_flow_controller)
-            external_max_flow = value_in_vph*myScenario.getSimdtinseconds()/3600d;
+            external_max_flow = value_in_vph*myScenario.get.simdtinseconds()/3600d;
 	}
 	
     public void set_external_max_speed(double value){
@@ -325,6 +330,10 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
     public Network getMyNetwork(){
         return myNetwork;
+    }
+
+    public Scenario getMyScenario(){
+        return myScenario;
     }
 
 	public static boolean haveSameType(Link linkA,Link linkB){
@@ -349,7 +358,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
     public double computeTotalDelayInVeh(int e){
         double val=0d;
-        for(int v=0;v<myScenario.getNumVehicleTypes();v++)
+        for(int v=0;v<myScenario.get.numVehicleTypes();v++)
             val += link_behavior.compute_delay_in_veh(e, v);
         return val;
     }
@@ -399,7 +408,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
     public double[] getDensityInVeh(int ensemble) {
         try{
-            int nVT = myScenario.getNumVehicleTypes();
+            int nVT = myScenario.get.numVehicleTypes();
             double [] d = new double[nVT];
             for(int v=0;v<nVT;v++)
                 d[v] = link_behavior.get_density_in_veh(ensemble, v);
@@ -585,7 +594,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD._getCapacityDropInVeh() / myScenario.getSimdtinseconds() / _lanes;
+			return FD._getCapacityDropInVeh() / myScenario.get.simdtinseconds() / _lanes;
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -596,7 +605,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD._getCapacityInVeh() / myScenario.getSimdtinseconds();
+			return FD._getCapacityInVeh() / myScenario.get.simdtinseconds();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -607,7 +616,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD._getCapacityInVeh() / myScenario.getSimdtinseconds() / _lanes;
+			return FD._getCapacityInVeh() / myScenario.get.simdtinseconds() / _lanes;
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -629,7 +638,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD.getVfNormalized() * getLengthInMeters() / myScenario.getSimdtinseconds();
+			return FD.getVfNormalized() * getLengthInMeters() / myScenario.get.simdtinseconds();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -665,7 +674,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			return FD.getWNormalized() * getLengthInMeters() / myScenario.getSimdtinseconds();
+			return FD.getWNormalized() * getLengthInMeters() / myScenario.get.simdtinseconds();
 		} catch (Exception e) {
 			return Double.NaN;
 		}

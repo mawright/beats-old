@@ -6,11 +6,12 @@ import java.lang.reflect.Field;
 
 import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_SplitRatioSolver_HAMBURGER;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_Greedy;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_SplitRatioSolver_Greedy;
 
 public class NodeTest {
 
@@ -29,7 +30,7 @@ public class NodeTest {
 		double endtime = 300;
 		int numEnsemble = 1;
 		scenario.initialize(timestep,starttime,endtime,numEnsemble);
-		node = scenario.getNodeWithId(-4);
+		node = scenario.get.nodeWithId(-4);
 	}
 
 	@Test
@@ -123,7 +124,7 @@ public class NodeTest {
 
 		scenario.initialize(timestep, starttime, endtime, numEnsemble, uncertaintymodel,nodeflowsolver,nodesrsolver);
 		
-		Node node = scenario.getNodeWithId(2);
+		Node node = scenario.get.nodeWithId(2);
 		
 		Field node_sr_solver_field = Node.class.getDeclaredField("node_sr_solver");
 		node_sr_solver_field.setAccessible(true);
@@ -150,7 +151,7 @@ public class NodeTest {
 
 		scenario.initialize(timestep, starttime, endtime, numEnsemble, uncertaintymodel,nodeflowsolver,nodesrsolver);
 		
-		Node node = scenario.getNodeWithId(5);
+		Node node = scenario.get.nodeWithId(5);
 		
 		Field node_sr_solver_field = Node.class.getDeclaredField("node_sr_solver");
 		node_sr_solver_field.setAccessible(true);

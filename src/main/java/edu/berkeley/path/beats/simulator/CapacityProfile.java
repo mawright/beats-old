@@ -26,6 +26,10 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfile;
+
 public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile {
 
 	// does not change ....................................
@@ -51,7 +55,7 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 		isdone = false;
 		
 		// required
-		Link myLink = myScenario.getLinkWithId(getLinkId());
+		Link myLink = myScenario.get.linkWithId(getLinkId());
 
 		isOrphan = myLink==null;
 				
@@ -64,13 +68,13 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 		// sample demand distribution, convert to vehicle units
 		if(getContent()!=null){
 			capacity = new BeatsTimeProfile(getContent(),",");	// true=> reshape to vector along k, define length
-			capacity.multiplyscalar(myScenario.getSimdtinseconds()*myLink.get_Lanes());
+			capacity.multiplyscalar(myScenario.get.simdtinseconds()*myLink.get_Lanes());
 		}
 		
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
+			samplesteps = BeatsMath.round(dtinseconds / myScenario.get.simdtinseconds());
 		}
 		else{ 	// allow only if it contains one time step
 			if(capacity.getNumTime()==1){
@@ -87,7 +91,7 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 
         // step_initial
         double start_time = Double.isInfinite(getStartTime()) ? 0d : getStartTime();
-        step_initial_abs = BeatsMath.round(start_time/myScenario.getSimdtinseconds());
+        step_initial_abs = BeatsMath.round(start_time/myScenario.get.simdtinseconds());
     }
 	
 	protected void validate() {
@@ -104,7 +108,7 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 		if( dtinseconds<=0  && capacity.getNumTime()>1)
 			BeatsErrorLog.addError("Non-positive time step in capacity profile for link ID=" + getLinkId());
 
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && capacity.getNumTime()>1)
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.get.simdtinseconds()) && capacity.getNumTime()>1)
 			BeatsErrorLog.addError("Time step for capacity profile of link ID=" + getLinkId() + " is not a multiple of simulation time step.");
 		
 		// check non-negative
@@ -133,10 +137,10 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 		if(isdone)
 			return;
 		
-		if(forcesample || myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
+		if(forcesample || myScenario.get.clock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
 			
 			int n = capacity.getNumTime()-1;
-			int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
+			int step = myScenario.get.clock().sample_index_abs(samplesteps,step_initial_abs);
 
 			// zeroth sample extends to the left
 			if(step<=0){

@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import javax.xml.bind.JAXBException;
 
 import edu.berkeley.path.beats.jaxb.Scenario;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 class XMLScenarioLoader extends ScenarioLoaderBase implements ScenarioLoaderIF {
 

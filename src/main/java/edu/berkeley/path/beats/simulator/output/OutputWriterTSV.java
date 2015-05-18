@@ -4,15 +4,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.List;
 import java.util.Properties;
 
-import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.simulator.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Network;
-import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 public class OutputWriterTSV extends OutputWriterBase {
@@ -49,7 +46,7 @@ public class OutputWriterTSV extends OutputWriterBase {
 			double flow;
 			double speed;
 			
-			String timestr = String.format("%.0f", scenario.getCurrentTimeInSeconds()) ;
+			String timestr = String.format("%.0f", scenario.get.currentTimeInSeconds()) ;
 			Writer out = new OutputStreamWriter(new FileOutputStream(prefix+"_"+timestr+".txt"));
 		
 			for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){				

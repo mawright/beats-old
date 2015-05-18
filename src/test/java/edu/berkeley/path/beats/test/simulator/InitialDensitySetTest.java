@@ -6,7 +6,7 @@ import edu.berkeley.path.beats.Jaxb;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.berkeley.path.beats.simulator.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.InitialDensitySet;
 import edu.berkeley.path.beats.simulator.Link;
@@ -43,7 +43,7 @@ public class InitialDensitySetTest {
 		double [] X;
 		double [] expected = {2d,1d};		
 		for(i=0;i<link_id.length;i++){
-			Link link = scenario.getLinkWithId(link_id[i]);
+			Link link = scenario.get.linkWithId(link_id[i]);
 			double link_length_in_miles = link.getLengthInMeters()*0.621371/1000d;
 			X = BeatsMath.times( ids.getDensityForLinkIdInVeh(1,link_id[i]),1/link_length_in_miles);
 			for(j=0;j<expected.length;j++)

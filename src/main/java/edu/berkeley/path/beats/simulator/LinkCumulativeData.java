@@ -1,5 +1,8 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 /**
  * Link cumulative data storage
  */
@@ -19,8 +22,8 @@ final public class LinkCumulativeData {
 
 	LinkCumulativeData(edu.berkeley.path.beats.simulator.Link link) {
 		this.link = link;
-		nensemble = link.myScenario.getNumEnsemble();
-		nvehtype = link.myScenario.getNumVehicleTypes();
+		nensemble = link.myScenario.get.numEnsemble();
+		nvehtype = link.myScenario.get.numVehicleTypes();
 		density = new double[nensemble][nvehtype];
 		iflow = new double[nensemble][nvehtype];
 		oflow = new double[nensemble][nvehtype];

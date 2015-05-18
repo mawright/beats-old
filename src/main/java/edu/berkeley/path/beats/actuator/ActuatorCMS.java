@@ -5,6 +5,7 @@ import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +61,7 @@ public class ActuatorCMS extends Actuator {
     @Override
     protected void reset() throws BeatsException {
         splits = new ArrayList<Splitratio>();
+        super.reset();
     }
 
     @Override

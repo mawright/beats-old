@@ -25,17 +25,12 @@
  **/
 
 package edu.berkeley.path.beats.db;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.torque.NoRowsException;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 
 import edu.berkeley.path.beats.om.*;
-import edu.berkeley.path.beats.simulator.BeatsException;
 
 /**
  * Loads a scenario from the database

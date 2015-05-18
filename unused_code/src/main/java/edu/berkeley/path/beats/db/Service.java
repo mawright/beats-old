@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import org.apache.torque.Torque;
 import org.apache.torque.TorqueException;
 
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 /**
  * DB service initialization and shutdown

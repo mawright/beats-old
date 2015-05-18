@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import edu.berkeley.path.beats.jaxb.Scenario;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 class XMLScenarioSaver extends ScenarioSaverBase implements ScenarioSaverIF {
 

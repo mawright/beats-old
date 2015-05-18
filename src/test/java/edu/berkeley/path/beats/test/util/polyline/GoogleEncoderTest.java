@@ -9,8 +9,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import edu.berkeley.path.beats.jaxb.Point;
-import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.simulator.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.util.polyline.GoogleDecoder;
 import edu.berkeley.path.beats.util.polyline.GoogleEncoder;
 

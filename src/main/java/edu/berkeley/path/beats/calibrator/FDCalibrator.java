@@ -32,6 +32,7 @@ import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 /** Fundamental diagram calibration routine.
  * 

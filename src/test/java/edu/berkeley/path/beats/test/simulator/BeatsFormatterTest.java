@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import edu.berkeley.path.beats.simulator.BeatsFormatter;
+import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
 
 public class BeatsFormatterTest {
 

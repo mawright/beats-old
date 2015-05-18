@@ -1,7 +1,6 @@
 package edu.berkeley.path.beats.util.scenario;
 
-import edu.berkeley.path.beats.simulator.ObjectFactory;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 class DBScenarioLoader implements ScenarioLoaderIF {
 

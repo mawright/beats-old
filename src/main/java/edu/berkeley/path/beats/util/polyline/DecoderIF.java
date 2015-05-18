@@ -2,7 +2,7 @@ package edu.berkeley.path.beats.util.polyline;
 
 import edu.berkeley.path.beats.jaxb.ObjectFactory;
 import edu.berkeley.path.beats.jaxb.Point;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 /**
  * Decodes a polyline from a string

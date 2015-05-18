@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -55,11 +55,11 @@ public class ScenarioTest {
 			scenario.initialize(timestep,starttime,endtime,numEnsemble);
 			scenario.reset();
 
-			assertEquals(scenario.getCurrentTimeInSeconds(),300d,1e-4);
-			assertEquals(scenario.getNumEnsemble(),10,1e-4);
+			assertEquals(scenario.get.currentTimeInSeconds(),300d,1e-4);
+			assertEquals(scenario.get.numEnsemble(),10,1e-4);
 			
 			scenario.advanceNSeconds(300d);
-			assertEquals(scenario.getCurrentTimeInSeconds(),600d,1e-4);
+			assertEquals(scenario.get.currentTimeInSeconds(),600d,1e-4);
 			
 		} catch (BeatsException e) {
 			fail("initialization failure.");
@@ -90,137 +90,137 @@ public class ScenarioTest {
 
 	@Test
 	public void test_time_getters() {
-		assertEquals(static_scenario.getCurrentTimeInSeconds(),300d,1e-4);
-		assertEquals(static_scenario.getTimeElapsedInSeconds(),0d,1e-4);
+		assertEquals(static_scenario.get.currentTimeInSeconds(),300d,1e-4);
+		assertEquals(static_scenario.get.timeElapsedInSeconds(),0d,1e-4);
 //		assertEquals(static_scenario.getCurrentTimeStep(),0,1e-4);
 //		assertEquals(static_scenario.getTotalTimeStepsToSimulate(),-1,1e-4);
 	}
 	
+//	@Test
+//	public void test_set_timestep() {
+//		try {
+//			String config_file = "_smalltest_withdemandprofile.xml";
+//			Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
+//			if(scenario==null)
+//				fail("scenario did not load");
+//
+//			// initialize
+//			double timestep = 5;
+//			double starttime = 0d;
+//			double endtime = Double.POSITIVE_INFINITY;
+//			int numEnsemble = 1;
+//			scenario.initialize(timestep,starttime,endtime,numEnsemble);
+//
+//			assertEquals(scenario.get.currentTimeInSeconds(),0d,1e-4);
+//			scenario.advanceNSeconds(200d);
+//
+//			double demand1 = scenario.get.linkWithId(-6).getDemandProfile().getCurrentValue(0)[0];
+//
+//			double[][] densityAt200 = scenario.get.totalDensity(-1);
+//
+//			scenario.advanceNSeconds(300d);
+//			double demand2 = scenario.get.linkWithId(-6).getDemandProfile().getCurrentValue(0)[0];
+//			double[][] densityAt500Round1 = scenario.get.totalDensity(-1);
+//
+//			assertFalse(scenario.get.linkWithId(-6).getDemandProfile().getCurrentValue(0)[0]==demand1);
+//
+//			scenario.set.timeInSeconds(200);
+//			scenario.set.totalDensity(densityAt200);
+//			assertEquals(scenario.get.linkWithId(-6).getDemandProfile().getCurrentValue(0)[0],demand1,1e-4);
+//
+//			scenario.advanceNSeconds(300d);
+//			assertEquals(scenario.get.linkWithId(-6).getDemandProfile().getCurrentValue(0)[0],demand2,1e-4);
+//
+//			double[][] densityAt500Round2 = scenario.get.totalDensity(-1);
+//
+//			for (int i=0;i<densityAt500Round1.length;i++)
+//				assertEquals(densityAt500Round1[i][0], densityAt500Round2[i][0],1e-4);
+//
+//		} catch (BeatsException e) {
+//			fail("initialization failure.");
+//		}
+//	}
+
 	@Test
-	public void test_set_timestep() {
-		try {
-			String config_file = "_smalltest_withdemandprofile.xml";
-			Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
-			if(scenario==null)
-				fail("scenario did not load");
-
-			// initialize
-			double timestep = 5;
-			double starttime = 0d;
-			double endtime = Double.POSITIVE_INFINITY;
-			int numEnsemble = 1;
-			scenario.initialize(timestep,starttime,endtime,numEnsemble);
-
-			assertEquals(scenario.getCurrentTimeInSeconds(),0d,1e-4);
-			scenario.advanceNSeconds(200d);
-			
-			double demand1 = scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0];
-			
-			double[][] densityAt200 = scenario.getTotalDensity(-1);
-			
-			scenario.advanceNSeconds(300d);
-			double demand2 = scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0];
-			double[][] densityAt500Round1 = scenario.getTotalDensity(-1);
-			
-			assertFalse(scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0]==demand1);
-			
-			scenario.setTimeInSeconds(200);
-			scenario.setTotalDensity(densityAt200);
-			assertEquals(scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0],demand1,1e-4);
-			
-			scenario.advanceNSeconds(300d);
-			assertEquals(scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0],demand2,1e-4);
-			
-			double[][] densityAt500Round2 = scenario.getTotalDensity(-1);
-			
-			for (int i=0;i<densityAt500Round1.length;i++)
-				assertEquals(densityAt500Round1[i][0], densityAt500Round2[i][0],1e-4);
-			
-		} catch (BeatsException e) {
-			fail("initialization failure.");
-		}
+	public void test_get_numVehicleTypes() {
+		assertEquals(static_scenario.get.numVehicleTypes(),1,1e-4);
 	}
 
 	@Test
-	public void test_getNumVehicleTypes() {
-		assertEquals(static_scenario.getNumVehicleTypes(),1,1e-4);
-	}
-
-	@Test
-	public void test_getNumEnsemble() {
-		assertEquals(static_scenario.getNumEnsemble(),10,1e-4);
+	public void test_get_numEnsemble() {
+		assertEquals(static_scenario.get.numEnsemble(),10,1e-4);
 	}
 
 	@Test
 	public void test_getVehicleTypeIndex() {
-		assertEquals(static_scenario.getVehicleTypeIndexForName("car"),0);
-		assertEquals(static_scenario.getVehicleTypeIndexForName("xxx"),-1);
+		assertEquals(static_scenario.get.vehicleTypeIndexForName("car"),0);
+		assertEquals(static_scenario.get.vehicleTypeIndexForName("xxx"),-1);
 		
 		// edge case
-		assertEquals(static_scenario.getVehicleTypeIndexForName(null),-1);
+		assertEquals(static_scenario.get.vehicleTypeIndexForName(null),-1);
 	}
 	
 	@Test
-	public void test_getSimDtInSeconds() {
-		assertEquals(static_scenario.getSimdtinseconds(),5,1e-4);
+	public void test_get_simdtinseconds() {
+		assertEquals(static_scenario.get.simdtinseconds(),5,1e-4);
 	}
 
 	@Test
-	public void test_getTimeStart() {
-		assertEquals(static_scenario.getTimeStart(),300d,1e-4);
+	public void test_get_timeStart() {
+		assertEquals(static_scenario.get.timeStart(),300d,1e-4);
 	}
 
 	@Test
-	public void test_getTimeEnd() {
-		assertTrue(Double.isInfinite(static_scenario.getTimeEnd()));
+	public void test_get_timeEnd() {
+		assertTrue(Double.isInfinite(static_scenario.get.timeEnd()));
 	}
 
 	@Test
-	public void test_getConfigFilename() {
-		assertEquals(static_scenario.getConfigFilename(),config_folder+"_smalltest.xml");
+	public void test_get_configFilename() {
+		assertEquals(static_scenario.get.configFilename(),config_folder+"_smalltest.xml");
 	}
 
 	@Test
-	public void test_getVehicleTypeNames() {
-		String [] names = static_scenario.getVehicleTypeNames();
+	public void test_get_vehicleTypeNames() {
+		String [] names = static_scenario.get.vehicleTypeNames();
 		assertEquals(names[0],"car");
 	}
 
 	@Test
-	public void test_getDensityForNetwork() {
-		double x = static_scenario.getDensityForNetwork(-1,0)[0][0];
+	public void test_get_densityForNetwork() {
+		double x = static_scenario.get.densityForNetwork(-1,0)[0][0];
 		double exp =0.4445728212287675;
 		assertEquals(exp,x,1e-4);
 
-		//x = static_scenario.getDensityForNetwork(null,0)[0][0];	// null works for single networks
+		//x = static_scenario.get.densityForNetwork(null,0)[0][0];	// null works for single networks
 		//assertEquals(x,exp,1e-4);
 		
 		// edge cases
-		assertNull(static_scenario.getDensityForNetwork(-100000,0));
-		assertNull(static_scenario.getDensityForNetwork(-1,-1));
-		assertNull(static_scenario.getDensityForNetwork(-1,100));
+		assertNull(static_scenario.get.densityForNetwork(-100000,0));
+		assertNull(static_scenario.get.densityForNetwork(-1,-1));
+		assertNull(static_scenario.get.densityForNetwork(-1,100));
 	}
 
 	@Test
-	public void test_getLinkWithId() {
-		Link link = static_scenario.getLinkWithId(-1);
+	public void test_get_linkWithId() {
+		Link link = static_scenario.get.linkWithId(-1);
 		double x = link.getLengthInMeters();
 		double exp = 429.2823615191171;
 		assertEquals(x,exp,1e-4);
 		
 		// edge cases
-		assertNull(static_scenario.getLinkWithId(-100000));
+		assertNull(static_scenario.get.linkWithId(-100000));
 	}
 	
 	@Test
 	public void test_getNodeWithId() {
-		Node node =  static_scenario.getNodeWithId(-2);
+		Node node =  static_scenario.get.nodeWithId(-2);
 		double x = node.getPosition().getPoint().get(0).getLat();
 		double exp  =37.8437831193107;
 		assertEquals(x,exp,1e-4);
 		
 		// edge cases
-		assertNull(static_scenario.getNodeWithId(-100000));
+		assertNull(static_scenario.get.nodeWithId(-100000));
 	}
 
 	@Test
@@ -239,13 +239,13 @@ public class ScenarioTest {
 			scenario.initialize(timestep,starttime,endtime,numEnsemble);
 			scenario.reset();
 			
-			assertNotNull(scenario.getControllerWithId(1));
-			assertNotNull(scenario.getEventWithId(1));
-			assertNotNull(scenario.getSensorWithId(1));
+			assertNotNull(scenario.get.controllerWithId(1));
+			assertNotNull(scenario.get.eventWithId(1));
+			assertNotNull(scenario.get.sensorWithId(1));
 
-			assertNull(scenario.getControllerWithId(-100000));
-			assertNull(scenario.getEventWithId(-100000));
-			assertNull(scenario.getSensorWithId(-100000L));
+			assertNull(scenario.get.controllerWithId(-100000));
+			assertNull(scenario.get.eventWithId(-100000));
+			assertNull(scenario.get.sensorWithId(-100000L));
 			
 		} catch (BeatsException e) {
 			fail("initialization failure.");
@@ -276,18 +276,18 @@ public class ScenarioTest {
     @Test
     public void test_getSensorWithVDS() {
         int vds = 100;
-        Sensor sensor = static_scenario.getSensorWithVDS(vds);
+        Sensor sensor = static_scenario.get.sensorWithVDS(vds);
         long exp = -2;
         assertEquals(sensor.getId(),exp,1e-4);
 
         // edge cases
-        assertNull(static_scenario.getSensorWithVDS(0));
+        assertNull(static_scenario.get.sensorWithVDS(0));
 
     }
 
     @Test
     public void test_getSensors() {
-        List<Sensor> sensorlist = static_scenario.getSensors();
+        List<Sensor> sensorlist = static_scenario.get.sensors();
         System.out.println(sensorlist);
     }
 	

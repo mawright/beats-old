@@ -27,7 +27,7 @@ public class Tester {
 //            scenario.run();
             scenario.advanceNSeconds(1200);
             
-            double [][] X = scenario.getTotalDensity(scenario.getNetworkSet().getNetwork().get(0).getId());
+            double [][] X = scenario.get.totalDensity(scenario.getNetworkSet().getNetwork().get(0).getId());
 
             double [][] density_state = new double [7][10];
             for(int i=0;i<7;i++)

@@ -43,20 +43,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Vector;
 
-import javax.xml.XMLConstants;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stax.StAXSource;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 @RunWith(Parameterized.class)
 public class XMLOutputWriterTest {

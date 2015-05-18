@@ -26,7 +26,9 @@
 
 package edu.berkeley.path.beats.simulator;
 
-/** Base class for sensors. 
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+
+/** Base class for sensors.
  * Provides a default implementation of <code>InterfaceSensor</code>.
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -66,7 +68,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
         if(jaxbS.isIsGood()!=null)
             this.isgood = jaxbS.isIsGood();
 		if(jaxbS.getLinkId()!=null)
-			myLink = myScenario.getLinkWithId(jaxbS.getLinkId());
+			myLink = myScenario.get.linkWithId(jaxbS.getLinkId());
 	}
 	
 	/////////////////////////////////////////////////////////////////////

@@ -26,6 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+
 public final class Clock {
 
     private final double to;    // [sec after midnight] reset time
@@ -41,7 +43,7 @@ public final class Clock {
 
     public Clock(double to,double tf,double dt){
 		this.to = to;
-        this.step_o = BeatsMath.round(to/dt);
+        this.step_o = BeatsMath.round(to / dt);
 		this.dt = dt;
         this.maxt = tf;
         reset();

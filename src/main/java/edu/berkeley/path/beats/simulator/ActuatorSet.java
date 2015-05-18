@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import edu.berkeley.path.beats.jaxb.ActuatorType;
 import edu.berkeley.path.beats.jaxb.Signal;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 
@@ -69,7 +70,7 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 			actuator.reset();
 	}
 
-    protected void deploy(double current_time_in_seconds) throws BeatsException {
+    public void deploy(double current_time_in_seconds) throws BeatsException {
         for(Actuator actuator : actuators){
             if(actuator.myController==null)
                 continue;

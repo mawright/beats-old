@@ -26,10 +26,13 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
-final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
+public final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 
 	// does not change ....................................
 	private Scenario myScenario;
@@ -127,7 +130,7 @@ final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 		isdone = sortedevents.isEmpty();
 	}
 
-	protected void update() throws BeatsException {
+    public void update() throws BeatsException {
 
 		if(isdone)
 			return;
@@ -138,7 +141,7 @@ final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 		}
 
 		// check whether next event is due
-		while(myScenario.getClock().getAbsoluteTimeStep()>=sortedevents.get(currentevent).getAbsTimeStep()){
+		while(myScenario.get.clock().getAbsoluteTimeStep()>=sortedevents.get(currentevent).getAbsTimeStep()){
 			
 			Event event =  sortedevents.get(currentevent);
 			

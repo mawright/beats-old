@@ -29,6 +29,10 @@ package edu.berkeley.path.beats.actuator;
 import edu.berkeley.path.beats.control.SignalCommand;
 import edu.berkeley.path.beats.jaxb.Phase;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.DebugFlags;
 
 import java.util.*;
 
@@ -90,7 +94,7 @@ public final class ActuatorSignal extends Actuator {
 
         edu.berkeley.path.beats.jaxb.Signal jaxbSignal = (edu.berkeley.path.beats.jaxb.Signal)jaxbobject;
 
-		myNode = myScenario.getNodeWithId(jaxbSignal.getNodeId());
+		myNode = myScenario.get.nodeWithId(jaxbSignal.getNodeId());
 		
 		if(myNode==null)
 			return;
@@ -103,7 +107,7 @@ public final class ActuatorSignal extends Actuator {
             NEMA.ID nema = NEMA.int_to_nema(jphase.getNema().intValue());
             //List<Link> link_list = nema_to_linklist.get( nema );
 
-            SignalPhase sp = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
+            SignalPhase sp = new SignalPhase(myNode,this,myScenario.get.simdtinseconds());
             sp.populateFromJaxb(myScenario,jphase);
             phases.add(sp);
             nema2phase.put(nema,sp);
@@ -115,7 +119,8 @@ public final class ActuatorSignal extends Actuator {
 	}
 
     @Override
-	protected void reset() {
+	protected void reset() throws BeatsException {
+        super.reset();
 		if(myNode==null)
 			return;
 		for(SignalPhase p : phases)
@@ -223,7 +228,7 @@ public final class ActuatorSignal extends Actuator {
 
                 if(DebugFlags.signal_events)
                     System.out.println(
-                            myNode.getMyNetwork().getMyScenario().getCurrentTimeInSeconds() + "\t" +
+                            myNode.getMyNetwork().getMyScenario().get.currentTimeInSeconds() + "\t" +
                             "signal=" + getId() + "\t" +
                             "phase=" + phase.myNEMA + "\t" +
                             "color=" + phase.bulbcolor );
@@ -532,7 +537,7 @@ public final class ActuatorSignal extends Actuator {
 //					permitopposinghold = true;
 
                         // yellow time over, go immediately to red if redcleartime==0
-                        if( BeatsMath.greaterorequalthan(bulbt,actualyellowtime) ){
+                        if( BeatsMath.greaterorequalthan(bulbt, actualyellowtime) ){
                             next_color = ActuatorSignal.BulbColor.RED;
                             bulbtimer.reset();
                             done = redcleartime>0;

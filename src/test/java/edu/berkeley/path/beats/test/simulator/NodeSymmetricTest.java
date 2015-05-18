@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import edu.berkeley.path.beats.simulator.Node_FlowSolver_Symmetric;
+import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_FlowSolver_Symmetric;
 
 public class NodeSymmetricTest {
 

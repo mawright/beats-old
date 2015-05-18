@@ -39,8 +39,8 @@ import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Transaction;
 
 import edu.berkeley.path.beats.om.*;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 /**
  * Administers the Sirius Database

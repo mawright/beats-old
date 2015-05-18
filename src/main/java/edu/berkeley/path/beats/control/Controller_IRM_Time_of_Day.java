@@ -30,8 +30,8 @@ import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.Table;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.Table;
 
 public class Controller_IRM_Time_of_Day extends Controller {
 	
@@ -89,7 +89,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 		// There should be only one target element, and it is the onramp
 		if( jaxbc.getTargetActuators().getTargetActuator().size()==1){
 			edu.berkeley.path.beats.jaxb.TargetActuator s = jaxbc.getTargetActuators().getTargetActuator().get(0);
-			onramplink = getMyScenario().getLinkWithId(s.getId());	
+			onramplink = getMyScenario().get.linkWithId(s.getId());
 		}
 
 		table = findTable(jaxbc, "schedule");

@@ -37,7 +37,7 @@ import edu.berkeley.path.beats.om.Scenarios;
 import edu.berkeley.path.beats.om.ScenariosPeer;
 import edu.berkeley.path.beats.om.SimulationRuns;
 import edu.berkeley.path.beats.om.SimulationRunsPeer;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 /**
  * Implements "list" commands

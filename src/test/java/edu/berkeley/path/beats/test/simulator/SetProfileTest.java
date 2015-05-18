@@ -41,12 +41,12 @@ public class SetProfileTest {
 
         HashMap<Long,double []> hmap;
         ArrayList<Double> inflow = new ArrayList();
-        Link link = scenario.getLinkWithId(source_link_id);
+        Link link = scenario.get.linkWithId(source_link_id);
 
         try {
 
             // set demands to 100,200 vph with dt=50 seconds
-            scenario.set_demand_for_link_si(source_link_id,50d,new double [] {100d/3600d,200d/3600d});
+            scenario.set.demand_for_link_si(source_link_id,50d,new double [] {100d/3600d,200d/3600d});
 
             // advance 120 seconds
             for(int i=0;i<24;i++){
@@ -55,7 +55,7 @@ public class SetProfileTest {
             }
 
             // change demands to constant 300 vph
-            scenario.set_demand_for_link_si(source_link_id,0d, new double [] {300d/3600d});
+            scenario.set.demand_for_link_si(source_link_id,0d, new double [] {300d/3600d});
 
             // advance 120 seconds
             for(int i=0;i<24;i++){
@@ -80,15 +80,15 @@ public class SetProfileTest {
     public void test_setCapcityProfile() {
 
         ArrayList<Double> outflow = new ArrayList();
-        Link link = scenario.getLinkWithId(sink_link_id);
+        Link link = scenario.get.linkWithId(sink_link_id);
 
         try{
 
             // add a demand of 1800 vph to source link
-            scenario.set_demand_for_link_si(source_link_id,0d,new double [] {1800d/3600d});
+            scenario.set.demand_for_link_si(source_link_id,0d,new double [] {1800d/3600d});
 
             // block the sink
-            scenario.set_capacity_for_link_si(sink_link_id,0d,new double[]{0d});
+            scenario.set.capacity_for_sink_si(sink_link_id,0d,new double[]{0d});
 
             // advance 120 seconds
             for(int i=0;i<24;i++){
@@ -97,7 +97,7 @@ public class SetProfileTest {
             }
 
             // unblock the sink
-            scenario.set_capacity_for_link_si(sink_link_id,3600d,new double[]{100d});
+            scenario.set.capacity_for_sink_si(sink_link_id,3600d,new double[]{100d});
 
             // advance 120 seconds
             for(int i=0;i<24;i++){

@@ -10,7 +10,7 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.log4j.Logger;
 
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 
 @SuppressWarnings("restriction")
