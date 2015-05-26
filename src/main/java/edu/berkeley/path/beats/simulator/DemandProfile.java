@@ -36,23 +36,15 @@ import java.util.ArrayList;
 final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
 	// does not change ....................................
-//	private Scenario myScenario;
     private TypeUncertainty uncertaintyModel;
 	private boolean isOrphan;
-//	private double dtinseconds;				// not really necessary
-//	private int samplesteps;				// [sim steps] profile sample period
-//	private int step_initial_abs;
     private BeatsTimeProfileDouble1D demand_nominal;	// [veh] demand profile per vehicle type
-//	private int [] vehicle_type_index;		// vehicle type indices for demand_nominal
 	private double std_dev_add;				// [veh]
 	private double std_dev_mult;			// [veh]
 	private boolean isdeterministic;		// true if the profile is deterministic
     private boolean doknob;
-//	private int profile_length;
-//	private boolean all_demands_scalar;		// true if all demand profiles have length 1.
-	
+
 	// does change ........................................
-//	private boolean isdone;
     private Double [][] current_sample_noisy_knobbed;
 	public double _knob;
 
@@ -123,13 +115,11 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
         doknob = !BeatsMath.equals(_knob,1d);
         current_sample_noisy_knobbed = BeatsMath.zeros(myScenario.get.numEnsemble(),myScenario.get.numVehicleTypes());
         uncertaintyModel = myScenario.get.uncertaintyModel();
-
     }
 
 	protected void validate() {
 		
-		int i;
-		
+
 		if(demand_nominal==null || demand_nominal.isEmpty()){
 			BeatsErrorLog.addWarning("Demand profile ID=" + getId() + " has no data.");
 			return;
@@ -192,11 +182,6 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	// private methods
 	/////////////////////////////////////////////////////////////////////
 
-    private double applyKnob(final double demandvalue){
-        return demandvalue*_knob;
-    }
-
-
     private double addNoise(final double demandvalue,TypeUncertainty uncertaintyModel){
 
         double noisy_demand = demandvalue;
@@ -224,60 +209,6 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 
     }
 
-
-//    private double sample_finalTime_addNoise_applyKnob(int vtype_index){
-//		return sample_KthTime_addNoise_applyKnob(profile_length-1,vtype_index);
-//	}
-//
-//	private double sample_currentTime_addNoise_applyKnob(int vtype_index){
-//		int step = myScenario.get.clock().sample_index_abs(samplesteps,step_initial_abs);
-//		return sample_KthTime_addNoise_applyKnob(step,vtype_index);
-//	}
-//
-//	/** sample the k-th entry of the profile, add noise **/
-//	private double sample_KthTime_addNoise_applyKnob(int k,int vtype_index){
-//
-//		double demandvalue =  demand_nominal[vtype_index].get(k);
-//
-//		// add noise
-//		if(!isdeterministic)
-//			demandvalue = addNoise(demandvalue);
-//
-//		// apply the knob
-//		demandvalue = applyKnob(demandvalue);
-//
-//		return demandvalue;
-//	}
-//
-//    private double addNoise(final double demandvalue){
-//
-//        double noisy_demand = demandvalue;
-//
-//        // use smallest between multiplicative and additive standard deviations
-//        double std_dev_apply = Double.isInfinite(std_dev_mult) ? std_dev_add :
-//                Math.min( noisy_demand*std_dev_mult , std_dev_add );
-//
-//        // sample the distribution
-//        switch(myScenario.get.uncertaintyModel()){
-//
-//            case uniform:
-//                for(int j=0;j<myScenario.get.numVehicleTypes();j++)
-//                    noisy_demand += BeatsMath.sampleZeroMeanUniform(std_dev_apply);
-//                break;
-//
-//            case gaussian:
-//                for(int j=0;j<myScenario.get.numVehicleTypes();j++)
-//                    noisy_demand += BeatsMath.sampleZeroMeanGaussian(std_dev_apply);
-//                break;
-//        }
-//
-//        // non-negativity
-//        noisy_demand = Math.max(0.0,noisy_demand);
-//
-//        return noisy_demand;
-//
-//    }
-
 	/////////////////////////////////////////////////////////////////////
 	// public interface
 	/////////////////////////////////////////////////////////////////////
@@ -286,30 +217,30 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
         return current_sample_noisy_knobbed[e];
 	}
 
-//    public double [] predict_in_VPS(int vehicle_type_index, double begin_time, double time_step, int num_steps){
-//
-//        double [] val = BeatsMath.zeros_double(num_steps);
-//
-//        if(demand_nominal==null || demand_nominal.isEmpty())
-//            return val;
-//
-//        for(int i=0;i<num_steps;i++){
-//
-//            // time in seconds after midnight
-//            double time = begin_time + i*time_step + 0.5*time_step;
-//
-//            // corresponding profile step
-//            int profile_step = BeatsMath.floor( (time-getStartTime())/getDt().floatValue() );
-//            if(profile_step>=0){
-//                profile_step = Math.min(profile_step,demand_nominal.get(0).getNumTime()-1);
-//                val[i] =  demand_nominal[vehicle_type_index].get(profile_step);
-//                val[i] = applyKnob(val[i]);
-//                val[i] /= myScenario.get.simdtinseconds();
-//            }
-//
-//        }
-//        return val;
-//    }
+    public double [] predict_in_VPS(int vehicle_type_index, double begin_time, double time_step, int num_steps,double simdtinseconds){
+
+        double [] val = BeatsMath.zeros_double(num_steps);
+
+        if(demand_nominal==null || demand_nominal.isEmpty())
+            return val;
+
+        for(int i=0;i<num_steps;i++){
+
+            // time in seconds after midnight
+            double time = begin_time + i*time_step + 0.5*time_step;
+
+            // corresponding profile step
+            int step = BeatsMath.floor( (time-getStartTime())/getDt().floatValue() );
+            if(step>=0){
+                Double [] d =  demand_nominal.get(step);
+                val[i] = d[vehicle_type_index];
+                val[i] *= _knob;
+                val[i] /= simdtinseconds;
+            }
+
+        }
+        return val;
+    }
 
 
 }
