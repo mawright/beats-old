@@ -1,4 +1,4 @@
-package edu.berkeley.path.beats.control.splitgen;
+package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.control.rm_interface.RampMeteringControlSet;
 import edu.berkeley.path.beats.control.rm_interface.RampMeteringPolicyMaker;

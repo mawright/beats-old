@@ -1,6 +1,6 @@
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.control.splitgen.Controller_SR_Generator_Fw;
+//import edu.berkeley.path.beats.control.splitgen.Controller_SR_Generator_Fw;
 import edu.berkeley.path.beats.jaxb.Demand;
 import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacitySet;
 import edu.berkeley.path.beats.jaxb.VehicleType;
@@ -142,23 +142,23 @@ public class ScenarioSetApi {
         dp.set_knob(newknob);
     }
 
-    public void knob_for_offramp_link_id(int link_id,double newknob){
-
-//        if(scenario.runMode.compareTo(Scenario.RunMode.FRDEMANDS)!=0) {
-//            System.err.println("This only works in fr demand run mode");
+//    public void knob_for_offramp_link_id(int link_id,double newknob){
+//
+////        if(scenario.runMode.compareTo(Scenario.RunMode.FRDEMANDS)!=0) {
+////            System.err.println("This only works in fr demand run mode");
+////            return;
+////        }
+//
+//        // get the SR generator controller
+//        ArrayList<Controller> SRControllers = scenario.get.controllerset().getControllersOfType("Controller_SR_Generator_Fw");
+//
+//        if(SRControllers.size()!=1) {
+//            System.err.println("Did not find a unique SR controller in this scenario");
 //            return;
 //        }
-
-        // get the SR generator controller
-        ArrayList<Controller> SRControllers = scenario.get.controllerset().getControllersOfType("Controller_SR_Generator_Fw");
-
-        if(SRControllers.size()!=1) {
-            System.err.println("Did not find a unique SR controller in this scenario");
-            return;
-        }
-
-        ((Controller_SR_Generator_Fw)SRControllers.get(0)).setKnobForLink(link_id,newknob);
-    }
+//
+//        ((Controller_SR_Generator_Fw)SRControllers.get(0)).setKnobForLink(link_id,newknob);
+//    }
 
     // SPLITS ------------------------------------------------------
 

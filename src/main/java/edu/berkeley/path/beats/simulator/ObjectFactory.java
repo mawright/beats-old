@@ -26,12 +26,12 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.control.splitgen.Controller_HOV_SR_Generator;
+//import edu.berkeley.path.beats.control.splitgen.Controller_HOV_SR_Generator;
 
 import edu.berkeley.path.beats.actuator.*;
 import edu.berkeley.path.beats.control.*;
-import edu.berkeley.path.beats.control.splitgen.Controller_SR_Generator;
-import edu.berkeley.path.beats.control.splitgen.Controller_SR_Generator_Fw;
+//import edu.berkeley.path.beats.control.splitgen.Controller_SR_Generator;
+//import edu.berkeley.path.beats.control.splitgen.Controller_SR_Generator_Fw;
 import edu.berkeley.path.beats.event.*;
 import edu.berkeley.path.beats.sensor.*;
 
@@ -93,17 +93,17 @@ final public class ObjectFactory {
 //                C = new Controller_SIG_CycleMP(myScenario, jaxbC, myType);
 //                break;
 
-            case SR_Generator:
-                C = new Controller_SR_Generator(myScenario, jaxbC);
-				break;
-
-			case SR_Generator_Fw:
-				C = new Controller_SR_Generator_Fw(myScenario, jaxbC);
-				break;
-
-			case HOV_SR_Generator:
-				C = new Controller_HOV_SR_Generator(myScenario, jaxbC);
-				break;
+//            case SR_Generator:
+//                C = new Controller_SR_Generator(myScenario, jaxbC);
+//				break;
+//
+//			case SR_Generator_Fw:
+//				C = new Controller_SR_Generator_Fw(myScenario, jaxbC);
+//				break;
+//
+//			case HOV_SR_Generator:
+//				C = new Controller_HOV_SR_Generator(myScenario, jaxbC);
+//				break;
 
 			default:
 				C = null;

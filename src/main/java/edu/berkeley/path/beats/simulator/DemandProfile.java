@@ -28,7 +28,7 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
-import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfile;
+import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfileDemands;
 
 final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
@@ -38,7 +38,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	private double dtinseconds;				// not really necessary
 	private int samplesteps;				// [sim steps] profile sample period
 	private int step_initial_abs;
-    private BeatsTimeProfile[] demand_nominal;	// [veh] demand profile per vehicle type
+    private BeatsTimeProfileDemands[] demand_nominal;	// [veh] demand profile per vehicle type
 	private int [] vehicle_type_index;		// vehicle type indices for demand_nominal
 	private double std_dev_add;				// [veh]
 	private double std_dev_mult;			// [veh]
@@ -90,7 +90,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		
 		// sample demand distribution, convert to vehicle units
 		int numdemand = getDemand().size();
-		demand_nominal = new BeatsTimeProfile[numdemand];
+		demand_nominal = new BeatsTimeProfileDemands[numdemand];
 		vehicle_type_index = new int[numdemand];
 		for(int i=0;i<numdemand;i++){
 			edu.berkeley.path.beats.jaxb.Demand d = getDemand().get(i);
@@ -98,7 +98,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			if(vehicle_type_index[i]<0)
 				continue;
 			if(d.getContent()!=null){
-				demand_nominal[i] = new BeatsTimeProfile(d.getContent(),false);
+				demand_nominal[i] = new BeatsTimeProfileDemands(d.getContent(),false);
 				demand_nominal[i].multiplyscalar(myScenario.get.simdtinseconds());
 			}
 		}
@@ -106,7 +106,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		// check whether all demands are scalar
 		all_demands_scalar = true;
 		profile_length = -1;
-		for(BeatsTimeProfile d : demand_nominal)
+		for(BeatsTimeProfileDemands d : demand_nominal)
 			if(d!=null){
 				all_demands_scalar &= d.getNumTime()<=1;
 				profile_length = d.getNumTime();		// will check in validation that they are all the same
@@ -167,7 +167,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		}
 		
 		// check all demands have same length
-		for(BeatsTimeProfile d : demand_nominal)
+		for(BeatsTimeProfileDemands d : demand_nominal)
 			if(d!=null && d.getNumTime()!=profile_length){
 				BeatsErrorLog.addError("In demand profile for link ID=" + getLinkIdOrg() + ", not all demands have the same length.");
 				break;

@@ -26,10 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.utils.BeatsMath;
-import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfile;
-import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
+import edu.berkeley.path.beats.simulator.utils.*;
 
 public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile {
 
@@ -40,9 +37,9 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 	private int samplesteps;
 	private int laststep;
 	private boolean isdeterministic;
-	private BeatsTimeProfile[][][] profile; 	// profile[i][j][v] is the split ratio profile for
+	private BeatsTimeProfileDemands[][][] profile; 	// profile[i][j][v] is the split ratio profile for
 												// input link i, output link j, vehicle type v.
-	private BeatsTimeProfile [][][] concentrationParamsProfile; // profile[i][j][v] is the concentration params
+	private BeatsTimeProfileDemands [][][] concentrationParamsProfile; // profile[i][j][v] is the concentration params
 																// profile by same indices as above
 	// does change ........................................
 	private Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
@@ -87,7 +84,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 			}
 		}
 		
-		profile = new BeatsTimeProfile[myNode.getnIn()][myNode.getnOut()][myScenario.get.numVehicleTypes()];
+		profile = new BeatsTimeProfileDemands[myNode.getnIn()][myNode.getnOut()][myScenario.get.numVehicleTypes()];
 		int in_index,out_index,vt_index;
 		laststep = 0;
 		for(edu.berkeley.path.beats.jaxb.Splitratio sr : getSplitratio()){
@@ -96,20 +93,20 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 			vt_index = myScenario.get.vehicleTypeIndexForId(sr.getVehicleTypeId());
 			if(in_index<0 || out_index<0 || vt_index<0)
 				continue; 
-			profile[in_index][out_index][vt_index] = new BeatsTimeProfile(sr.getContent(),false);
+			profile[in_index][out_index][vt_index] = new BeatsTimeProfileDemands(sr.getContent(),false);
 			if(!profile[in_index][out_index][vt_index].isEmpty())
 				laststep = Math.max(laststep,profile[in_index][out_index][vt_index].getNumTime());
 		}
 		// copy of above for building concentration params profile
 		if(hasConcentrationParameters()) {
-			concentrationParamsProfile = new BeatsTimeProfile[myNode.getnIn()][myNode.getnOut()][myScenario.get.numVehicleTypes()];
+			concentrationParamsProfile = new BeatsTimeProfileDemands[myNode.getnIn()][myNode.getnOut()][myScenario.get.numVehicleTypes()];
 			for(edu.berkeley.path.beats.jaxb.ConcentrationParameters cp : getConcentrationParameters()){
 				in_index = myNode.getInputLinkIndex(cp.getLinkIn());
 				out_index = myNode.getOutputLinkIndex(cp.getLinkOut());
 				vt_index = myScenario.get.vehicleTypeIndexForId(cp.getVehicleTypeId());
 				if(in_index<0 || out_index<0 || vt_index<0)
 					continue; 
-				concentrationParamsProfile[in_index][out_index][vt_index] = new BeatsTimeProfile(cp.getContent(),false);
+				concentrationParamsProfile[in_index][out_index][vt_index] = new BeatsTimeProfileDemands(cp.getContent(),false);
 			}
 		}
 		
@@ -323,7 +320,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 
         double [] val = BeatsMath.zeros(num_steps);
 
-        BeatsTimeProfile thisprofile = profile[in_index][out_index][vt_index];
+        BeatsTimeProfileDemands thisprofile = profile[in_index][out_index][vt_index];
 
         // HACK!!!
         if(thisprofile==null)
