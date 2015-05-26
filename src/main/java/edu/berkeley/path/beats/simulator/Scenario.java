@@ -769,39 +769,39 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return split_ratio_set;
     }
 
-    public DemandSet predict_demands_si(double time_current, double sample_dt, double horizon){
-
-        Network network = (Network) getNetworkSet().getNetwork().get(0);
-        JaxbObjectFactory factory = new JaxbObjectFactory();
-
-        DemandSet demand_set = (DemandSet) factory.createDemandSet();
-        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
-            Link L = (Link) jaxbL;
-            if(L.isSource()){
-                DemandProfile dem_profile = L.getDemandProfile();
-
-                // add demands to demand_set
-                DemandProfile dp = (DemandProfile) factory.createDemandProfile();
-                demand_set.getDemandProfile().add(dp);
-
-                double dp_sample_dt= Double.isNaN(sample_dt) ? dem_profile.getDt() : sample_dt;
-                int horizon_steps = BeatsMath.round(horizon/dp_sample_dt);
-
-                dp.setLinkIdOrg(L.getId());
-                dp.setDt(dp_sample_dt);
-                for(int v=0;v<get.numVehicleTypes();v++){
-                    Demand dem = factory.createDemand();
-                    dp.getDemand().add(dem);
-
-                    // set values
-                    dem.setVehicleTypeId(get.vehicleTypeIdForIndex(v));
-                    double [] x = dem_profile.predict_in_VPS(v, time_current, dp_sample_dt, horizon_steps);
-                    dem.setContent(BeatsFormatter.csv(x, ","));
-                }
-            }
-        }
-        return demand_set;
-    }
+//    public DemandSet predict_demands_si(double time_current, double sample_dt, double horizon){
+//
+//        Network network = (Network) getNetworkSet().getNetwork().get(0);
+//        JaxbObjectFactory factory = new JaxbObjectFactory();
+//
+//        DemandSet demand_set = (DemandSet) factory.createDemandSet();
+//        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
+//            Link L = (Link) jaxbL;
+//            if(L.isSource()){
+//                DemandProfile dem_profile = L.getDemandProfile();
+//
+//                // add demands to demand_set
+//                DemandProfile dp = (DemandProfile) factory.createDemandProfile();
+//                demand_set.getDemandProfile().add(dp);
+//
+//                double dp_sample_dt= Double.isNaN(sample_dt) ? dem_profile.getDt() : sample_dt;
+//                int horizon_steps = BeatsMath.round(horizon/dp_sample_dt);
+//
+//                dp.setLinkIdOrg(L.getId());
+//                dp.setDt(dp_sample_dt);
+//                for(int v=0;v<get.numVehicleTypes();v++){
+//                    Demand dem = factory.createDemand();
+//                    dp.getDemand().add(dem);
+//
+//                    // set values
+//                    dem.setVehicleTypeId(get.vehicleTypeIdForIndex(v));
+//                    double [] x = dem_profile.predict_in_VPS(v, time_current, dp_sample_dt, horizon_steps);
+//                    dem.setContent(BeatsFormatter.csv(x, ","));
+//                }
+//            }
+//        }
+//        return demand_set;
+//    }
 
     /////////////////////////////////////////////////////////////////////
     // inner classes

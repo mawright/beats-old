@@ -12,10 +12,10 @@ public class LinkBehaviorCTM {
 
     public Link myLink;
     public Scenario myScenario;
-    public double [][] density;                  // [veh] numEnsemble x numVehTypes
-    public double [] total_space_supply;         // [veh]	numEnsemble (typically njam-n)
-    public double [] available_space_supply;     // [veh]	numEnsemble (typically min(w*(njam-n),F))
-    public double [][] flow_demand;              // [veh] 	numEnsemble x numVehTypes (typically min(vn,F,c))
+    public Double [][] density;                  // [veh] numEnsemble x numVehTypes
+    public Double [] total_space_supply;         // [veh]	numEnsemble (typically njam-n)
+    public Double [] available_space_supply;     // [veh]	numEnsemble (typically min(w*(njam-n),F))
+    public Double [][] flow_demand;              // [veh] 	numEnsemble x numVehTypes (typically min(vn,F,c))
 
     public LinkBehaviorCTM(Link link){
         this.myLink = link;
@@ -150,7 +150,7 @@ public class LinkBehaviorCTM {
 
     // UPDATE
 
-    public void update_state(double [][] inflow,double [][] outflow){
+    public void update_state(Double [][] inflow,Double [][] outflow){
         int e,j;
         for(e=0;e<myScenario.get.numEnsemble();e++)
             for(j=0;j<myScenario.get.numVehicleTypes();j++)

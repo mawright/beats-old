@@ -109,13 +109,8 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	@Override
 	protected void reset() {
 		int numEnsemble = getMyScenario().get.numEnsemble();
-		cumulative_inflow = new Double [numEnsemble];
-		cumulative_outflow = new Double [numEnsemble];
-		for(int i=0;i<numEnsemble;i++){
-			cumulative_inflow[i] = 0d;
-			cumulative_outflow[i] = 0d;
-		}
-		return;
+		cumulative_inflow = BeatsMath.zeros(numEnsemble);
+		cumulative_outflow = BeatsMath.zeros(numEnsemble);
 	}
 
 	@Override
@@ -135,7 +130,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	
 	@Override
 	public double [] getDensityInVPM(int ensemble) {
-		return BeatsMath.times(getMyLink().getDensityInVeh(ensemble), 1 / getMyLink().getLengthInMeters());
+		return BeatsMath.times(getMyLink().getDensityInVeh(ensemble), 1d / getMyLink().getLengthInMeters());
 	}
 
 	@Override

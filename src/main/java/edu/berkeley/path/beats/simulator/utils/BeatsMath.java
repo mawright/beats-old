@@ -41,16 +41,68 @@ public final class BeatsMath {
 	
 	private static Random random = new Random();
 	private static final double EPSILON = (double) 1e-4;
-	
- 	public static double [] zeros(int n1){
- 		return n1<0 ? null : new double [n1];
-	}
- 	
- 	public static double [][] zeros(int n1,int n2){
- 		return (n1<0 || n2<0) ? null : new double[n1][n2];
-	}
-	
-	public static Double sum(Double [] V){
+
+    public static Double [] zeros(int n1){
+        if(n1<0)
+            return null;
+        Double [] z = new Double[n1];
+        for(int i=0;i<n1;i++)
+            z[i]=0d;
+        return z;
+    }
+
+    public static double [] zeros_double(int n1){
+        if (n1<0)
+            return null;
+        return new double[n1];
+    }
+
+
+    public static double [][] zeros_double(int n1,int n2){
+        if (n1<0 || n2<0)
+            return null;
+        return new double[n1][n2];
+    }
+
+
+    public static Double [][] zeros(int n1,int n2){
+        if (n1<0 || n2<0)
+            return null;
+        Double [][] z = new Double[n1][n2];
+        for(int i=0;i<n1;i++)
+            z[i] = BeatsMath.zeros(n2);
+        return z;
+    }
+
+    public static Double [][][] zeros(int n1,int n2,int n3){
+        if (n1<0 || n2<0 || n3<0)
+            return null;
+        Double [][][] z = new Double[n1][n2][n3];
+        for(int i=0;i<n1;i++)
+            z[i] = BeatsMath.zeros(n2,n3);
+        return z;
+    }
+
+    public static Double [][][][] zeros(int n1,int n2,int n3,int n4){
+        if (n1<0 || n2<0 || n3<0 || n4<0)
+            return null;
+        Double [][][][] z = new Double[n1][n2][n3][n4];
+        for(int i=0;i<n1;i++)
+            z[i] = BeatsMath.zeros(n2,n3,n4);
+        return z;
+    }
+
+    public static Double [][][] ones(int n1,int n2,int n3){
+        Double [][][] X = BeatsMath.zeros(n1,n2,n3);
+        int i,j,k;
+        for(i=0;i<n1;i++)
+            for(j=0;j<n2;j++)
+                for(k=0;k<n3;k++)
+                    X[i][j][k]= 1d;
+        return X;
+    }
+
+    public static Double sum(Double [] V){
 		if(V==null)
 			return null;
 		Double answ = 0d;
@@ -92,7 +144,7 @@ public final class BeatsMath {
 		int n2 = V[0].length;
 		switch(dim){
 		case 1:
-			answ = new Double[n2];
+			answ = BeatsMath.zeros(n2);
 			for(i=0;i<V.length;i++)
 				for(j=0;j<V[i].length;j++){
 					if(answ[j]==null)
@@ -102,7 +154,7 @@ public final class BeatsMath {
 				}
 			return answ;
 		case 2:
-			answ = new Double[n1];
+			answ = BeatsMath.zeros(n1);
 			for(i=0;i<V.length;i++){
 				answ[i]=0d;
 				for(j=0;j<V[i].length;j++)
@@ -115,14 +167,24 @@ public final class BeatsMath {
 		}
 	}
 
-	public static Double [] times(Double [] V,double a){
-		if(V==null)
-			return null;
-		Double [] answ = new Double [V.length];
-		for(int i=0;i<V.length;i++)
-			answ[i] = a*V[i];
-		return answ;
-	}
+
+    public static double [] times(Double [] V,double a){
+        if(V==null)
+            return null;
+        double [] answ = new double [V.length];
+        for(int i=0;i<V.length;i++)
+            answ[i] = a*V[i];
+        return answ;
+    }
+
+    public static Double [] times(Double [] V,Double a){
+        if(V==null)
+            return null;
+        Double [] answ = new Double [V.length];
+        for(int i=0;i<V.length;i++)
+            answ[i] = a*V[i];
+        return answ;
+    }
 
 	public static double [] times(double [] V,double a){
 		if(V==null)
@@ -350,7 +412,7 @@ public final class BeatsMath {
 		}
 		for(e=0;e<numSamples;e++){
 			double sum_sample = BeatsMath.sum(sample[e]);
-			sample[e] = BeatsMath.times(sample[e], 1/sum_sample);
+			sample[e] = BeatsMath.times(sample[e], 1d/sum_sample);
 		}
 		return sample;
 	}

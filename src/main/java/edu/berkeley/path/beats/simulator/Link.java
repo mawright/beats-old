@@ -50,8 +50,8 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     public Type link_type;
 
     // in/out flows (from node model or demand profiles)
-    public double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
-    public double [][] outflow;    				    // [veh]	numEnsemble x numVehTypes
+    public Double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
+    public Double [][] outflow;    				    // [veh]	numEnsemble x numVehTypes
 
     // link geometry
     public double _lanes;							// [-]
@@ -235,14 +235,14 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
     protected void set_initial_state(double [] d){
-        initial_density  = d==null ? BeatsMath.zeros(myScenario.get.numVehicleTypes()) : d.clone();
+        initial_density  = d==null ? BeatsMath.zeros_double(myScenario.get.numVehicleTypes()) : d.clone();
     }
 
-    public void setInflow(int ensemble,double[] inflow) {
+    public void setInflow(int ensemble,Double[] inflow) {
         this.inflow[ensemble] = inflow;
     }
 
-    public void setOutflow(int ensemble,double[] outflow) {
+    public void setOutflow(int ensemble,Double[] outflow) {
         this.outflow[ensemble] = outflow;
     }
 
@@ -441,11 +441,11 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         return link_behavior.set_density_in_veh(e,d);
     }
 
-    public double[] get_out_demand_in_veh(int e) {
+    public Double[] get_out_demand_in_veh(int e) {
         return link_behavior.flow_demand[e];
     }
 
-    public double get_total_out_demand_in_veh(int e){
+    public Double get_total_out_demand_in_veh(int e){
         return BeatsMath.sum(link_behavior.flow_demand[e]);
     }
 
@@ -461,7 +461,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     // interface for node model
     /////////////////////////////////////////////////////////////////////
 
-    public double[] getOutflowInVeh(int ensemble) {
+    public Double[] getOutflowInVeh(int ensemble) {
         try{
             return outflow[ensemble].clone();
         } catch(Exception e){
@@ -485,7 +485,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         }
     }
 
-    public double[] getInflowInVeh(int ensemble) {
+    public Double[] getInflowInVeh(int ensemble) {
         try{
             return inflow[ensemble].clone();
         } catch(Exception e){

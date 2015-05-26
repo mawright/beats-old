@@ -109,11 +109,11 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
         // onramp flow = min(onramp demand,mainline supply for onramp)
         for (FwyNode fwy_node : fwy_nodes){
             if(fwy_node.onramp!=null){
-                double[] demand = fwy_node.onramp.get_out_demand_in_veh(e);
+                Double[] demand = fwy_node.onramp.get_out_demand_in_veh(e);
                 double total_demand = BeatsMath.sum(demand);
-                double ratio = Math.min(1d,fwy_node.supply_for_onramp/total_demand);
+                Double ratio = Math.min(1d,fwy_node.supply_for_onramp/total_demand);
                 fwy_node.r = Math.min(total_demand,fwy_node.supply_for_onramp);
-                fwy_node.onramp.setOutflow(e, BeatsMath.times(demand,ratio) );
+                fwy_node.onramp.setOutflow(e,BeatsMath.times(demand,ratio) );
             }
         }
 
@@ -141,7 +141,7 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
                 beta = Double.isNaN(beta) ? 0d : beta;
             }
 
-            double [] fout = {0d}; // fake array for vehicle type
+            Double [] fout = {0d}; // fake array for vehicle type
 
             fout[0] = Math.min( fwy_node.up_ml==null ? 0d :
                                                        fwy_node.up_ml.get_total_out_demand_in_veh(e) ,
@@ -153,12 +153,12 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
                 fwy_node.up_ml.setOutflow(e,fout);
 
             if(fwy_node.offramp!=null){
-                double [] s = {beta*fout[0]};
+                Double [] s = {beta*fout[0]};
                 fwy_node.offramp.setInflow(e, s);
             }
 
             if(fwy_node.dn_ml!=null){
-                double [] fin = {(1-beta)*fout[0]+fwy_node.r};
+                Double [] fin = {(1-beta)*fout[0]+fwy_node.r};
                 fwy_node.dn_ml.setInflow(e,fin);
             }
         }

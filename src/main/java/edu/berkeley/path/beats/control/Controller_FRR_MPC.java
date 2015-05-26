@@ -161,40 +161,40 @@ public class Controller_FRR_MPC extends Controller {
 	@Override
 	protected void update() throws BeatsException {
 
-		double time_current = getMyScenario().get.currentTimeInSeconds();
-
-		// if it is time to optimize, update metering rate profile
-		if(BeatsMath.greaterorequalthan(time_current-time_last_opt, pm_period)){
-
-			// call policy maker (everything in SI units)
-            policy = policy_maker.givePolicy( network,
-                                              myScenario.get.current_fds_si(time_current),
-                                              myScenario.predict_demands_si(time_current, Double.NaN, pm_horizon),
-                                              myScenario.predict_split_ratios(time_current,Double.NaN,pm_horizon),
-                                              myScenario.get.current_densities_si(),
-                                              myScenario.getRouteSet(),
-                                              pm_dt,
-                                              policy_maker_properties );
-
-            // update time keeper
-			time_last_opt = time_current;
-		}
-
-        // send policy to actuators
-        if(policy!=null){
-            double time_since_last_pm_call = time_current-time_last_opt;
-            int time_index = (int) (time_since_last_pm_call/pm_dt);
-            for(ReroutePolicyProfile rrprofile : policy.profiles){
-                ActuatorCMS act = (ActuatorCMS) node_actuator_map.get(rrprofile.actuatorNode.getId());
-                if(act!=null){
-                    int clipped_time_index = Math.min(time_index,rrprofile.reroutePolicy.size()-1);
-                    act.set_split(  rrprofile.in_link_id,
-                            rrprofile.out_link_id,
-                            rrprofile.vehicle_type_id,
-                            rrprofile.reroutePolicy.get(clipped_time_index) );
-                }
-            }
-        }
+//		double time_current = getMyScenario().get.currentTimeInSeconds();
+//
+//		// if it is time to optimize, update metering rate profile
+//		if(BeatsMath.greaterorequalthan(time_current-time_last_opt, pm_period)){
+//
+//			// call policy maker (everything in SI units)
+//            policy = policy_maker.givePolicy( network,
+//                                              myScenario.get.current_fds_si(time_current),
+//                                              myScenario.predict_demands_si(time_current, Double.NaN, pm_horizon),
+//                                              myScenario.predict_split_ratios(time_current,Double.NaN,pm_horizon),
+//                                              myScenario.get.current_densities_si(),
+//                                              myScenario.getRouteSet(),
+//                                              pm_dt,
+//                                              policy_maker_properties );
+//
+//            // update time keeper
+//			time_last_opt = time_current;
+//		}
+//
+//        // send policy to actuators
+//        if(policy!=null){
+//            double time_since_last_pm_call = time_current-time_last_opt;
+//            int time_index = (int) (time_since_last_pm_call/pm_dt);
+//            for(ReroutePolicyProfile rrprofile : policy.profiles){
+//                ActuatorCMS act = (ActuatorCMS) node_actuator_map.get(rrprofile.actuatorNode.getId());
+//                if(act!=null){
+//                    int clipped_time_index = Math.min(time_index,rrprofile.reroutePolicy.size()-1);
+//                    act.set_split(  rrprofile.in_link_id,
+//                            rrprofile.out_link_id,
+//                            rrprofile.vehicle_type_id,
+//                            rrprofile.reroutePolicy.get(clipped_time_index) );
+//                }
+//            }
+//        }
 
 	}
 

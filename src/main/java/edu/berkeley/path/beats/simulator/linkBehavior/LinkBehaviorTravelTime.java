@@ -37,7 +37,7 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
     // UPDATE
 
     @Override
-    public void update_state(double [][] inflow,double [][] outflow){
+    public void update_state(Double [][] inflow,Double [][] outflow){
         for(int e=0;e<ensemble.size();e++)
             ensemble.get(e).update_state(inflow[e]);
     }
@@ -147,7 +147,7 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
             for(Cell cell : cell_array)
                 cell.reset();
         }
-        protected void update_state(double [] inflow){
+        protected void update_state(Double [] inflow){
             cell_array.add(new Cell(inflow));
             cell_array.remove(0);
         }
@@ -159,12 +159,12 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
     /////////////////////////////////////////////////////////////////////
 
     private class Cell {
-        public double [] n;        // [ve] for each vehicle type
+        public Double [] n;        // [ve] for each vehicle type
         public Cell(int nVT){
             n=BeatsMath.zeros(nVT);
         }
-        public Cell(double [] no){
-            n = new double[no.length];
+        public Cell(Double [] no){
+            n = BeatsMath.zeros(no.length);
             for(int v=0;v<no.length;v++)
                 n[v]=no[v];
         }

@@ -263,13 +263,13 @@ public class ScenarioSetApi {
                     if(density!=null)
                         ((Link) jlink).set_initial_state(density);
                     else
-                        ((Link) jlink).set_initial_state(BeatsMath.zeros(scenario.numVehicleTypes));
+                        ((Link) jlink).set_initial_state(BeatsMath.zeros_double(scenario.numVehicleTypes));
                 }
         }
         else {
             for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworks())
                 for(edu.berkeley.path.beats.jaxb.Link jlink:network.getLinkList().getLink())
-                    ((Link) jlink).set_initial_state(BeatsMath.zeros(scenario.numVehicleTypes));
+                    ((Link) jlink).set_initial_state(BeatsMath.zeros_double(scenario.numVehicleTypes));
         }
 
         // warmup

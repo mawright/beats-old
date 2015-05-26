@@ -19,7 +19,7 @@ public class BeatsMathTest {
 	@Test
 	public void test_zeros_1D() {
 		double [] x = {0d,0d,0d};
-		assertTrue(Arrays.equals(BeatsMath.zeros(3),x));
+		assertTrue(Arrays.equals(BeatsMath.zeros_double(3),x));
 		
 		// edge cases
 		assertNull(BeatsMath.zeros(-1));
@@ -30,7 +30,7 @@ public class BeatsMathTest {
 	public void test_zeros_2D() {
 
 		double [][] x = {{0d,0d},{0d,0d},{0d,0d}};
-		double [][] y = BeatsMath.zeros(3,2);
+		double [][] y = BeatsMath.zeros_double(3,2);
 		
 		assertEquals(x.length,y.length);
 		for(int i=0;i<x.length;i++)
@@ -92,17 +92,17 @@ public class BeatsMathTest {
 		assertNull(BeatsMath.sum(Z,2));
 	}
 
-	@Test
-	public void test_times_scalararray() {
-		Double [] V = {1d,2d,3d};
-		double a = 4;
-		Double [] S = {4d,8d,12d};
-		assertTrue(Arrays.equals(BeatsMath.times(V, a), S));
-		
-		// edge cases
-		Double [] Y = null;
-		assertNull(BeatsMath.times(Y,2d));
-	}
+//	@Test
+//	public void test_times_scalararray() {
+//		Double [] V = {1d,2d,3d};
+//		double a = 4;
+//		Double [] S = {4d,8d,12d};
+//		assertTrue(Arrays.equals(BeatsMath.times(V, a), S));
+//
+//		// edge cases
+//		Double [] Y = null;
+//		assertNull(BeatsMath.times(Y,2d));
+//	}
 
 	@Test
 	public void test_ceil() {

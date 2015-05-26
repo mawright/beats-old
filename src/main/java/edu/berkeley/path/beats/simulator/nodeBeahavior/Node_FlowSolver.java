@@ -1,6 +1,7 @@
 package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
 import edu.berkeley.path.beats.simulator.Node;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 public abstract class Node_FlowSolver {
@@ -50,13 +51,13 @@ public abstract class Node_FlowSolver {
 	
 	public static class IOFlow {
 		// input to node model, copied from link suppy/demand
-		protected double [][] in;		// [nIn][nTypes]
-		protected double [][] out;	// [ensemble][nOut][nTypes]
+		protected Double [][] in;		// [nIn][nTypes]
+		protected Double [][] out;	// [ensemble][nOut][nTypes]
 		
 		public IOFlow(int nIn,int nOut,int numVehicleTypes) {
 			super();
-	    	in = new double[nIn][numVehicleTypes];
-			out = new double[nOut][numVehicleTypes];
+	    	in = BeatsMath.zeros(nIn, numVehicleTypes);
+			out = BeatsMath.zeros(nOut,numVehicleTypes);
 		}
 
 		public void setIn(int nI,int nV,double val){
@@ -67,15 +68,15 @@ public abstract class Node_FlowSolver {
 			out[nO][nV]=val;
 		}
 		
-		public double [] getIn(int nI){
+		public Double [] getIn(int nI){
 			return in[nI];
 		}
 
-		public double getIn(int nI,int nV){
+		public Double getIn(int nI,int nV){
 			return in[nI][nV];
 		}
 		
-		public double [] getOut(int nO){
+		public Double [] getOut(int nO){
 			return out[nO];
 		}
 		

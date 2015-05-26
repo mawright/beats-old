@@ -88,7 +88,7 @@ public final class Double2DMatrix {
 			numtokens = slicesXY.countTokens();
 			if(nVTypes==0){ // first time here
 				nVTypes = numtokens;
-				data = new Double[nTime][nVTypes];
+				data = BeatsMath.zeros(nTime,nVTypes);
 			}
 			else{
 				if(nVTypes!=numtokens){

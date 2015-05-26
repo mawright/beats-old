@@ -36,14 +36,7 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 	// does not change ....................................
 	private Scenario myScenario;
 	private boolean isOrphan;
-//	private double dtinseconds;			// not really necessary
-//	private int samplesteps;
 	private BeatsTimeProfileDouble capacity;	// [veh]
-//	private int step_initial_abs;       // time steps at start since midnight
-//
-//	// does change ........................................
-//	private boolean isdone;
-//	private double current_sample;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update

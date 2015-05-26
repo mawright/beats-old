@@ -35,7 +35,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
     // UPDATE
 
     @Override
-    public void update_state(double[][] inflow, double[][] outflow) {
+    public void update_state(Double[][] inflow, Double[][] outflow) {
         for(int e=0;e<ensemble.size();e++)
             ensemble.get(e).update_state(inflow[e],outflow[e]);
     }
@@ -191,7 +191,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
         public double [] queue;
         public ArrayList<Cell> cell_array;
         public CellArrayAndQueue(int numcell, int num_veh_types){
-            queue = BeatsMath.zeros(num_veh_types);
+            queue = BeatsMath.zeros_double(num_veh_types);
             cell_array = new ArrayList<Cell>();
             for(int i=0;i<numcell;i++)
                 cell_array.add(new Cell(num_veh_types));
@@ -221,14 +221,14 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
         }
         protected void reset(){
             int nVT = queue.length;
-            queue = BeatsMath.zeros(nVT);
+            queue = BeatsMath.zeros_double(nVT);
             for(Cell cell : cell_array)
                 cell.reset();
         }
-        protected void update_state(double[] inflow, double[] outflow){
+        protected void update_state(Double[] inflow, Double[] outflow){
 
             // update the queue
-            double [] flow_into_queue = cell_array.get(0).n;
+            Double [] flow_into_queue = cell_array.get(0).n;
             for(int j=0;j<queue.length;j++)
                queue[j] += flow_into_queue[j] - outflow[j];
 
@@ -255,12 +255,12 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
     /////////////////////////////////////////////////////////////////////
 
     private class Cell {
-        public double [] n;        // [ve] for each vehicle type
+        public Double [] n;        // [ve] for each vehicle type
         public Cell(int nVT){
             n=BeatsMath.zeros(nVT);
         }
-        public Cell(double [] no){
-            n = new double[no.length];
+        public Cell(Double [] no){
+            n = new Double[no.length];
             for(int v=0;v<no.length;v++)
                 n[v]=no[v];
         }

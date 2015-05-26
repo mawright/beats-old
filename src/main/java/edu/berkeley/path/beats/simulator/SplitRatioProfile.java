@@ -318,7 +318,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
         if(in_index<0 || out_index<0)
             return null;
 
-        double [] val = BeatsMath.zeros(num_steps);
+        double [] val = BeatsMath.zeros_double(num_steps);
 
         BeatsTimeProfileDemands thisprofile = profile[in_index][out_index][vt_index];
 

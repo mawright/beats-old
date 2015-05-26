@@ -53,7 +53,7 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 
 		// allocate
 		int numLinks = getDensity().size();
-		initial_density = BeatsMath.zeros(numLinks);
+		initial_density = BeatsMath.zeros_double(numLinks);
 		link = new Link [numLinks];
 		vehicle_type_index = new int [numLinks];
 		
@@ -137,7 +137,7 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 	 * @return array of intitial densities in [veh/link]
 	 */
 	public double [] getDensityForLinkIdInVeh(long network_id,long linkid){
-		double [] d = BeatsMath.zeros(myScenario.get.numVehicleTypes());
+		double [] d = BeatsMath.zeros_double(myScenario.get.numVehicleTypes());
 		boolean foundit = false;
 		for(int i=0;i<link.length;i++){
 			if(link[i]!=null && link[i].getId()==linkid && link[i].myNetwork.getId()==network_id){

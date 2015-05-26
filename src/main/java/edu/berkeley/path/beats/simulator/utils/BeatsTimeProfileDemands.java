@@ -17,7 +17,7 @@ public class BeatsTimeProfileDemands {
     public BeatsTimeProfileDemands(){}
 
     public BeatsTimeProfileDemands(int n,Double val) {
-        data = new Double [n];
+        data = BeatsMath.zeros(n);
         for (int i = 0; i < n; i++)
             data[i] = val;
     }
