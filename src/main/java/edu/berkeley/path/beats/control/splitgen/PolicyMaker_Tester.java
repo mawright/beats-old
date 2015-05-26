@@ -1,4 +1,4 @@
-package edu.berkeley.path.beats.control;
+package edu.berkeley.path.beats.control.splitgen;
 
 import edu.berkeley.path.beats.control.rm_interface.RampMeteringControlSet;
 import edu.berkeley.path.beats.control.rm_interface.RampMeteringPolicyMaker;
@@ -17,7 +17,7 @@ public class PolicyMaker_Tester implements RampMeteringPolicyMaker {
 
         RampMeteringPolicySet policy = new RampMeteringPolicySet();
 
-        double [] sample_data = BeatsFormatter.readCSVstring_nonnegative(demand.getDemandProfile().get(0).getDemand().get(0).getContent(), ",");
+        Double [] sample_data = BeatsFormatter.readCSVstring_nonnegative(demand.getDemandProfile().get(0).getDemand().get(0).getContent(), ",");
         double num_data = sample_data.length;
 
         for(edu.berkeley.path.beats.jaxb.Link jaxbL : net.getListOfLinks()){

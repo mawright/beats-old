@@ -29,6 +29,7 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfile;
+import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfileDouble;
 
 public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile {
 
@@ -37,7 +38,7 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 	private boolean isOrphan;
 	private double dtinseconds;			// not really necessary
 	private int samplesteps;
-	private BeatsTimeProfile capacity;	// [veh]
+	private BeatsTimeProfileDouble capacity;	// [veh]
 	private int step_initial_abs;       // time steps at start since midnight
 
 	// does change ........................................
@@ -67,8 +68,8 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 
 		// sample demand distribution, convert to vehicle units
 		if(getContent()!=null){
-			capacity = new BeatsTimeProfile(getContent(),",");	// true=> reshape to vector along k, define length
-			capacity.multiplyscalar(myScenario.get.simdtinseconds()*myLink.get_Lanes());
+			capacity = new BeatsTimeProfileDouble(getContent(),",",dt,startTime,myScenario.get.simdtinseconds());
+            capacity.multiplyscalar(myScenario.get.simdtinseconds()*myLink.get_Lanes());
 		}
 		
 		// optional dt

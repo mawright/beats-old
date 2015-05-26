@@ -1,7 +1,6 @@
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.control.Controller_SR_Generator;
-import edu.berkeley.path.beats.control.Controller_SR_Generator_Fw;
+import edu.berkeley.path.beats.control.splitgen.Controller_SR_Generator_Fw;
 import edu.berkeley.path.beats.jaxb.Demand;
 import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacitySet;
 import edu.berkeley.path.beats.jaxb.VehicleType;

@@ -26,23 +26,12 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-
-import edu.berkeley.path.beats.jaxb.OutputRequest;
-import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
+import edu.berkeley.path.beats.control.splitgen.Controller_HOV_SR_Generator;
 
 import edu.berkeley.path.beats.actuator.*;
 import edu.berkeley.path.beats.control.*;
+import edu.berkeley.path.beats.control.splitgen.Controller_SR_Generator;
+import edu.berkeley.path.beats.control.splitgen.Controller_SR_Generator_Fw;
 import edu.berkeley.path.beats.event.*;
 import edu.berkeley.path.beats.sensor.*;
 

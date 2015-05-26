@@ -71,9 +71,9 @@ final public class BeatsFormatter {
 		return str;
 	}
 
-    public static double [] readCSVstring_nonnegative(String str, String delim) {
+    public static Double [] readCSVstring_nonnegative(String str, String delim) {
 
-        double [] data = null;
+        Double [] data = null;
 
         if ((str.isEmpty()) || (str.equals("\n")) || (str.equals("\r\n"))){
             return data;
@@ -85,7 +85,7 @@ final public class BeatsFormatter {
         StringTokenizer slicesX = new StringTokenizer(str,delim);
         int i=0;
         boolean allnan = true;
-        data = new double[slicesX.countTokens()];
+        data = new Double[slicesX.countTokens()];
         while (slicesX.hasMoreTokens()) {
             try {
                 Double value = Double.parseDouble(slicesX.nextToken());
@@ -106,9 +106,9 @@ final public class BeatsFormatter {
     }
 
 
-    public static double [] readCSVstring(String str, String delim) {
+    public static Double [] readCSVstring(String str, String delim) {
 
-        double [] data = null;
+        Double [] data = null;
 
         if ((str.isEmpty()) || (str.equals("\n")) || (str.equals("\r\n"))){
             return data;
@@ -119,7 +119,7 @@ final public class BeatsFormatter {
         // populate data
         StringTokenizer slicesX = new StringTokenizer(str,delim);
         int i=0;
-        data = new double[slicesX.countTokens()];
+        data = new Double[slicesX.countTokens()];
         while (slicesX.hasMoreTokens()) {
             try {
                 Double value = Double.parseDouble(slicesX.nextToken());
