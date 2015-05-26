@@ -72,11 +72,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     protected boolean has_controller_split;
     protected List<Splitratio> controller_splits;
 
-	// selected split ratio
-	private Double3DMatrix splitratio_selected;
-	
-	// stochasticity
-	protected boolean isdeterministic;
+    // selected split ratio
+    private Double [][][] splitratio_nominal;
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -119,7 +116,6 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		isTerminal = nOut==0 || nIn==0;
         istrivialsplit = nOut<=1;
         has_profile = false;
-        isdeterministic = true;
 
     	if(isTerminal)
     		return;
@@ -129,8 +125,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
 		// initialize the split ratio matrix
 		// NOTE: SHOULD THIS GO IN RESET?
-		splitratio_selected = new Double3DMatrix(nIn,nOut,myScenario.get.numVehicleTypes(),0d);
-		normalizeSplitRatioMatrix(splitratio_selected);
+//		splitratio_selected = new Double3DMatrix(nIn,nOut,myScenario.get.numVehicleTypes(),0d);
+//		normalizeSplitRatioMatrix(splitratio_selected);
 
 		// default node flow and split solvers
 //        node_behavior = new NodeBehavior(this,
@@ -171,21 +167,50 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	}
 	
 	public void update_flows() {
-		
+
         if(isTerminal)
             return;
 
         int e,i,j;
         Scenario myScenario = myNetwork.getMyScenario();
         int numEnsemble = myScenario.get.numEnsemble();
+        int numVTypes = myScenario.get.numVehicleTypes();
 
-        // update split ratio matrix
-        Double3DMatrix[] splitratio_selected_perturbed = select_and_perturb_split_ratio();
+        // Select a nominal split ratio from profile, event, or controller
+        if(istrivialsplit) {
+            // nominal is all ones
+            splitratio_nominal = BeatsMath.ones(nIn, nOut, numVTypes);
+        }
+        else {
+            if (has_profile)
+                splitratio_nominal = my_profile.getCurrentSplitRatio();
+            if (has_controller_split)
+                override_splits(splitratio_nominal, controller_splits);
+            //if(has_event_split)
+            //    override_splits(splitratio_nominal,event_splits);
+        }
 
         for(e=0;e<numEnsemble;e++){
 
-			// compute applied split ratio matrix
-            Double3DMatrix splitratio_applied = node_behavior.sr_solver.computeAppliedSplitRatio(splitratio_selected_perturbed[e],e);
+            Double [][][] splitratio_perturbed;
+
+            if(my_profile==null) {
+                splitratio_perturbed = BeatsMath.nans(nIn,nOut,numVTypes);
+            }
+            else
+            {
+                if (istrivialsplit || my_profile.isdeterministic()) {
+                    splitratio_perturbed = splitratio_nominal;
+                } else {
+                    if (nOut == 2 && nIn == 1)
+                        splitratio_perturbed = SplitRatioPerturber.perturb2OutputSplitOnce(splitratio_nominal, my_profile);
+                    else
+                        splitratio_perturbed = SplitRatioPerturber.sampleFromConcentrationParametersOnce(my_profile.getCurrentConcentration());
+                }
+            }
+
+            // compute applied split ratio matrix
+            Double [][][] splitratio_applied = node_behavior.sr_solver.computeAppliedSplitRatio(splitratio_perturbed,e);
 
             /////////////////////////////////////////////////
             // write first to logger
@@ -221,15 +246,13 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		this.my_profile = mySplitRatioProfile;
 		if(!istrivialsplit){
 			this.has_profile = true;
-			if (!mySplitRatioProfile.isdeterministic())
-				isdeterministic = false;
 		}
 	}
 
     public double getSplitRatioProfileValue(int i,int j,int k){
         if(my_profile==null || my_profile.getCurrentSplitRatio()==null)
             return Double.NaN;
-        return my_profile.getCurrentSplitRatio().get(i,j,k);
+        return my_profile.getSplit(i,j,k);
     }
 
 	// controllers ......................................................
@@ -286,117 +309,114 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 
 
-    public Double3DMatrix[] select_and_perturb_split_ratio(){
-    	
-    	int numVTypes = getMyNetwork().getMyScenario().get.numVehicleTypes();
-
-        // Select a split ratio from profile, event, or controller
-        if(istrivialsplit)
-            splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),numVTypes,1d);
-        else{
-            if(has_profile)
-                splitratio_selected = new Double3DMatrix(my_profile.getCurrentSplitRatio());
-            if(has_controller_split)
-                splitratio_selected.override_splits(this,controller_splits);
-//        if(has_event_split)
-//            splitratio_selected.override_splits(event_splits);
-        }
-
-        // perturb split ratio
-        int numEnsemble = myNetwork.getMyScenario().get.numEnsemble();
-        Double3DMatrix[] splitratio_selected_perturbed = new Double3DMatrix[numEnsemble];
-        if(!isdeterministic && my_profile.hasConcentrationParameters() 
-        		&& my_profile.isCurrentConcentrationParametersValid())
-        	splitratio_selected_perturbed = SplitRatioPerturber.sampleFromConcentrationParameters(my_profile.getCurrentConcentrationParameters(), numEnsemble);
-        else if(!isdeterministic && nOut==2 && nIn==1)
-            splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile, numEnsemble);
-        else
-            Arrays.fill(splitratio_selected_perturbed, 0, splitratio_selected_perturbed.length, splitratio_selected);
-
-        return splitratio_selected_perturbed;
-
-    }
-
-
+//    public Double3DMatrix[] select_and_perturb_split_ratio(){
+//
+//    	int numVTypes = getMyNetwork().getMyScenario().get.numVehicleTypes();
+//
+//        // Select a split ratio from profile, event, or controller
+//        if(istrivialsplit)
+//            splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),numVTypes,1d);
+//        else{
+//            if(has_profile)
+//                splitratio_selected = new Double3DMatrix(my_profile.getCurrentSplitRatio());
+//            if(has_controller_split)
+//                splitratio_selected.override_splits(this,controller_splits);
+////        if(has_event_split)
+////            splitratio_selected.override_splits(event_splits);
+//        }
+//
+//        // perturb split ratio
+//        int numEnsemble = myNetwork.getMyScenario().get.numEnsemble();
+//        Double3DMatrix[] splitratio_selected_perturbed = new Double3DMatrix[numEnsemble];
+//        if(!isdeterministic && my_profile.hasConcentrationParameters()
+//        		&& my_profile.isCurrentConcentrationParametersValid())
+//        	splitratio_selected_perturbed = SplitRatioPerturber.sampleFromConcentrationParameters(my_profile.getCurrentConcentrationParameters(), numEnsemble);
+//        else if(!isdeterministic && nOut==2 && nIn==1)
+//            splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile, numEnsemble);
+//        else
+//            Arrays.fill(splitratio_selected_perturbed, 0, splitratio_selected_perturbed.length, splitratio_selected);
+//
+//        return splitratio_selected_perturbed;
+//
+//    }
 
 
-
-	protected boolean validateSplitRatioMatrix(Double3DMatrix X){
-
-		int i,j,k;
-		double value;
-		
-		// dimension
-		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.getMyScenario().get.numVehicleTypes()){
-			BeatsErrorLog.addError("Split ratio for node " + getId() + " has incorrect dimensions.");
-			return false;
-		}
-		
-		// range
-		for(i=0;i<X.getnIn();i++){
-			for(j=0;j<X.getnOut();j++){
-				for(k=0;k<X.getnVTypes();k++){
-					value = X.get(i,j,k);
-					if( !Double.isNaN(value) && (value>1 || value<0) ){
-						BeatsErrorLog.addError("Invalid split ratio values for node ID=" + getId());
-						return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
-	
-    protected void normalizeSplitRatioMatrix(Double3DMatrix X){
-
-    	int i,j,k;
-		boolean hasNaN;
-		int countNaN;
-		int idxNegative;
-		double sum;
-    	
-    	for(i=0;i<X.getnIn();i++)
-    		for(k=0;k<myNetwork.getMyScenario().get.numVehicleTypes();k++){
-				hasNaN = false;
-				countNaN = 0;
-				idxNegative = -1;
-				sum = 0.0f;
-				for (j = 0; j < X.getnOut(); j++)
-					if (Double.isNaN(X.get(i,j,k))) {
-						countNaN++;
-						idxNegative = j;
-						if (countNaN > 1)
-							hasNaN = true;
-					}
-					else
-						sum += X.get(i,j,k);
-				
-				if (countNaN==1) {
-					X.set(i,idxNegative,k,Math.max(0f, (1-sum)));
-					sum += X.get(i,idxNegative,k);
-				}
-				
-				if ( !hasNaN && BeatsMath.equals(sum, 0.0) ) {
-					X.set(i,0,k,1d);
-					//for (j=0; j<n2; j++)			
-					//	data[i][j][k] = 1/((double) n2);
-					continue;
-				}
-				
-				if ((!hasNaN) && (sum<1.0)) {
-					for (j=0;j<X.getnOut();j++)
-						X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));
-					continue;
-				}
-				
-				if (sum >= 1.0)
-					for (j=0; j<X.getnOut(); j++)
-						if (Double.isNaN(X.get(i,j,k)))
-							X.set(i,j,k,0d);
-						else
-							X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));
-    		}
-    }
+//	protected boolean validateSplitRatioMatrix(Double3DMatrix X){
+//
+//		int i,j,k;
+//		double value;
+//
+//		// dimension
+//		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.getMyScenario().get.numVehicleTypes()){
+//			BeatsErrorLog.addError("Split ratio for node " + getId() + " has incorrect dimensions.");
+//			return false;
+//		}
+//
+//		// range
+//		for(i=0;i<X.getnIn();i++){
+//			for(j=0;j<X.getnOut();j++){
+//				for(k=0;k<X.getnVTypes();k++){
+//					value = X.get(i,j,k);
+//					if( !Double.isNaN(value) && (value>1 || value<0) ){
+//						BeatsErrorLog.addError("Invalid split ratio values for node ID=" + getId());
+//						return false;
+//					}
+//				}
+//			}
+//		}
+//		return true;
+//	}
+//
+//    protected void normalizeSplitRatioMatrix(Double3DMatrix X){
+//
+//    	int i,j,k;
+//		boolean hasNaN;
+//		int countNaN;
+//		int idxNegative;
+//		double sum;
+//
+//    	for(i=0;i<X.getnIn();i++)
+//    		for(k=0;k<myNetwork.getMyScenario().get.numVehicleTypes();k++){
+//				hasNaN = false;
+//				countNaN = 0;
+//				idxNegative = -1;
+//				sum = 0.0f;
+//				for (j = 0; j < X.getnOut(); j++)
+//					if (Double.isNaN(X.get(i,j,k))) {
+//						countNaN++;
+//						idxNegative = j;
+//						if (countNaN > 1)
+//							hasNaN = true;
+//					}
+//					else
+//						sum += X.get(i,j,k);
+//
+//				if (countNaN==1) {
+//					X.set(i,idxNegative,k,Math.max(0f, (1-sum)));
+//					sum += X.get(i,idxNegative,k);
+//				}
+//
+//				if ( !hasNaN && BeatsMath.equals(sum, 0.0) ) {
+//					X.set(i,0,k,1d);
+//					//for (j=0; j<n2; j++)
+//					//	data[i][j][k] = 1/((double) n2);
+//					continue;
+//				}
+//
+//				if ((!hasNaN) && (sum<1.0)) {
+//					for (j=0;j<X.getnOut();j++)
+//						X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));
+//					continue;
+//				}
+//
+//				if (sum >= 1.0)
+//					for (j=0; j<X.getnOut(); j++)
+//						if (Double.isNaN(X.get(i,j,k)))
+//							X.set(i,j,k,0d);
+//						else
+//							X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));
+//    		}
+//    }
     
 	/////////////////////////////////////////////////////////////////////
 	// public API
@@ -451,23 +471,21 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		return nOut;
 	}
 	
-	public double [][][] getSplitRatio(){
-		if(splitratio_selected==null)
-			return null;
-		return splitratio_selected.cloneData();
+	public Double [][][] getSplitRatio(){
+		return splitratio_nominal;
 	}
 
-	/**
-	 * Retrieves a split ratio for the given input/output link pair and vehicle type
-	 * @param inLinkInd input link index
-	 * @param outLinkInd output link index
-	 * @param vehTypeInd vehicle type index
-	 * @return the split ratio
-	 */
+//	/**
+//	 * Retrieves a split ratio for the given input/output link pair and vehicle type
+//	 * @param inLinkInd input link index
+//	 * @param outLinkInd output link index
+//	 * @param vehTypeInd vehicle type index
+//	 * @return the split ratio
+//	 */
 	public double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
-		if(splitratio_selected==null)
+		if(splitratio_nominal==null)
 			return Double.NaN;
-		return splitratio_selected.get(inLinkInd, outLinkInd, vehTypeInd);
+		return splitratio_nominal[inLinkInd][outLinkInd][vehTypeInd];
 	}
 
 
@@ -479,14 +497,37 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         return istrivialsplit;
     }
 
-    public static double[][][] perturb2DSplitForTest(double[][][] splitData){
-    	// implemented this way because Double3DMatrix is not public so not viewable in java/test/ package
-    	Double3DMatrix split = new Double3DMatrix(splitData);
-        JaxbObjectFactory factory = new JaxbObjectFactory();
-        SplitRatioProfile profile = (SplitRatioProfile) factory.createSplitRatioProfile();
-        profile.setVariance(.03);
-    	Double3DMatrix[] perturbedSplit = SplitRatioPerturber.perturb2OutputSplit(split, profile, 1);
-    	return perturbedSplit[0].cloneData();
-    }
+//    public static double[][][] perturb2DSplitForTest(double[][][] splitData){
+//    	// implemented this way because Double3DMatrix is not public so not viewable in java/test/ package
+//    	Double3DMatrix split = new Double3DMatrix(splitData);
+//        JaxbObjectFactory factory = new JaxbObjectFactory();
+//        SplitRatioProfile profile = (SplitRatioProfile) factory.createSplitRatioProfile();
+//        profile.setVariance(.03);
+//    	Double3DMatrix[] perturbedSplit = SplitRatioPerturber.perturb2OutputSplit(split, profile, 1);
+//    	return perturbedSplit[0].cloneData();
+//    }
 
+    private void override_splits(Double [][][] data,List<Splitratio> srs){
+
+        for(Splitratio sr : srs){
+            int in_index = this.getInputLinkIndex(sr.getLinkIn());
+            int out_index = this.getOutputLinkIndex(sr.getLinkOut());
+            int vt_index = this.getMyNetwork().getMyScenario().get.vehicleTypeIndexForId(sr.getVehicleTypeId());
+
+            if(in_index<0 || out_index<0 || vt_index<0)
+                continue;
+
+            Double val;
+            try{
+                val = Double.parseDouble(sr.getContent());
+            } catch( NumberFormatException e){
+                val = Double.NaN;
+            }
+            if(val.isNaN())
+                continue;
+
+            data[in_index][out_index][vt_index] = val;
+        }
+
+    }
 }

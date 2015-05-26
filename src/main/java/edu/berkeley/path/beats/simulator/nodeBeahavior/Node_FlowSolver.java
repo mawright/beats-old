@@ -8,7 +8,7 @@ public abstract class Node_FlowSolver {
 
     public Node myNode;
 
-    public abstract IOFlow computeLinkFlows(final Double3DMatrix sr,final int ensemble_index);
+    public abstract IOFlow computeLinkFlows(final Double [][][] sr,final int ensemble_index);
 
     public abstract void reset();
     

@@ -126,7 +126,7 @@ public final class BeatsMath {
 	
 	public static Double sum(Collection<Double> V) {
 		if (null == V) 
-			return null;
+			return Double.NaN;
 		Double ans = .0d;
 		Iterator<Double> iter = V.iterator();
 		while (iter.hasNext()) ans += iter.next();

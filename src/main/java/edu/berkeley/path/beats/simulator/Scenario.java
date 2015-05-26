@@ -220,7 +220,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// validate split ratio profiles
 		if(S.splitRatioSet!=null)
-			((SplitRatioSet)S.splitRatioSet).validate();
+			((SplitRatioSet)S.splitRatioSet).validate(S.get.simdtinseconds());
 
 		// validate fundamental diagram profiles
 		if(S.fundamentalDiagramSet!=null)

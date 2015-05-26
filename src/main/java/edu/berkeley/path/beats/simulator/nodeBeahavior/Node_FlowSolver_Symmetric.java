@@ -52,7 +52,7 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 	}
 
 	@Override
-    public IOFlow computeLinkFlows(final Double3DMatrix splitratio,final int ensemble_index){
+    public IOFlow computeLinkFlows(final Double [][][] splitratio,final int ensemble_index){
 
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut; 
@@ -70,7 +70,7 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
                 for (int vt = 0; vt < numVehicleTypes; ++vt) {
                     if (1 < nOut) {
                         // S_{ij} = \sum_{vt} S_i^{vt} * sr_{ij}^{vt}
-                        double sr = splitratio.get(i, j, vt);
+                        double sr = splitratio[i][j][vt];
                         if (!Double.isNaN(sr))
                             directed_demand[i][j] += demand[i][vt] * sr;
                     } else
@@ -105,7 +105,7 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
                 for (int vt = 0; vt < numVehicleTypes; ++vt) {
                     ioflow.setIn(i,vt,demand[i][vt]*reduction  );
                     for (int j = 0; j < nOut; ++j){
-                        ioflow.addOut(j,vt, ioflow.getIn(i,vt) * splitratio.get(i,j,vt) );
+                        ioflow.addOut(j,vt, ioflow.getIn(i,vt) * splitratio[i][j][vt] );
                     }
                 }
             }

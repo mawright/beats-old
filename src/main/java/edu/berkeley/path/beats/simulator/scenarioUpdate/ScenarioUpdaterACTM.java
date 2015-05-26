@@ -136,8 +136,8 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
             // update split ratio matrix
             double beta = 0d;
             if(fwy_node.fr_index>=0){
-                Double3DMatrix[] splitratio_selected = node.select_and_perturb_split_ratio();
-                beta = splitratio_selected[e].get(fwy_node.up_ml_index,fwy_node.fr_index,vt);
+                Double [][][] splitratio_selected = node.getSplitRatio();
+                beta = splitratio_selected[fwy_node.up_ml_index][fwy_node.fr_index][vt];
                 beta = Double.isNaN(beta) ? 0d : beta;
             }
 
