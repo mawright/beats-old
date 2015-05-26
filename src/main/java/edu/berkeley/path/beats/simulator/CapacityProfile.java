@@ -36,14 +36,14 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 	// does not change ....................................
 	private Scenario myScenario;
 	private boolean isOrphan;
-	private double dtinseconds;			// not really necessary
-	private int samplesteps;
+//	private double dtinseconds;			// not really necessary
+//	private int samplesteps;
 	private BeatsTimeProfileDouble capacity;	// [veh]
-	private int step_initial_abs;       // time steps at start since midnight
-
-	// does change ........................................
-	private boolean isdone;
-	private double current_sample;
+//	private int step_initial_abs;       // time steps at start since midnight
+//
+//	// does change ........................................
+//	private boolean isdone;
+//	private double current_sample;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -52,9 +52,7 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 	protected void populate(Scenario myScenario) {
 
 		this.myScenario = myScenario;
-		
-		isdone = false;
-		
+
 		// required
 		Link myLink = myScenario.get.linkWithId(getLinkId());
 
@@ -67,32 +65,17 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 		myLink.myCapacityProfile = this;
 
 		// sample demand distribution, convert to vehicle units
-		if(getContent()!=null){
-			capacity = new BeatsTimeProfileDouble(getContent(),",",dt,startTime,myScenario.get.simdtinseconds());
+        // sample demand distribution, convert to vehicle units
+        if(getContent()!=null){
+
+            Double dt = getDt();
+            Double startTime = getStartTime();
+            double simdtinseconds = myScenario.get.simdtinseconds();
+
+            capacity = new BeatsTimeProfileDouble(getContent(),",",dt,startTime,simdtinseconds);	// true=> reshape to vector along k, define length
             capacity.multiplyscalar(myScenario.get.simdtinseconds()*myLink.get_Lanes());
-		}
-		
-		// optional dt
-		if(getDt()!=null){
-			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds / myScenario.get.simdtinseconds());
-		}
-		else{ 	// allow only if it contains one time step
-			if(capacity.getNumTime()==1){
-				dtinseconds = Double.POSITIVE_INFINITY;
-				samplesteps = Integer.MAX_VALUE;
-			}
-			else{
-				dtinseconds = -1.0;		// this triggers the validation error
-				samplesteps = -1;
-				return;
-			}
-		}
+        }
 
-
-        // step_initial
-        double start_time = Double.isInfinite(getStartTime()) ? 0d : getStartTime();
-        step_initial_abs = BeatsMath.round(start_time/myScenario.get.simdtinseconds());
     }
 	
 	protected void validate() {
@@ -105,63 +88,34 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 		if(capacity==null || capacity.isEmpty())
 			return;
 
-		// check dtinseconds
-		if( dtinseconds<=0  && capacity.getNumTime()>1)
-			BeatsErrorLog.addError("Non-positive time step in capacity profile for link ID=" + getLinkId());
-
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.get.simdtinseconds()) && capacity.getNumTime()>1)
-			BeatsErrorLog.addError("Time step for capacity profile of link ID=" + getLinkId() + " is not a multiple of simulation time step.");
-		
-		// check non-negative
-		if(capacity.hasNaN())
-			BeatsErrorLog.addError("Capacity profile for link ID=" +getLinkId()+ " has illegal values.");
+//		// check dtinseconds
+//		if( dtinseconds<=0  && capacity.getNumTime()>1)
+//			BeatsErrorLog.addError("Non-positive time step in capacity profile for link ID=" + getLinkId());
+//
+//		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.get.simdtinseconds()) && capacity.getNumTime()>1)
+//			BeatsErrorLog.addError("Time step for capacity profile of link ID=" + getLinkId() + " is not a multiple of simulation time step.");
+//
+//		// check non-negative
+//		if(capacity.hasNaN())
+//			BeatsErrorLog.addError("Capacity profile for link ID=" +getLinkId()+ " has illegal values.");
 
 	}
 
-	protected void reset() {			
-
+	protected void reset() {
 		if(isOrphan)
 			return;
-		
-		isdone = false;
-        current_sample = capacity.get(0);
+        capacity.reset();
 	}
 	
 	protected void update(boolean forcesample) {
 
-		if(isOrphan)
-			return;
+        if(isOrphan)
+            return;
 
-		if(capacity==null || capacity.isEmpty())
-			return;
-		
-		if(isdone)
-			return;
-		
-		if(forcesample || myScenario.get.clock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
-			
-			int n = capacity.getNumTime()-1;
-			int step = myScenario.get.clock().sample_index_abs(samplesteps,step_initial_abs);
+        if(capacity==null || capacity.isEmpty())
+            return;
 
-			// zeroth sample extends to the left
-			if(step<=0){
-				current_sample = capacity.get(0);
-				return;
-			}
-
-			// sample the profile
-			if(step<n){
-				current_sample = capacity.get(step);
-				return;
-			}
-
-			// last sample
-			if(step>=n && !isdone){
-				current_sample = capacity.get(n);
-				isdone = true;
-				return;
-			}
-		}
+        capacity.sample(forcesample,myScenario.get.clock());
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -169,7 +123,7 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 	/////////////////////////////////////////////////////////////////////
 	
 	public double getCurrentValue(){
-		return current_sample;
-	}
+		return capacity.getCurrentSample();
+    }
 
 }

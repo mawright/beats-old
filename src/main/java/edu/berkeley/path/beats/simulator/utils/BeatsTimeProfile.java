@@ -31,34 +31,6 @@ public class BeatsTimeProfile <T> {
         dtinseconds = dt!=null ? dt.floatValue() : Double.POSITIVE_INFINITY; // assume given in seconds
         samplesteps = BeatsMath.round(dtinseconds/simdtinseconds);
     }
-
-
-//    public BeatsTimeProfile(int n,Double val) {
-//        data = new Double [n];
-//        for (int i = 0; i < n; i++)
-//            data[i] = val;
-//    }
-//
-//    public BeatsTimeProfile(String str,boolean allownegative) {
-//        if(allownegative)
-//            data = BeatsFormatter.readCSVstring(str, ",");
-//        else
-//            data = BeatsFormatter.readCSVstring_nonnegative(str, ",");
-//    }
-//
-//    public BeatsTimeProfile(String str,boolean allownegative,Scenario scenario) {
-//        if(allownegative)
-//    	    data = BeatsFormatter.readCSVstring(str, ",");
-//        else
-//            data = BeatsFormatter.readCSVstring_nonnegative(str, ",");
-//        this.sampleSteps = (int) (dt/scenario.get.simdtinseconds());
-//    }
-
-//    // initialize a 1D vector from comma separated string of positive numbers
-//    // negative numbers get replaced with nan.
-//    public BeatsTimeProfile(String str,String delim) {
-//    	data = BeatsFormatter.readCSVstring_nonnegative(str, delim);
-//    }
     
 	/////////////////////////////////////////////////////////////////////
 	// public interface
@@ -106,32 +78,6 @@ public class BeatsTimeProfile <T> {
     		data.set(i,f);
     }
 
-//    public void multiplyscalar(double value){
-//    	if(data==null)
-//    		return;
-//    	int i;
-//    	for(i=0;i<data.length;i++)
-//    		data[i] *= value;
-//    }
-//
-//    public void addscalar(double value){
-//    	if(data==null)
-//    		return;
-//    	int i;
-//    	for(i=0;i<data.length;i++)
-//    		data[i] += value;
-//    }
-//
-//    public void copydata(BeatsTimeProfile in){
-//    	if(data==null)
-//    		return;
-//    	if(in.data.length!=data.length)
-//    		return;
-//    	int i;
-//    	for(i=0;i<data.length;i++)
-//    		data[i] = in.data[i];
-//    }
-    
 	/////////////////////////////////////////////////////////////////////
 	// check data
 	/////////////////////////////////////////////////////////////////////  
@@ -144,15 +90,5 @@ public class BeatsTimeProfile <T> {
                 return true;
         return false;
     }
-
-//
-//    public void multiplyscalar(double value) {
-//        if (data == null)
-//            return;
-//        int i;
-//        for (i = 0; i < data.length; i++)
-//            data[i] *= value;
-//    }
-
 
 }
