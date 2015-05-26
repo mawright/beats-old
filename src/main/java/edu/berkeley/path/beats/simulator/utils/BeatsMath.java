@@ -92,6 +92,16 @@ public final class BeatsMath {
         return z;
     }
 
+    public static Double [][][] nans(int n1,int n2,int n3){
+        Double [][][] X = BeatsMath.zeros(n1,n2,n3);
+        int i,j,k;
+        for(i=0;i<n1;i++)
+            for(j=0;j<n2;j++)
+                for(k=0;k<n3;k++)
+                    X[i][j][k] = Double.NaN;
+        return X;
+    }
+
     public static Double [][][] ones(int n1,int n2,int n3){
         Double [][][] X = BeatsMath.zeros(n1,n2,n3);
         int i,j,k;
@@ -443,4 +453,69 @@ public final class BeatsMath {
         params[1] = (1-m)*n;
         return params;
     }
+
+    public static Double [][][] normalize(Double [][][] In) {
+
+        int i, j, k;
+        boolean hasNaN;
+        int countNaN;
+        int idxNegative;
+        double sum;
+
+        int nIn = In.length;
+        int nOut = nIn > 0 ? In[0].length : 0;
+        int nVt = nOut > 0 ? In[0][0].length : 0;
+        Double [][][] Out = In.clone();
+
+        for (i = 0; i < nIn; i++) {
+            for (k = 0; k < nVt; k++) {
+                hasNaN = false;
+                countNaN = 0;
+                idxNegative = -1;
+                sum = 0.0f;
+
+                // count NaNs in ikth row of In
+                // sum non-nan entries in ikth row of In
+                for (j = 0; j < nOut; j++) {
+                    if (Double.isNaN(In[i][j][k])) {
+                        countNaN++;
+                        idxNegative = j;
+                        if (countNaN > 1)
+                            hasNaN = true;
+                    } else
+                        sum += In[i][j][k];
+                }
+
+                // case single nan
+                if (countNaN == 1) {
+                    Out[i][idxNegative][k] = Math.max(0f, (1 - sum));
+                    sum += Out[i][idxNegative][k];
+                }
+
+                // case all zeros => set first to 1
+                if (!hasNaN && BeatsMath.equals(sum, 0.0)) {
+                    Out[i][0][k] = 1d;
+                    continue;
+                }
+
+                // case no nans, sum<1 => normalize
+                if ((!hasNaN) && (sum < 1.0)) {
+                    for (j = 0; j < nOut; j++)
+                        Out[i][j][k] = Out[i][j][k] / sum;
+                    continue;
+                }
+
+                // sum>1 => normalize non-zero entries
+                if (sum >= 1.0) {
+                    for (j = 0; j < nOut; j++)
+                        if (Double.isNaN(In[i][j][k]))
+                            Out[i][j][k] = 0d;
+                        else
+                            Out[i][j][k] = Out[i][j][k] / sum;
+                }
+            }
+        }
+        return Out;
+    }
+
 }
