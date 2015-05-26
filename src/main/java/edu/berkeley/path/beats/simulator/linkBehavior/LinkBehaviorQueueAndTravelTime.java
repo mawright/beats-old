@@ -140,7 +140,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
     }
 
     @Override
-    public boolean set_density_in_veh(int e, double[] d) {
+    public boolean set_density_in_veh(int e, Double[] d) {
         if(e<0 || e>=ensemble.size())
             return false;
         if(d.length!=myScenario.get.numVehicleTypes())
@@ -188,17 +188,17 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
 
     // vehicles travel from the end of the cell_array to the begining
     private class CellArrayAndQueue {
-        public double [] queue;
+        public Double [] queue;
         public ArrayList<Cell> cell_array;
         public CellArrayAndQueue(int numcell, int num_veh_types){
-            queue = BeatsMath.zeros_double(num_veh_types);
+            queue = BeatsMath.zeros(num_veh_types);
             cell_array = new ArrayList<Cell>();
             for(int i=0;i<numcell;i++)
                 cell_array.add(new Cell(num_veh_types));
         }
 
         // x is an array over vehicle types
-        public boolean set_density_in_veh(double [] x){
+        public boolean set_density_in_veh(Double [] x){
             queue = BeatsMath.copy(x);
             for(Cell cell : cell_array)
                 cell.reset();
@@ -221,7 +221,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
         }
         protected void reset(){
             int nVT = queue.length;
-            queue = BeatsMath.zeros_double(nVT);
+            queue = BeatsMath.zeros(nVT);
             for(Cell cell : cell_array)
                 cell.reset();
         }

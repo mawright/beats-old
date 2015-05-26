@@ -22,7 +22,7 @@ public class LinkBehaviorCTM {
         this.myScenario = myLink.getMyScenario();
     }
 
-    public void reset(double [] initial_density) {
+    public void reset(Double [] initial_density) {
         int n1 = myScenario.get.numEnsemble();
         int n2 = myScenario.get.numVehicleTypes();
         flow_demand = BeatsMath.zeros(n1, n2);
@@ -163,7 +163,7 @@ public class LinkBehaviorCTM {
         return density[ensemble_index][vehicletype_index];
     }
 
-    public boolean set_density_in_veh(int e,double [] d){
+    public boolean set_density_in_veh(int e,Double [] d){
         if(density==null)
             return false;
         if(e<0 || e>=density.length)

@@ -51,19 +51,11 @@ public final class BeatsMath {
         return z;
     }
 
-    public static double [] zeros_double(int n1){
-        if (n1<0)
-            return null;
-        return new double[n1];
-    }
-
-
-    public static double [][] zeros_double(int n1,int n2){
-        if (n1<0 || n2<0)
-            return null;
-        return new double[n1][n2];
-    }
-
+//    public static double [][] zeros_double(int n1,int n2){
+//        if (n1<0 || n2<0)
+//            return null;
+//        return new double[n1][n2];
+//    }
 
     public static Double [][] zeros(int n1,int n2){
         if (n1<0 || n2<0)
@@ -114,7 +106,7 @@ public final class BeatsMath {
 
     public static Double sum(Double [] V){
 		if(V==null)
-			return null;
+			return Double.NaN;
 		Double answ = 0d;
 		for(int i=0;i<V.length;i++)
 			if(V[i]!=null)
@@ -177,16 +169,6 @@ public final class BeatsMath {
 		}
 	}
 
-
-    public static double [] times(Double [] V,double a){
-        if(V==null)
-            return null;
-        double [] answ = new double [V.length];
-        for(int i=0;i<V.length;i++)
-            answ[i] = a*V[i];
-        return answ;
-    }
-
     public static Double [] times(Double [] V,Double a){
         if(V==null)
             return null;
@@ -239,7 +221,7 @@ public final class BeatsMath {
 		return true;
 	}
 
-    public static boolean all_non_negative (double [] x){
+    public static boolean all_non_negative (Double [] x){
         if(x==null)
             return false;
         if(x.length==0)
@@ -377,6 +359,11 @@ public final class BeatsMath {
         for(int i=0;i<x.length;i++)
             y[i]=x[i];
         return y;
+    }
+
+    // deep copy a double array
+    public static Double[] copy(Double[] x){
+        return (x==null || x.length==0) ? null : x.clone();
     }
 
 	// deep copy a double array

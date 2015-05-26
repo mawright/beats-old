@@ -256,7 +256,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 			return sb.toString();
 		}
 
-		public String format(double[] vector) {
+		public String format(Double[] vector) {
 			clear();
 			for (double val : vector)
 				add(val);

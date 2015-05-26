@@ -259,17 +259,17 @@ public class ScenarioSetApi {
         if(simulationMode!=TypeMode.left_of_init_dens && ids!=null){
             for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworks())
                 for(edu.berkeley.path.beats.jaxb.Link jlink:network.getLinkList().getLink()){
-                    double [] density = ((InitialDensitySet)ids).getDensityForLinkIdInVeh(network.getId(),jlink.getId());
+                    Double [] density = ((InitialDensitySet)ids).getDensityForLinkIdInVeh(network.getId(),jlink.getId());
                     if(density!=null)
                         ((Link) jlink).set_initial_state(density);
                     else
-                        ((Link) jlink).set_initial_state(BeatsMath.zeros_double(scenario.numVehicleTypes));
+                        ((Link) jlink).set_initial_state(BeatsMath.zeros(scenario.numVehicleTypes));
                 }
         }
         else {
             for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworks())
                 for(edu.berkeley.path.beats.jaxb.Link jlink:network.getLinkList().getLink())
-                    ((Link) jlink).set_initial_state(BeatsMath.zeros_double(scenario.numVehicleTypes));
+                    ((Link) jlink).set_initial_state(BeatsMath.zeros(scenario.numVehicleTypes));
         }
 
         // warmup
@@ -331,7 +331,7 @@ public class ScenarioSetApi {
         boolean success = true;
         for(i=0;i<numLinks;i++)
             for(e=0;e<scenario.get.numEnsemble();e++){
-                double [] val = new double[1];
+                Double [] val = new Double[1];
                 val[0] = d[i][e];
                 success &= ((Link)network.getLinkList().getLink().get(i)).set_density_in_veh(e,val);
             }

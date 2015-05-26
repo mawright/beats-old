@@ -217,9 +217,9 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
         return current_sample_noisy_knobbed[e];
 	}
 
-    public double [] predict_in_VPS(int vehicle_type_index, double begin_time, double time_step, int num_steps,double simdtinseconds){
+    public Double [] predict_in_VPS(int vehicle_type_index, double begin_time, double time_step, int num_steps,double simdtinseconds){
 
-        double [] val = BeatsMath.zeros_double(num_steps);
+        Double [] val = BeatsMath.zeros(num_steps);
 
         if(demand_nominal==null || demand_nominal.isEmpty())
             return val;

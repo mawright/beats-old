@@ -83,7 +83,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     protected boolean activeFDevent;					// true if an FD event is active on this link,
 
 	// link state
-    protected double [] initial_density;			    // [veh]  	numVehTypes
+    protected Double [] initial_density;			    // [veh]  	numVehTypes
 
     // link behavior
     public LinkBehaviorCTM link_behavior;
@@ -234,8 +234,8 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         initial_density = getDensityInVeh(0).clone();
     }
 
-    protected void set_initial_state(double [] d){
-        initial_density  = d==null ? BeatsMath.zeros_double(myScenario.get.numVehicleTypes()) : d.clone();
+    protected void set_initial_state(Double [] d){
+        initial_density  = d==null ? BeatsMath.zeros(myScenario.get.numVehicleTypes()) : d.clone();
     }
 
     public void setInflow(int ensemble,Double[] inflow) {
@@ -406,10 +406,10 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	
 	// Link state .......................
 
-    public double[] getDensityInVeh(int ensemble) {
+    public Double[] getDensityInVeh(int ensemble) {
         try{
             int nVT = myScenario.get.numVehicleTypes();
-            double [] d = new double[nVT];
+            Double [] d = BeatsMath.zeros(nVT);
             for(int v=0;v<nVT;v++)
                 d[v] = link_behavior.get_density_in_veh(ensemble, v);
             return d;
@@ -437,7 +437,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
     // dimension of d is # vehicle types
-    public boolean set_density_in_veh(int e,double [] d){
+    public boolean set_density_in_veh(int e,Double [] d){
         return link_behavior.set_density_in_veh(e,d);
     }
 
@@ -517,7 +517,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         return link_behavior.compute_speed_in_mps(ensemble);
     }
 
-    public void overrideDensityWithVeh(double[] x,int ensemble){
+    public void overrideDensityWithVeh(Double[] x,int ensemble){
         link_behavior.set_density_in_veh(ensemble, x);
     }
 

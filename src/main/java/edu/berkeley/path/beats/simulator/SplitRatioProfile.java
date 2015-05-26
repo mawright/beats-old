@@ -310,7 +310,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
     // public API
     /////////////////////////////////////////////////////////////////////
 
-    public double [] predict(long inlink_id,long outlink_id,int vt_index,double start_time,double time_step,int num_steps){
+    public Double [] predict(long inlink_id,long outlink_id,int vt_index,double start_time,double time_step,int num_steps){
 
         int in_index = myNode.getInputLinkIndex(inlink_id);
         int out_index = myNode.getOutputLinkIndex(outlink_id);
@@ -318,7 +318,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
         if(in_index<0 || out_index<0)
             return null;
 
-        double [] val = BeatsMath.zeros_double(num_steps);
+        Double [] val = BeatsMath.zeros(num_steps);
 
         BeatsTimeProfileDemands thisprofile = profile[in_index][out_index][vt_index];
 

@@ -129,37 +129,37 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	/////////////////////////////////////////////////////////////////////
 	
 	@Override
-	public double [] getDensityInVPM(int ensemble) {
+	public Double [] getDensityInVPM(int ensemble) {
 		return BeatsMath.times(getMyLink().getDensityInVeh(ensemble), 1d / getMyLink().getLengthInMeters());
 	}
 
 	@Override
-	public double getTotalDensityInVeh(int ensemble) {
+	public Double getTotalDensityInVeh(int ensemble) {
 		return getMyLink().getTotalDensityInVeh(ensemble);
 	}
 	
 	@Override
-	public double getTotalDensityInVPM(int ensemble) {
+	public Double getTotalDensityInVPM(int ensemble) {
 		return getMyLink().getTotalDensityInVeh(ensemble) / getMyLink().getLengthInMeters();
 	}
 
 //	@Override
-//	public double getOccupancy(int ensemble) {
+//	public Double getOccupancy(int ensemble) {
 //		return myLink.getTotalDensityInVeh(ensemble)/myLink.getLengthInMiles()/this.getRho_jam()*100;
 //	}
 	
 	@Override
-	public double[] getFlowInVPS(int ensemble) {
+	public Double[] getFlowInVPS(int ensemble) {
 		return BeatsMath.times(getMyLink().getOutflowInVeh(ensemble), 1 / getMyScenario().get.simdtinseconds());
 	}
 
 	@Override
-	public double getTotalFlowInVPS(int ensemble) {
+	public Double getTotalFlowInVPS(int ensemble) {
 		return getMyLink().getTotalOutflowInVeh(ensemble) / getMyScenario().get.simdtinseconds();
 	}
 
 	@Override
-	public double getSpeedInMPS(int ensemble) {
+	public Double getSpeedInMPS(int ensemble) {
 		return getMyLink().computeSpeedInMPS(ensemble);
 	}
 

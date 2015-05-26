@@ -40,32 +40,32 @@ public interface InterfaceSensor {
 	 * 
 	 * @return Array of densities.
 	 */
-	public double[] getDensityInVPM(int ensemble);
+	public Double[] getDensityInVPM(int ensemble);
 	
 	/** Measured total density in veh/meter.
 	 * 
 	 * <p> Returns the total density measured by the sensor.
 	 * Must equal the sum of values in {@link InterfaceSensor#getDensityInVPM}.
 	 * 
-	 * @return A double with the total measured density in veh/meter.
+	 * @return A Double with the total measured density in veh/meter.
 	 */
-	public double getTotalDensityInVPM(int ensemble);
+	public Double getTotalDensityInVPM(int ensemble);
 
 	/** Measured total density in veh/link. 
 	 * 
 	 * <p> Returns the total density measured by the sensor averaged over the links it's in.
 	 * 
-	 * @return A double with the total measured density in veh/link.	 
+	 * @return A Double with the total measured density in veh/link.
 	 */
-	public double getTotalDensityInVeh(int ensemble);
+	public Double getTotalDensityInVeh(int ensemble);
 	
 	/** Measured total occupancy in a number between 0 and 100. 
 	 * 
 	 * <p> Returns the occupancy  measured by the sensor.	 * 
 	 * 
-	 * @return A double with the total occupancy, with values between 0 and 100.	 
+	 * @return A Double with the total occupancy, with values between 0 and 100.
 	 */
-	public double getOccupancy(int ensemble);
+	public Double getOccupancy(int ensemble);
 	
 	/** Measured flow per vehicle type in veh/sec.
 	 * 
@@ -75,23 +75,23 @@ public interface InterfaceSensor {
 	 * 
 	 * @return Array of flows.
 	 */	
-	public double[] getFlowInVPS(int ensemble);
+	public Double[] getFlowInVPS(int ensemble);
 	
 	/** Measured total flow in veh/sec.
 	 * 
 	 * <p> Returns the total flow measured by the sensor.
 	 * Must equal the sum of values in {@link InterfaceSensor#getFlowInVPS}.
 	 * 
-	 * @return A double with the total measured flow in veh/sec.
+	 * @return A Double with the total measured flow in veh/sec.
 	 */
-	public double getTotalFlowInVPS(int ensemble);
+	public Double getTotalFlowInVPS(int ensemble);
 	
 	/** Measured speed in meters/sec.
 	 * 
 	 * <p> Returns the speed measured by the sensor.
 	 * 
-	 * @return A double with the measured speed in meters/sec.
+	 * @return A Double with the measured speed in meters/sec.
 	 */
-	public double getSpeedInMPS(int ensemble);
+	public Double getSpeedInMPS(int ensemble);
 	
 }

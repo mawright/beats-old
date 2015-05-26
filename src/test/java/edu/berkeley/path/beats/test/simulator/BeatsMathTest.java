@@ -18,9 +18,9 @@ public class BeatsMathTest {
 
 	@Test
 	public void test_zeros_1D() {
-		double [] x = {0d,0d,0d};
-		assertTrue(Arrays.equals(BeatsMath.zeros_double(3),x));
-		
+		Double [] x = {0d,0d,0d};
+		assertTrue(Arrays.equals(BeatsMath.zeros(3),x));
+
 		// edge cases
 		assertNull(BeatsMath.zeros(-1));
 		assertTrue(BeatsMath.zeros(0).length==0);
@@ -29,8 +29,8 @@ public class BeatsMathTest {
 	@Test
 	public void test_zeros_2D() {
 
-		double [][] x = {{0d,0d},{0d,0d},{0d,0d}};
-		double [][] y = BeatsMath.zeros_double(3,2);
+        Double [][] x = {{0d,0d},{0d,0d},{0d,0d}};
+        Double [][] y = BeatsMath.zeros(3,2);
 		
 		assertEquals(x.length,y.length);
 		for(int i=0;i<x.length;i++)
@@ -50,7 +50,7 @@ public class BeatsMathTest {
 		
 		// edge cases
 		Double [] Y = null;
-		assertNull(BeatsMath.sum(Y));
+		assertTrue(Double.isNaN(BeatsMath.sum(Y)));
 		Double [] Z = {};
 		assertEquals(BeatsMath.sum(Z),0d,1E-6);		
 	}

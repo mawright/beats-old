@@ -722,52 +722,52 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     // predictors
     /////////////////////////////////////////////////////////////////////
 
-    public SplitRatioSet predict_split_ratios(double time_current,double sample_dt,double horizon){
-
-        Network network = (Network) getNetworkSet().getNetwork().get(0);
-        JaxbObjectFactory factory = new JaxbObjectFactory();
-        SplitRatioSet split_ratio_set = (SplitRatioSet) factory.createSplitRatioSet();
-        for(edu.berkeley.path.beats.jaxb.Node jaxbN : network.getListOfNodes()){
-            Node N = (Node) jaxbN;
-
-            if(N.istrivialsplit())
-                continue;
-
-            SplitRatioProfile sr_profile = N.getSplitRatioProfile();
-            SplitRatioProfile srp = (SplitRatioProfile) factory.createSplitRatioProfile();
-            split_ratio_set.getSplitRatioProfile().add(srp);
-
-            double srp_sample_dt = Double.isNaN(sample_dt) ? sr_profile.getDt() : sample_dt;
-            int horizon_steps = BeatsMath.round(horizon/srp_sample_dt);
-
-            srp.setDt(srp_sample_dt);
-            srp.setNodeId(N.getId());
-            for(Input in : N.getInputs().getInput()){
-                for(Output out : N.getOutputs().getOutput()){
-                    for(int v=0;v<get.numVehicleTypes();v++)    {
-
-                        Splitratio splitratio = factory.createSplitratio();
-
-                        // set values
-                        splitratio.setLinkIn(in.getLinkId());
-                        splitratio.setLinkOut(out.getLinkId());
-                        splitratio.setVehicleTypeId(get.vehicleTypeIdForIndex(v));
-                        double [] sr = sr_profile.predict(
-                                in.getLinkId(),
-                                out.getLinkId(),
-                                v,time_current, srp_sample_dt, horizon_steps);
-
-                        if(sr==null)
-                            continue;
-
-                        srp.getSplitratio().add(splitratio);
-                        splitratio.setContent(BeatsFormatter.csv(sr, ","));
-                    }
-                }
-            }
-        }
-        return split_ratio_set;
-    }
+//    public SplitRatioSet predict_split_ratios(double time_current,double sample_dt,double horizon){
+//
+//        Network network = (Network) getNetworkSet().getNetwork().get(0);
+//        JaxbObjectFactory factory = new JaxbObjectFactory();
+//        SplitRatioSet split_ratio_set = (SplitRatioSet) factory.createSplitRatioSet();
+//        for(edu.berkeley.path.beats.jaxb.Node jaxbN : network.getListOfNodes()){
+//            Node N = (Node) jaxbN;
+//
+//            if(N.istrivialsplit())
+//                continue;
+//
+//            SplitRatioProfile sr_profile = N.getSplitRatioProfile();
+//            SplitRatioProfile srp = (SplitRatioProfile) factory.createSplitRatioProfile();
+//            split_ratio_set.getSplitRatioProfile().add(srp);
+//
+//            double srp_sample_dt = Double.isNaN(sample_dt) ? sr_profile.getDt() : sample_dt;
+//            int horizon_steps = BeatsMath.round(horizon/srp_sample_dt);
+//
+//            srp.setDt(srp_sample_dt);
+//            srp.setNodeId(N.getId());
+//            for(Input in : N.getInputs().getInput()){
+//                for(Output out : N.getOutputs().getOutput()){
+//                    for(int v=0;v<get.numVehicleTypes();v++)    {
+//
+//                        Splitratio splitratio = factory.createSplitratio();
+//
+//                        // set values
+//                        splitratio.setLinkIn(in.getLinkId());
+//                        splitratio.setLinkOut(out.getLinkId());
+//                        splitratio.setVehicleTypeId(get.vehicleTypeIdForIndex(v));
+//                        double [] sr = sr_profile.predict(
+//                                in.getLinkId(),
+//                                out.getLinkId(),
+//                                v,time_current, srp_sample_dt, horizon_steps);
+//
+//                        if(sr==null)
+//                            continue;
+//
+//                        srp.getSplitratio().add(splitratio);
+//                        splitratio.setContent(BeatsFormatter.csv(sr, ","));
+//                    }
+//                }
+//            }
+//        }
+//        return split_ratio_set;
+//    }
 
 //    public DemandSet predict_demands_si(double time_current, double sample_dt, double horizon){
 //
