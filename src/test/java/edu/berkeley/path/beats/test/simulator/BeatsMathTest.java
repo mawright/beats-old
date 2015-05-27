@@ -66,7 +66,7 @@ public class BeatsMathTest {
 		
 		// edge cases
 		ArrayList<Double> Y = null;
-		assertNull(BeatsMath.sum(Y));
+		assertTrue(Double.isNaN(BeatsMath.sum(Y)));
 		ArrayList<Double> Z = new ArrayList<Double>();
 		assertEquals(BeatsMath.sum(Z),0d,1E-6);	
 		
@@ -355,19 +355,19 @@ public class BeatsMathTest {
 	
 	@Test
 	public void test_betaparams() {
-		double[] expectedOne = {.12, .48};
+		Double[] expectedOne = {.12, .48};
 		assertTrue(Arrays.equals(BeatsMath.betaParamsFromRVMeanAndVariance(.2, .1), expectedOne));
-		
-		double[] expectedTwo = {5.75, 5.75};
+
+        Double[] expectedTwo = {5.75, 5.75};
 		assertTrue(Arrays.equals(BeatsMath.betaParamsFromRVMeanAndVariance(.5, .02), expectedTwo));
-		
-		double[] expectedThree = {.2, .1};
-		double[] actualThree = BeatsMath.betaParamsFromRVMeanAndVariance(.6667, .1709);
+
+        Double[] expectedThree = {.2, .1};
+        Double[] actualThree = BeatsMath.betaParamsFromRVMeanAndVariance(.6667, .1709);
 		assertEquals(expectedThree[0], actualThree[0], .01);
 		assertEquals(expectedThree[1], actualThree[1], .01);
-		
-		double[] expectedFour = {5.1193, .89};
-		double[] actualFour = BeatsMath.betaParamsFromRVMeanAndVariance(.8519, .018);
+
+        Double[] expectedFour = {5.1193, .89};
+        Double[] actualFour = BeatsMath.betaParamsFromRVMeanAndVariance(.8519, .018);
 		assertEquals(expectedFour[0], actualFour[0], .01);
 		assertEquals(expectedFour[1], actualFour[1], .01);
 	}
