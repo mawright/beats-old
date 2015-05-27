@@ -86,7 +86,6 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
             }
 
             // create split profile
-            System.out.println(stringArray);
             if(!stringArray.isEmpty())
                 splitsProfile = new BeatsTimeProfileDouble3D(
                         in_index,out_index, vt_index,stringArray,
@@ -141,8 +140,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
         splitsCurrent = BeatsMath.nans(nIn,nOut,nVt);
         if(concentrationProfile!=null)
             concentrationProfile.reset();
-        if(concentrationCurrent!=null)
-            concentrationCurrent = BeatsMath.nans(nIn,nOut,nVt);
+        concentrationCurrent = BeatsMath.nans(nIn,nOut,nVt);
 	}
 
 	protected void validate(double simdt) {
@@ -181,14 +179,20 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
         if(myNode==null)
             return;
 
-        boolean sample_changed = splitsProfile.sample(myScenario.clock,forcesample);
-
-        if( sample_changed ){
+        // sample splits and update
+        if( splitsProfile.sample(myScenario.clock,forcesample) ) {
             splitsCurrent = splitsProfile.getCurrentSample();
-            if(concentrationProfile!=null)
-                concentrationCurrent = concentrationProfile.getCurrentSample();
-//            myNode.setSampledSRProfile(splitsCurrent);
+            if(splitsCurrent==null)
+                splitsCurrent = BeatsMath.nans(myNode.nIn,myNode.nOut,myScenario.numVehicleTypes);
         }
+
+        // sample concentration parameters and update
+        if( concentrationProfile!=null && concentrationProfile.sample(myScenario.clock,forcesample) ) {
+            concentrationCurrent = concentrationProfile.getCurrentSample();
+            if(concentrationCurrent==null)
+                concentrationCurrent = BeatsMath.nans(myNode.nIn,myNode.nOut,myScenario.numVehicleTypes);
+        }
+
     }
 
 	/////////////////////////////////////////////////////////////////////

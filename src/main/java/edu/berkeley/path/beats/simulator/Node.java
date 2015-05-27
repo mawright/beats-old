@@ -199,14 +199,12 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
             }
             else
             {
-                if (istrivialsplit || my_profile.isdeterministic()) {
+                if(!my_profile.isdeterministic() && my_profile.hasConcentrationParameters() ) //&& my_profile.isCurrentConcentrationParametersValid())
+                    splitratio_perturbed = SplitRatioPerturber.sampleFromConcentrationParametersOnce(my_profile.getCurrentConcentration());
+                else if(!my_profile.isdeterministic() && nOut==2 && nIn==1)
+                    splitratio_perturbed = SplitRatioPerturber.perturb2OutputSplitOnce(splitratio_nominal, my_profile);
+                else
                     splitratio_perturbed = splitratio_nominal;
-                } else {
-                    if (nOut == 2 && nIn == 1)
-                        splitratio_perturbed = SplitRatioPerturber.perturb2OutputSplitOnce(splitratio_nominal, my_profile);
-                    else
-                        splitratio_perturbed = SplitRatioPerturber.sampleFromConcentrationParametersOnce(my_profile.getCurrentConcentration());
-                }
             }
 
             // compute applied split ratio matrix

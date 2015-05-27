@@ -36,6 +36,7 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
 		int nOut = myNode.nOut;        
     	int numVehicleTypes = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
         String [] vTypes = myNode.getMyNetwork().getMyScenario().get.vehicleTypeNames();
+
         Double [][][] splitratio_new = splitratio_selected.clone();
 
     	double remainingSplit;

@@ -91,7 +91,7 @@ public class BeatsTimeProfileDouble3D extends BeatsTimeProfile<Double[][][]> {
 
             // last sample
             if(step>=n && !isdone){
-                current_sample = BeatsMath.normalize(data.get(data.size()-1));
+                current_sample = n>=0 ? BeatsMath.normalize(data.get(data.size()-1)) : null;
                 isdone = true;
                 return true;
             }
