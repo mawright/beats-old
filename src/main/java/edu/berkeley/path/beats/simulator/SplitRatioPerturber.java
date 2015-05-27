@@ -12,8 +12,7 @@ public class SplitRatioPerturber {
         // TODO Auto-generated method stub
     }
 
-    public static Double [][][][] sampleFromConcentrationParameters( Double [][][] params, int numEnsemble){
-
+//    public static Double [][][][] sampleFromConcentrationParameters( Double [][][] params, int numEnsemble){
 //        int nIn = params.length;
 //        int nOut = nIn>0 ? params[0].length : 0;
 //        int nVt = nOut>0 ? params[0][0].length : 0;
@@ -40,41 +39,37 @@ public class SplitRatioPerturber {
 //        }
 //
 //        return splitPerturbed;
-
-        return null;
-    }
+//    }
 
     // single sample version of above
     public static Double [][][] sampleFromConcentrationParametersOnce( Double [][][] params){
+        int nIn = params.length;
+        int nOut = nIn>0 ? params[0].length : 0;
+        int nVt = nOut>0 ? params[0][0].length : 0;
 
-//        int nIn = params.length;
-//        int nOut = nIn>0 ? params[0].length : 0;
-//        int nVt = nOut>0 ? params[0][0].length : 0;
-//
-//        // Assumes concentration parameters of each input link are independent
-//        Double [][][] splitPerturbed = BeatsMath.zeros(nIn,nOut,nVt);
-//
-//        int v,o,i;
-//        Double[] paramsForInputLink = BeatsMath.zeros(nOut);
-//        Double[] sample;
-//        for (v=0;v<nVt;v++){
-//            for (i=0;i<nIn;i++){
-//                for (o=0;o<nOut;o++){
-//                    paramsForInputLink[o] = params[i][o][v] + 1;
-//                }
-//                sample = BeatsMath.sampleDirichlet(paramsForInputLink);
-//                splitPerturbed = BeatsMath.zeros(nIn,nOut,nVt);
-//                for (o=0;o<nOut;o++){
-//                    splitPerturbed[i][o][v] = sample[o];
-//                }
-//            }
-//        }
-//        return splitPerturbed;
-        return null;
+        // Assumes concentration parameters of each input link are independent
+        Double [][][] splitPerturbed = BeatsMath.zeros(nIn,nOut,nVt);
+
+        int v,o,i;
+        Double[] paramsForInputLink = BeatsMath.zeros(nOut);
+        double[] sample;
+        for (v=0;v<nVt;v++){
+            for (i=0;i<nIn;i++){
+                for (o=0;o<nOut;o++){
+                    paramsForInputLink[o] = params[i][o][v] + 1;
+                }
+                sample = BeatsMath.sampleDirichlet(paramsForInputLink);
+                splitPerturbed = BeatsMath.zeros(nIn,nOut,nVt);
+                for (o=0;o<nOut;o++){
+                    splitPerturbed[i][o][v] = sample[o];
+                }
+            }
+        }
+        return splitPerturbed;
     }
 
-    public static Double [][][][] perturb2OutputSplit(Double [][][] split, SplitRatioProfile profile, int numEnsemble){
-
+//    public static Double [][][][] perturb2OutputSplit(Double [][][] split, SplitRatioProfile profile, int numEnsemble){
+//
 //        int nIn = split.length;
 //        int nOut = nIn>0 ? split[0].length : 0;
 //        int nVt = nOut>0 ? split[0][0].length : 0;
@@ -120,52 +115,50 @@ public class SplitRatioPerturber {
 //            }
 //        }
 //        return splitPerturbed;
-
-        return null;
-    }
+//
+//    }
 
     // single sample version of above
     public static Double [][][] perturb2OutputSplitOnce(final Double [][][] split, SplitRatioProfile profile){
 
-//        int nIn = split.length;
-//        int nOut = nIn>0 ? split[0].length : 0;
-//        int nVt = nOut>0 ? split[0][0].length : 0;
-//
-//        // clone it
-//        Double [][][] splitPerturbed = split.clone();
-//
-//        if(nIn!=1 && nOut!=2) // return non-perturbed if non 1 to 2 split given
-//            return splitPerturbed;
-//
-//        for (int v=0;v<nVt;v++){
-//            Double max = 0d;
-//            int max_index = 0;
-//            for (int o=0;o<nOut;o++){
-//                if (max<split[0][o][v]){
-//                    max=split[0][o][v];
-//                    max_index = o;
-//                }
-//            }
-//            Double[] params;
-//            if (profile.getSampleSize()!=null){
-//                params = BeatsMath.betaParamsFromRVMeanAndSampleSize(max, profile.getSampleSize());
-//            }
-//            else {
-//                params = BeatsMath.betaParamsFromRVMeanAndVariance(max, profile.getVariance()); }
-//            Double[] sample;
-//            try{
-//                sample = BeatsMath.sampleDirichlet(params);
-//            }
-//            catch (NotStrictlyPositiveException ex){
-//                double newmax = max - profile.getVariance()*1.5; //
-//                params = BeatsMath.betaParamsFromRVMeanAndVariance(newmax, profile.getVariance());
-//                sample = BeatsMath.sampleDirichlet(params);
-//            }
-//            splitPerturbed[0][max_index][v] = sample[0];
-//            splitPerturbed[0][1-max_index][v] = sample[1];
-//        }
-//        return splitPerturbed;
-        return null;
+        int nIn = split.length;
+        int nOut = nIn>0 ? split[0].length : 0;
+        int nVt = nOut>0 ? split[0][0].length : 0;
+
+        // clone it
+        Double [][][] splitPerturbed = split.clone();
+
+        if(nIn!=1 && nOut!=2) // return non-perturbed if non 1 to 2 split given
+            return splitPerturbed;
+
+        for (int v=0;v<nVt;v++){
+            Double max = 0d;
+            int max_index = 0;
+            for (int o=0;o<nOut;o++){
+                if (max<split[0][o][v]){
+                    max=split[0][o][v];
+                    max_index = o;
+                }
+            }
+            Double[] params;
+            if (profile.getSampleSize()!=null){
+                params = BeatsMath.betaParamsFromRVMeanAndSampleSize(max, profile.getSampleSize());
+            }
+            else {
+                params = BeatsMath.betaParamsFromRVMeanAndVariance(max, profile.getVariance()); }
+            double[] sample;
+            try{
+                sample = BeatsMath.sampleDirichlet(params);
+            }
+            catch (NotStrictlyPositiveException ex){
+                double newmax = max - profile.getVariance()*1.5; //
+                params = BeatsMath.betaParamsFromRVMeanAndVariance(newmax, profile.getVariance());
+                sample = BeatsMath.sampleDirichlet(params);
+            }
+            splitPerturbed[0][max_index][v] = sample[0];
+            splitPerturbed[0][1-max_index][v] = sample[1];
+        }
+        return splitPerturbed;
     }
 
 }

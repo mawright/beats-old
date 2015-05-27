@@ -125,8 +125,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
 		// initialize the split ratio matrix
 		// NOTE: SHOULD THIS GO IN RESET?
-//		splitratio_selected = new Double3DMatrix(nIn,nOut,myScenario.get.numVehicleTypes(),0d);
-//		normalizeSplitRatioMatrix(splitratio_selected);
+		splitratio_nominal = BeatsMath.zeros(nIn,nOut,myScenario.get.numVehicleTypes());
+        BeatsMath.normalize(splitratio_nominal);
 
 		// default node flow and split solvers
 //        node_behavior = new NodeBehavior(this,
@@ -483,9 +483,11 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 //	 * @return the split ratio
 //	 */
 	public double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
-		if(splitratio_nominal==null)
-			return Double.NaN;
-		return splitratio_nominal[inLinkInd][outLinkInd][vehTypeInd];
+        try{
+            return splitratio_nominal[inLinkInd][outLinkInd][vehTypeInd];
+        } catch(Exception e) {
+            return Double.NaN;
+        }
 	}
 
 
