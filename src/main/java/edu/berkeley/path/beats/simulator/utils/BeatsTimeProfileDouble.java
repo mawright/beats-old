@@ -6,8 +6,6 @@ import java.util.ArrayList;
 
 public class BeatsTimeProfileDouble extends BeatsTimeProfile<Double> {
 
-    protected Double current_sample;
-
     // initialize a 1D vector from comma separated string of positive numbers
     // negative numbers get replaced with nan.
     public BeatsTimeProfileDouble(String str, String delim, Double dt, Double startTime, double simdtinseconds) {
@@ -16,7 +14,7 @@ public class BeatsTimeProfileDouble extends BeatsTimeProfile<Double> {
     }
 
     public void reset() {
-        isdone = false;
+        super.reset();
         current_sample = data.get(0);
     }
 
@@ -35,13 +33,6 @@ public class BeatsTimeProfileDouble extends BeatsTimeProfile<Double> {
         for (i = 0; i < data.size(); i++)
             data.set(i,(Double) data.get(i)+value);
     }
-
-    public Double getCurrentSample() {
-        return current_sample;
-    }
-
-
-
 
     private ArrayList<Double> dataFromDoubles(Double [] X){
         ArrayList<Double> z = new ArrayList<Double>();

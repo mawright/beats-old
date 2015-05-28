@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class BeatsTimeProfileDouble3D extends BeatsTimeProfile<Double[][][]> {
 
-    private Double[][][] current_sample;        // sample per [vehicle type]
+    // current_sample per [vehicle type]
     private int nIn;
     private int nOut;
     private int nVt;
@@ -105,14 +105,6 @@ public class BeatsTimeProfileDouble3D extends BeatsTimeProfile<Double[][][]> {
         }
 
         return false;
-    }
-
-    public Double [][][] getFirst(){
-        return data.get(0);
-    }
-
-    public Double [][][] getCurrentSample(){
-        return current_sample;
     }
 
     // for time sample k, returns a 3D matrix with dimensions inlink x outlink x vehicle type

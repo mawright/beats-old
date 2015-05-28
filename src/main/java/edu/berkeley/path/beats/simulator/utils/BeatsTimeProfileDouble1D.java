@@ -11,7 +11,6 @@ import java.util.Iterator;
  */
 public class BeatsTimeProfileDouble1D extends BeatsTimeProfile<Double[]> {
 
-    private Double [] current_sample;		// sample per [vehicle type]
     protected int numTypes;
 
     public BeatsTimeProfileDouble1D(ArrayList<Integer> vehicle_type_index, ArrayList<String> demandStr, int numVehTypes, Double dt, Double startTime, double simdtinseconds) {
@@ -86,12 +85,8 @@ public class BeatsTimeProfileDouble1D extends BeatsTimeProfile<Double[]> {
             }
 
         }
-
         return false;
     }
 
-    public Double [] getCurrentSample(){
-        return current_sample;
-    }
 
 }

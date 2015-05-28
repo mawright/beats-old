@@ -151,7 +151,7 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
 
         if(scenario.getFundamentalDiagramSet()!=null)
             for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdProfile : scenario.getFundamentalDiagramSet().getFundamentalDiagramProfile())
-                ((FundamentalDiagramProfile) fdProfile).update(false);
+                ((FundamentalDiagramProfile) fdProfile).update(false,scenario.get.clock());
     }
 
     protected void update_sensors_control_events() throws BeatsException{

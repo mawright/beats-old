@@ -28,163 +28,150 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
-import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfile;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile {
 
-	// does not change ....................................
-	private Scenario myScenario;
-	private Link myLink;
-	private double dtinseconds;
-	private int samplesteps;
-	private ArrayList<FundamentalDiagram> FD;
-    private int step_initial_abs;
+    // does not change ....................................
+    private Scenario myScenario;
+    private Link myLink;
+    private BeatsTimeProfileFD fdProfile;
 
-	// does change ........................................
-	private boolean isdone; 
+    /////////////////////////////////////////////////////////////////////
+    // protected interface
+    /////////////////////////////////////////////////////////////////////
 
-	/////////////////////////////////////////////////////////////////////
-	// protected interface
-	/////////////////////////////////////////////////////////////////////
-	
-	// scale present and future fundamental diagrams to new lane value
-	protected void set_Lanes(double newlanes){
-		if(newlanes<=0 || FD.isEmpty())
-			return;
-		int step = myScenario.get.clock().sample_index_abs(samplesteps,step_initial_abs);
-		step = Math.max(0,step);
-		for(int i=step;i<FD.size();i++){
-			FD.get(i).setLanes(newlanes);
-		}
-	}
-	
-	/////////////////////////////////////////////////////////////////////
-	// populate / reset / validate / update
-	/////////////////////////////////////////////////////////////////////
-
-	protected void populate(Scenario myScenario) throws BeatsException {
-		
-		this.myScenario = myScenario;
-		isdone = false;
-		FD = new ArrayList<FundamentalDiagram>();
-		
-		// required
-		myLink = myScenario.get.linkWithId(getLinkId());
-		
-		if(myLink!=null)
-			myLink.setFundamentalDiagramProfile(this);
-		
-		// optional dt
-		if(getDt()!=null){
-			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds / myScenario.get.simdtinseconds());
-		}
-		else{ 	// only allow if it contains only one fd
-			if(getFundamentalDiagram().size()==1){
-				dtinseconds = Double.POSITIVE_INFINITY;
-				samplesteps = Integer.MAX_VALUE;
-			}
-			else{
-				dtinseconds = -1.0;		// this triggers the validation error
-				samplesteps = -1;
-				return;
-			}
-		}
-		
-		//  read fundamental diagrams
-		for(edu.berkeley.path.beats.jaxb.FundamentalDiagram fd : getFundamentalDiagram()){
-			FundamentalDiagram _fd = new FundamentalDiagram(myLink,fd);	// create empty fd
-//	        _fd.settoDefault();					// set to default
-//			_fd.copyfrom(fd);					// copy and normalize
-			FD.add(_fd);
-		}
-
-        // step_initial
-        double start_time = Double.isInfinite(getStartTime()) ? 0d : getStartTime();
-        step_initial_abs = BeatsMath.round(start_time/myScenario.get.simdtinseconds());
-
+    // scale present and future fundamental diagrams to new lane value
+    protected void set_Lanes(double newlanes) {
+//        if (newlanes <= 0 || fdProfile.isEmpty())
+//            return;
+//        int step = myScenario.get.clock().sample_index_abs(samplesteps, step_initial_abs);
+//        step = Math.max(0, step);
+//        for (int i = step; i < FD.size(); i++) {
+//            FD.get(i).setLanes(newlanes);
+//        }
     }
-	
-	protected void validate() {
-		
-		if(myLink==null)
-			BeatsErrorLog.addError("Bad link ID=" + getLinkId() + " in fundamental diagram.");
-		
-		// check dtinseconds
-		if( BeatsMath.lessorequalthan(dtinseconds,0d) && FD.size()>1 )
-			BeatsErrorLog.addError("Non-positive dt in fundamental diagram profile for link ID=" + getLinkId() + ".");
-	
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.get.simdtinseconds()) && FD.size()>1 )
-			BeatsErrorLog.addError("Time step in fundamental diagram profile for link ID=" + getLinkId() + " is not a multiple of simulation time step.");
-		
-		// check fundamental diagrams
-		for(FundamentalDiagram fd : FD)
-			fd.validate();
 
-	}
+    /////////////////////////////////////////////////////////////////////
+    // populate / reset / validate / update
+    /////////////////////////////////////////////////////////////////////
 
-	protected void reset() throws BeatsException {
-		isdone = false;
+    protected void populate(Scenario myScenario) throws BeatsException {
 
-        if(FD!=null)
-			for(FundamentalDiagram fd : FD)
-				fd.reset(myScenario.get.uncertaintyModel());
-		
-		// assign the fundamental diagram to the link
-		//update();	
-		
-	}
+        this.myScenario = myScenario;
+        this.myLink = myScenario.get.linkWithId(getLinkId());
 
-    public void update(boolean forcesample) throws BeatsException {
-		if(myLink==null)
-			return;
-		if(isdone || FD.isEmpty())
-			return;
-		if(forcesample || myScenario.get.clock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
-			
-			int n = FD.size()-1;
-			int step = myScenario.get.clock().sample_index_abs(samplesteps,step_initial_abs);
+        if (myLink != null)
+            myLink.setFundamentalDiagramProfile(this);
 
-			// zeroth sample extends to the left
-			step = Math.max(0,step);
+        fdProfile = new BeatsTimeProfileFD(
+            getFundamentalDiagram(),
+            getDt(),
+            getStartTime(),
+            myScenario.get.simdtinseconds()
+        );
+    }
 
-			// sample the profile
-			if(step<n){
-				myLink.setFDFromProfile( FD.get(step) );
-				return;
-			}
-			
-			// last sample
-			if(step>=n && !isdone){
-				myLink.setFDFromProfile( FD.get(n) );
-				isdone = true;
-				return;
-			}
-		}
-	}
+    protected void validate() {
 
+        if (myLink == null)
+            BeatsErrorLog.addError("Bad link ID=" + getLinkId() + " in fundamental diagram.");
+
+        fdProfile.validate();
+    }
+
+    protected void reset() throws BeatsException {
+        fdProfile.reset();
+    }
+
+    public void update(boolean forcesample,Clock clock) throws BeatsException {
+        if (myLink == null || fdProfile==null || fdProfile.isEmpty())
+            return;
+
+        if(fdProfile.sample(clock))
+            myLink.setFDFromProfile(fdProfile.getCurrentSample());
+    }
 
     /////////////////////////////////////////////////////////////////////
     // public API
     /////////////////////////////////////////////////////////////////////
 
-    public FundamentalDiagram getFDforTime(double time){
-        int profile_step = BeatsMath.floor( (time-getStartTime()) /dtinseconds);
-        profile_step = Math.max(profile_step,0);
-        profile_step = Math.min(profile_step,FD.size()-1);
-        return FD.get(profile_step);
-    }
-
+//    public FundamentalDiagram getFDforTime(double time) {
+//        int profile_step = BeatsMath.floor((time - getStartTime()) / dtinseconds);
+//        profile_step = Math.max(profile_step, 0);
+//        profile_step = Math.min(profile_step, FD.size() - 1);
+//        return FD.get(profile_step);
+//    }
 
     @Override
     public String toString() {
         String str = "";
         edu.berkeley.path.beats.simulator.FundamentalDiagram fd = (FundamentalDiagram) getFundamentalDiagram().get(0);
-        str += "vf="+fd.getVfNormalized()+",";
-        str += "w="+fd.getWNormalized()+",";
-        str += "C="+fd._getCapacityInVeh()+",";
+        str += "vf=" + fd.getVfNormalized() + ",";
+        str += "w=" + fd.getWNormalized() + ",";
+        str += "C=" + fd._getCapacityInVeh() + ",";
         return str;
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // inner classes
+    /////////////////////////////////////////////////////////////////////
+
+    public class BeatsTimeProfileFD extends BeatsTimeProfile<FundamentalDiagram> {
+
+        public BeatsTimeProfileFD(List<edu.berkeley.path.beats.jaxb.FundamentalDiagram> fds, Double dt, Double startTime, double simdtinseconds) {
+            super(dt, startTime, simdtinseconds);
+            for (edu.berkeley.path.beats.jaxb.FundamentalDiagram fd : fds) {
+                FundamentalDiagram _fd = new FundamentalDiagram(myLink, fd);    // create empty fd
+                // _fd.settoDefault();					// set to default
+                // _fd.copyfrom(fd);					// copy and normalize
+                data.add(_fd);
+            }
+        }
+
+//        @Override
+//        public void reset(){
+//            super.reset();
+//            current_sample = reset_fd;
+//        }
+
+        @Override
+        public void validate(){
+            super.validate();
+            for (FundamentalDiagram fd : data)
+                fd.validate();
+        }
+
+        // returns true iff a new sample was chosen
+        public boolean sample(Clock clock){
+
+            if( !isdone & clock.is_time_to_sample_abs(samplesteps, step_initial_abs) ){
+
+                int n = data.size()-1;
+                int step = clock.sample_index_abs(samplesteps,step_initial_abs);
+
+                // demand is zero before step_initial_abs
+                if(clock.getAbsoluteTimeStep()< step_initial_abs)
+                    return false;
+
+                // sample the profile
+                if(step<n){
+                    current_sample = data.get(step);
+                    return true;
+                }
+
+                // last sample
+                if(step>=n && !isdone){
+                    current_sample = data.get(data.size()-1);
+                    isdone = true;
+                    return true;
+                }
+
+            }
+            return false;
+        }
+
     }
 }

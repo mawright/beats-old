@@ -28,7 +28,6 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
-import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfileDemands;
 import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfileDouble1D;
 
 import java.util.ArrayList;

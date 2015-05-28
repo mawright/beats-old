@@ -364,29 +364,29 @@ public class ScenarioGetApi {
         return null;
     }
 
-    public FundamentalDiagramSet current_fds_si(double time_current){
-        Network network = (Network) scenario.getNetworks().get(0);
-        JaxbObjectFactory factory = new JaxbObjectFactory();
-        FundamentalDiagramSet fd_set = factory.createFundamentalDiagramSet();
-        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
-            Link L = (Link) jaxbL;
-            FundamentalDiagramProfile fdp = (FundamentalDiagramProfile) factory.createFundamentalDiagramProfile();
-            fd_set.getFundamentalDiagramProfile().add(fdp);
-
-            // set values
-            fdp.setLinkId(L.getId());
-            //fdp.setDt(-1d);
-            FundamentalDiagram fd = new FundamentalDiagram(L);
-
-            if(L.getFundamentalDiagramProfile()==null)
-                fd.settoDefault();
-            else
-                fd.copyfrom(L.getFundamentalDiagramProfile().getFDforTime(time_current));
-            fd.setOrder(0);
-            fdp.getFundamentalDiagram().add(fd);
-        }
-        return fd_set;
-    }
+//    public FundamentalDiagramSet current_fds_si(double time_current){
+//        Network network = (Network) scenario.getNetworks().get(0);
+//        JaxbObjectFactory factory = new JaxbObjectFactory();
+//        FundamentalDiagramSet fd_set = factory.createFundamentalDiagramSet();
+//        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
+//            Link L = (Link) jaxbL;
+//            FundamentalDiagramProfile fdp = (FundamentalDiagramProfile) factory.createFundamentalDiagramProfile();
+//            fd_set.getFundamentalDiagramProfile().add(fdp);
+//
+//            // set values
+//            fdp.setLinkId(L.getId());
+//            //fdp.setDt(-1d);
+//            FundamentalDiagram fd = new FundamentalDiagram(L);
+//
+//            if(L.getFundamentalDiagramProfile()==null)
+//                fd.settoDefault();
+//            else
+//                fd.copyfrom(L.getFundamentalDiagramProfile().getFDforTime(time_current));
+//            fd.setOrder(0);
+//            fdp.getFundamentalDiagram().add(fd);
+//        }
+//        return fd_set;
+//    }
 
     public InitialDensitySet current_densities_si(){
         Network network = (Network) scenario.getNetworks().get(0);

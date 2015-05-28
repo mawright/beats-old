@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class BeatsTimeProfile <T> {
 
+    protected T current_sample;
     protected double dtinseconds;            // not really necessary
     protected int samplesteps;
     protected int step_initial_abs;       // time steps at start since midnight
@@ -18,9 +19,9 @@ public class BeatsTimeProfile <T> {
 
     public BeatsTimeProfile(){}
 
-
     public BeatsTimeProfile(Double dt,Double startTime, double simdtinseconds){
 
+        data = new ArrayList<T>();
         isdone = false;
 
         // step_initial
@@ -33,12 +34,27 @@ public class BeatsTimeProfile <T> {
     }
     
 	/////////////////////////////////////////////////////////////////////
-	// public interface
+	// validate, reset
 	/////////////////////////////////////////////////////////////////////  
-
 
     public void reset(){
         isdone = false;
+    }
+
+    public void validate(){
+
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // getters / setters
+    /////////////////////////////////////////////////////////////////////
+
+    public T getCurrentSample() {
+        return current_sample;
+    }
+
+    public T getFirst(){
+        return data.get(0);
     }
 
     public double getDtinseconds() {
@@ -69,18 +85,10 @@ public class BeatsTimeProfile <T> {
         return samplesteps;
     }
 
-	/////////////////////////////////////////////////////////////////////
-	// alter data
-	/////////////////////////////////////////////////////////////////////  
-    
     public void set(int i,T f){
     	if(data!=null)
     		data.set(i,f);
     }
-
-	/////////////////////////////////////////////////////////////////////
-	// check data
-	/////////////////////////////////////////////////////////////////////  
 
     public boolean hasNaN(){
         if(data==null)
