@@ -1,9 +1,6 @@
 package edu.berkeley.path.beats.simulator;
 
-import java.util.Arrays;
-
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
-import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 import org.apache.commons.math3.exception.NotStrictlyPositiveException;
 
 public class SplitRatioPerturber {

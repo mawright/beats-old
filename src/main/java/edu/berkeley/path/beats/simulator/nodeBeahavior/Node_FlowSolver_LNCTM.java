@@ -28,7 +28,6 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
-import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
 
@@ -122,12 +121,12 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
         return ioflow;
 	}
 
-	/////////////////////////////////////////////////////////////////////
-	// protected interface
-	/////////////////////////////////////////////////////////////////////
-
-	protected Double3DMatrix resolveUnassignedSplits(final Double3DMatrix splitratio,final SupplyDemand demand_supply){
-		return null;
-	}
+//	/////////////////////////////////////////////////////////////////////
+//	// protected interface
+//	/////////////////////////////////////////////////////////////////////
+//
+//	protected Double3DMatrix resolveUnassignedSplits(final Double3DMatrix splitratio,final SupplyDemand demand_supply){
+//		return null;
+//	}
 	
 }

@@ -3,7 +3,6 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 import java.util.Set;
 
 import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 import edu.berkeley.path.beats.util.ArraySet;
 import org.apache.log4j.Logger;
 

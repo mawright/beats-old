@@ -1,7 +1,5 @@
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;

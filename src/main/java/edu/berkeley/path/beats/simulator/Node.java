@@ -31,9 +31,7 @@ import edu.berkeley.path.beats.simulator.nodeBeahavior.NodeBehavior;
 import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_FlowSolver;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
-import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
-import java.util.Arrays;
 import java.util.List;
 
 /** Node class.

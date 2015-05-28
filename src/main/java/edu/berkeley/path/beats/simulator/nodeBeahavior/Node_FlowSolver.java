@@ -2,7 +2,6 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
-import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 public abstract class Node_FlowSolver {
 

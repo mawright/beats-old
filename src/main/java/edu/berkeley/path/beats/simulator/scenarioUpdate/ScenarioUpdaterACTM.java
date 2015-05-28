@@ -6,7 +6,6 @@ import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorCTM;
 import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_FlowSolver;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
-import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 import java.util.ArrayList;
 import java.util.List;

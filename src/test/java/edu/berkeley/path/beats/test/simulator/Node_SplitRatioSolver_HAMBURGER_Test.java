@@ -615,7 +615,6 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
         density_field.setAccessible(true);
         density_field.set(linkBehavior, density.get(link_id));
         
-        
         // Set LinkType.
         LinkType type = new LinkType();
         type.setName(link_type);
