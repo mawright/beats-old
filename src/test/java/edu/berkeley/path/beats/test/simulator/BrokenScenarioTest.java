@@ -25,7 +25,7 @@ public class BrokenScenarioTest {
 	private static Logger logger = Logger.getLogger(BrokenScenarioTest.class);
 	private File config;
 	
-	private static String[] working_config_names = {"_scenario_constantsplits",
+	private static String[] working_config_names = { //"_scenario_constantsplits",
                                                     "_scenario_hovlanes_onevtype",
                                                     "_scenario_2009_02_12",
                                                     "_smalltest",

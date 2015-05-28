@@ -195,7 +195,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
             Double [][][] splitratio_perturbed;
 
             if(my_profile==null) {
-                splitratio_perturbed = BeatsMath.nans(nIn,nOut,numVTypes);
+                splitratio_perturbed = splitratio_nominal; //BeatsMath.nans(nIn,nOut,numVTypes);
             }
             else
             {
