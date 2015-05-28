@@ -2,7 +2,6 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 	
@@ -49,9 +48,10 @@ public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 	/* Methods */
 	// Method for adjust the split ratio
 	@Override
-    public Double3DMatrix computeAppliedSplitRatio(Double3DMatrix splitratio_selected,final int ensemble_index) {
-		
-		Double3DMatrix splitratio_new = new Double3DMatrix(splitratio_selected.getData());
+    public Double [][][] computeAppliedSplitRatio(final Double [][][] splitratio_selected,final int ensemble_index) {
+
+        int numVehicleTypes = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
+        Double [][][] splitratio_new = splitratio_selected.clone();
 		
 		// Get index for general vehicle type.
 		int vehicle_index = myNode.getMyNetwork().getMyScenario().get.vehicleTypeIndexForId(1);
@@ -63,7 +63,7 @@ public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 		
 		
 		// Adjusts the split ratio and
-		for	(int v = 0 ; v < splitratio_selected.getnVTypes();v++)
+		for	(int v = 0 ; v < numVehicleTypes;v++)
 		{
 			// sr_predict = sr_local_avg + K * max(density - threshold, 0)
 			double diverging_ratio = sr_local_avg + scaling_factor * Math.max(mainline_density - threshold, 0);
@@ -80,8 +80,8 @@ public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 				diverging_ratio = 1;
 			}
 			
-			splitratio_new.set(0, off_ramp_id, v, diverging_ratio);
-			splitratio_new.set(0, fwy_id, v,1 - diverging_ratio);
+			splitratio_new[0][off_ramp_id][v] = diverging_ratio;
+			splitratio_new[0][fwy_id][v] = 1 - diverging_ratio;
 		}
 		
 
@@ -97,10 +97,9 @@ public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
 	}
 	
 	// Method for getting local_sr
-	private double getLocalSR(Double3DMatrix splitratio_selected, int vehicle_index)
+	private double getLocalSR(final Double [][][] splitratio_selected, int vehicle_index)
 	{
-		double sr_local_avg = splitratio_selected.get(0, off_ramp_id, vehicle_index);
-		
+		double sr_local_avg = splitratio_selected[0][off_ramp_id][vehicle_index];
 		return sr_local_avg;
 	}
 

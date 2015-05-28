@@ -41,18 +41,72 @@ public final class BeatsMath {
 	
 	private static Random random = new Random();
 	private static final double EPSILON = (double) 1e-4;
-	
- 	public static double [] zeros(int n1){
- 		return n1<0 ? null : new double [n1];
-	}
- 	
- 	public static double [][] zeros(int n1,int n2){
- 		return (n1<0 || n2<0) ? null : new double[n1][n2];
-	}
-	
-	public static Double sum(Double [] V){
+
+    public static Double [] zeros(int n1){
+        if(n1<0)
+            return null;
+        Double [] z = new Double[n1];
+        for(int i=0;i<n1;i++)
+            z[i]=0d;
+        return z;
+    }
+
+//    public static double [][] zeros_double(int n1,int n2){
+//        if (n1<0 || n2<0)
+//            return null;
+//        return new double[n1][n2];
+//    }
+
+    public static Double [][] zeros(int n1,int n2){
+        if (n1<0 || n2<0)
+            return null;
+        Double [][] z = new Double[n1][n2];
+        for(int i=0;i<n1;i++)
+            z[i] = BeatsMath.zeros(n2);
+        return z;
+    }
+
+    public static Double [][][] zeros(int n1,int n2,int n3){
+        if (n1<0 || n2<0 || n3<0)
+            return null;
+        Double [][][] z = new Double[n1][n2][n3];
+        for(int i=0;i<n1;i++)
+            z[i] = BeatsMath.zeros(n2,n3);
+        return z;
+    }
+
+    public static Double [][][][] zeros(int n1,int n2,int n3,int n4){
+        if (n1<0 || n2<0 || n3<0 || n4<0)
+            return null;
+        Double [][][][] z = new Double[n1][n2][n3][n4];
+        for(int i=0;i<n1;i++)
+            z[i] = BeatsMath.zeros(n2,n3,n4);
+        return z;
+    }
+
+    public static Double [][][] nans(int n1,int n2,int n3){
+        Double [][][] X = BeatsMath.zeros(n1,n2,n3);
+        int i,j,k;
+        for(i=0;i<n1;i++)
+            for(j=0;j<n2;j++)
+                for(k=0;k<n3;k++)
+                    X[i][j][k] = Double.NaN;
+        return X;
+    }
+
+    public static Double [][][] ones(int n1,int n2,int n3){
+        Double [][][] X = BeatsMath.zeros(n1,n2,n3);
+        int i,j,k;
+        for(i=0;i<n1;i++)
+            for(j=0;j<n2;j++)
+                for(k=0;k<n3;k++)
+                    X[i][j][k]= 1d;
+        return X;
+    }
+
+    public static Double sum(Double [] V){
 		if(V==null)
-			return null;
+			return Double.NaN;
 		Double answ = 0d;
 		for(int i=0;i<V.length;i++)
 			if(V[i]!=null)
@@ -72,7 +126,7 @@ public final class BeatsMath {
 	
 	public static Double sum(Collection<Double> V) {
 		if (null == V) 
-			return null;
+			return Double.NaN;
 		Double ans = .0d;
 		Iterator<Double> iter = V.iterator();
 		while (iter.hasNext()) ans += iter.next();
@@ -92,7 +146,7 @@ public final class BeatsMath {
 		int n2 = V[0].length;
 		switch(dim){
 		case 1:
-			answ = new Double[n2];
+			answ = BeatsMath.zeros(n2);
 			for(i=0;i<V.length;i++)
 				for(j=0;j<V[i].length;j++){
 					if(answ[j]==null)
@@ -102,7 +156,7 @@ public final class BeatsMath {
 				}
 			return answ;
 		case 2:
-			answ = new Double[n1];
+			answ = BeatsMath.zeros(n1);
 			for(i=0;i<V.length;i++){
 				answ[i]=0d;
 				for(j=0;j<V[i].length;j++)
@@ -115,14 +169,14 @@ public final class BeatsMath {
 		}
 	}
 
-	public static Double [] times(Double [] V,double a){
-		if(V==null)
-			return null;
-		Double [] answ = new Double [V.length];
-		for(int i=0;i<V.length;i++)
-			answ[i] = a*V[i];
-		return answ;
-	}
+    public static Double [] times(Double [] V,Double a){
+        if(V==null)
+            return null;
+        Double [] answ = new Double [V.length];
+        for(int i=0;i<V.length;i++)
+            answ[i] = a*V[i];
+        return answ;
+    }
 
 	public static double [] times(double [] V,double a){
 		if(V==null)
@@ -167,7 +221,7 @@ public final class BeatsMath {
 		return true;
 	}
 
-    public static boolean all_non_negative (double [] x){
+    public static boolean all_non_negative (Double [] x){
         if(x==null)
             return false;
         if(x.length==0)
@@ -307,6 +361,11 @@ public final class BeatsMath {
         return y;
     }
 
+    // deep copy a double array
+    public static Double[] copy(Double[] x){
+        return (x==null || x.length==0) ? null : x.clone();
+    }
+
 	// deep copy a double array
 	public static Double[][] copy(Double[][] x){
 		if(x==null)
@@ -332,8 +391,26 @@ public final class BeatsMath {
 	public static double sampleZeroMeanGaussian(double std_dev){
 		return std_dev*BeatsMath.random.nextGaussian();
 	}
-	
-	public static double[][] sampleDirichlet(double[] concentration_parameters, int numSamples){
+
+    public static double[] sampleDirichlet(Double[] concentration_parameters){
+
+        int i;
+        double[] sample = new double[concentration_parameters.length];
+        for(i=0;i<concentration_parameters.length;i++){
+            if (concentration_parameters[i] <= 0d)
+                concentration_parameters[i] = 0.01d; //concentration parameters must be positive
+            GammaDistribution Gamma = new GammaDistribution(concentration_parameters[i], 1);
+            sample[i] = Gamma.sample();
+        }
+
+        double sum_sample = BeatsMath.sum(sample);
+        sample = BeatsMath.times(sample, 1d/sum_sample);
+
+        return sample;
+    }
+
+
+    public static double[][] sampleDirichlet(double[] concentration_parameters, int numSamples){
 		// Samples from a Dirichlet distribution using Gamma distributions
 		// Random variables distributed according to a Dirichlet distribution are random vectors
 		// whose entries are in the range (0, 1) and sum to 1.
@@ -350,17 +427,17 @@ public final class BeatsMath {
 		}
 		for(e=0;e<numSamples;e++){
 			double sum_sample = BeatsMath.sum(sample[e]);
-			sample[e] = BeatsMath.times(sample[e], 1/sum_sample);
+			sample[e] = BeatsMath.times(sample[e], 1d/sum_sample);
 		}
 		return sample;
 	}
 	
-	public static double[] betaParamsFromRVMeanAndVariance(double mean, double variance){
+	public static Double[] betaParamsFromRVMeanAndVariance(double mean, double variance){
 		// The beta distribution is the special case of the Dirichlet distribution for k = 2
 		// k > 2 not implemented yet
 		if( mean>.99d)
 			mean = .95;
-		double[] params = new double[2];
+		Double[] params = new Double[2];
 		double m = mean;
 		double v = variance;
 		params[0] = - m * (Math.pow(m, 2) - m + v) / v;
@@ -375,10 +452,78 @@ public final class BeatsMath {
         return params;
     }
 
-    public static double[] betaParamsFromRVMeanAndSampleSize(double m, double n){
-        double[] params = new double[2];
+    public static Double[] betaParamsFromRVMeanAndSampleSize(double m, double n){
+        Double[] params = new Double[2];
         params[0] = m*n;
         params[1] = (1-m)*n;
         return params;
     }
+
+    public static Double [][][] normalize(Double [][][] In) {
+
+        int i, j, k;
+        boolean hasNaN;
+        int countNaN;
+        int idxNegative;
+        double sum;
+
+        if(In==null)
+            return null;
+
+        int nIn = In.length;
+        int nOut = nIn > 0 ? In[0].length : 0;
+        int nVt = nOut > 0 ? In[0][0].length : 0;
+        Double [][][] Out = In.clone();
+
+        for (i = 0; i < nIn; i++) {
+            for (k = 0; k < nVt; k++) {
+                hasNaN = false;
+                countNaN = 0;
+                idxNegative = -1;
+                sum = 0.0f;
+
+                // count NaNs in ikth row of In
+                // sum non-nan entries in ikth row of In
+                for (j = 0; j < nOut; j++) {
+                    if (Double.isNaN(In[i][j][k])) {
+                        countNaN++;
+                        idxNegative = j;
+                        if (countNaN > 1)
+                            hasNaN = true;
+                    } else
+                        sum += In[i][j][k];
+                }
+
+                // case single nan
+                if (countNaN == 1) {
+                    Out[i][idxNegative][k] = Math.max(0f, (1 - sum));
+                    sum += Out[i][idxNegative][k];
+                }
+
+                // case all zeros => set first to 1
+                if (!hasNaN && BeatsMath.equals(sum, 0.0)) {
+                    Out[i][0][k] = 1d;
+                    continue;
+                }
+
+                // case no nans, sum<1 => normalize
+                if ((!hasNaN) && (sum < 1.0)) {
+                    for (j = 0; j < nOut; j++)
+                        Out[i][j][k] = Out[i][j][k] / sum;
+                    continue;
+                }
+
+                // sum>1 => normalize non-zero entries
+                if (sum >= 1.0) {
+                    for (j = 0; j < nOut; j++)
+                        if (Double.isNaN(In[i][j][k]))
+                            Out[i][j][k] = 0d;
+                        else
+                            Out[i][j][k] = Out[i][j][k] / sum;
+                }
+            }
+        }
+        return Out;
+    }
+
 }

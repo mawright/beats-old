@@ -28,7 +28,6 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
-import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
 
@@ -57,7 +56,7 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
 	}
 	
 	@Override
-    public IOFlow computeLinkFlows(final Double3DMatrix sr,final int ensemble_index){
+    public IOFlow computeLinkFlows(final Double [][][] sr,final int ensemble_index){
 
     	int i,j,k;
 		int nIn = myNode.nIn;
@@ -68,10 +67,11 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
         double [] supply = myNode.node_behavior.getAvailableSupply(ensemble_index);
 
         // input i contributes to output j .............................
-    	for(i=0;i<sr.getnIn();i++)
-        	for(j=0;j<sr.getnOut();j++)
-        		iscontributor[i][j] = sr.getSumOverTypes(i,j)>0;
-	
+    	for(i=0;i<sr.length;i++)
+        	for(j=0;j<sr[i].length;j++)
+        		iscontributor[i][j] = BeatsMath.sum(sr[i][j])>0;
+
+
         double [] applyratio = new double[nIn];
 
         for(i=0;i<nIn;i++)
@@ -83,7 +83,7 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
             outDemandKnown[j] = 0d;
             for(i=0;i<nIn;i++)
                 for(k=0;k<numVehicleTypes;k++)
-                    outDemandKnown[j] += demand[i][k]*sr.get(i,j,k);
+                    outDemandKnown[j] += demand[i][k]*sr[i][j][k];
 
             // compute and sort output demand/supply ratio .............
             if(BeatsMath.greaterthan(supply[j], 0d))
@@ -113,7 +113,7 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
             for(k=0;k<numVehicleTypes;k++){
                 double val = 0d;
                 for(i=0;i<nIn;i++)
-                    val += ioflow.getIn(i,k)*sr.get(i,j,k);
+                    val += ioflow.getIn(i,k)*sr[i][j][k];
                 ioflow.setOut(j,k,val);
             }
         }
@@ -121,12 +121,12 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
         return ioflow;
 	}
 
-	/////////////////////////////////////////////////////////////////////
-	// protected interface
-	/////////////////////////////////////////////////////////////////////
-
-	protected Double3DMatrix resolveUnassignedSplits(final Double3DMatrix splitratio,final SupplyDemand demand_supply){
-		return null;
-	}
+//	/////////////////////////////////////////////////////////////////////
+//	// protected interface
+//	/////////////////////////////////////////////////////////////////////
+//
+//	protected Double3DMatrix resolveUnassignedSplits(final Double3DMatrix splitratio,final SupplyDemand demand_supply){
+//		return null;
+//	}
 	
 }

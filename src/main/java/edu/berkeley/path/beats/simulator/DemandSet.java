@@ -86,7 +86,7 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
     public void update() {
         Iterator it = link_id_to_demandprofile.entrySet().iterator();
         while (it.hasNext())
-            ((DemandProfile) ((Map.Entry)it.next()).getValue()).update(false);
+            ((DemandProfile) ((Map.Entry)it.next()).getValue()).update(false,myScenario.clock);
     }
 
     /////////////////////////////////////////////////////////////////////

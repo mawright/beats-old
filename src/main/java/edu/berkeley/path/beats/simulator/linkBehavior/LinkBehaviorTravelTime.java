@@ -37,7 +37,7 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
     // UPDATE
 
     @Override
-    public void update_state(double [][] inflow,double [][] outflow){
+    public void update_state(Double [][] inflow,Double [][] outflow){
         for(int e=0;e<ensemble.size();e++)
             ensemble.get(e).update_state(inflow[e]);
     }
@@ -85,7 +85,7 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
     }
 
     @Override
-    public boolean set_density_in_veh(int e,double [] d){
+    public boolean set_density_in_veh(int e,Double [] d){
         if(e<0 || e>=ensemble.size())
             return false;
         if(d.length!=myScenario.get.numVehicleTypes())
@@ -129,10 +129,10 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
         }
 
         // x is an array over vehicle types
-        public boolean set_density_in_veh(double [] x){
+        public boolean set_density_in_veh(Double [] x){
             if(cell_array.isEmpty())
                 return false;
-            double [] x_per_cell = BeatsMath.times(x,1/cell_array.size());
+            Double [] x_per_cell = BeatsMath.times(x,1d/cell_array.size());
             for(Cell cell : cell_array)
                 cell.set_vehicles(x_per_cell);
             return true;
@@ -147,7 +147,7 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
             for(Cell cell : cell_array)
                 cell.reset();
         }
-        protected void update_state(double [] inflow){
+        protected void update_state(Double [] inflow){
             cell_array.add(new Cell(inflow));
             cell_array.remove(0);
         }
@@ -159,16 +159,16 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
     /////////////////////////////////////////////////////////////////////
 
     private class Cell {
-        public double [] n;        // [ve] for each vehicle type
+        public Double [] n;        // [ve] for each vehicle type
         public Cell(int nVT){
             n=BeatsMath.zeros(nVT);
         }
-        public Cell(double [] no){
-            n = new double[no.length];
+        public Cell(Double [] no){
+            n = BeatsMath.zeros(no.length);
             for(int v=0;v<no.length;v++)
                 n[v]=no[v];
         }
-        protected void set_vehicles(double [] x){
+        protected void set_vehicles(Double [] x){
             for(int i=0;i<x.length;i++)
                 n[i]=x[i];
         }

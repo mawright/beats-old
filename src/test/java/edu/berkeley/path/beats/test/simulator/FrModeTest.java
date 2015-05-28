@@ -21,7 +21,7 @@ public class FrModeTest {
 
 
 
-
+    @Ignore
     @Ignore
     @Test
     public void testWithProperties() throws Exception {
@@ -38,7 +38,7 @@ public class FrModeTest {
 
 //            System.out.println(dp._knob + "\t" + dp.getCurrentValue(0)[0]);
 
-            scenario.set.knob_for_offramp_link_id(link_id,2);
+//            scenario.set.knob_for_offramp_link_id(link_id,2);
 
 //            System.out.println(dp._knob + "\t" + dp.getCurrentValue(0)[0]);
 

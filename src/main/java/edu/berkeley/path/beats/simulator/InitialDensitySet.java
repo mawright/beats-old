@@ -41,7 +41,7 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 	private Scenario myScenario;
 	private Link [] link;					// ordered array of references
 	private int [] vehicle_type_index; 		// index of vehicle types into global list
-	private double [] initial_density; 		// [veh/meter] indexed by link and type
+	private Double [] initial_density; 		// [veh/meter] indexed by link and type
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -136,8 +136,8 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 	 * @param linkid String ID of the link
 	 * @return array of intitial densities in [veh/link]
 	 */
-	public double [] getDensityForLinkIdInVeh(long network_id,long linkid){
-		double [] d = BeatsMath.zeros(myScenario.get.numVehicleTypes());
+	public Double [] getDensityForLinkIdInVeh(long network_id,long linkid){
+		Double [] d = BeatsMath.zeros(myScenario.get.numVehicleTypes());
 		boolean foundit = false;
 		for(int i=0;i<link.length;i++){
 			if(link[i]!=null && link[i].getId()==linkid && link[i].myNetwork.getId()==network_id){

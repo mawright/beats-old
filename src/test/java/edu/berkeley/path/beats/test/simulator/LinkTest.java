@@ -370,8 +370,8 @@ public class LinkTest {
 
 	@Test
 	public void test_overrideDensityWithVeh() {
-		double [] olddensity = link.getDensityInVeh(0);
-		double [] newdensity = link.getDensityInVeh(0);
+        Double [] olddensity = link.getDensityInVeh(0);
+        Double [] newdensity = link.getDensityInVeh(0);
 		newdensity[0] *= 2d;
 		link.overrideDensityWithVeh(newdensity,0);
 

@@ -2,7 +2,6 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
-import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
 
 import java.util.ArrayList;
 
@@ -27,7 +26,7 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
 	}
 	
 	@Override
-    public Double3DMatrix computeAppliedSplitRatio(final Double3DMatrix splitratio_selected,final int e) {
+    public Double [][][] computeAppliedSplitRatio(final Double [][][] splitratio_selected,final int e) {
 
     	int i,j,k;
     	int numunknown;	
@@ -36,7 +35,9 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
 		int nOut = myNode.nOut;        
     	int numVehicleTypes = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
         String [] vTypes = myNode.getMyNetwork().getMyScenario().get.vehicleTypeNames();
-    	Double3DMatrix splitratio_new = new Double3DMatrix(splitratio_selected.getData());
+
+        Double [][][] splitratio_new = splitratio_selected.clone();
+
     	double remainingSplit;
     	double num;
 
@@ -44,7 +45,7 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
         double [] supply = myNode.node_behavior.getAvailableSupply(e);
 
         if(myNode.istrivialsplit)
-        	return new Double3DMatrix(nIn,nOut,numVehicleTypes,1d);
+        	return BeatsMath.ones(nIn,nOut,numVehicleTypes);
 
     	ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
     	ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
@@ -57,8 +58,8 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
             outDemandKnown[j] = 0f;
             for(i=0;i<nIn;i++)
                 for(k=0;k<numVehicleTypes;k++)
-                    if(!Double.isNaN(splitratio_selected.get(i,j,k)))
-                        outDemandKnown[j] += splitratio_selected.get(i,j,k) * demand[i][k];
+                    if(!Double.isNaN(splitratio_selected[i][j][k]))
+                        outDemandKnown[j] += splitratio_selected[i][j][k] * demand[i][k];
         }
 
         // fill in unassigned split ratios .............................
@@ -68,7 +69,7 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
                 // number of outputs with unknown split ratio
                 numunknown = 0;
                 for(j=0;j<nOut;j++)
-                    if(Double.isNaN(splitratio_selected.get(i,j,k)))
+                    if(Double.isNaN(splitratio_selected[i][j][k]))
                         numunknown++;
 
                 if(numunknown==0)
@@ -85,7 +86,7 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
                 unknown_dsratio.clear();
                 remainingSplit = 1f;
                 for(j=0;j<nOut;j++){
-                    Double sr = splitratio_selected.get(i,j,k);
+                    Double sr = splitratio_selected[i][j][k];
                     if(sr.isNaN()){
                         sr_new[j] = 0f;
                         if(myNode.getOutput_link()[j].canVTypeEnter(vTypes[k])) {
@@ -167,7 +168,7 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
 
                 // copy to SR
                 for(j=0;j<nOut;j++)
-                    splitratio_new.set(i,j,k,sr_new[j]);
+                    splitratio_new[i][j][k] = sr_new[j];
             }
         }
 

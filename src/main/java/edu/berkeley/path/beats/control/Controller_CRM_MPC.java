@@ -181,29 +181,29 @@ public class Controller_CRM_MPC extends Controller {
     @Override
     protected void update() throws BeatsException {
 
-        double time_current = getMyScenario().get.currentTimeInSeconds();
-
-        // if it is time to optimize, update metering rate profile
-        if(BeatsMath.greaterorequalthan(time_current-time_last_opt, pm_period)){
-
-            // call policy maker (everything in SI units)
-            policy = policy_maker.givePolicy( network,
-                    myScenario.get.current_fds_si(time_current),
-                    myScenario.predict_demands_si(time_current, pm_dt, pm_horizon),
-                    myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon),
-                    myScenario.get.current_densities_si(),
-                    controller_parameters,
-                    pm_dt,
-                    pm_props);
-
-//            System.out.println(time_current+"\n"+policy);
-
-            // update time keeper
-            time_last_opt = time_current;
-        }
-
-        // .....
-        send_policy_to_actuators(time_current);
+//        double time_current = getMyScenario().get.currentTimeInSeconds();
+//
+//        // if it is time to optimize, update metering rate profile
+//        if(BeatsMath.greaterorequalthan(time_current-time_last_opt, pm_period)){
+//
+//            // call policy maker (everything in SI units)
+//            policy = policy_maker.givePolicy( network,
+//                    myScenario.get.current_fds_si(time_current),
+//                    myScenario.predict_demands_si(time_current, pm_dt, pm_horizon),
+//                    myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon),
+//                    myScenario.get.current_densities_si(),
+//                    controller_parameters,
+//                    pm_dt,
+//                    pm_props);
+//
+////            System.out.println(time_current+"\n"+policy);
+//
+//            // update time keeper
+//            time_last_opt = time_current;
+//        }
+//
+//        // .....
+//        send_policy_to_actuators(time_current);
 
     }
 

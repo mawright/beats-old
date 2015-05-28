@@ -1,7 +1,5 @@
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.simulator.utils.Double3DMatrix;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,7 +24,7 @@ public class SplitRatioLogger  {
         }
     }
 
-    public void write(Double3DMatrix splitratio_applied){
+    public void write(Double [][][] splitratio_applied){
 
         Scenario myScenario = myNode.getMyNetwork().getMyScenario();
 
@@ -44,7 +42,7 @@ public class SplitRatioLogger  {
                                         myNode.getInput_link()[i].getId(),
                                         myNode.getOutput_link()[j].getId(),
                                         myScenario.get.vehicleTypeIdForIndex(k),
-                                        splitratio_applied.get(i,j,k)));
+                                        splitratio_applied[i][j][k]));
                     } catch(IOException ioe){
                         System.out.println(ioe.getMessage());
                     }

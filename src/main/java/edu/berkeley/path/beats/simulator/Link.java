@@ -50,8 +50,8 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     public Type link_type;
 
     // in/out flows (from node model or demand profiles)
-    public double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
-    public double [][] outflow;    				    // [veh]	numEnsemble x numVehTypes
+    public Double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
+    public Double [][] outflow;    				    // [veh]	numEnsemble x numVehTypes
 
     // link geometry
     public double _lanes;							// [-]
@@ -83,7 +83,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     protected boolean activeFDevent;					// true if an FD event is active on this link,
 
 	// link state
-    protected double [] initial_density;			    // [veh]  	numVehTypes
+    protected Double [] initial_density;			    // [veh]  	numVehTypes
 
     // link behavior
     public LinkBehaviorCTM link_behavior;
@@ -234,15 +234,15 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         initial_density = getDensityInVeh(0).clone();
     }
 
-    protected void set_initial_state(double [] d){
+    protected void set_initial_state(Double [] d){
         initial_density  = d==null ? BeatsMath.zeros(myScenario.get.numVehicleTypes()) : d.clone();
     }
 
-    public void setInflow(int ensemble,double[] inflow) {
+    public void setInflow(int ensemble,Double[] inflow) {
         this.inflow[ensemble] = inflow;
     }
 
-    public void setOutflow(int ensemble,double[] outflow) {
+    public void setOutflow(int ensemble,Double[] outflow) {
         this.outflow[ensemble] = outflow;
     }
 
@@ -406,10 +406,10 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	
 	// Link state .......................
 
-    public double[] getDensityInVeh(int ensemble) {
+    public Double[] getDensityInVeh(int ensemble) {
         try{
             int nVT = myScenario.get.numVehicleTypes();
-            double [] d = new double[nVT];
+            Double [] d = BeatsMath.zeros(nVT);
             for(int v=0;v<nVT;v++)
                 d[v] = link_behavior.get_density_in_veh(ensemble, v);
             return d;
@@ -437,15 +437,15 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
     // dimension of d is # vehicle types
-    public boolean set_density_in_veh(int e,double [] d){
+    public boolean set_density_in_veh(int e,Double [] d){
         return link_behavior.set_density_in_veh(e,d);
     }
 
-    public double[] get_out_demand_in_veh(int e) {
+    public Double[] get_out_demand_in_veh(int e) {
         return link_behavior.flow_demand[e];
     }
 
-    public double get_total_out_demand_in_veh(int e){
+    public Double get_total_out_demand_in_veh(int e){
         return BeatsMath.sum(link_behavior.flow_demand[e]);
     }
 
@@ -461,7 +461,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
     // interface for node model
     /////////////////////////////////////////////////////////////////////
 
-    public double[] getOutflowInVeh(int ensemble) {
+    public Double[] getOutflowInVeh(int ensemble) {
         try{
             return outflow[ensemble].clone();
         } catch(Exception e){
@@ -485,7 +485,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         }
     }
 
-    public double[] getInflowInVeh(int ensemble) {
+    public Double[] getInflowInVeh(int ensemble) {
         try{
             return inflow[ensemble].clone();
         } catch(Exception e){
@@ -517,7 +517,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         return link_behavior.compute_speed_in_mps(ensemble);
     }
 
-    public void overrideDensityWithVeh(double[] x,int ensemble){
+    public void overrideDensityWithVeh(Double[] x,int ensemble){
         link_behavior.set_density_in_veh(ensemble, x);
     }
 

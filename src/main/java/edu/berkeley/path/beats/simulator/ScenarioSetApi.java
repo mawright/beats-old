@@ -1,7 +1,6 @@
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.control.Controller_SR_Generator;
-import edu.berkeley.path.beats.control.Controller_SR_Generator_Fw;
+//import edu.berkeley.path.beats.control.splitgen.Controller_SR_Generator_Fw;
 import edu.berkeley.path.beats.jaxb.Demand;
 import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacitySet;
 import edu.berkeley.path.beats.jaxb.VehicleType;
@@ -143,23 +142,23 @@ public class ScenarioSetApi {
         dp.set_knob(newknob);
     }
 
-    public void knob_for_offramp_link_id(int link_id,double newknob){
-
-//        if(scenario.runMode.compareTo(Scenario.RunMode.FRDEMANDS)!=0) {
-//            System.err.println("This only works in fr demand run mode");
+//    public void knob_for_offramp_link_id(int link_id,double newknob){
+//
+////        if(scenario.runMode.compareTo(Scenario.RunMode.FRDEMANDS)!=0) {
+////            System.err.println("This only works in fr demand run mode");
+////            return;
+////        }
+//
+//        // get the SR generator controller
+//        ArrayList<Controller> SRControllers = scenario.get.controllerset().getControllersOfType("Controller_SR_Generator_Fw");
+//
+//        if(SRControllers.size()!=1) {
+//            System.err.println("Did not find a unique SR controller in this scenario");
 //            return;
 //        }
-
-        // get the SR generator controller
-        ArrayList<Controller> SRControllers = scenario.get.controllerset().getControllersOfType("Controller_SR_Generator_Fw");
-
-        if(SRControllers.size()!=1) {
-            System.err.println("Did not find a unique SR controller in this scenario");
-            return;
-        }
-
-        ((Controller_SR_Generator_Fw)SRControllers.get(0)).setKnobForLink(link_id,newknob);
-    }
+//
+//        ((Controller_SR_Generator_Fw)SRControllers.get(0)).setKnobForLink(link_id,newknob);
+//    }
 
     // SPLITS ------------------------------------------------------
 
@@ -260,7 +259,7 @@ public class ScenarioSetApi {
         if(simulationMode!=TypeMode.left_of_init_dens && ids!=null){
             for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworks())
                 for(edu.berkeley.path.beats.jaxb.Link jlink:network.getLinkList().getLink()){
-                    double [] density = ((InitialDensitySet)ids).getDensityForLinkIdInVeh(network.getId(),jlink.getId());
+                    Double [] density = ((InitialDensitySet)ids).getDensityForLinkIdInVeh(network.getId(),jlink.getId());
                     if(density!=null)
                         ((Link) jlink).set_initial_state(density);
                     else
@@ -332,7 +331,7 @@ public class ScenarioSetApi {
         boolean success = true;
         for(i=0;i<numLinks;i++)
             for(e=0;e<scenario.get.numEnsemble();e++){
-                double [] val = new double[1];
+                Double [] val = new Double[1];
                 val[0] = d[i][e];
                 success &= ((Link)network.getLinkList().getLink().get(i)).set_density_in_veh(e,val);
             }

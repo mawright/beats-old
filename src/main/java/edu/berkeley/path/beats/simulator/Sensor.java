@@ -76,37 +76,37 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
-	public double[] getDensityInVPM(int ensemble) {
+	public Double[] getDensityInVPM(int ensemble) {
 		return null;
 	}
 
 	@Override
-	public double getOccupancy(int ensemble) {
+	public Double getOccupancy(int ensemble) {
 		return Double.NaN;
 	}
 
 	@Override
-	public double getTotalDensityInVPM(int ensemble) {
+	public Double getTotalDensityInVPM(int ensemble) {
 		return Double.NaN;
 	}
 
 	@Override
-	public double[] getFlowInVPS(int ensemble) {
+	public Double[] getFlowInVPS(int ensemble) {
 		return null;
 	}
 
 	@Override
-	public double getTotalFlowInVPS(int ensemble) {
+	public Double getTotalFlowInVPS(int ensemble) {
 		return Double.NaN;
 	}
 
 	@Override
-	public double getSpeedInMPS(int ensemble) {
+	public Double getSpeedInMPS(int ensemble) {
 		return Double.NaN;
 	}
 
 	@Override
-	public double getTotalDensityInVeh(int ensemble) {
+	public Double getTotalDensityInVeh(int ensemble) {
 		return Double.NaN;
 	}
 

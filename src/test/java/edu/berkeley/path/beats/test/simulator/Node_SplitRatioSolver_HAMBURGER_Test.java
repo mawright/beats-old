@@ -15,6 +15,7 @@ import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorCTM;
 import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_SplitRatioSolver_HAMBURGER;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -502,7 +503,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	private void generateValidationEnvironment(String configuration) throws Exception
 	{
 		// Generate density.
-		HashMap<Integer, double[][]> density = generateDensity(configuration);
+		HashMap<Integer, Double[][]> density = generateDensity(configuration);
 		
 		// Generate expected output.
 		Object exp_out = buildExpectedOutput(configuration);
@@ -539,7 +540,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		List<VehicleType> list = generateVehicleTypes(configuration);
 		
 		// Generate density.
-		HashMap<Integer, double[][]> density = generateDensity(configuration);
+		HashMap<Integer, Double[][]> density = generateDensity(configuration);
 		
 		// Generate Scenario
 		Scenario scenario = generateScenario(configuration, list, nr_of_ensembles);
@@ -576,7 +577,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	}
 	
 	// Builds Links
-	private Link linkBuilder(int link_id, String link_type, Scenario scenario, HashMap<Integer, double[][]> density) throws Exception
+	private Link linkBuilder(int link_id, String link_type, Scenario scenario, HashMap<Integer, Double[][]> density) throws Exception
 	{
 		// Access the Link constructor.
 		Constructor<Link> constructALink= Link.class.getDeclaredConstructor(null);
@@ -613,7 +614,6 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
         Field density_field = LinkBehaviorCTM.class.getDeclaredField("density");
         density_field.setAccessible(true);
         density_field.set(linkBehavior, density.get(link_id));
-        
         
         // Set LinkType.
         LinkType type = new LinkType();
@@ -761,7 +761,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	}
 	
 	// Generate Node
-	private Node generateNode(String configuration, Network network, HashMap<Integer, double[][]> density) throws Exception
+	private Node generateNode(String configuration, Network network, HashMap<Integer, Double[][]> density) throws Exception
 	{
 		// Access the Node constructor.
 		Constructor<Node> constructANode= Node.class.getDeclaredConstructor(null);
@@ -968,17 +968,17 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 	}
 		
 	// Build input density
-	private HashMap<Integer, double[][]> generateDensity(String configuration)
+	private HashMap<Integer, Double[][]> generateDensity(String configuration)
 	{
 		// Initiation
-		double[][] density = null;
-		HashMap<Integer, double[][]> density_map = new HashMap<Integer, double[][]>();
+		Double[][] density = null;
+		HashMap<Integer, Double[][]> density_map = new HashMap<Integer, Double[][]>();
 			
 			
 		if(configuration.equals("Test: calculation no diversion."))
 		{
 			// Link 1 Ensemble 1
-			density = new double[1][1];
+			density = BeatsMath.zeros(1,1);
 			density[0][0] = 0.037282197;
 			density_map.put(1, density.clone());
 				
@@ -998,7 +998,7 @@ public class Node_SplitRatioSolver_HAMBURGER_Test {
 		else
 		{
 			// Link 1 Ensemble 1
-			density = new double[1][1];
+			density = BeatsMath.zeros(1,1);
 			density[0][0] = 0.049709596;
 			density_map.put(1, density.clone());
 				

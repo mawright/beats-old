@@ -40,12 +40,12 @@ public class InitialDensitySetTest {
 		
 		int [] link_id = {1,2,3,4,5,6,7};
 		int i,j;
-		double [] X;
+		Double [] X;
 		double [] expected = {2d,1d};		
 		for(i=0;i<link_id.length;i++){
 			Link link = scenario.get.linkWithId(link_id[i]);
 			double link_length_in_miles = link.getLengthInMeters()*0.621371/1000d;
-			X = BeatsMath.times( ids.getDensityForLinkIdInVeh(1,link_id[i]),1/link_length_in_miles);
+			X = BeatsMath.times( ids.getDensityForLinkIdInVeh(1,link_id[i]),1d/link_length_in_miles);
 			for(j=0;j<expected.length;j++)
 				assertEquals(X[j],expected[j],1E-4);
 		}

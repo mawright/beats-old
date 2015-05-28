@@ -35,7 +35,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
     // UPDATE
 
     @Override
-    public void update_state(double[][] inflow, double[][] outflow) {
+    public void update_state(Double[][] inflow, Double[][] outflow) {
         for(int e=0;e<ensemble.size();e++)
             ensemble.get(e).update_state(inflow[e],outflow[e]);
     }
@@ -140,7 +140,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
     }
 
     @Override
-    public boolean set_density_in_veh(int e, double[] d) {
+    public boolean set_density_in_veh(int e, Double[] d) {
         if(e<0 || e>=ensemble.size())
             return false;
         if(d.length!=myScenario.get.numVehicleTypes())
@@ -188,7 +188,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
 
     // vehicles travel from the end of the cell_array to the begining
     private class CellArrayAndQueue {
-        public double [] queue;
+        public Double [] queue;
         public ArrayList<Cell> cell_array;
         public CellArrayAndQueue(int numcell, int num_veh_types){
             queue = BeatsMath.zeros(num_veh_types);
@@ -198,7 +198,7 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
         }
 
         // x is an array over vehicle types
-        public boolean set_density_in_veh(double [] x){
+        public boolean set_density_in_veh(Double [] x){
             queue = BeatsMath.copy(x);
             for(Cell cell : cell_array)
                 cell.reset();
@@ -225,10 +225,10 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
             for(Cell cell : cell_array)
                 cell.reset();
         }
-        protected void update_state(double[] inflow, double[] outflow){
+        protected void update_state(Double[] inflow, Double[] outflow){
 
             // update the queue
-            double [] flow_into_queue = cell_array.get(0).n;
+            Double [] flow_into_queue = cell_array.get(0).n;
             for(int j=0;j<queue.length;j++)
                queue[j] += flow_into_queue[j] - outflow[j];
 
@@ -255,12 +255,12 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
     /////////////////////////////////////////////////////////////////////
 
     private class Cell {
-        public double [] n;        // [ve] for each vehicle type
+        public Double [] n;        // [ve] for each vehicle type
         public Cell(int nVT){
             n=BeatsMath.zeros(nVT);
         }
-        public Cell(double [] no){
-            n = new double[no.length];
+        public Cell(Double [] no){
+            n = new Double[no.length];
             for(int v=0;v<no.length;v++)
                 n[v]=no[v];
         }

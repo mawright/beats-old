@@ -288,7 +288,7 @@ public class ScenarioGetApi {
         int i,j;
         for(i=0;i<network.getLinkList().getLink().size();i++){
             Link link = (Link) network.getLinkList().getLink().get(i);
-            double [] linkdensity = link.getDensityInVeh(ensemble);
+            Double [] linkdensity = link.getDensityInVeh(ensemble);
             if(linkdensity==null)
                 for(j=0;j<numVehTypes;j++)
                     density[i][j] = 0d;
