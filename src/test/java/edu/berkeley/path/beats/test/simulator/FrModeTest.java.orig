@@ -18,6 +18,13 @@ import static org.junit.Assert.fail;
  */
 public class FrModeTest {
 
+
+
+
+<<<<<<< HEAD
+
+=======
+>>>>>>> repair2
     @Ignore
     @Test
     public void testWithProperties() throws Exception {
