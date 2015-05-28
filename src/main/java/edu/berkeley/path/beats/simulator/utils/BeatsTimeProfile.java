@@ -1,5 +1,7 @@
 package edu.berkeley.path.beats.simulator.utils;
 
+import edu.berkeley.path.beats.simulator.Clock;
+import edu.berkeley.path.beats.simulator.FundamentalDiagram;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ public class BeatsTimeProfile <T> {
     protected int samplesteps;
     protected int step_initial_abs;       // time steps at start since midnight
     protected boolean isdone;
+    protected double start_time;
 	protected ArrayList<T> data;
 	
 	/////////////////////////////////////////////////////////////////////
@@ -25,7 +28,7 @@ public class BeatsTimeProfile <T> {
         isdone = false;
 
         // step_initial
-        double start_time = Double.isInfinite(startTime) ? 0d : startTime;
+        start_time = Double.isInfinite(startTime) ? 0d : startTime;
         step_initial_abs = BeatsMath.round(start_time/simdtinseconds);
 
         // dt
@@ -42,7 +45,61 @@ public class BeatsTimeProfile <T> {
     }
 
     public void validate(){
+        if(start_time<0)
+            BeatsErrorLog.addError("start_time<0 in a time profile");
+        if(step_initial_abs<0)
+            BeatsErrorLog.addError("step_initial_abs<0 in a time profile");
+        if(dtinseconds<=0)
+            BeatsErrorLog.addError("dt<=0 in a time profile");
+        if(!Double.isInfinite(dtinseconds) && samplesteps<=0)
+            BeatsErrorLog.addError("samplesteps<=0 in a time profile");
+    }
 
+
+    // returns true iff a new sample was chosen
+    public boolean sample(boolean forcesample,Clock clock){
+
+        if(data==null || data.isEmpty())
+            return false;
+
+        boolean istime = clock.is_time_to_sample_abs(samplesteps, step_initial_abs);
+        if(forcesample || (!isdone && istime)){
+
+            int n = data.size()-1;
+            int step = clock.sample_index_abs(samplesteps,step_initial_abs);
+
+            if(forcesample){
+                current_sample = data.get(Math.min(step,n));
+                return true;
+            }
+
+            // demand is zero before step_initial_abs
+            if(clock.getAbsoluteTimeStep()< step_initial_abs)
+                return false;
+
+            // sample the profile
+            if(step<n){
+                current_sample = data.get(step);
+                return true;
+            }
+
+            // last sample
+            if(step>=n && !isdone){
+                current_sample = data.get(n);
+                isdone = true;
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    public T sample_at_time(double time) {
+        int n = data.size()-1;
+        int step = BeatsMath.floor((time-start_time)/dtinseconds);
+        step = Math.max(step, 0);
+        step = Math.min(step,n);
+        return data.get(step);
     }
 
     /////////////////////////////////////////////////////////////////////

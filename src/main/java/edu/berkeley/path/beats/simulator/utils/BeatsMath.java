@@ -467,6 +467,9 @@ public final class BeatsMath {
         int idxNegative;
         double sum;
 
+        if(In==null)
+            return null;
+
         int nIn = In.length;
         int nOut = nIn > 0 ? In[0].length : 0;
         int nVt = nOut > 0 ? In[0][0].length : 0;

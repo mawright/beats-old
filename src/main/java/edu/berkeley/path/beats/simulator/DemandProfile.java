@@ -150,7 +150,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		if(demand_nominal==null || demand_nominal.isEmpty())
 			return;
 
-        boolean sample_changed = noiseknobonly ? false : demand_nominal.sample(clock);
+        boolean sample_changed = noiseknobonly ? false : demand_nominal.sample(false,clock);
 
         if( noiseknobonly || sample_changed ){
 

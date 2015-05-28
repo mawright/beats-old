@@ -143,7 +143,7 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
         concentrationCurrent = BeatsMath.nans(nIn,nOut,nVt);
 	}
 
-	protected void validate(double simdt) {
+	protected void validate() {
         if(getSplitratio().isEmpty()){
             BeatsErrorLog.addWarning("Split ratio ID=" + this.getId() + " has no data.");
             return;
@@ -167,10 +167,10 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 
         }
 
-        splitsProfile.validate(simdt,0d,1d);
+        splitsProfile.validate(0d,1d);
 
         if(concentrationProfile!=null)
-            concentrationProfile.validate(simdt,1d,Double.POSITIVE_INFINITY);
+            concentrationProfile.validate(1d,Double.POSITIVE_INFINITY);
 	}
 
     protected void update(boolean forcesample) {
@@ -180,14 +180,14 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
             return;
 
         // sample splits and update
-        if( splitsProfile.sample(myScenario.clock,forcesample) ) {
-            splitsCurrent = splitsProfile.getCurrentSample();
+        if( splitsProfile.sample(forcesample,myScenario.clock) ) {
+            splitsCurrent = BeatsMath.normalize(splitsProfile.getCurrentSample());
             if(splitsCurrent==null)
                 splitsCurrent = BeatsMath.nans(myNode.nIn,myNode.nOut,myScenario.numVehicleTypes);
         }
 
         // sample concentration parameters and update
-        if( concentrationProfile!=null && concentrationProfile.sample(myScenario.clock,forcesample) ) {
+        if( concentrationProfile!=null && concentrationProfile.sample(forcesample,myScenario.clock) ) {
             concentrationCurrent = concentrationProfile.getCurrentSample();
             if(concentrationCurrent==null)
                 concentrationCurrent = BeatsMath.nans(myNode.nIn,myNode.nOut,myScenario.numVehicleTypes);

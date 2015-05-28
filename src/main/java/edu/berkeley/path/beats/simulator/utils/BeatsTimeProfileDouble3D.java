@@ -1,15 +1,8 @@
 package edu.berkeley.path.beats.simulator.utils;
 
-import edu.berkeley.path.beats.simulator.Clock;
-
 import java.util.ArrayList;
 
 public class BeatsTimeProfileDouble3D extends BeatsTimeProfile<Double[][][]> {
-
-    // current_sample per [vehicle type]
-    private int nIn;
-    private int nOut;
-    private int nVt;
 
     public BeatsTimeProfileDouble3D(
             ArrayList<Integer> in_index,
@@ -24,10 +17,6 @@ public class BeatsTimeProfileDouble3D extends BeatsTimeProfile<Double[][][]> {
             double simdtinseconds) throws BeatsException {
 
         super(dt, startTime, simdtinseconds);
-
-        this.nIn = nIn;
-        this.nOut = nOut;
-        this.nVt = nVt;
 
         // organize into array of SplitInfo, collect max length
         ArrayList<SplitInfo> splits = new ArrayList<SplitInfo>();
@@ -57,82 +46,18 @@ public class BeatsTimeProfileDouble3D extends BeatsTimeProfile<Double[][][]> {
         }
     }
 
-    public void validate(double simdt,double minval,double maxval) {
-//        super.validate(simdt);
-//
-//        // check values are in range
-//        int i,j,k;
-//        for(Double[][][] X : data)
-//            for (i=0; i<X.length; i++)
-//                for (j = 0; j < X[i].length; j++)
-//                    for (k = 0; k < X[i][j].length; k++)
-//                        if (BeatsMath.greaterthan(X[i][j][k],maxval) | BeatsMath.lessthan(X[i][j][k],minval))
-//                            BeatsErrorLog.addError("Values out of range.");
+    public void validate(double minval,double maxval) {
+        super.validate();
+
+        // check values are in range
+        int i,j,k;
+        for(Double[][][] X : data)
+            for (i=0; i<X.length; i++)
+                for (j = 0; j < X[i].length; j++)
+                    for (k = 0; k < X[i][j].length; k++)
+                        if (BeatsMath.greaterthan(X[i][j][k],maxval) | BeatsMath.lessthan(X[i][j][k],minval))
+                            BeatsErrorLog.addError("Values out of range.");
     }
-
-    // returns true iff a new sample was chosen
-    public boolean sample(Clock clock,boolean forcesample){
-
-        if( forcesample | clock.is_time_to_sample_abs(samplesteps, step_initial_abs)){
-
-            // REMOVE THESE
-            int n = data.size()-1;
-            int step = clock.sample_index_abs(samplesteps,step_initial_abs);
-
-            // dont sample before start time
-            if(clock.getAbsoluteTimeStep()< step_initial_abs)
-                return false | forcesample;
-
-            // sample the profile
-            if(step<n){
-                current_sample = BeatsMath.normalize(data.get(step));
-                return true;
-            }
-
-            // last sample
-            if(step>=n && !isdone){
-                current_sample = n>=0 ? BeatsMath.normalize(data.get(data.size()-1)) : null;
-                isdone = true;
-                return true;
-            }
-
-            // sample CPs
-//            currentConcentrationParameters = sampleConcentrationParametersAtTimeStep( Math.min( step, laststep-1) );
-
-//            // assign
-//            myNode.setSampledSRProfile(currentSplitRatio);
-
-        }
-
-        return false;
-    }
-
-    // for time sample k, returns a 3D matrix with dimensions inlink x outlink x vehicle type
-//    private Double [][][] sampleAtTimeStep(int k){
-//        return data.get( Math.min(k,data.size()-1) );
-//    }
-
-//    private Double3DMatrix sampleConcentrationParametersAtTimeStep(int k){
-//        if (!hasConcentrationParameters())
-//            return null;
-//        Double3DMatrix X = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),
-//                myScenario.get.numVehicleTypes(),Double.NaN);	// initialize all unknown
-//
-//        int i,j,v,lastk;
-//        for(i=0;i<myNode.getnIn();i++){
-//            for(j=0;j<myNode.getnOut();j++){
-//                for(v=0;v<myScenario.get.numVehicleTypes();v++){
-//                    if(concentrationParamsProfile[i][j][v]==null)						// nan if not defined
-//                        continue;
-//                    if(concentrationParamsProfile[i][j][v].isEmpty())					// nan if no data
-//                        continue;
-//                    lastk = Math.min(k,concentrationParamsProfile[i][j][v].getNumTime()-1);	// hold last value
-//                    X.set(i,j,v,concentrationParamsProfile[i][j][v].get(lastk));
-//                }
-//            }
-//        }
-//        return X;
-//    }
 
     class SplitInfo {
         int inIndex;

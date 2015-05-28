@@ -108,7 +108,9 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
         if(capacity==null || capacity.isEmpty())
             return;
 
-        capacity.sample(forcesample,myScenario.get.clock());
+        // sample splits and update
+        capacity.sample(forcesample,myScenario.clock);
+
 	}
 
 	/////////////////////////////////////////////////////////////////////

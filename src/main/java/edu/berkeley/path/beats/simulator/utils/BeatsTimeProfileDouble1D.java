@@ -1,10 +1,7 @@
 package edu.berkeley.path.beats.simulator.utils;
 
-import edu.berkeley.path.beats.simulator.Clock;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Created by gomes on 5/18/2015.
@@ -58,35 +55,5 @@ public class BeatsTimeProfileDouble1D extends BeatsTimeProfile<Double[]> {
         super.reset();
         current_sample = BeatsMath.zeros(numTypes);
     }
-
-    // returns true iff a new sample was chosen
-    public boolean sample(Clock clock){
-
-        if( !isdone & clock.is_time_to_sample_abs(samplesteps, step_initial_abs) ){
-
-            int n = data.size()-1;
-            int step = clock.sample_index_abs(samplesteps,step_initial_abs);
-
-            // demand is zero before step_initial_abs
-            if(clock.getAbsoluteTimeStep()< step_initial_abs)
-                return false;
-
-            // sample the profile
-            if(step<n){
-                current_sample = data.get(step);
-                return true;
-            }
-
-            // last sample
-            if(step>=n && !isdone){
-                current_sample = data.get(data.size()-1);
-                isdone = true;
-                return true;
-            }
-
-        }
-        return false;
-    }
-
 
 }

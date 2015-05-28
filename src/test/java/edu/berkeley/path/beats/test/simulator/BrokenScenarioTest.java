@@ -26,8 +26,8 @@ public class BrokenScenarioTest {
 	private File config;
 	
 	private static String[] working_config_names = { //"_scenario_constantsplits",
-                                                    "_scenario_hovlanes_onevtype",
                                                     "_scenario_2009_02_12",
+                                                    "_scenario_hovlanes_onevtype",
                                                     "_smalltest",
 													"_smalltest_multipletypes",
 													 "testfwy_w",

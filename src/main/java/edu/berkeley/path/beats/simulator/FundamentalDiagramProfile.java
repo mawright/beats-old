@@ -45,13 +45,9 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
 
     // scale present and future fundamental diagrams to new lane value
     protected void set_Lanes(double newlanes) {
-//        if (newlanes <= 0 || fdProfile.isEmpty())
-//            return;
-//        int step = myScenario.get.clock().sample_index_abs(samplesteps, step_initial_abs);
-//        step = Math.max(0, step);
-//        for (int i = step; i < FD.size(); i++) {
-//            FD.get(i).setLanes(newlanes);
-//        }
+        if (newlanes <= 0 || fdProfile.isEmpty())
+            return;
+        fdProfile.set_lanes(newlanes);
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -90,7 +86,7 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
         if (myLink == null || fdProfile==null || fdProfile.isEmpty())
             return;
 
-        if(fdProfile.sample(clock))
+        if(fdProfile.sample(forcesample,clock))
             myLink.setFDFromProfile(fdProfile.getCurrentSample());
     }
 
@@ -98,12 +94,9 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
     // public API
     /////////////////////////////////////////////////////////////////////
 
-//    public FundamentalDiagram getFDforTime(double time) {
-//        int profile_step = BeatsMath.floor((time - getStartTime()) / dtinseconds);
-//        profile_step = Math.max(profile_step, 0);
-//        profile_step = Math.min(profile_step, FD.size() - 1);
-//        return FD.get(profile_step);
-//    }
+    public FundamentalDiagram getFDforTime(double time) {
+        return fdProfile.sample_at_time(time);
+    }
 
     @Override
     public String toString() {
@@ -144,34 +137,9 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
                 fd.validate();
         }
 
-        // returns true iff a new sample was chosen
-        public boolean sample(Clock clock){
-
-            if( !isdone & clock.is_time_to_sample_abs(samplesteps, step_initial_abs) ){
-
-                int n = data.size()-1;
-                int step = clock.sample_index_abs(samplesteps,step_initial_abs);
-
-                // demand is zero before step_initial_abs
-                if(clock.getAbsoluteTimeStep()< step_initial_abs)
-                    return false;
-
-                // sample the profile
-                if(step<n){
-                    current_sample = data.get(step);
-                    return true;
-                }
-
-                // last sample
-                if(step>=n && !isdone){
-                    current_sample = data.get(data.size()-1);
-                    isdone = true;
-                    return true;
-                }
-
-            }
-            return false;
+        public void set_lanes(double newlanes) {
+            for (FundamentalDiagram fd : data)
+                fd.setLanes(newlanes);
         }
-
     }
 }
