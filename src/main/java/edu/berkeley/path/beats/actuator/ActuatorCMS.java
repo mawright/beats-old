@@ -41,6 +41,12 @@ public class ActuatorCMS extends Actuator {
         splits.add(newsr);
     }
 
+    public void set_split(Long in_link_id,Long out_link_id,double sr){
+        for (VehicleType vt : myController.getMyScenario().getVehicleTypeSet().getVehicleType())
+            set_split(in_link_id,out_link_id, vt.getId(),sr);
+    }
+
+
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////

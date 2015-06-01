@@ -466,10 +466,14 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	public int getnOut() {
 		return nOut;
 	}
-	
-	public Double [][][] getSplitRatio(){
-		return splitratio_nominal;
-	}
+
+    public Double [][][] getSplitRatio(){
+        return splitratio_nominal;
+    }
+
+    public Double getSplitRatio(int in,int out){
+        return BeatsMath.sum(splitratio_nominal[in][out]);
+    }
 
 //	/**
 //	 * Retrieves a split ratio for the given input/output link pair and vehicle type
