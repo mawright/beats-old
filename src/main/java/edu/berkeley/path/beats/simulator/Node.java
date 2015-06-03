@@ -118,7 +118,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     	if(isTerminal)
     		return;
 
-        if(!istrivialsplit & !myScenario.split_logger_prefix.isEmpty())
+        if(!istrivialsplit && myScenario.split_logger_prefix!=null && !myScenario.split_logger_prefix.isEmpty())
             split_ratio_logger = new SplitRatioLogger(this);
 
 		// initialize the split ratio matrix

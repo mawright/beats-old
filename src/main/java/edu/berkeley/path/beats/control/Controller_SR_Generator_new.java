@@ -1,11 +1,13 @@
-package edu.berkeley.path.beats.control.splitgen;
+package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorCMS;
 import edu.berkeley.path.beats.jaxb.DemandProfile;
+import edu.berkeley.path.beats.jaxb.Parameter;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -27,29 +29,56 @@ public class Controller_SR_Generator_new extends Controller {
     // populate / validate / reset  / update
     /////////////////////////////////////////////////////////////////////
 
-    protected void populate(Scenario scenario) {
+    @Override
+    protected void populate(Object jaxbO) {
 
-        // search demand set for offramp profiles,
-        // populate a NodeData with each one
-        if(scenario.getDemandSet()==null)
-            return;
+        edu.berkeley.path.beats.jaxb.Controller jaxbC = (edu.berkeley.path.beats.jaxb.Controller) jaxbO;
 
         node_data = new ArrayList<NodeData>();
-        for(edu.berkeley.path.beats.jaxb.DemandProfile dp :  scenario.getDemandSet().getDemandProfile()){
-            Link link = scenario.get.linkWithId(dp.getLinkIdOrg());
-            // only consider offramp links
-            if(link!=null && link.isOfframp())
-                node_data.add( new NodeData(dp,link,scenario) );
+
+        Iterator<Parameter> it = jaxbController.getParameters().getParameter().iterator();
+
+        // because this controller was generated within beats, we can
+        // be sure the parameters come in fours.
+        while(it.hasNext()) {
+
+            // 1. link id
+            Link link = getMyScenario().get.linkWithId(Integer.parseInt(it.next().getValue()));
+
+            // 2. demand
+            String demandString = it.next().getValue();
+
+            // 3. dt
+            double dpdt = Double.parseDouble(it.next().getValue());
+
+            // 4. knob
+            double knob = Double.parseDouble(it.next().getValue());
+
+            if (!demandString.isEmpty() && link != null)
+                node_data.add(new NodeData(this,link, demandString, knob, dpdt, myScenario));
         }
+
+
+    }
+
+    @Override
+    public boolean register() {
+        for(NodeData nd : node_data)
+            if(!nd.cms.register())
+                return false;
+        return true;
     }
 
     @Override
     protected void validate() {
         super.validate();
+
+        for(NodeData node : node_data)
+            node.validate();
     }
 
     @Override
-    protected void reset() {
+    protected void reset()  {
         super.reset();
 
         if(node_data==null)
@@ -87,10 +116,11 @@ public class Controller_SR_Generator_new extends Controller {
         private ArrayList<Link> feeds;          // incoming that feed meas
         private BeatsTimeProfileDouble measured_flow_profile_veh;
         private Double current_flow_veh;
-        private Double [] alpha_tilde; // row sum of splits from feeding to non-measured links
+//        private Double [] alpha_tilde; // row sum of splits from feeding to non-measured links
 
-        public NodeData(DemandProfile dp,Link profileLink, Scenario scenario) {
+        public NodeData(Controller parent,Link profileLink,String demandStr,Double knob,Double dpdt, Scenario scenario) {
 
+            this.knob = knob;
             this.myNode = profileLink.getBegin_node();
             meas = profileLink;
             feeds = new ArrayList<Link>();
@@ -117,9 +147,10 @@ public class Controller_SR_Generator_new extends Controller {
                 return;
 
             // find the demand profile for the offramp
-            knob = dp.getKnob();
-            measured_flow_profile_veh = new BeatsTimeProfileDouble(dp.getDemand().get(0).getContent(), ",", dp.getDt(), dp.getStartTime(), scenario.get.simdtinseconds());
-            alpha_tilde = new Double[myNode.nIn];
+            measured_flow_profile_veh = new BeatsTimeProfileDouble(demandStr, ",", dpdt, 0d, scenario.get.simdtinseconds());
+            measured_flow_profile_veh.multiplyscalar(scenario.get.simdtinseconds());
+
+//            alpha_tilde = new Double[myNode.nIn];
 
             // create the actuator
             edu.berkeley.path.beats.jaxb.Actuator jaxbA = new edu.berkeley.path.beats.jaxb.Actuator();
@@ -133,10 +164,23 @@ public class Controller_SR_Generator_new extends Controller {
             jaxbA.setScenarioElement(se);
             jaxbA.setActuatorType(at);
             cms = new ActuatorCMS(scenario,jaxbA,new BeatsActuatorImplementation(jaxbA,scenario));
+            cms.populate(null,null);
+            cms.setMyController(parent);
         }
 
-        public void reset(){
+        public void validate(){
+
+            if(not_meas.size()!=1 )
+                BeatsErrorLog.addError("This case is not correctly implemented yet.");
+
+        }
+        public void reset() {
             measured_flow_profile_veh.reset();
+            try {
+                cms.reset();
+            } catch (BeatsException e) {
+                e.printStackTrace();
+            }
         }
 
         public void update(Clock clock){
@@ -161,14 +205,14 @@ public class Controller_SR_Generator_new extends Controller {
             ArrayList<Double> beta_array = new ArrayList<Double>();
 
             // compute sr normalization factor for feeding links
-            for(i=0;i<myNode.getInput_link().length;i++) {
-                if (!feeds.contains( myNode.input_link[i]))
-                    continue;
-                alpha_tilde[i] = 0d;
-                for (j = 0; j < myNode.nOut; j++)
-                    if(not_meas.contains( myNode.output_link[j]))
-                        alpha_tilde[i] += myNode.getSplitRatio(i, j);
-            }
+//            for(i=0;i<myNode.getInput_link().length;i++) {
+//                if (!feeds.contains( myNode.input_link[i]))
+//                    continue;
+//                alpha_tilde[i] = 0d;
+//                for (j = 0; j < myNode.nOut; j++)
+//                    if(not_meas.contains( myNode.output_link[j]))
+//                        alpha_tilde[i] += myNode.getSplitRatio(i, j);
+//            }
 
             // freeflow case
             beta_array.add(0d);
@@ -186,18 +230,19 @@ public class Controller_SR_Generator_new extends Controller {
 
                     for(i=0;i<myNode.nIn;i++) {
                         Link inlink = myNode.input_link[i];
-                        Double alpha_ij = myNode.getSplitRatio(i,j);
+//                        Double alpha_ij = myNode.getSplitRatio(i,j);
                         Double Si = BeatsMath.sum(inlink.get_out_demand_in_veh(e));
                         if (feeds.contains(inlink))
-                            dem_feed += alpha_ij * Si / alpha_tilde[i];
+                            dem_feed += Si; //alpha_ij * Si / alpha_tilde[i];
                         else //otherwise add to total
-                            dem_non_feed += alpha_ij * Si;
+                            dem_non_feed += 0d; //alpha_ij * Si;
                     }
 
                     Double R = outlink.get_available_space_supply_in_veh(e);
 
                     double num = current_flow_veh*(dem_non_feed+dem_feed);
                     double den = Sf*R + dem_feed*current_flow_veh;
+
                     beta_array.add( den>0 ? num / den : Double.POSITIVE_INFINITY );
                 }
             }
@@ -221,8 +266,8 @@ public class Controller_SR_Generator_new extends Controller {
 
                         // not measured scaled to 1-beta
                         else
-                            cms.set_split(inlink.getId(), outlink.getId(),
-                                    myNode.getSplitRatio(i, j)*(1d-beta)/alpha_tilde[i]);
+                            cms.set_split(inlink.getId(), outlink.getId(), myNode.getSplitRatio(i, j)*(1d-beta));
+//                            cms.set_split(inlink.getId(), outlink.getId(), myNode.getSplitRatio(i, j)*(1d-beta)/alpha_tilde[i]);
                     }
                 }
             }

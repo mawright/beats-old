@@ -15,7 +15,7 @@ public class ActuatorVSL extends Actuator {
 //	}
 
     @Override
-    protected boolean register() {
+    public boolean register() {
         return ((Link)implementor.get_target()).register_speed_controller();
     }
 }

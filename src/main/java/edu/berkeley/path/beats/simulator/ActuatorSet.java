@@ -72,7 +72,7 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 
     public void deploy(double current_time_in_seconds) throws BeatsException {
         for(Actuator actuator : actuators){
-            if(actuator.myController==null)
+            if(actuator.getMyController()==null)
                 continue;
             if(!actuator.isOn)
                 continue;

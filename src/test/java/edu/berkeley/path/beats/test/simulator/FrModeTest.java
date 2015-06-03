@@ -1,16 +1,14 @@
 package edu.berkeley.path.beats.test.simulator;
 
 import edu.berkeley.path.beats.Jaxb;
-import edu.berkeley.path.beats.Runner;
-import edu.berkeley.path.beats.simulator.Defaults;
-import edu.berkeley.path.beats.simulator.DemandProfile;
-import edu.berkeley.path.beats.simulator.DemandSet;
-import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import org.junit.Test;
 
+import java.io.File;
+
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -18,32 +16,19 @@ import static org.junit.Assert.fail;
  */
 public class FrModeTest {
 
-    @Ignore
     @Test
-    public void testWithProperties() throws Exception {
+    public void testFrMode() {
         try {
-            //String config_file = "C:\\Users\\gomes\\Dropbox\\_work_other\\polytechnique\\calibration\\config\\210E_joined_frmode.xml";
-
-            String propsfile = "C:\\Users\\Felix\\code\\autoCalibrationProject\\config\\frmode.properties";
-            int link_id = -24026218;
-            Scenario scenario = Runner.load_scenario_from_properties(propsfile);
-//            DemandSet demandSet = (DemandSet) scenario.getDemandSet();
-//            DemandProfile dp = demandSet.get_demand_profile_for_link_id((long) link_id);
-
-            scenario.reset();
-
-//            System.out.println(dp._knob + "\t" + dp.getCurrentValue(0)[0]);
-
-//            scenario.set.knob_for_offramp_link_id(link_id,2);
-
-//            System.out.println(dp._knob + "\t" + dp.getCurrentValue(0)[0]);
-
-
-            // run the scenario
+            Scenario scenario = Jaxb.create_scenario_from_xml("data" + File.separator + "config" + File.separator + "_smalltest_SRcontrol2.xml");
+            if (scenario == null)
+                fail("scenario did not load");
+            scenario.initialize(5d, 0d, 3600d, 5d, "", "", 1, 1, null, null, null, null, "fw_fr_split_output", null, null, null);
             scenario.run();
-
+            Link link = scenario.get.linkWithId(-7);
+            Double d = BeatsMath.sum(link.getOutflowInVeh(0)) * 3600d / 5d;
+            assertTrue(BeatsMath.equals(d, 150d));
         } catch (BeatsException e) {
-            fail("initialization failure.");
+            e.printStackTrace();
         }
     }
 }

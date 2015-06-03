@@ -42,7 +42,7 @@ public class ActuatorCMS extends Actuator {
     }
 
     public void set_split(Long in_link_id,Long out_link_id,double sr){
-        for (VehicleType vt : myController.getMyScenario().getVehicleTypeSet().getVehicleType())
+        for (VehicleType vt : getMyController().getMyScenario().getVehicleTypeSet().getVehicleType())
             set_split(in_link_id,out_link_id, vt.getId(),sr);
     }
 
@@ -60,12 +60,12 @@ public class ActuatorCMS extends Actuator {
     /////////////////////////////////////////////////////////////////////
 
     @Override
-    protected void populate(Object jaxbobject,Scenario myScenario) {
+    public void populate(Object jaxbobject,Scenario myScenario) {
         splits = new ArrayList<Splitratio>();
     }
 
     @Override
-    protected void reset() throws BeatsException {
+    public void reset() throws BeatsException {
         splits = new ArrayList<Splitratio>();
         super.reset();
     }
@@ -81,7 +81,7 @@ public class ActuatorCMS extends Actuator {
     };
 
     @Override
-    protected boolean register() {
+    public boolean register() {
         return ((Node)implementor.get_target()).register_split_controller();
     }
 }

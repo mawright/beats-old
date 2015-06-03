@@ -4,7 +4,7 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 
-    protected Controller myController;
+    private Controller myController;
     public enum Implementation {beats,aimsun};
     protected ActuatorImplementation implementor;
     protected Actuator.Type myType;
@@ -42,25 +42,25 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	// populate / validate / reset / deploy
 	/////////////////////////////////////////////////////////////////////
 
-    protected boolean register(){
+    public boolean register(){
         return false;
     }
 
-	protected void populate(Object jaxbobject,Scenario myScenario) {
+	public void populate(Object jaxbobject,Scenario myScenario) {
 		return;
 	}
 
-	protected void validate() {
+    public void validate() {
 //		if(implementor.getLink()==null)
 //			BeatsErrorLog.addError("Bad link reference in actuator ID="+getId());
 	}
 
-	protected void reset() throws BeatsException {
+    public void reset() throws BeatsException {
         this.isOn = true;
         return;
 	}
 
-	protected void deploy(double current_time_in_seconds){
+    public void deploy(double current_time_in_seconds){
     };
 
     protected void deploy_off_signal(){
@@ -79,5 +79,13 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
         this.isOn = xison;
         if(!isOn)
             deploy_off_signal();
+    }
+
+    public void setMyController(Controller myController){
+        this.myController = myController;
+    }
+
+    public Controller getMyController(){
+        return myController;
     }
 }
