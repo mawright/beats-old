@@ -5,16 +5,15 @@ import edu.berkeley.path.beats.jaxb.Parameter;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.*;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * HOVs and GP feed the offramp
  */
 public class Controller_SR_Generator_new extends Controller {
 
-    private List<NodeData> node_data;
+//    private List<NodeData> node_data;
+    private HashMap<Long,NodeData> node_data;
 
     /////////////////////////////////////////////////////////////////////
     // Construction
@@ -33,7 +32,7 @@ public class Controller_SR_Generator_new extends Controller {
 
         edu.berkeley.path.beats.jaxb.Controller jaxbC = (edu.berkeley.path.beats.jaxb.Controller) jaxbO;
 
-        node_data = new ArrayList<NodeData>();
+        node_data = new HashMap<Long,NodeData>();
 
         Iterator<Parameter> it = jaxbController.getParameters().getParameter().iterator();
 
@@ -54,7 +53,7 @@ public class Controller_SR_Generator_new extends Controller {
             double knob = Double.parseDouble(it.next().getValue());
 
             if (!demandString.isEmpty() && link != null)
-                node_data.add(new NodeData(this,link, demandString, knob, dpdt, myScenario));
+                node_data.put(link.getId(), new NodeData(this, link, demandString, knob, dpdt, myScenario));
         }
 
 
@@ -62,7 +61,7 @@ public class Controller_SR_Generator_new extends Controller {
 
     @Override
     public boolean register() {
-        for(NodeData nd : node_data)
+        for(NodeData nd : node_data.values())
             if(!nd.cms.register())
                 return false;
         return true;
@@ -72,7 +71,7 @@ public class Controller_SR_Generator_new extends Controller {
     protected void validate() {
         super.validate();
 
-        for(NodeData node : node_data)
+        for(NodeData node : node_data.values())
             node.validate();
     }
 
@@ -83,7 +82,7 @@ public class Controller_SR_Generator_new extends Controller {
         if(node_data==null)
             return;
 
-        for(NodeData node : node_data)
+        for(NodeData node : node_data.values())
             node.reset();
     }
 
@@ -93,10 +92,18 @@ public class Controller_SR_Generator_new extends Controller {
         if(node_data==null)
             return;
 
-        for(NodeData nd : node_data){
+        for(NodeData nd : node_data.values()){
             nd.update(myScenario.get.clock());
             nd.deploy(myScenario.get.currentTimeInSeconds());
         }
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // api
+    /////////////////////////////////////////////////////////////////////
+
+    public void set_knob_for_link(Long link_id,double newknob){
+        node_data.get(link_id).set_knob(newknob);
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -168,11 +175,10 @@ public class Controller_SR_Generator_new extends Controller {
         }
 
         public void validate(){
-
             if(not_meas.size()!=1 )
                 BeatsErrorLog.addError("This case is not correctly implemented yet.");
-
         }
+
         public void reset() {
             measured_flow_profile_veh.reset();
             try {
@@ -188,7 +194,7 @@ public class Controller_SR_Generator_new extends Controller {
             int e = 0;
 
             if(measured_flow_profile_veh.sample(false,clock))
-                current_flow_veh = measured_flow_profile_veh.getCurrentSample();
+                current_flow_veh = measured_flow_profile_veh.getCurrentSample()*knob;
 
             if(BeatsMath.equals(current_flow_veh, 0d)){
                 beta = 0d;
@@ -275,9 +281,9 @@ public class Controller_SR_Generator_new extends Controller {
 
         }
 
-//        protected void set_knob_for_fr_link(double newknob){
-//            knob = newknob;
-//        }
+        protected void set_knob(double newknob){
+            knob = newknob;
+        }
 
     }
 

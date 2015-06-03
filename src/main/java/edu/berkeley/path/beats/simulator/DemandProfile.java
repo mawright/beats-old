@@ -35,6 +35,7 @@ import java.util.ArrayList;
 final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
 	// does not change ....................................
+    protected boolean isSinkDemand;
     private TypeUncertainty uncertaintyModel;
 	private boolean isOrphan;
     private BeatsTimeProfileDouble1D demand_nominal;	// [veh] demand profile per vehicle type
@@ -71,8 +72,9 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
         // required
         Link myLink = myScenario.get.linkWithId(getLinkIdOrg());
         isOrphan = myLink==null;
+        isSinkDemand = myLink.isSink();
 
-		if(isOrphan)
+		if(isOrphan || isSinkDemand)
 			return;
 		
 		// attach to link
@@ -134,7 +136,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 
 	protected void reset() {
 		
-		if(isOrphan)
+		if(isOrphan || isSinkDemand)
 			return;
 
         demand_nominal.reset();
@@ -144,7 +146,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	
 	protected void update(boolean noiseknobonly,Clock clock) {
 		
-		if(isOrphan)
+		if(isOrphan || isSinkDemand)
 			return;
 		
 		if(demand_nominal==null || demand_nominal.isEmpty())
