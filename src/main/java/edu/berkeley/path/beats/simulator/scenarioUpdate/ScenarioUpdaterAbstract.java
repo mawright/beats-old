@@ -19,10 +19,15 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
 
     public ScenarioUpdaterAbstract(Scenario scenario,String nodeflowsolver_name,String nodesrsolver_name){
         this.scenario = scenario;
-        if(nodeflowsolver_name!=null)
-            this.nodeflowsolver = TypeNodeFlowSolver.valueOf(nodeflowsolver_name);
-        if(nodesrsolver_name!=null)
-            this.nodesrsolver = TypeNodeSplitSolver.valueOf(nodesrsolver_name);
+
+        this.nodeflowsolver = nodeflowsolver_name==null ?
+                TypeNodeFlowSolver.proportional :
+                TypeNodeFlowSolver.valueOf(nodeflowsolver_name);
+
+        this.nodesrsolver = nodesrsolver_name==null ?
+                TypeNodeSplitSolver.A :
+                TypeNodeSplitSolver.valueOf(nodesrsolver_name);
+
     }
 
     @Override

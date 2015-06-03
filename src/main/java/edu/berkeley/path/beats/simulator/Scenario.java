@@ -35,6 +35,7 @@ import javax.xml.bind.Marshaller;
 
 import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
+import edu.berkeley.path.beats.control.Controller_SR_Generator_new;
 import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.simulator.output.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.output.OutputWriterFactory;
@@ -408,6 +409,14 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         set.splitLoggerDt(split_logger_dt);
         this.aux_props = aux_props;
 
+        // convert units
+        if (null == getSettings() || null == getSettings().getUnits())
+            logger.warn("Scenario units not specified. Assuming SI");
+        else if (!"SI".equalsIgnoreCase(getSettings().getUnits())) {
+            logger.info("Converting scenario units from " + getSettings().getUnits() + " to SI");
+            edu.berkeley.path.beats.util.UnitConverter.process(this);
+        }
+
         // create scenario updater
         if(is_actm){
             runMode = RunMode.ACTM;
@@ -417,6 +426,14 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             if(run_mode.compareToIgnoreCase("fw_fr_split_output")==0) {
                 runMode = RunMode.FRDEMANDS;
                 updater = new ScenarioUpdaterFrFlow(this, nodeflowsolver, nodesrsolver);
+
+
+                // generate split ratio controllers
+                if(controllerSet==null)
+                    controllerSet = new edu.berkeley.path.beats.jaxb.ControllerSet();
+
+                controllerSet.getController().add(generate_SR_controllers());
+
             }
             else {
                 runMode = RunMode.NORMAL;
@@ -425,11 +442,11 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         }
 
         // create performance calculator
-        if(!performance_config.isEmpty())
+        if(performance_config!=null && !performance_config.isEmpty())
             set.performance_calculator(Jaxb.create_performance_calculator(performance_config));
 
 		// create run parameters object
-		boolean writeoutput = true;
+		boolean writeoutput = outtype!=null && !outtype.isEmpty() && outprefix!=null && !outprefix.isEmpty();
 		runParam = new RunParameters( timestep,
 									  starttime,
 									  endtime,
@@ -472,13 +489,6 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @throws BeatsException
 	 */
 	protected void populate_validate() throws BeatsException {
-
-		if (null == getSettings() || null == getSettings().getUnits())
-			logger.warn("Scenario units not specified. Assuming SI");
-		else if (!"SI".equalsIgnoreCase(getSettings().getUnits())) {
-			logger.info("Converting scenario units from " + getSettings().getUnits() + " to SI");
-			edu.berkeley.path.beats.util.UnitConverter.process(this);
-		}
 
 	    // populate the scenario ....................................................
 	    populate();
@@ -982,5 +992,35 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     @Override
     public void setDownstreamBoundaryCapacitySet(DownstreamBoundaryCapacitySet value) {
         super.setDownstreamBoundaryCapacitySet(value);
+    }
+
+
+
+    /////////////////////////////////////////////////////////////////////
+    // private
+    /////////////////////////////////////////////////////////////////////
+
+    private edu.berkeley.path.beats.jaxb.Controller  generate_SR_controllers(){
+
+        edu.berkeley.path.beats.jaxb.Controller contr = new edu.berkeley.path.beats.jaxb.Controller();
+        contr.setType("SR_Generator_new");
+        contr.setEnabled(true);
+        Parameters parms = new Parameters();
+        contr.setParameters(parms);
+
+        for(edu.berkeley.path.beats.jaxb.DemandProfile dp : demandSet.getDemandProfile()){
+            Link link = get.linkWithId(dp.getLinkIdOrg());
+            Node endnode = get.nodeWithId(link.getEnd().getNodeId());
+            boolean issink = endnode.getOutputs()==null || endnode.getOutputs().getOutput().isEmpty();
+
+            // create a controller in this case
+            if(issink) {
+                parms.addParameter("linkid",String.format("%d", dp.getLinkIdOrg()));
+                parms.addParameter("demand",dp.getDemand().get(0).getContent());
+                parms.addParameter("dt", String.format("%f", dp.getDt()));
+                parms.addParameter("knob",String.format("%f",dp.getKnob()));
+            }
+        }
+        return contr;
     }
 }

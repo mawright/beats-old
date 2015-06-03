@@ -55,7 +55,6 @@ public class BeatsTimeProfile <T> {
             BeatsErrorLog.addError("samplesteps<=0 in a time profile");
     }
 
-
     // returns true iff a new sample was chosen
     public boolean sample(boolean forcesample,Clock clock){
 

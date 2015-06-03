@@ -339,7 +339,7 @@ public class ScenarioSetApi {
     }
 
     public void uncertaintyModel(String uncertaintyModel) {
-        scenario.uncertaintyModel = TypeUncertainty.valueOf(uncertaintyModel);
+        scenario.uncertaintyModel = uncertaintyModel==null ? TypeUncertainty.gaussian : TypeUncertainty.valueOf(uncertaintyModel);
     }
 
 }

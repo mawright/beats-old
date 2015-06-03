@@ -52,7 +52,7 @@ public final class ControllerSet extends edu.berkeley.path.beats.jaxb.Controller
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
-	
+
 	protected void populate(Scenario myScenario) {
 
 		this.myScenario = myScenario;

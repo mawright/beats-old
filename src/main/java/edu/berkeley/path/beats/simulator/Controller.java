@@ -70,6 +70,7 @@ public class Controller {
         SIG_MaxPressure,
         SR_Generator,
 		SR_Generator_Fw,
+		SR_Generator_new,
 		HOV_SR_Generator}
 
     public static enum ActuatorType {
@@ -133,7 +134,7 @@ public class Controller {
 				for(TargetActuator ta : jaxbC.getTargetActuators().getTargetActuator()){
                     Actuator act = myScenario.get.actuatorWithId(ta.getId());
                     actuators.add(act);
-                    act.myController = this;
+                    act.setMyController(this);
 					actuator_usage.add(ta.getUsage()==null ? "" : ta.getUsage());
 				}
 			}

@@ -90,7 +90,7 @@ public final class ActuatorSignal extends Actuator {
 	/////////////////////////////////////////////////////////////////////
 
     @Override
-	protected void populate(Object jaxbobject,Scenario myScenario) {
+    public void populate(Object jaxbobject,Scenario myScenario) {
 
         edu.berkeley.path.beats.jaxb.Signal jaxbSignal = (edu.berkeley.path.beats.jaxb.Signal)jaxbobject;
 
@@ -119,7 +119,7 @@ public final class ActuatorSignal extends Actuator {
 	}
 
     @Override
-	protected void reset() throws BeatsException {
+    public void reset() throws BeatsException {
         super.reset();
 		if(myNode==null)
 			return;
@@ -128,7 +128,7 @@ public final class ActuatorSignal extends Actuator {
 	}
 
     @Override
-	protected void validate() {
+    public void validate() {
 		
 		if(myNode==null){
 			BeatsErrorLog.addWarning("Unknow node ID in signal ID=" + getId());
@@ -143,7 +143,7 @@ public final class ActuatorSignal extends Actuator {
 	}
 
     @Override
-	protected void deploy(double current_time_in_seconds) {
+    public void deploy(double current_time_in_seconds) {
 
 		if(myNode==null)
 			return;
@@ -283,7 +283,7 @@ public final class ActuatorSignal extends Actuator {
     };
 
     @Override
-    protected boolean register() {
+    public boolean register() {
         HashMap<NEMA.ID,List<Link>> phase_link_map = (HashMap<NEMA.ID,List<Link>>) implementor.get_target();
         boolean success = true;
         for(List<Link> link_list : phase_link_map.values())
@@ -298,7 +298,7 @@ public final class ActuatorSignal extends Actuator {
 
     // hack for call to deploy by Controller.initialize_actuators
     public void deploy(double current_time_in_seconds,Controller caller){
-        if(caller==myController)
+        if(caller==getMyController())
             deploy(current_time_in_seconds);
     }
 

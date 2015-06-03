@@ -26,10 +26,8 @@
 
 package edu.berkeley.path.beats.simulator.utils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
+
 import org.apache.commons.math3.distribution.GammaDistribution;
 
 /** XXX. 
@@ -340,7 +338,27 @@ public final class BeatsMath {
 	public static boolean lessorequalthan(double a,double b){
 		return !greaterthan(a,b);
 	}
-	
+
+    public static Double max(List<Double> X){
+        if(X.isEmpty())
+            return Double.NaN;
+        Double x = Double.NEGATIVE_INFINITY;
+        for(Double d : X)
+            if(d>x)
+                x=d;
+        return x;
+    }
+
+    public static Double min(List<Double> X){
+        if(X.isEmpty())
+            return Double.NaN;
+        Double x = Double.POSITIVE_INFINITY;
+        for(Double d : X)
+            if(d<x)
+                x=d;
+        return x;
+    }
+
 	// greatest common divisor of two integers
 	public static int gcd(int p, int q) {
 		if (q == 0) {
