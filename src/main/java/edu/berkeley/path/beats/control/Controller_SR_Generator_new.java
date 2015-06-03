@@ -1,7 +1,6 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorCMS;
-import edu.berkeley.path.beats.jaxb.DemandProfile;
 import edu.berkeley.path.beats.jaxb.Parameter;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.*;
@@ -266,7 +265,7 @@ public class Controller_SR_Generator_new extends Controller {
 
                         // not measured scaled to 1-beta
                         else
-                            cms.set_split(inlink.getId(), outlink.getId(), myNode.getSplitRatio(i, j)*(1d-beta));
+                            cms.set_split(inlink.getId(), outlink.getId(), 1d-beta );
 //                            cms.set_split(inlink.getId(), outlink.getId(), myNode.getSplitRatio(i, j)*(1d-beta)/alpha_tilde[i]);
                     }
                 }

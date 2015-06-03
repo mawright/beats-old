@@ -34,8 +34,11 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
 		int nIn = myNode.nIn;
 		int nOut = myNode.nOut;        
     	int numVehicleTypes = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
-        String [] vTypes = myNode.getMyNetwork().getMyScenario().get.vehicleTypeNames();
 
+        if(myNode.istrivialsplit)
+            return BeatsMath.ones(nIn,nOut,numVehicleTypes);
+
+        String [] vTypes = myNode.getMyNetwork().getMyScenario().get.vehicleTypeNames();
         Double [][][] splitratio_new = splitratio_selected.clone();
 
     	double remainingSplit;
@@ -43,9 +46,6 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
 
         double [][] demand = myNode.node_behavior.getDemand(e);
         double [] supply = myNode.node_behavior.getAvailableSupply(e);
-
-        if(myNode.istrivialsplit)
-        	return BeatsMath.ones(nIn,nOut,numVehicleTypes);
 
     	ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
     	ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	

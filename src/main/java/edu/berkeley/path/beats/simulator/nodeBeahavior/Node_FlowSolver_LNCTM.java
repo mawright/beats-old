@@ -71,7 +71,6 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
         	for(j=0;j<sr[i].length;j++)
         		iscontributor[i][j] = BeatsMath.sum(sr[i][j])>0;
 
-
         double [] applyratio = new double[nIn];
 
         for(i=0;i<nIn;i++)
@@ -91,12 +90,10 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
             else
 	            dsratio[j] = Double.POSITIVE_INFINITY;
 
-
             // reflect ratios back on inputs
             for(i=0;i<nIn;i++)
                 if(iscontributor[i][j])
                     applyratio[i] = Math.max(dsratio[j],applyratio[i]);
-
         }
 
         IOFlow ioflow = new IOFlow(nIn,nOut,numVehicleTypes);

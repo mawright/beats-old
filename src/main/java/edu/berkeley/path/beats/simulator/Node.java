@@ -192,7 +192,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
             Double [][][] splitratio_perturbed;
 
-            if(my_profile==null) {
+            if(my_profile==null || istrivialsplit) {
                 splitratio_perturbed = splitratio_nominal; //BeatsMath.nans(nIn,nOut,numVTypes);
             }
             else
@@ -206,7 +206,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
             }
 
             // compute applied split ratio matrix
-            Double [][][] splitratio_applied = node_behavior.sr_solver.computeAppliedSplitRatio(splitratio_perturbed,e);
+            Double [][][] splitratio_applied = istrivialsplit ?
+                    splitratio_perturbed :
+                    node_behavior.sr_solver.computeAppliedSplitRatio(splitratio_perturbed,e);
 
             /////////////////////////////////////////////////
             // write first to logger
