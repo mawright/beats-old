@@ -310,6 +310,7 @@
 					<excludes>	
 						<exclude>edu/berkeley/path/beats/control/adjoint/*.java</exclude>
 						<exclude>edu/berkeley/path/beats/control/lp/*.java</exclude>
+						<exclude>edu/berkeley/path/beats/control/splitgen/*.java</exclude>
 						<exclude>edu/berkeley/path/beats/test/simulator/DTA_test.java</exclude>
 						<exclude>edu/berkeley/path/beats/util/scenario/JSON*.java</exclude>
 						<exclude>edu/berkeley/path/beats/processor/*.java</exclude>
