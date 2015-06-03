@@ -54,7 +54,8 @@ public class LinkBehaviorCTM {
             }
 
             // compute total flow leaving the link in the absence of flow control
-            if(myLink.issource){
+            boolean apply_vertical_onramp_model = false;
+            if(apply_vertical_onramp_model && myLink.issource){
                 totaloutflow = Math.min( totaldensity , FD._getCapacityInVeh() );
             }
             else {
