@@ -125,6 +125,7 @@ public final class Runner {
                     props.split_ratio_model ,
                     props.performance_config ,
                     props.run_mode,
+                    props.hov_type,
                     props.split_logger_prefix,
                     props.split_logger_dt,
                     props.aux_props );
@@ -164,6 +165,7 @@ public final class Runner {
                     "A",
                     "",
                     "normal",
+                    "ungated",
                     "",
                     Double.NaN,
                     null);
@@ -234,6 +236,7 @@ public final class Runner {
                         "\tNODE_FLOW_SOLVER : Node model <proportional,symmetric>. (default=proportional)\n" +
                         "\tNODE_SPLIT_RATIO_SOLVER : Algorithm for unknown splits <A,B,C,HAMBURGER>. (default=A) \n" +
                         "\tRUN_MODE : run mode <normal,fw_fr_split_output>. (default=normal)\n" +
+                        "\tHOV_TYPE : hov access type <gated,ungated> (default=ungated)\n" +
                         "\tPERFORMANCE : Configuration file for performance output.\n";
         return str;
     }

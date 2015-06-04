@@ -25,7 +25,7 @@ public class FrModeTest {
             String outprefix = "data" + File.separator + "test" + File.separator + "output" + File.separator + "test";
 
             // run fr mode with knob = 2
-            scenario.initialize(5d, 0d, 3600d, 5d, "text", outprefix, 1, 1, null, null, null, null, "fw_fr_split_output", null, null, null);
+            scenario.initialize(5d, 0d, 3600d, 5d, "text", outprefix, 1, 1, null, null, null, null, "fw_fr_split_output", "ungated", null, null, null);
             scenario.set.demand_knob_for_link_id(7,2d);
             scenario.run();
 

@@ -33,6 +33,7 @@ public class BeatsProperties extends Properties {
     public Integer ensemble_size;
     public Double split_logger_dt;
     public Boolean use_actm;
+    public String hov_type;
 
     public BeatsProperties(String prop_file_name) throws BeatsException {
 
@@ -62,6 +63,7 @@ public class BeatsProperties extends Properties {
         split_logger_prefix = getProperty("SPLIT_LOGGER_PREFIX","");
         split_logger_dt = getProperty("SPLIT_LOGGER_DT")==null ? sim_dt : Double.parseDouble(getProperty("SPLIT_LOGGER_DT","0"));
         use_actm = getProperty("USE_ACTM")==null ? false : Boolean.parseBoolean(getProperty("USE_ACTM"));
+        hov_type = getProperty("HOV_TYPE","UNGATED");
 
         DebugFlags.time_print = getProperty("DEBUG.TIME")==null ? 0 : Integer.parseInt(getProperty("DEBUG.TIME", "0"));
         DebugFlags.signal_events = getProperty("DEBUG.SIGNAL_EVENTS") ==null ? false : Boolean.parseBoolean(getProperty("DEBUG.SIGNAL_EVENTS"));
@@ -103,6 +105,7 @@ public class BeatsProperties extends Properties {
         str += "NODE_FLOW_SOLVER = " + node_flow_model + "\n";
         str += "NODE_SPLIT_RATIO_SOLVER = " + split_ratio_model + "\n";
         str += "RUN_MODE = " + run_mode + "\n";
+        str += "HOV_TYPE = " + hov_type + "\n";
         str += "ENSEMBLE_SIZE = " + ensemble_size + "\n";
         str += "PERFORMANCE = " + performance_config + "\n";
         str += "SPLIT_LOGGER_PREFIX = " + split_logger_prefix + "\n";

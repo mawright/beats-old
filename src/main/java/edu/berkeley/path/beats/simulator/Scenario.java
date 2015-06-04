@@ -56,6 +56,7 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     public enum RunMode {NORMAL,ACTM,FRDEMANDS};
+    public enum HovType {GATED,UNGATED};
     protected String configfilename;
     public Clock clock;
     protected int numVehicleTypes;			// number of vehicle types
@@ -63,6 +64,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     // run parameters
     protected RunParameters runParam;
     public RunMode runMode;
+    public HovType hovType;
     protected boolean initialized = false;
     protected boolean scenario_locked=false;				// true when the simulation is running
 
@@ -332,6 +334,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 props.split_ratio_model ,
                 props.performance_config ,
                 props.run_mode,
+                props.hov_type,
                 props.split_logger_prefix,
                 props.split_logger_dt,
                 props.aux_props,
@@ -345,6 +348,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 "A",
                 "",
                 "normal",
+                "ungated",
                 "",
                 Double.NaN,
                 null,
@@ -355,6 +359,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble,uncertaintymodel,nodeflowsolver,nodesrsolver,
                 "",
                 "normal",
+                "ungated",
                 "",
                 Double.NaN,
                 null,
@@ -368,6 +373,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 "A",
                 "",
                 "normal",
+                "ungated",
                 "",
                 Double.NaN,
                 null,
@@ -376,8 +382,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix,
                            int numReps, int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver,
-                           String performance_config, String run_mode,String split_logger_prefix,Double split_logger_dt ,
-                           HashMap<String,Properties> aux_props) throws BeatsException {
+                           String performance_config, String run_mode, String hov_type,String split_logger_prefix,
+                           Double split_logger_dt , HashMap<String,Properties> aux_props) throws BeatsException {
         boolean is_actm = false;
         this.initialize(timestep,
                         starttime,
@@ -392,6 +398,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                         nodesrsolver,
                         performance_config,
                         run_mode,
+                        hov_type,
                         split_logger_prefix,
                         split_logger_dt ,
                         aux_props,
@@ -400,8 +407,8 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix,
                            int numReps, int numEnsemble,String uncertaintymodel,String nodeflowsolver,String nodesrsolver,
-                           String performance_config, String run_mode,String split_logger_prefix,Double split_logger_dt ,
-                           HashMap<String,Properties> aux_props,boolean is_actm) throws BeatsException {
+                           String performance_config, String run_mode, String hov_type,String split_logger_prefix,
+                           Double split_logger_dt , HashMap<String,Properties> aux_props,boolean is_actm) throws BeatsException {
 
         // set stuff
         set.uncertaintyModel(uncertaintymodel);
@@ -438,6 +445,15 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             else {
                 runMode = RunMode.NORMAL;
                 updater = new ScenarioUpdaterStandard(this, nodeflowsolver, nodesrsolver);
+
+                }
+
+            if(hov_type.compareToIgnoreCase("gated")==0) {
+                hovType = HovType.GATED;
+                if(controllerSet==null)
+                    controllerSet = new edu.berkeley.path.beats.jaxb.ControllerSet();
+
+                generate_HOV_gate_controllers();
             }
         }
 
@@ -1030,5 +1046,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             }
         }
         return contr;
+    }
+
+    private void generate_HOV_gate_controllers(){
+
     }
 }
