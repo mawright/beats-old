@@ -251,7 +251,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		return _capacity/_vf;
 	}
 
-	protected void setLanes(double newlanes){
+	public void setLanes(double newlanes){
 		if(newlanes<=0)
 			return;
 		if(BeatsMath.equals(newlanes, lanes))
@@ -397,7 +397,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		return samp;
 	}
 	
-	protected void validate(){
+	public void validate(){
 				
 		if(myLink==null)
 			return;
