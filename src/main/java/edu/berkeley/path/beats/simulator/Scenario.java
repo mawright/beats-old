@@ -893,6 +893,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         Scenario scenario;
         java.util.Map<Long, LinkCumulativeData> links = null;
+        private int stepsSinceReset;
 
         protected static Logger logger = Logger.getLogger(Cumulatives.class);
 
@@ -913,6 +914,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                     }
                 }
                 logger.info("Link cumulative data have been requested");
+                stepsSinceReset = 0;
             }
         }
 
@@ -925,6 +927,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //				Iterator<SignalPhases> iter = phases.values().iterator();
 //				while (iter.hasNext()) iter.next().reset();
 //			}
+            stepsSinceReset = 0;
         }
 
         public void update() throws BeatsException {
@@ -936,6 +939,11 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //				Iterator<SignalPhases> iter = phases.values().iterator();
 //				while (iter.hasNext()) iter.next().update();
 //			}
+            stepsSinceReset++;
+        }
+
+        public int getStepsSinceReset() {
+            return stepsSinceReset;
         }
 
         public LinkCumulativeData get(edu.berkeley.path.beats.jaxb.Link link) throws BeatsException {

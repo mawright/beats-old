@@ -348,6 +348,21 @@ public class ScenarioGetApi {
         return cumInflow;
     }
 
+    public double [][] totalMeanDensity(long network_id) throws BeatsException {
+        Network network = networkWithId(network_id);
+        if(network==null)
+            return null;
+
+        double [][] meanDensity = new double [network.getLinkList().getLink().size()][numEnsemble()];
+        int i,e;
+        for(i=0;i<network.getLinkList().getLink().size();i++) {
+            Link link = (Link) network.getLinkList().getLink().get(i);
+            for (e = 0; e < numEnsemble(); e++)
+                meanDensity[i][e] = scenario.cumulatives.get(link).getMeanTotalDensityInVeh(e);
+        }
+        return meanDensity;
+    }
+
     public Scenario.Cumulatives cumulatives() {
         return scenario.cumulatives;
     }
