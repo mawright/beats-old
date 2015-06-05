@@ -44,6 +44,7 @@ import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterAbstract;
 import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterFrFlow;
 import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterStandard;
 import edu.berkeley.path.beats.simulator.utils.*;
+import edu.berkeley.path.beats.simulator.utils.Table;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
@@ -1013,8 +1014,33 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         edu.berkeley.path.beats.jaxb.Controller contr = new edu.berkeley.path.beats.jaxb.Controller();
         contr.setType("SR_Generator_new");
         contr.setEnabled(true);
-        Parameters parms = new Parameters();
-        contr.setParameters(parms);
+
+        // construct a jaxb table
+        edu.berkeley.path.beats.jaxb.Table table = new edu.berkeley.path.beats.jaxb.Table();
+        contr.getTable().add(table);
+        edu.berkeley.path.beats.jaxb.ColumnNames colnames = new edu.berkeley.path.beats.jaxb.ColumnNames();
+        table.setColumnNames(colnames);
+
+        ColumnName col0 = new ColumnName();
+        col0.setId(0);
+        col0.setName("linkid");
+        colnames.getColumnName().add(0,col0);
+
+        ColumnName col1 = new ColumnName();
+        col1.setId(1);
+        col1.setName("demand");
+        colnames.getColumnName().add(1,col1);
+
+        ColumnName col2 = new ColumnName();
+        col2.setId(2);
+        col2.setName("dt");
+        colnames.getColumnName().add(2,col2);
+
+        ColumnName col3 = new ColumnName();
+        col3.setId(3);
+        col3.setName("knob");
+        colnames.getColumnName().add(3,col3);
+
 
         for(edu.berkeley.path.beats.jaxb.DemandProfile dp : demandSet.getDemandProfile()){
             Link link = get.linkWithId(dp.getLinkIdOrg());
@@ -1023,12 +1049,38 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
             // create a controller in this case
             if(issink) {
-                parms.addParameter("linkid",String.format("%d", dp.getLinkIdOrg()));
-                parms.addParameter("demand",dp.getDemand().get(0).getContent());
-                parms.addParameter("dt", String.format("%f", dp.getDt()));
-                parms.addParameter("knob",String.format("%f",dp.getKnob()));
+
+                edu.berkeley.path.beats.jaxb.Row row = new edu.berkeley.path.beats.jaxb.Row();
+
+                // linkid
+                Column c0 = new Column();
+                c0.setId(0);
+                c0.setContent(String.format("%d", dp.getLinkIdOrg()));
+                row.getColumn().add(c0);
+
+                // demand
+                Column c1 = new Column();
+                c1.setId(1);
+                c1.setContent(dp.getDemand().get(0).getContent());
+                row.getColumn().add(c1);
+
+                // dt
+                Column c2 = new Column();
+                c2.setId(2);
+                c2.setContent(String.format("%f", dp.getDt()));
+                row.getColumn().add(c2);
+
+                // knob
+                Column c3 = new Column();
+                c3.setId(3);
+                c3.setContent(String.format("%f",dp.getKnob()));
+                row.getColumn().add(c3);
+
+                table.getRow().add(row);
+
             }
         }
+
         return contr;
     }
 }
