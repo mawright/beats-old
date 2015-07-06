@@ -40,8 +40,8 @@ public class Controller_Commodity_Swapper extends Controller {
             Long link_id = Long.parseLong(row.get_value_for_column_name("link_id"));
             Integer comm_in = Integer.parseInt(row.get_value_for_column_name("comm_in"));
             Integer comm_out = Integer.parseInt(row.get_value_for_column_name("comm_out"));
-            Long target_sink = Long.parseLong(row.get_value_for_column_name("target_sink"));
-            Long target_source = Long.parseLong(row.get_value_for_column_name("target_source"));
+//            Long target_sink = Long.parseLong(row.get_value_for_column_name("target_sink"));
+//            Long target_source = Long.parseLong(row.get_value_for_column_name("target_source"));
             String time_delay_series = row.get_value_for_column_name("time_delay");
             Double time_delay;
             if(time_delay_series == null){
@@ -52,15 +52,15 @@ public class Controller_Commodity_Swapper extends Controller {
 
             Link actuating_link = myScenario.get.linkWithId(link_id);
 
-            Link source_link = myScenario.get.linkWithId(target_source);
-            Link sink_link = myScenario.get.linkWithId(target_sink);
-            SplitRatioProfile reference_split_profile = sink_link.getBegin_node().getSplitRatioProfile();
+//            Link source_link = myScenario.get.linkWithId(target_source);
+//            Link sink_link = myScenario.get.linkWithId(target_sink);
+//            SplitRatioProfile reference_split_profile = sink_link.getBegin_node().getSplitRatioProfile();
 
             if(linkRefs.containsKey(link_id)) {
-                linkRefs.get(link_id).append(source_link, sink_link, reference_split_profile, comm_in, comm_out);
+//                linkRefs.get(link_id).append(source_link, sink_link, reference_split_profile, comm_in, comm_out);
             } else {
-                linkRefs.put(link_id, new LinkReference(this, actuating_link, source_link, sink_link,
-                        comm_in, comm_out, reference_split_profile, myScenario));
+//                linkRefs.put(link_id, new LinkReference(this, actuating_link, source_link, sink_link,
+//                        comm_in, comm_out, reference_split_profile, myScenario));
             }
         }
 

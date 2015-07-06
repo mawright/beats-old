@@ -152,17 +152,19 @@
 			</target_actuators>
 			
 		  <table name="splits">
-			 <column_names>
+			 <column_names> 
 				<column_name id="0" name="comm_in"/>
 				<column_name id="1" name="comm_out"/>
 				<column_name id="2" name="dt"/>
 				<column_name id="3" name="split_str"/>
+				<column_name id="4" name="link_id" />
 			 </column_names>
 			 <row>
 				<column id="0">0</column>
 				<column id="1">1</column>
 				<column id="2">300</column>
 				<column id="3">0,1</column>
+				<column id="4">2</column>
 			 </row>
 		  </table>
 		  
