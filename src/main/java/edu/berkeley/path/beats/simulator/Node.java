@@ -492,6 +492,13 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         }
 	}
 
+    public double [] getInputLinkPriorities(int ensembleIndex) {
+        double [] priorities = new double[nIn];
+        for(int i=0;i<nIn;i++){
+            priorities[i] = input_link[i].getPriority(ensembleIndex);
+        }
+        return priorities;
+    }
 
     public SplitRatioProfile getSplitRatioProfile(){
         return my_profile;

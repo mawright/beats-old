@@ -117,7 +117,12 @@ final public class Table {
 //    }
 
 	public class Row {
+		public String name = null;
 		public String [] column_value;
+		public Row(int numcol, String RowName) {
+			name = RowName;
+			column_value = new String[numcol];
+		}
 		public Row(edu.berkeley.path.beats.jaxb.Row jrow){
             column_value = new String[column_names.size()];
             for(edu.berkeley.path.beats.jaxb.Column col : jrow.getColumn()){
@@ -126,11 +131,13 @@ final public class Table {
                     continue;
                 column_value[index] = col.getContent().trim();
             }
+			name = jrow.getName();
         }
         public String get_value_for_column_name(String colname){
             int ind = column_names.indexOf(colname);
             return ind<0 ? null : column_value[ind];
         }
+		public String get_name() {return name;}
 	}
 	
 }
