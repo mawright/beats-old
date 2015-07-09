@@ -89,6 +89,11 @@ final public class Table {
 	public int getNoColumns(){		
 		return 	column_names.size();
 	}
+
+	/** Returns the name of columns in the table*/
+	public ArrayList<String>  getColumnNames(){
+		return column_names;
+	}
 	
 	/** Returns the column number corresponding to the given column_name*/ 
 	public int getColumnNo(String cname){		
