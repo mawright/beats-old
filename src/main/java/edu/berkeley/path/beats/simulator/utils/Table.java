@@ -39,7 +39,7 @@ final public class Table {
 	protected ArrayList<Long> column_ids;
 	protected ArrayList<String> column_names;
 	protected ArrayList<Row> rows;
-	
+
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
@@ -80,9 +80,17 @@ final public class Table {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
-	/** Returns number of rows in the table*/
+	/** Returns the rows in the table*/
 	public ArrayList<Row> getRows(){
 		return rows;
+	}
+
+	public Row getRowWithName(String name){
+		for( Row row : rows) {
+			if (row.get_name().equalsIgnoreCase(name))
+				return row;
+		}
+		return null;
 	}
 	
 	/** Returns the number of columns in the table*/ 

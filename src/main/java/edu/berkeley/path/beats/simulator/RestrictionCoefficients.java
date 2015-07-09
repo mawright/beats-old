@@ -112,7 +112,14 @@ public class RestrictionCoefficients extends edu.berkeley.path.beats.jaxb.Restri
 		if(defaultFullRestriction)
 			return 1;
 
-		return 0;
+		Table matrix = RestrictionMatrices.get(inLink);
+		Table.Row restrictorRow = matrix.getRowWithName(Long.toString(RestrictorLink.getId()));
+		if (restrictorRow == null){
+			BeatsErrorLog.addError("No restriction row found for link ID=" + RestrictorLink.getId());
+			return 1;
+		}
+		String stringvalue = restrictorRow.get_value_for_column_name(Long.toString(RestrictedLink.getId()));
+		return Double.parseDouble(stringvalue);
 	}
 
 
