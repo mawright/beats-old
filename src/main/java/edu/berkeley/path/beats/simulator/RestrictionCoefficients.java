@@ -5,6 +5,7 @@ import edu.berkeley.path.beats.simulator.utils.Table;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,34 +18,41 @@ public class RestrictionCoefficients extends edu.berkeley.path.beats.jaxb.Restri
 	private boolean defaultFullRestriction = false;  // if true, all out-links have full restriction on other out-links, leading to
 	// traditional strict FIFO
 
-	protected void populate(Node node) {
+	protected void populate(Node node, edu.berkeley.path.beats.jaxb.RestrictionCoefficients jaxbRC) {
 		this.myNode = node;
+
+		if(jaxbRC == null){
+			defaultFullRestriction = true;
+			return;
+		}
+
+		List<edu.berkeley.path.beats.jaxb.Table> jaxbTables = jaxbRC.getTable();
 
 		int numIn = myNode.getnIn();
 
 		int i;
 		// if only one mutual restriction matrix, it applies to all in-links
-		if(getTable().size()==1){
+		if(jaxbTables.size()==1){
 			RestrictionMatrices = new HashMap<Link, Table>(numIn);
 			for(i=0;i<numIn;i++){
-				Table matrixForAllLinks = new Table(getTable().get(0));
+				Table matrixForAllLinks = new Table(jaxbTables.get(0));
 				RestrictionMatrices.put(myNode.getInput_link()[i],matrixForAllLinks);
 			}
 		}
 		// if no mutual restriction matrices specified, default to behavior of strict FIFO
 		// (all coefficients are equal to 1)
-		else if(getTable().size()==0) {
+		else if(jaxbTables.size()==0) {
 			defaultFullRestriction = true;
 		}
 		else {
 			Long inputLinkId;
 			RestrictionMatrices = new HashMap<Link, Table>(numIn);
 			for(i=0;i<numIn;i++){
-				inputLinkId = Long.parseLong(getTable().get(i).getName());
+				inputLinkId = Long.parseLong(jaxbTables.get(i).getName());
 				try {
 					RestrictionMatrices.put(
 							myNode.getInput_link()[myNode.getInputLinkIndex(inputLinkId)],
-							new Table(getTable().get(i)));
+							new Table(jaxbTables.get(i)));
 				}
 				catch (ArrayIndexOutOfBoundsException ex){
 					BeatsErrorLog.addWarning("Node with ID=" + myNode.getId() +

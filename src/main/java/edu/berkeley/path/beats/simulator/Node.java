@@ -62,7 +62,11 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
     // node behavior
     public NodeBehavior node_behavior;
-	
+
+    // restriction coefficients
+    private RestrictionCoefficients restrictionCoefficients;
+    // TODO move to node behavior?
+
 	// does change ........................................
 
     // split ratio from controller
@@ -132,6 +136,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 //                                          new Node_FlowSolver_LNCTM(this) ,
 //                                          new Node_SupplyPartitioner(this) );
 
+        // parse restriction coefficients
+        restrictionCoefficients = new RestrictionCoefficients();
+        restrictionCoefficients.populate(this, super.getRestrictionCoefficients());
 	}
     
 	protected void validate() {
@@ -152,7 +159,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		if(node_behavior.sr_solver !=null)
             node_behavior.sr_solver.validate();
 				
-		
+		restrictionCoefficients.validate();
 	}
 	
 	protected void reset() {
@@ -498,6 +505,11 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
             priorities[i] = input_link[i].getPriority(ensembleIndex);
         }
         return priorities;
+    }
+
+    @Override
+    public RestrictionCoefficients getRestrictionCoefficients() {
+        return restrictionCoefficients;
     }
 
     public SplitRatioProfile getSplitRatioProfile(){
