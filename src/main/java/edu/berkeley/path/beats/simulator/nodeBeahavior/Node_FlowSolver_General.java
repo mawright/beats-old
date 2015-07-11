@@ -1,7 +1,8 @@
 package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
-import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
+import edu.berkeley.path.beats.simulator.RestrictionCoefficients;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 /**
  * Created by matt on 7/1/15.
@@ -14,11 +15,15 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	protected boolean [][] iscontributor;	// [nIn][nOut]
 
 	protected double [][] demands; // [nIn][nVType]
+	protected double [] supplies; // [nOut]
 	protected double [][][] directed_demands; // [nIn][nOut][nVType]
 	protected double [] priorities; // [nIn]
-	protected double [][] directed_priorities; // [nIn][nOut]
-	protected double [][][] restriction_coefficients; // [nIn][nOut][nOut]
-	private boolean all_flows_solved;
+	protected double [][] oriented_priorities; // [nIn][nOut]
+	private RestrictionCoefficients restrictionCoefficients;
+
+	private int c_max; // num of VTypes
+
+	private boolean [] outlink_done; // [nOut], true if outlink has all its inflows computed, false otherwise
 
 	// constructor
 	public Node_FlowSolver_General(Node myNode){
@@ -26,10 +31,6 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	}
 
 	// implementation
-
-	// TODO write restriction matrices parsers and getters
-	// extend restrictionMatrices class
-	// finish writing
 
 	@Override
 	public void reset() {
@@ -44,25 +45,88 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 		int i,j,c; // input, output, commodity indices
 		priorities = myNode.getInputLinkPriorities(ensemble_index);
 		demands = myNode.node_behavior.getDemand(ensemble_index);
+		supplies = myNode.node_behavior.getAvailableSupply(ensemble_index);
 
-		//restriction_coefficients = myNode.getRestrictionCoefficients();
+		restrictionCoefficients = myNode.getRestrictionCoefficients();
 
-		all_flows_solved = false;
+		int c_max = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
 
-		while(!all_flows_solved){
-
+		// initialize directed deamnds
+		for(i=0;i<sr.length;i++){
+			for(j=0;j<sr[i].length;j++){
+				for(c=0;c<sr[i][j].length;c++){
+					directed_demands[i][j][c] = demands[i][c] * sr[i][j][c];
+				}
+			}
 		}
 
-		return null;
+		IOFlow ioflow = new IOFlow(myNode.getnIn(),myNode.getnOut(),c_max);
+
+		determineUnsolvedMovements();
+
+		while(!allFlowsSolved()){
+			computeOrientedPriorities();
+			computeReductionFactors();
+			determineFreeflowInlinks();
+			setFlows();
+			updateSupplyDemand();
+			determineUnsolvedMovements();
+		}
+
+		return ioflow;
 	}
 
-	private double [] solveMISO(Link outlink, int ensemble_index){
+	private void determineUnsolvedMovements() { // determine membership of set V(k)
+		int i,j;
+		// input i contributes to output j .............................
+		for(j=0;j<myNode.getnOut();j++){
+			for(i=0;i<myNode.getnIn();i++){
+				iscontributor[i][j] = BeatsMath.sum(directed_demands[i][j]) > 0;
+			}
+			for(i=0;i<myNode.getnIn();i++) {
+				if(iscontributor[i][j]){
+					outlink_done[j] = false;
+					break;
+				}
+				outlink_done[j] = true;
+			}
+		}
+	}
 
-		double [] MISOflows = new double[myNode.nIn];
-		double supply = outlink.get_available_space_supply_in_veh(ensemble_index);
+	private void computeOrientedPriorities() {
+		int i,j,c;
+		double sum_over_c;
+		double sum_over_c_and_j;
+		for(i=0;i<directed_demands.length;i++){
+			for(j=0;j<directed_demands[i].length;j++){
+				sum_over_c = BeatsMath.sum(directed_demands[i][j]);
+//				oriented_priorities[i][j] = priorities[i] * sum_over_c  // This line is not complete!!
+			}
+		}
+	}
 
+	private void computeReductionFactors() { // compute factors a_j
 
-		return MISOflows;
+	}
+
+	private void determineFreeflowInlinks() { // find members of set U-tilde(k)
+
+	}
+
+	private void setFlows() { // set to IOFlow flows found in this iteration
+
+	}
+
+	private void updateSupplyDemand() { // update demand, supplies
+
+	}
+
+	private boolean allFlowsSolved() {
+		for (boolean outlink_computed : outlink_done){
+			if(!outlink_computed)
+				return false;
+		}
+		return true;
 	}
 
 
