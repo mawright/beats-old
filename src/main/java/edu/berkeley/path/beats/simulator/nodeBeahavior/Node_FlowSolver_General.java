@@ -23,7 +23,8 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 
 	private int c_max; // num of VTypes
 
-	private boolean [] outlink_done; // [nOut], true if outlink has all its inflows computed, false otherwise
+	private boolean [] outlink_done; // [nOut], entry is true if outlink has all its inflows computed, false otherwise
+	private boolean [] inlink_done; // [nIn], entry is true if inlink has all its outflows computed, false otherwise
 
 	// constructor
 	public Node_FlowSolver_General(Node myNode){
@@ -51,7 +52,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 
 		int c_max = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
 
-		// initialize directed deamnds
+		// initialize directed demands
 		for(i=0;i<sr.length;i++){
 			for(j=0;j<sr[i].length;j++){
 				for(c=0;c<sr[i][j].length;c++){
@@ -60,11 +61,15 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 			}
 		}
 
+		outlink_done = new boolean[myNode.getnOut()];
+		inlink_done = new boolean[myNode.getnIn()];
+
 		IOFlow ioflow = new IOFlow(myNode.getnIn(),myNode.getnOut(),c_max);
 
 		determineUnsolvedMovements();
 
 		while(!allFlowsSolved()){
+			updatePriorities();
 			computeOrientedPriorities();
 			computeReductionFactors();
 			determineFreeflowInlinks();
@@ -85,22 +90,51 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 			}
 			for(i=0;i<myNode.getnIn();i++) {
 				if(iscontributor[i][j]){
+					inlink_done[i] = false;
+					break;
+				}
+				inlink_done[i] = true;
+			}
+		}
+		for(i=0;i<myNode.getnIn();i++) {
+			for(j=0;j<myNode.getnOut();j++) {
+				if(iscontributor[i][j]){
 					outlink_done[j] = false;
 					break;
 				}
-				outlink_done[j] = true;
 			}
+			outlink_done[j] = true;
 		}
 	}
 
-	private void computeOrientedPriorities() {
-		int i,j,c;
-		double sum_over_c;
+	private void updatePriorities() { // equation (5.4)
+		int i,j;
+		for(j=0;j<myNode.getnOut();j++) {
+			if(!outlink_done[j]) {
+				for(i=0;i<myNode.getnIn();i++) {
+					if(iscontributor[i][j] && !inlink_done[i] && priorities[i] > 0)
+						return; // if there are any unprocessed in-links with nonzero priority, do not adjust
+				}
+			}
+		}
+		int numUnsetInlinks = BeatsMath.count(inlink_done);
+		for(i=0;i<myNode.getnIn();i++) {
+			if(!inlink_done[i])
+				priorities[i] = 1/numUnsetInlinks; // otherwise
+		}
+	}
+
+	private void computeOrientedPriorities() { // equation (5.12)
+		int i,j;
+		double[] sum_over_c = new double[directed_demands[0].length];
 		double sum_over_c_and_j;
 		for(i=0;i<directed_demands.length;i++){
-			for(j=0;j<directed_demands[i].length;j++){
-				sum_over_c = BeatsMath.sum(directed_demands[i][j]);
-//				oriented_priorities[i][j] = priorities[i] * sum_over_c  // This line is not complete!!
+			for(j=0;j<directed_demands[i].length;j++) {
+				sum_over_c[j] = BeatsMath.sum(directed_demands[i][j]);
+			}
+			sum_over_c_and_j = BeatsMath.sum(sum_over_c);
+			for(j=0;j<directed_demands[i].length;j++) {
+				oriented_priorities[i][j] = priorities[i] * sum_over_c[j] / sum_over_c_and_j;
 			}
 		}
 	}
