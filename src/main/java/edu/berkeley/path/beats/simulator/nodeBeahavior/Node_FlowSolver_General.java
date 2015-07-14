@@ -4,6 +4,10 @@ import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.RestrictionCoefficients;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
 /**
  * Created by matt on 7/1/15.
  */
@@ -19,6 +23,12 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	protected double [][][] directed_demands; // [nIn][nOut][nVType]
 	protected double [] priorities; // [nIn]
 	protected double [][] oriented_priorities; // [nIn][nOut]
+	protected double [] reduction_factors; // [nOut]
+	protected int min_reduction_index;
+	protected ArrayList<Integer> freeflow_inlinks;
+	protected HashMap< int[], Double > flows;
+	protected IOFlow ioFlow;
+
 	private RestrictionCoefficients restrictionCoefficients;
 
 	private int c_max; // num of VTypes
@@ -38,19 +48,22 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 		iscontributor = new boolean[myNode.nIn][myNode.nOut];
 		dsratio 		= new double[myNode.nOut];
 		outDemandKnown 	= new double[myNode.nOut];
+
+		directed_demands = new double[myNode.nIn][myNode.nOut][myNode.getMyNetwork().getMyScenario().get.numVehicleTypes()];
+		reduction_factors = new double[myNode.nOut];
+		c_max = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
+		freeflow_inlinks = new ArrayList<Integer>(myNode.nIn);
 	}
 
 	@Override
 	public IOFlow computeLinkFlows(final Double [][][] sr, final int ensemble_index){
 
 		int i,j,c; // input, output, commodity indices
-		priorities = myNode.getInputLinkPriorities(ensemble_index);
-		demands = myNode.node_behavior.getDemand(ensemble_index);
-		supplies = myNode.node_behavior.getAvailableSupply(ensemble_index);
+		priorities = Arrays.copyOf(myNode.getInputLinkPriorities(ensemble_index), myNode.nIn);
+		demands = Arrays.copyOf(myNode.node_behavior.getDemand(ensemble_index), myNode.nIn);
+		supplies = Arrays.copyOf(myNode.node_behavior.getAvailableSupply(ensemble_index), myNode.nOut);
 
 		restrictionCoefficients = myNode.getRestrictionCoefficients();
-
-		int c_max = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
 
 		// initialize directed demands
 		for(i=0;i<sr.length;i++){
@@ -73,8 +86,8 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 			computeOrientedPriorities();
 			computeReductionFactors();
 			determineFreeflowInlinks();
-			setFlows();
-			updateSupplyDemand();
+			pickFlows();
+			setFlowsUpdateItems();
 			determineUnsolvedMovements();
 		}
 
@@ -127,31 +140,76 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	private void computeOrientedPriorities() { // equation (5.12)
 		int i,j;
 		double[] sum_over_c = new double[directed_demands[0].length];
-		double sum_over_c_and_j;
+//		double sum_over_c_and_j;
 		for(i=0;i<directed_demands.length;i++){
 			for(j=0;j<directed_demands[i].length;j++) {
 				sum_over_c[j] = BeatsMath.sum(directed_demands[i][j]);
 			}
-			sum_over_c_and_j = BeatsMath.sum(sum_over_c);
+//			sum_over_c_and_j = BeatsMath.sum(sum_over_c);
 			for(j=0;j<directed_demands[i].length;j++) {
-				oriented_priorities[i][j] = priorities[i] * sum_over_c[j] / sum_over_c_and_j;
+//				oriented_priorities[i][j] = priorities[i] * sum_over_c[j] / sum_over_c_and_j;
+				oriented_priorities[i][j] = priorities[i] * sum_over_c[j] / BeatsMath.sum(demands[i]);
 			}
 		}
 	}
 
 	private void computeReductionFactors() { // compute factors a_j
+		int i,j;
+		double sum_over_i;
+		for(j=0;j<myNode.nOut;j++){
+			sum_over_i = 0d;
+			for(i=0;i<myNode.nIn;i++){
+				if(iscontributor[i][j])
+					sum_over_i += oriented_priorities[i][j];
+			}
+			reduction_factors[j] = supplies[j] / sum_over_i;
+			if(reduction_factors[j] <= reduction_factors[min_reduction_index])
+				min_reduction_index = j;
+		}
 
 	}
 
 	private void determineFreeflowInlinks() { // find members of set U-tilde(k)
-
+		int i;
+		for(i=0;i<myNode.nIn;i++){
+			if( iscontributor[i][min_reduction_index] &&
+					BeatsMath.sum(demands[i]) <= priorities[i] * reduction_factors[min_reduction_index] )
+				freeflow_inlinks.add(i);
+		}
 	}
 
-	private void setFlows() { // set to IOFlow flows found in this iteration
+	private void pickFlows() { // set to IOFlow flows found in this iteration
+		if(!freeflow_inlinks.isEmpty()){
+			for(int i : freeflow_inlinks){
+				for(int j=0;j<myNode.nOut;j++){
+					for(int c=0;c<c_max;c++){
+						int[] indexTriple = new int[3];
+						indexTriple[0] = i; indexTriple[1] = j; indexTriple[2] = c;
+						flows.put( indexTriple, directed_demands[i][j][c] );
+					}
+				}
+			}
+		}
+		else {
+			for(int i=0;i<myNode.nIn;i++) {
+				for(int j=0;j<myNode.nOut;j++) {
+					if(iscontributor[i][j] && iscontributor[i][min_reduction_index]) {
+						double sum_over_c = BeatsMath.sum(directed_demands[i][j]);
+						for(int c=0;c<c_max;c++) {
+							int[] indexTriple = new int[3];
+							indexTriple[0] = i;	indexTriple[1] = j;	indexTriple[2] = c;
 
+							double flow = directed_demands[i][j][c] * oriented_priorities[i][j]
+									* reduction_factors[min_reduction_index] / sum_over_c;
+							flows.put(indexTriple, flow);
+						}
+					}
+				}
+			}
+		}
 	}
 
-	private void updateSupplyDemand() { // update demand, supplies
+	private void setFlowsUpdateItems() { // update demand, supplies
 
 	}
 
