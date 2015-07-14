@@ -7,6 +7,7 @@ import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by matt on 7/1/15.
@@ -14,8 +15,6 @@ import java.util.HashMap;
 public class Node_FlowSolver_General extends Node_FlowSolver {
 
 	// used in update()
-	protected double [] outDemandKnown;	// [nOut]
-	protected double [] dsratio;			// [nOut]
 	protected boolean [][] iscontributor;	// [nIn][nOut]
 
 	protected double [][] demands; // [nIn][nVType]
@@ -25,8 +24,8 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	protected double [][] oriented_priorities; // [nIn][nOut]
 	protected double [] reduction_factors; // [nOut]
 	protected int min_reduction_index;
-	protected ArrayList<Integer> freeflow_inlinks;
-	protected HashMap< int[], Double > flows;
+	protected ArrayList<Integer> freeflow_inlinks; // a list of ints that represent the inlink indeces that are in FF, if any
+	protected HashMap< int[], Double > flows; // crude way to implement a tuple of a (i,j,c) index set and flow value [per-commodity, summed over commodity]
 	protected IOFlow ioFlow;
 
 	private RestrictionCoefficients restrictionCoefficients;
@@ -46,8 +45,6 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	@Override
 	public void reset() {
 		iscontributor = new boolean[myNode.nIn][myNode.nOut];
-		dsratio 		= new double[myNode.nOut];
-		outDemandKnown 	= new double[myNode.nOut];
 
 		directed_demands = new double[myNode.nIn][myNode.nOut][myNode.getMyNetwork().getMyScenario().get.numVehicleTypes()];
 		reduction_factors = new double[myNode.nOut];
@@ -87,7 +84,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 			computeReductionFactors();
 			determineFreeflowInlinks();
 			pickFlows();
-			setFlowsUpdateItems();
+			setFlowsUpdateSuppliesDemands();
 			determineUnsolvedMovements();
 		}
 
@@ -120,7 +117,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 		}
 	}
 
-	private void updatePriorities() { // equation (5.4)
+	private void updatePriorities() { // equation (5.12)
 		int i,j;
 		for(j=0;j<myNode.getnOut();j++) {
 			if(!outlink_done[j]) {
@@ -139,16 +136,15 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 
 	private void computeOrientedPriorities() { // equation (5.12)
 		int i,j;
-		double[] sum_over_c = new double[directed_demands[0].length];
-//		double sum_over_c_and_j;
+		double[] sum_over_c = new double[myNode.getnOut()];
+		double sum_over_c_and_j;
 		for(i=0;i<directed_demands.length;i++){
 			for(j=0;j<directed_demands[i].length;j++) {
 				sum_over_c[j] = BeatsMath.sum(directed_demands[i][j]);
 			}
-//			sum_over_c_and_j = BeatsMath.sum(sum_over_c);
+			sum_over_c_and_j = BeatsMath.sum(sum_over_c);
 			for(j=0;j<directed_demands[i].length;j++) {
-//				oriented_priorities[i][j] = priorities[i] * sum_over_c[j] / sum_over_c_and_j;
-				oriented_priorities[i][j] = priorities[i] * sum_over_c[j] / BeatsMath.sum(demands[i]);
+				oriented_priorities[i][j] = priorities[i] * sum_over_c[j] / sum_over_c_and_j;
 			}
 		}
 	}
@@ -166,7 +162,6 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 			if(reduction_factors[j] <= reduction_factors[min_reduction_index])
 				min_reduction_index = j;
 		}
-
 	}
 
 	private void determineFreeflowInlinks() { // find members of set U-tilde(k)
@@ -185,23 +180,34 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 					for(int c=0;c<c_max;c++){
 						int[] indexTriple = new int[3];
 						indexTriple[0] = i; indexTriple[1] = j; indexTriple[2] = c;
-						flows.put( indexTriple, directed_demands[i][j][c] );
+						double flow = directed_demands[i][j][c];
+						flows.put( indexTriple, flow );
 					}
 				}
 			}
 		}
-		else {
+		else { // no links whose demands whose can be met by their claimed supply
 			for(int i=0;i<myNode.nIn;i++) {
-				for(int j=0;j<myNode.nOut;j++) {
-					if(iscontributor[i][j] && iscontributor[i][min_reduction_index]) {
+				if(iscontributor[i][min_reduction_index]) { // for each i in U_j*(k)
+					for(int j=0;j<myNode.nOut;j++) {
+						double restrictCoef = restrictionCoefficients.getCoefficient(myNode.getInput_link()[i],
+								myNode.getOutput_link()[min_reduction_index], myNode.getOutput_link()[j]);
 						double sum_over_c = BeatsMath.sum(directed_demands[i][j]);
 						for(int c=0;c<c_max;c++) {
-							int[] indexTriple = new int[3];
-							indexTriple[0] = i;	indexTriple[1] = j;	indexTriple[2] = c;
+							if(BeatsMath.equals(restrictCoef,1d)) { // strict FIFO
+								int[] indexTriple = new int[3];
+								indexTriple[0] = i;
+								indexTriple[1] = j;
+								indexTriple[2] = c;
 
-							double flow = directed_demands[i][j][c] * oriented_priorities[i][j]
-									* reduction_factors[min_reduction_index] / sum_over_c;
-							flows.put(indexTriple, flow);
+								double flow = directed_demands[i][j][c] * oriented_priorities[i][j]
+										* reduction_factors[min_reduction_index] / sum_over_c; // equation (5.13)
+								flows.put(indexTriple, flow);
+							} else { // relaxed FIFO - degrade other directed demands
+								directed_demands[i][j][c] = (1 - restrictCoef) * directed_demands[i][j][min_reduction_index]
+										+ restrictCoef * directed_demands[i][j][c] * supplies[min_reduction_index]
+										/ BeatsMath.sum(directed_demands[i][min_reduction_index]); // equation (5.14)
+							}
 						}
 					}
 				}
@@ -209,8 +215,34 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 		}
 	}
 
-	private void setFlowsUpdateItems() { // update demand, supplies
+	private void setFlowsUpdateSuppliesDemands() { // update IOFlow, demand, supplies
+		int i, j, c;
+		for(Map.Entry<int[],Double> pair : flows.entrySet() ){
+			int[] indexTriple = pair.getKey();
+			// set flows to the IOFlow object
+			i = indexTriple[0];
+			j = indexTriple[1];
+			c = indexTriple[2];
+			ioFlow.setIn(j, c, pair.getValue());
+			ioFlow.setOut(i, c, pair.getValue());
 
+			// update supplies
+			supplies[j] -= pair.getValue();
+		}
+
+		// update (undirected) demands
+		for (i = 0; i < myNode.getnIn(); i++) {
+			for (c = 0; c < c_max; c++) {
+				demands[i][c] = 0;
+				for (j = 0; j < myNode.getnOut(); j++) {
+					demands[i][c] += directed_demands[i][j][c];
+				}
+			}
+		}
+
+		// clear sets
+		flows.clear();
+		freeflow_inlinks.clear();
 	}
 
 	private boolean allFlowsSolved() {
