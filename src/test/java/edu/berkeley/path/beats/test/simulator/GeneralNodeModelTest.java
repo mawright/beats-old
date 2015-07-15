@@ -43,9 +43,9 @@ public class GeneralNodeModelTest {
 	@Test
 	public void doesItRunTest() {
 		try {
-			Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + "_smalltext.xml");
+			Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + "_smalltest.xml");
 			// initialize
-			double timestep = Defaults.getTimestepFor("_smalltext.xml");
+			double timestep = Defaults.getTimestepFor("_smalltest.xml");
 			double starttime = 300d;
 			double endtime = Double.POSITIVE_INFINITY;
 			int numEnsemble = 1;

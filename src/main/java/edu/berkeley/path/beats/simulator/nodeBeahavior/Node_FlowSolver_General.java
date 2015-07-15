@@ -58,10 +58,9 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	public IOFlow computeLinkFlows(final Double [][][] sr, final int ensemble_index){
 
 		int i,j,c; // input, output, commodity indices
-		priorities = Arrays.copyOf(myNode.getInputLinkPriorities(ensemble_index), myNode.nIn);
-		supplies = Arrays.copyOf(myNode.node_behavior.getAvailableSupply(ensemble_index), myNode.nOut);
-		for(i=0;i<myNode.nIn;i++)
-			demands[i] = Arrays.copyOf(myNode.node_behavior.getDemand(ensemble_index)[i], myNode.nIn);
+		priorities = myNode.getInputLinkPriorities(ensemble_index);
+		supplies = myNode.node_behavior.getAvailableSupply(ensemble_index);
+		demands = myNode.node_behavior.getDemand(ensemble_index);
 
 		restrictionCoefficients = myNode.getRestrictionCoefficients();
 
@@ -185,6 +184,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 						indexTriple[0] = i; indexTriple[1] = j; indexTriple[2] = c;
 						double flow = directed_demands[i][j][c];
 						flows.put( indexTriple, flow );
+						directed_demands[i][j][c] = 0;
 					}
 				}
 			}
@@ -206,6 +206,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 								double flow = directed_demands[i][j][c] * oriented_priorities[i][j]
 										* reduction_factors[min_reduction_index] / sum_over_c; // equation (5.13)
 								flows.put(indexTriple, flow);
+								directed_demands[i][j][c] = 0;
 							} else { // relaxed FIFO - degrade other directed demands
 								directed_demands[i][j][c] = (1 - restrictCoef) * directed_demands[i][j][min_reduction_index]
 										+ restrictCoef * directed_demands[i][j][c] * supplies[min_reduction_index]
@@ -226,8 +227,8 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 			i = indexTriple[0];
 			j = indexTriple[1];
 			c = indexTriple[2];
-			ioFlow.setIn(j, c, pair.getValue());
-			ioFlow.setOut(i, c, pair.getValue());
+			ioFlow.setOut(j, c, pair.getValue());
+			ioFlow.setIn(i, c, pair.getValue());
 
 			// update supplies
 			supplies[j] -= pair.getValue();
