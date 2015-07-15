@@ -47,6 +47,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 		iscontributor = new boolean[myNode.nIn][myNode.nOut];
 
 		directed_demands = new double[myNode.nIn][myNode.nOut][myNode.getMyNetwork().getMyScenario().get.numVehicleTypes()];
+		oriented_priorities = new double[myNode.nIn][myNode.nOut];
 		reduction_factors = new double[myNode.nOut];
 		c_max = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
 		freeflow_inlinks = new ArrayList<Integer>(myNode.nIn);
@@ -112,8 +113,8 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 					outlink_done[j] = false;
 					break;
 				}
+				outlink_done[j] = true;
 			}
-			outlink_done[j] = true;
 		}
 	}
 
