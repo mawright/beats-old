@@ -51,6 +51,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 		reduction_factors = new double[myNode.nOut];
 		c_max = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
 		freeflow_inlinks = new ArrayList<Integer>(myNode.nIn);
+		flows = new HashMap<int[], Double>();
 	}
 
 	@Override
@@ -58,8 +59,9 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 
 		int i,j,c; // input, output, commodity indices
 		priorities = Arrays.copyOf(myNode.getInputLinkPriorities(ensemble_index), myNode.nIn);
-		demands = Arrays.copyOf(myNode.node_behavior.getDemand(ensemble_index), myNode.nIn);
 		supplies = Arrays.copyOf(myNode.node_behavior.getAvailableSupply(ensemble_index), myNode.nOut);
+		for(i=0;i<myNode.nIn;i++)
+			demands[i] = Arrays.copyOf(myNode.node_behavior.getDemand(ensemble_index)[i], myNode.nIn);
 
 		restrictionCoefficients = myNode.getRestrictionCoefficients();
 
@@ -75,7 +77,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 		outlink_done = new boolean[myNode.getnOut()];
 		inlink_done = new boolean[myNode.getnIn()];
 
-		IOFlow ioflow = new IOFlow(myNode.getnIn(),myNode.getnOut(),c_max);
+		ioFlow = new IOFlow(myNode.getnIn(),myNode.getnOut(),c_max);
 
 		determineUnsolvedMovements();
 
@@ -89,7 +91,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 			determineUnsolvedMovements();
 		}
 
-		return ioflow;
+		return ioFlow;
 	}
 
 	private void determineUnsolvedMovements() { // determine membership of set V(k)
