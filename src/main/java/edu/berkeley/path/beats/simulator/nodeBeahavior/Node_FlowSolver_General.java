@@ -96,26 +96,29 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	private void determineUnsolvedMovements() { // determine membership of set V(k)
 		int i,j;
 		// input i contributes to output j .............................
-		for(j=0;j<myNode.getnOut();j++){
-			for(i=0;i<myNode.getnIn();i++){
+		for(j=0;j<myNode.getnOut();j++)
+			for (i = 0; i < myNode.getnIn(); i++)
 				iscontributor[i][j] = BeatsMath.sum(directed_demands[i][j]) > 0;
-			}
+
+		outerloop1:
+		for(j=0;j<myNode.getnOut();j++){
 			for(i=0;i<myNode.getnIn();i++) {
 				if(iscontributor[i][j]){
-					inlink_done[i] = false;
-					break;
+					outlink_done[j] = false;
+					break outerloop1;
 				}
-				inlink_done[i] = true;
 			}
+			outlink_done[j] = true;
 		}
+		outerloop2:
 		for(i=0;i<myNode.getnIn();i++) {
 			for(j=0;j<myNode.getnOut();j++) {
 				if(iscontributor[i][j]){
-					outlink_done[j] = false;
-					break;
+					inlink_done[i] = false;
+					break outerloop2;
 				}
-				outlink_done[j] = true;
 			}
+			inlink_done[i] = true;
 		}
 	}
 
@@ -205,6 +208,8 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 
 								double flow = directed_demands[i][j][c] * oriented_priorities[i][j]
 										* reduction_factors[min_reduction_index] / sum_over_c; // equation (5.13)
+								if(Double.isNaN(flow)) // due to divide-by-zero by sum_over_c
+									flow = 0;
 								flows.put(indexTriple, flow);
 								directed_demands[i][j][c] = 0;
 							} else { // relaxed FIFO - degrade other directed demands
@@ -227,8 +232,8 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 			i = indexTriple[0];
 			j = indexTriple[1];
 			c = indexTriple[2];
-			ioFlow.setOut(j, c, pair.getValue());
-			ioFlow.setIn(i, c, pair.getValue());
+			ioFlow.setOut(j, c, ioFlow.getOut(j)[c] + pair.getValue());
+			ioFlow.setIn(i, c, ioFlow.getIn(i)[c] + pair.getValue());
 
 			// update supplies
 			supplies[j] -= pair.getValue();
