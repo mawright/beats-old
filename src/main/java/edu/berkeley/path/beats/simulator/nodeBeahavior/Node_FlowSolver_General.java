@@ -105,7 +105,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 			for(i=0;i<myNode.getnIn();i++) {
 				if(iscontributor[i][j]){
 					outlink_done[j] = false;
-					break outerloop1;
+					continue outerloop1;
 				}
 			}
 			outlink_done[j] = true;
@@ -115,7 +115,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 			for(j=0;j<myNode.getnOut();j++) {
 				if(iscontributor[i][j]){
 					inlink_done[i] = false;
-					break outerloop2;
+					continue outerloop2;
 				}
 			}
 			inlink_done[i] = true;
