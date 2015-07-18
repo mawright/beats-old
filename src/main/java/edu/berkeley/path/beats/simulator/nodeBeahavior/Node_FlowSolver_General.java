@@ -213,7 +213,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 								flows.put(indexTriple, flow);
 								directed_demands[i][j][c] = 0;
 							} else { // relaxed FIFO - degrade other directed demands
-								directed_demands[i][j][c] = (1 - restrictCoef) * directed_demands[i][j][min_reduction_index]
+								directed_demands[i][j][c] = (1 - restrictCoef) * directed_demands[i][j][c]
 										+ restrictCoef * directed_demands[i][j][c] * supplies[min_reduction_index]
 										/ BeatsMath.sum(directed_demands[i][min_reduction_index]); // equation (5.14)
 							}
