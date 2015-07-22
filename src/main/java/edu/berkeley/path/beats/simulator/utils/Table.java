@@ -43,7 +43,34 @@ final public class Table {
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
-	
+
+	public Table(ArrayList<String> colnames) {
+
+		// check column names has single key
+//		boolean found_key = false;
+//		for(int i=0;i<T.getColumnNames().getColumnName().size();i++){
+//			if(T.getColumnNames().getColumnName().get(i).isKey()){
+//				if(found_key)
+//					BeatsErrorLog.addError("No more than one key allowed in a table.");
+//				else{
+//					found_key = true;
+//					key_index = i;
+//				}
+//			}
+//		}
+
+		// populate column_names, column_ids, column_is_key
+		column_names = new ArrayList<String>();
+		column_ids = new ArrayList<Long>();
+		ArrayList<Boolean> column_is_key = new ArrayList<Boolean>();
+		for(int i=0;i<colnames.size();i++){
+			column_ids.add((long)i);
+			column_is_key.add(false);
+			column_names.add(colnames.get(i));
+		}
+
+	}
+
 	public Table(edu.berkeley.path.beats.jaxb.Table T) {
 		
 		// check column names has single key
@@ -79,6 +106,18 @@ final public class Table {
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
+
+	public void addRow(ArrayList<String> colnames,ArrayList<String> rowvalues){
+		if(colnames.size()!=rowvalues.size())
+			return;
+		Row row = new Row(column_names.size());
+		for(int i=0;i<colnames.size();i++){
+			int index = column_names.indexOf(colnames.get(i));
+			if(index<0)
+				continue;
+			row.set_value(index,rowvalues.get(i));
+		}
+	}
 
 	/** Returns the rows in the table*/
 	public ArrayList<Row> getRows(){
@@ -136,6 +175,9 @@ final public class Table {
 			name = RowName;
 			column_value = new String[numcol];
 		}
+		public Row(int numcol){
+			column_value = new String[numcol];
+		}
 		public Row(edu.berkeley.path.beats.jaxb.Row jrow){
             column_value = new String[column_names.size()];
             for(edu.berkeley.path.beats.jaxb.Column col : jrow.getColumn()){
@@ -151,6 +193,9 @@ final public class Table {
             return ind<0 ? null : column_value[ind];
         }
 		public String get_name() {return name;}
+		public void set_value(int index,String val){
+			column_value[index] = val;
+		}
 	}
 	
 }
