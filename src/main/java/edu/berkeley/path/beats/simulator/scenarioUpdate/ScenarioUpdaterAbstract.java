@@ -103,6 +103,9 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
             case tampere:
                 node_flow_solver = new Node_FlowSolver_Symmetric(node);
                 break;
+            case general:
+                node_flow_solver = new Node_FlowSolver_General(node);
+                break;
             default:
                 node_flow_solver = new Node_FlowSolver_LNCTM(node);
         }

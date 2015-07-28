@@ -39,7 +39,7 @@ final public class Table {
 	protected ArrayList<Long> column_ids;
 	protected ArrayList<String> column_names;
 	protected ArrayList<Row> rows;
-	
+
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
@@ -119,14 +119,27 @@ final public class Table {
 		}
 	}
 
-	/** Returns number of rows in the table*/
+	/** Returns the rows in the table*/
 	public ArrayList<Row> getRows(){
 		return rows;
+	}
+
+	public Row getRowWithName(String name){
+		for( Row row : rows) {
+			if (row.get_name().equalsIgnoreCase(name))
+				return row;
+		}
+		return null;
 	}
 	
 	/** Returns the number of columns in the table*/ 
 	public int getNoColumns(){		
 		return 	column_names.size();
+	}
+
+	/** Returns the name of columns in the table*/
+	public ArrayList<String>  getColumnNames(){
+		return column_names;
 	}
 	
 	/** Returns the column number corresponding to the given column_name*/ 
@@ -156,7 +169,12 @@ final public class Table {
 //    }
 
 	public class Row {
+		public String name = null;
 		public String [] column_value;
+		public Row(int numcol, String RowName) {
+			name = RowName;
+			column_value = new String[numcol];
+		}
 		public Row(int numcol){
 			column_value = new String[numcol];
 		}
@@ -168,11 +186,13 @@ final public class Table {
                     continue;
                 column_value[index] = col.getContent().trim();
             }
+			name = jrow.getName();
         }
         public String get_value_for_column_name(String colname){
             int ind = column_names.indexOf(colname);
             return ind<0 ? null : column_value[ind];
         }
+		public String get_name() {return name;}
 		public void set_value(int index,String val){
 			column_value[index] = val;
 		}

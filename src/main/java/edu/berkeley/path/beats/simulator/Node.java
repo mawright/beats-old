@@ -62,7 +62,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
     // node behavior
     public NodeBehavior node_behavior;
-	
+
 	// does change ........................................
 
     // split ratio from controller
@@ -131,7 +131,6 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 //                                          new Node_SplitRatioSolver_Greedy(this) ,
 //                                          new Node_FlowSolver_LNCTM(this) ,
 //                                          new Node_SupplyPartitioner(this) );
-
 	}
     
 	protected void validate() {
@@ -151,9 +150,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		
 		if(node_behavior.sr_solver !=null)
             node_behavior.sr_solver.validate();
-				
-		
-	}
+    }
 	
 	protected void reset() {
     	if(isTerminal)
@@ -492,6 +489,13 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         }
 	}
 
+    public double [] getInputLinkPriorities(int ensembleIndex) {
+        double [] priorities = new double[nIn];
+        for(int i=0;i<nIn;i++){
+            priorities[i] = input_link[i].getPriority(ensembleIndex);
+        }
+        return priorities;
+    }
 
     public SplitRatioProfile getSplitRatioProfile(){
         return my_profile;
