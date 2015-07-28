@@ -1,11 +1,9 @@
 package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
 import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.RestrictionCoefficients;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +36,10 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	// constructor
 	public Node_FlowSolver_General(Node myNode){
 		super(myNode);
+		restrictionCoefficients = new RestrictionCoefficients();
+		restrictionCoefficients.populate(myNode, myNode.getRestrictionCoefficients());
+
+		restrictionCoefficients.validate();
 	}
 
 	// implementation
@@ -61,8 +63,6 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 		priorities = myNode.getInputLinkPriorities(ensemble_index);
 		supplies = myNode.node_behavior.getAvailableSupply(ensemble_index);
 		demands = myNode.node_behavior.getDemand(ensemble_index);
-
-		restrictionCoefficients = myNode.getRestrictionCoefficients();
 
 		// initialize directed demands
 		for(i=0;i<sr.length;i++){
