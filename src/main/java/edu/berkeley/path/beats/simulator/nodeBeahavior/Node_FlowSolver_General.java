@@ -215,7 +215,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 							} else { // relaxed FIFO - degrade other directed demands
 								directed_demands[i][j][c] = (1 - restrictCoef) * directed_demands[i][j][c]
 										+ restrictCoef * directed_demands[i][j][c] * supplies[min_reduction_index]
-										/ BeatsMath.sum(directed_demands[i][min_reduction_index]); // equation (5.14)
+										/ sum_over_c; // equation (5.14)
 							}
 						}
 					}
