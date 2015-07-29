@@ -119,7 +119,10 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
     }
 
 	protected void validate() {
-		
+
+        // sink demands get validated in the controller
+        if(isSinkDemand)
+            return;
 
 		if(demand_nominal==null || demand_nominal.isEmpty()){
 			BeatsErrorLog.addWarning("Demand profile ID=" + getId() + " has no data.");

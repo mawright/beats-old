@@ -1,7 +1,9 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorCMS;
+import edu.berkeley.path.beats.jaxb.Column;
 import edu.berkeley.path.beats.jaxb.Parameter;
+import edu.berkeley.path.beats.jaxb.Row;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.*;
 
@@ -34,25 +36,36 @@ public class Controller_SR_Generator_new extends Controller {
 
         node_data = new HashMap<Long,NodeData>();
 
-        Iterator<Parameter> it = jaxbController.getParameters().getParameter().iterator();
+        for( Row row : jaxbController.getTable().get(0).getRow() ){
 
-        // because this controller was generated within beats, we can
-        // be sure the parameters come in fours.
-        while(it.hasNext()) {
+            Link link = null;
+            String demandString = "";
+            double dpdt = Double.NaN;
+            double knob = Double.NaN;
 
-            // 1. link id
-            Link link = getMyScenario().get.linkWithId(Integer.parseInt(it.next().getValue()));
+            for( Column col : row.getColumn() ){
 
-            // 2. demand
-            String demandString = it.next().getValue();
+                switch( (int) col.getId() ){
 
-            // 3. dt
-            double dpdt = Double.parseDouble(it.next().getValue());
+                    case 0:
+                        link = getMyScenario().get.linkWithId(Integer.parseInt(col.getContent()));
+                        break;
 
-            // 4. knob
-            double knob = Double.parseDouble(it.next().getValue());
+                    case 1:
+                        demandString = col.getContent();
+                        break;
 
-            if (!demandString.isEmpty() && link != null)
+                    case 2:
+                        dpdt = Double.parseDouble(col.getContent());
+                        break;
+
+                    case 3:
+                        knob = Double.parseDouble(col.getContent());
+                        break;
+                }
+            }
+
+            if (!demandString.isEmpty() && link != null && !Double.isNaN(knob) && !Double.isNaN(dpdt))
                 node_data.put(link.getId(), new NodeData(this, link, demandString, knob, dpdt, myScenario));
         }
 
