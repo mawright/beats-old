@@ -9,6 +9,8 @@ import java.util.Map;
 
 /**
  * Created by matt on 7/1/15.
+ * The general node model described in Section 3.5 of Wright, Gomes, Horowitz and Kurzhanskiy,
+ * "A new model for multi-commodity macroscopic modeling of complex traffic networks"
  */
 public class Node_FlowSolver_General extends Node_FlowSolver {
 
