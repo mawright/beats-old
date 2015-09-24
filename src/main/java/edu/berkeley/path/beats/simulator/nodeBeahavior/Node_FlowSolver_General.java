@@ -18,6 +18,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	protected double [][] demands; // [nIn][nVType]
 	protected double [] supplies; // [nOut]
 	protected double [][][] directed_demands; // [nIn][nOut][nVType]
+	protected double [][][] original_directed_demands; // [nIn][nOut][nVType]
 	protected double [] priorities; // [nIn]
 	protected double [][] oriented_priorities; // [nIn][nOut]
 	protected double [] reduction_factors; // [nOut]
@@ -49,6 +50,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 		iscontributor = new boolean[myNode.nIn][myNode.nOut];
 
 		directed_demands = new double[myNode.nIn][myNode.nOut][myNode.getMyNetwork().getMyScenario().get.numVehicleTypes()];
+		original_directed_demands = new double[myNode.nIn][myNode.nOut][myNode.getMyNetwork().getMyScenario().get.numVehicleTypes()];
 		oriented_priorities = new double[myNode.nIn][myNode.nOut];
 		reduction_factors = new double[myNode.nOut];
 		c_max = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
@@ -70,6 +72,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 				for(c=0;c<sr[i][j].length;c++){
 					directed_demands[i][j][c] = demands[i][c] * sr[i][j][c];
 				}
+				original_directed_demands[i][j] = directed_demands[i][j].clone();
 			}
 		}
 
@@ -172,8 +175,14 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	private void determineFreeflowInlinks() { // find members of set U-tilde(k)
 		int i;
 		for(i=0;i<myNode.nIn;i++){
-			if( iscontributor[i][min_reduction_index] &&
-					BeatsMath.sum(demands[i]) <= priorities[i] * reduction_factors[min_reduction_index] )
+			if(!iscontributor[i][min_reduction_index])
+				continue;
+
+			double total_demand_i = 0d;
+			for(int j=0;j<myNode.nOut;j++)
+				total_demand_i += BeatsMath.sum(directed_demands[i][j]);
+
+			if( total_demand_i <= priorities[i] * reduction_factors[min_reduction_index] )
 				freeflow_inlinks.add(i);
 		}
 	}
@@ -195,10 +204,34 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 		else { // no links whose demands whose can be met by their claimed supply
 			for(int i=0;i<myNode.nIn;i++) {
 				if(iscontributor[i][min_reduction_index]) { // for each i in U_j*(k)
+
+					// solve for flows to j* first (they are needed for demand reduction in 3.41)
+					double demand_sum_over_c = BeatsMath.sum(directed_demands[i][min_reduction_index]);
+					double flow_i_jstar_sum_over_c =0d;
+					double original_demand_i_jstar_sum_over_c =
+							BeatsMath.sum(original_directed_demands[i][min_reduction_index]);
+
+					for(int c=0;c<c_max;c++) {
+						double flow = directed_demands[i][min_reduction_index][c]
+								* oriented_priorities[i][min_reduction_index] * reduction_factors[min_reduction_index]
+								/ demand_sum_over_c;
+						int[] indexTriple = new int[3];
+						indexTriple[0] = i;
+						indexTriple[1] = min_reduction_index;
+						indexTriple[2] = c;
+						flows.put(indexTriple,flow);
+						flow_i_jstar_sum_over_c += flow;
+						directed_demands[i][min_reduction_index][c] = 0d;
+					}
+
 					for(int j=0;j<myNode.nOut;j++) {
+						if (j==min_reduction_index)
+							continue; // we already did j* above
+
 						double restrictCoef = restrictionCoefficients.getCoefficient(myNode.getInput_link()[i],
 								myNode.getOutput_link()[min_reduction_index], myNode.getOutput_link()[j]);
-						double sum_over_c = BeatsMath.sum(directed_demands[i][j]);
+						demand_sum_over_c = BeatsMath.sum(directed_demands[i][j]);
+						double original_demand_sum_over_c = BeatsMath.sum(original_directed_demands[i][j]);
 						for(int c=0;c<c_max;c++) {
 							if(BeatsMath.equals(restrictCoef,1d)) { // strict FIFO
 								int[] indexTriple = new int[3];
@@ -206,16 +239,23 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 								indexTriple[1] = j;
 								indexTriple[2] = c;
 
-								double flow = directed_demands[i][j][c] * oriented_priorities[i][j]
-										* reduction_factors[min_reduction_index] / sum_over_c; // equation (5.13)
-								if(Double.isNaN(flow)) // due to divide-by-zero by sum_over_c
+								double flow;
+								if(demand_sum_over_c<=0d)
 									flow = 0;
+								else
+									flow = directed_demands[i][j][c] * oriented_priorities[i][j]
+											* reduction_factors[min_reduction_index] / demand_sum_over_c; // equation (3.39)
+
 								flows.put(indexTriple, flow);
 								directed_demands[i][j][c] = 0;
 							} else { // relaxed FIFO - degrade other directed demands
-								directed_demands[i][j][c] = (1 - restrictCoef) * directed_demands[i][j][c]
-										+ restrictCoef * directed_demands[i][j][c] * supplies[min_reduction_index]
-										/ sum_over_c; // equation (5.14)
+								double degraded_demand_sum_over_c = Math.min(demand_sum_over_c,
+										(1 - restrictCoef) * original_demand_sum_over_c
+										+ restrictCoef * flow_i_jstar_sum_over_c / original_demand_i_jstar_sum_over_c
+										* original_demand_sum_over_c); // equation (3.41)
+
+								directed_demands[i][j][c] = directed_demands[i][j][c]
+										* demand_sum_over_c / degraded_demand_sum_over_c; // equation (3.40)
 							}
 						}
 					}
