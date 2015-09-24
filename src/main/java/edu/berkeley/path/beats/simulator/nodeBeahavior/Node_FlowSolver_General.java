@@ -175,14 +175,8 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	private void determineFreeflowInlinks() { // find members of set U-tilde(k)
 		int i;
 		for(i=0;i<myNode.nIn;i++){
-			if(!iscontributor[i][min_reduction_index])
-				continue;
-
-			double total_demand_i = 0d;
-			for(int j=0;j<myNode.nOut;j++)
-				total_demand_i += BeatsMath.sum(directed_demands[i][j]);
-
-			if( total_demand_i <= priorities[i] * reduction_factors[min_reduction_index] )
+			if(iscontributor[i][min_reduction_index] &&
+					BeatsMath.sum(demands[i]) <= priorities[i] * reduction_factors[min_reduction_index] )
 				freeflow_inlinks.add(i);
 		}
 	}
