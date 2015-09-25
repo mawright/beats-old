@@ -162,6 +162,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 	private void computeReductionFactors() { // compute factors a_j
 		int i,j;
 		double sum_over_i;
+		min_reduction_index = 0;
 		for(j=0;j<myNode.nOut;j++){
 			sum_over_i = 0d;
 			for(i=0;i<myNode.nIn;i++){
@@ -251,7 +252,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 										* original_demand_sum_over_c); // equation (3.41)
 
 								directed_demands[i][j][c] = directed_demands[i][j][c]
-										* demand_sum_over_c / degraded_demand_sum_over_c; // equation (3.40)
+										* degraded_demand_sum_over_c / demand_sum_over_c; // equation (3.40)
 							}
 						}
 					}
@@ -298,6 +299,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver {
 		return true;
 	}
 
-
-
+	public RestrictionCoefficients getRestrictionCoefficients() {
+		return restrictionCoefficients;
+	}
 }
