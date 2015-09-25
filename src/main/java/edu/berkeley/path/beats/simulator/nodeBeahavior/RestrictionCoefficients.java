@@ -132,5 +132,20 @@ public class RestrictionCoefficients extends edu.berkeley.path.beats.jaxb.Restri
 		return Double.parseDouble(stringvalue);
 	}
 
+	public void setCoefficient( Link inLink, Link RestrictorLink, Link RestrictedLink, double value){
+		if( value < 0 || value > 1) {
+			BeatsErrorLog.addError("Illegal restriction coefficient value of " + value + ".");
+			return;
+		}
+		Table matrix = RestrictionMatrices.get(inLink);
+		Table.Row restrictorRow = matrix.getRowWithName(Long.toString(RestrictorLink.getId()));
+		int restrictedIndex = matrix.getColumnNo(Long.toString(RestrictedLink.getId()));
+		if (restrictorRow == null){
+			BeatsErrorLog.addError("No restriction row found for link ID=" + RestrictorLink.getId());
+			return;
+		}
+		restrictorRow.set_value(restrictedIndex,Double.toString(value));
+	}
+
 
 }
