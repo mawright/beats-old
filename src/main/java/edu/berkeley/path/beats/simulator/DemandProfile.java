@@ -165,8 +165,10 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
             int e,v;
 
             // add noise
-            if(isdeterministic)
-                current_sample_noisy_knobbed[0] = current_sample;
+            if(isdeterministic) {
+                for (e = 0; e < current_sample_noisy_knobbed.length; e++)
+                    current_sample_noisy_knobbed[e] = current_sample;
+            }
             else {
                 for (e = 0; e < current_sample_noisy_knobbed.length; e++)
                     for (v = 0; v < current_sample_noisy_knobbed[e].length; v++)
