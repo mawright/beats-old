@@ -25,6 +25,8 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 	protected List<Integer>[] U_j; // links i that wish to send to link j
 	protected List<Integer>[][] V_ic; // links j to which (i,c) has undefined split ratios
 
+	private final double zeroThreshold = Double.MIN_VALUE * 2;
+
 	public Node_SplitRatioSolver_Balancing(Node myNode) {
 		super(myNode);
 	}
@@ -53,6 +55,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 		assignZeroRemainingSplits();
 
 		initializeSets();
+		regularizePriorities();
 
 		return computed_splitratio;
 	}
@@ -78,10 +81,9 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 	}
 
 	private void assignZeroDemandSplits(final Double [][][] splitratio_selected) {
-		double threshold = Double.MIN_VALUE * 2;
 		for (int i=0;i<splitratio_selected.length;i++){
 			for (int c=0;c<nVType;c++){
-				if (demands[i][c] < threshold) { // splits may be assigned arbitrarily - assign 1 to first j
+				if (demands[i][c] < zeroThreshold) { // splits may be assigned arbitrarily - assign 1 to first j
 					computed_splitratio[i][0][c] = 1d;
 					splitRemaining[i][c] = 0d;
 					splitKnown[i][0][c] = true;
@@ -97,10 +99,9 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 
 	private void assignZeroRemainingSplits() {
 		int i,j,c;
-		double threshold = Double.MIN_VALUE * 2;
 		for(i=0;i<myNode.nIn;i++){
 			for(c=0;c<nVType;c++){
-				if (splitRemaining[i][c] < threshold) {
+				if (splitRemaining[i][c] < zeroThreshold) {
 					for(j=0;j<myNode.nOut;j++) {
 						splitKnown[i][j][c] = true;
 						computed_splitratio[i][j][c] = 0d;
@@ -139,8 +140,25 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 					splitKnown[i][j][c] = true;
 					computed_splitratio[i][j][c] = splitRemaining[i][c];
 					splitRemaining[i][c] = 0d;
+					V_ic[i][c].clear();
 				}
 			}
+		}
+	}
+
+	private void regularizePriorities() {
+		int numZeroPriority = 0;
+		int i;
+		for (i = 0; i < myNode.nIn; i++) {
+			if (inputPriorities[i] <  zeroThreshold)
+				numZeroPriority++;
+		}
+		if (numZeroPriority==0)
+			return;
+
+		for (i = 0; i <myNode.nIn; i++) {
+			inputPriorities[i] = inputPriorities[i] * (myNode.nIn - numZeroPriority) / numZeroPriority
+					+ numZeroPriority / (Math.pow(myNode.nIn,2));
 		}
 	}
 
