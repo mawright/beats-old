@@ -28,6 +28,12 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 	protected double[][] unallocated_demand;
 	protected double[][][] oriented_demand;
 	protected double[][] oriented_priority;
+	protected double[][] dsratio;
+	protected int[] max_dsratio_index;
+	protected int[] min_dsratio_index;
+	protected int min_demanded_output_link; // j^-
+	protected int min_oriented_DSratio_i; // i^-
+	protected int min_oriented_DSratio_c; //c^-
 
 	private final double zeroThreshold = Double.MIN_VALUE * 2;
 
@@ -46,6 +52,9 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 		unallocated_demand = new double[myNode.nIn][nVType];
 		oriented_demand = new double[myNode.nIn][myNode.nOut][nVType];
 		oriented_priority = new double[myNode.nIn][myNode.nOut];
+		dsratio = new double[myNode.nIn][myNode.nOut];
+		max_dsratio_index = new int[2];
+		min_dsratio_index = new int[2];
 	}
 
 	@Override
@@ -68,6 +77,9 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 			calculateRemainingDemand();
 			calculateOrientedDemand();
 			calculateOrientedPriorities(splitratio_selected);
+			computeDSRatios(e);
+			findMinimumDemandedOutputLink(e);
+			findMinimumOrientedDSRatio(e);
 		}
 
 		return computed_splitratio;
@@ -221,8 +233,58 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 		}
 	}
 
-	private void findLargestOrientedDSRatio() {
-		
+	private void computeDSRatios(int e) {
+		double numerator, denominator, sum_of_priorities_Uj;
+		max_dsratio_index[0] = 0; max_dsratio_index[1] = 0;
+		min_dsratio_index[0] = 0; min_dsratio_index[1] = 0;
+		for(int j=0;j<myNode.nOut;j++) {
+			sum_of_priorities_Uj = 0;
+			for(int iprime : U_j[j]) {
+				sum_of_priorities_Uj += oriented_priority[iprime][j];
+			}
+			for(int i=0;i<myNode.nIn;i++) {
+				numerator = BeatsMath.sum(oriented_demand[i][j]);
+				denominator = oriented_priority[i][j] * myNode.getOutput_link()[j].get_total_space_supply_in_veh(e);
+				dsratio[i][j] = sum_of_priorities_Uj * numerator / denominator;
+
+				if( dsratio[i][j] > dsratio[max_dsratio_index[0]][max_dsratio_index[1]]) {
+					max_dsratio_index[0] = i; max_dsratio_index[1] = j;
+				}
+				else if( dsratio[i][j] < dsratio[min_dsratio_index[0]][min_dsratio_index[1]]) {
+					min_dsratio_index[0] = i; min_dsratio_index[1] = j;
+				}
+			}
+		}
+	}
+
+	private void findMinimumDemandedOutputLink(int e) {
+		ArrayList<Integer> set_of_output_links_with_min_dsratio = new ArrayList<Integer>(3);
+		int i,j;
+		for(i=0;i<myNode.nIn;i++) {
+			for(j=0;j<myNode.nOut;j++) {
+				if( Math.abs(dsratio[i][j] - dsratio[min_dsratio_index[0]][min_dsratio_index[1]]) <= zeroThreshold
+						&& !set_of_output_links_with_min_dsratio.contains(j))
+					set_of_output_links_with_min_dsratio.add(j);
+			}
+		}
+		min_demanded_output_link = 0;
+		double numerator,fraction;
+		double min_fraction = Double.POSITIVE_INFINITY;
+		for(int jprime : set_of_output_links_with_min_dsratio ) {
+			numerator = 0;
+			for(i=0;i<myNode.nIn;i++) {
+				numerator += BeatsMath.sum(oriented_demand[i][jprime]);
+			}
+			fraction = numerator / myNode.getOutput_link()[jprime].get_available_space_supply_in_veh(e);
+			if( fraction < min_fraction ) {
+				min_demanded_output_link = jprime;
+				min_fraction = fraction;
+			}
+		}
+	}
+
+	private void findMinimumOrientedDSRatio(int e) {
+
 	}
 
 	private ArrayList<Integer> makeTuple(int i, int j, int c) {
