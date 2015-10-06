@@ -22,8 +22,9 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 	protected Double [][] splitRemaining; // nIn x nVType
 
 	protected List<Integer>[] U_j; // links i that wish to send to link j
+	protected List<Integer>[] U_j_tilde;
 	protected List<Integer>[][] V_ic; // links j to which (i,c) has undefined split ratios
-	protected List<Integer> V; // links j to which split may still be assigned
+	protected List<Integer> V_tilde; // links j to which split may still be assigned
 
 	protected double[][] unallocated_demand;
 	protected double[][][] oriented_demand;
@@ -140,22 +141,24 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 	private void initializeSets() {
 		int i,j,c;
 
-		V = new ArrayList<Integer>(myNode.nOut);
+		V_tilde = new ArrayList<Integer>(myNode.nOut);
 
 		for(j=0;j<myNode.nOut;j++){
 			U_j[j] = new ArrayList<Integer>(myNode.nIn);
+			U_j_tilde[j] = new ArrayList<Integer>(myNode.nIn);
 
 			outerloop1:
 			for(i=0;i<myNode.nIn;i++){
 				for(c=0;c<nVType;c++){
 					if (!splitKnown[i][j][c]) {
 						U_j[j].add(i);
+						U_j_tilde[j].add(i);
 						break outerloop1;
 					}
 				}
 			}
 			if(!U_j[j].isEmpty())
-				V.add(j);
+				V_tilde.add(j);
 		}
 
 		for(i=0;i<myNode.nIn;i++){
@@ -193,7 +196,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 	}
 
 	private boolean allSplitsSolved() {
-		return V.isEmpty();
+		return V_tilde.isEmpty();
 	}
 
 	private void calculateRemainingDemand() {
@@ -258,10 +261,9 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 	}
 
 	private void findMinimumDemandedOutputLink(int e) {
-		ArrayList<Integer> set_of_output_links_with_min_dsratio = new ArrayList<Integer>(3);
-		int i,j;
-		for(i=0;i<myNode.nIn;i++) {
-			for(j=0;j<myNode.nOut;j++) {
+		ArrayList<Integer> set_of_output_links_with_min_dsratio = new ArrayList<Integer>(myNode.nOut);
+		for(int j : V_tilde) {
+			for(int i : U_j_tilde[j]) {
 				if( Math.abs(dsratio[i][j] - dsratio[min_dsratio_index[0]][min_dsratio_index[1]]) <= zeroThreshold
 						&& !set_of_output_links_with_min_dsratio.contains(j))
 					set_of_output_links_with_min_dsratio.add(j);
@@ -272,7 +274,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 		double min_fraction = Double.POSITIVE_INFINITY;
 		for(int jprime : set_of_output_links_with_min_dsratio ) {
 			numerator = 0;
-			for(i=0;i<myNode.nIn;i++) {
+			for(int i=0;i<myNode.nIn;i++) {
 				numerator += BeatsMath.sum(oriented_demand[i][jprime]);
 			}
 			fraction = numerator / myNode.getOutput_link()[jprime].get_available_space_supply_in_veh(e);
@@ -284,7 +286,32 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 	}
 
 	private void findMinimumOrientedDSRatio(int e) {
+		double sum_of_priorities_Uj = 0;
+		for(int i : U_j[min_demanded_output_link])
+			sum_of_priorities_Uj += oriented_priority[i][min_demanded_output_link];
 
+		ArrayList<Integer> set_of_input_links_with_min_oriented_dsratio = new ArrayList<Integer>(myNode.nIn);
+		double numerator,denominator,fraction;
+		double min_fraction = Double.POSITIVE_INFINITY;
+		for(int i : U_j_tilde[min_demanded_output_link]) {
+			numerator = BeatsMath.sum(oriented_demand[i][min_demanded_output_link]);
+			denominator = oriented_priority[i][min_demanded_output_link] *
+					myNode.getOutput_link()[min_demanded_output_link].get_available_space_supply_in_veh(e);
+			fraction = sum_of_priorities_Uj * numerator / denominator;
+			if( fraction < min_fraction + zeroThreshold)
+				set_of_input_links_with_min_oriented_dsratio.add(i);
+		}
+		double min_remaining_allocated_demand = Double.POSITIVE_INFINITY;
+		min_oriented_DSratio_c = 0;
+		min_oriented_DSratio_i = 0;
+		for(int i : set_of_input_links_with_min_oriented_dsratio) {
+			for(int c=0;c<nVType;c++) {
+				if( unallocated_demand[i][c] < min_remaining_allocated_demand) {
+					min_oriented_DSratio_i = i;
+					min_oriented_DSratio_c = c;
+				}
+			}
+		}
 	}
 
 	private ArrayList<Integer> makeTuple(int i, int j, int c) {
