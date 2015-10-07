@@ -35,6 +35,8 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 	protected int min_demanded_output_link; // j^-
 	protected int min_oriented_DSratio_i; // i^-
 	protected int min_oriented_DSratio_c; //c^-
+	protected double largest_oriented_dsratio;
+	protected double smallest_oriented_dsratio;
 
 	private final double zeroThreshold = Double.MIN_VALUE * 2;
 
@@ -81,6 +83,8 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 			computeDSRatios(e);
 			findMinimumDemandedOutputLink(e);
 			findMinimumOrientedDSRatio(e);
+			distributeSplitRatio(e);
+			updateSets();
 		}
 
 		return computed_splitratio;
@@ -252,6 +256,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 
 				if( dsratio[i][j] > dsratio[max_dsratio_index[0]][max_dsratio_index[1]]) {
 					max_dsratio_index[0] = i; max_dsratio_index[1] = j;
+					largest_oriented_dsratio = dsratio[max_dsratio_index[0]][max_dsratio_index[1]];
 				}
 				else if( dsratio[i][j] < dsratio[min_dsratio_index[0]][min_dsratio_index[1]]) {
 					min_dsratio_index[0] = i; min_dsratio_index[1] = j;
@@ -311,6 +316,56 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 					min_oriented_DSratio_c = c;
 				}
 			}
+		}
+		smallest_oriented_dsratio = dsratio[min_oriented_DSratio_i][min_demanded_output_link];
+	}
+
+	private void distributeSplitRatio(int e) {
+		double numerator,denominator,delta_split;
+		if( Math.abs(largest_oriented_dsratio- smallest_oriented_dsratio) < zeroThreshold) {
+			denominator = 0;
+			for( int j : V_ic[min_oriented_DSratio_i][min_oriented_DSratio_c]) {
+				denominator += oriented_priority[min_oriented_DSratio_i][j] *
+						myNode.getOutput_link()[j].get_available_space_supply_in_veh(e);
+			}
+			for( int j : V_ic[min_oriented_DSratio_i][min_oriented_DSratio_c]) {
+				numerator = oriented_priority[min_oriented_DSratio_i][j] *
+						myNode.getOutput_link()[j].get_available_space_supply_in_veh(e);
+				computed_splitratio[min_oriented_DSratio_i][j][min_oriented_DSratio_c] +=
+						splitRemaining[min_oriented_DSratio_i][min_oriented_DSratio_c] * numerator / denominator;
+			}
+			splitRemaining[min_oriented_DSratio_i][min_oriented_DSratio_c] = 0d;
+		}
+		else {
+			delta_split = compute_delta_split(e);
+			computed_splitratio[min_oriented_DSratio_i][min_demanded_output_link][min_oriented_DSratio_c] += delta_split;
+			splitRemaining[min_oriented_DSratio_i][min_oriented_DSratio_c] -= delta_split;
+		}
+	}
+
+	private double compute_delta_split(int e) {
+		double LHdenominator = 0d;
+		for( int i : U_j[min_demanded_output_link])
+			LHdenominator += oriented_priority[i][min_demanded_output_link];
+		LHdenominator *= unallocated_demand[min_oriented_DSratio_i][min_oriented_DSratio_c];
+		double LHfraction = largest_oriented_dsratio * oriented_priority[min_oriented_DSratio_i][min_demanded_output_link]
+				* myNode.getOutput_link()[min_demanded_output_link].get_available_space_supply_in_veh(e) /
+				LHdenominator;
+		double RHfraction = BeatsMath.sum(oriented_demand[min_oriented_DSratio_i][min_demanded_output_link]) /
+				unallocated_demand[min_oriented_DSratio_i][min_oriented_DSratio_c];
+
+		return Math.min(splitRemaining[min_oriented_DSratio_i][min_oriented_DSratio_c], LHfraction - RHfraction);
+	}
+
+	private void updateSets() {
+		for( int j : V_tilde) {
+			if( U_j_tilde[j].contains(min_oriented_DSratio_i) &&
+					Math.abs(splitRemaining[min_oriented_DSratio_i][min_oriented_DSratio_c]) < zeroThreshold)
+				U_j_tilde[j].remove( U_j_tilde[j].indexOf(min_oriented_DSratio_i)); // remove expects the index of the object
+																					// to be removed when you pass it an int
+
+			if( U_j_tilde[j].isEmpty())
+				V_tilde.remove(V_tilde.indexOf(j));
 		}
 	}
 
