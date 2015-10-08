@@ -51,7 +51,16 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 
 	@Override
 	public void reset() {
+		computed_splitratio = new Double[myNode.nIn][myNode.nOut][nVType];
 		nVType = myNode.getMyNetwork().getMyScenario().get.numVehicleTypes();
+		demands = new Double[myNode.nIn][nVType];
+		splitKnown = new boolean[myNode.nIn][myNode.nOut][nVType];
+		splitRemaining = new Double[myNode.nIn][nVType];
+
+		U_j = (ArrayList<Integer>[])new ArrayList[myNode.nOut];
+		U_j_tilde = (ArrayList<Integer>[])new ArrayList[myNode.nOut];
+		V_ic = (ArrayList<Integer>[][])new ArrayList[myNode.nIn][nVType];
+
 		unallocated_demand = new double[myNode.nIn][nVType];
 		oriented_demand = new double[myNode.nIn][myNode.nOut][nVType];
 		oriented_priority = new double[myNode.nIn][myNode.nOut];
@@ -100,6 +109,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 
 					if (Double.isNaN(input_splitratio[i][j][c])) {
 						splitKnown[i][j][c] = false;
+						computed_splitratio[i][j][c] = 0d;
 					}
 					else {
 						splitKnown[i][j][c] = true;
@@ -134,8 +144,10 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 			for(c=0;c<nVType;c++){
 				if (splitRemaining[i][c] < zeroThreshold) {
 					for(j=0;j<myNode.nOut;j++) {
-						splitKnown[i][j][c] = true;
-						computed_splitratio[i][j][c] = 0d;
+						if(!splitKnown[i][j][c]) {
+							splitKnown[i][j][c] = true;
+							computed_splitratio[i][j][c] = 0d;
+						}
 					}
 				}
 			}
@@ -157,7 +169,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 					if (!splitKnown[i][j][c]) {
 						U_j[j].add(i);
 						U_j_tilde[j].add(i);
-						break outerloop1;
+						continue outerloop1;
 					}
 				}
 			}
@@ -227,10 +239,15 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 		for (int i = 0; i<myNode.nIn; i++) {
 			for( int j=0; j<myNode.nOut; j++) {
 				for( int c=0; c<nVType; c++) {
-					if(Double.isNaN(input_splitratio[i][j][c]))
+					if(Math.abs(demands[i][c]) < zeroThreshold) {
+						gamma[c] = 0d;
+					}
+					else if(!Double.isNaN(input_splitratio[i][j][c])) {
 						gamma[c] = input_splitratio[i][j][c];
-					else
+					}
+					else {
 						gamma[c] = computed_splitratio[i][j][c] + splitRemaining[i][c] / V_ic[i][c].size();
+					}
 
 					numerator[c] = gamma[c] * demands[i][c];
 				}
@@ -244,6 +261,8 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 		double numerator, denominator, sum_of_priorities_Uj;
 		max_dsratio_index[0] = 0; max_dsratio_index[1] = 0;
 		min_dsratio_index[0] = 0; min_dsratio_index[1] = 0;
+		smallest_oriented_dsratio = Double.POSITIVE_INFINITY;
+		largest_oriented_dsratio = Double.NEGATIVE_INFINITY;
 		for(int j=0;j<myNode.nOut;j++) {
 			sum_of_priorities_Uj = 0;
 			for(int iprime : U_j[j]) {
@@ -251,15 +270,20 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 			}
 			for(int i=0;i<myNode.nIn;i++) {
 				numerator = BeatsMath.sum(oriented_demand[i][j]);
-				denominator = oriented_priority[i][j] * myNode.getOutput_link()[j].get_total_space_supply_in_veh(e);
-				dsratio[i][j] = sum_of_priorities_Uj * numerator / denominator;
-
-				if( dsratio[i][j] > dsratio[max_dsratio_index[0]][max_dsratio_index[1]]) {
-					max_dsratio_index[0] = i; max_dsratio_index[1] = j;
-					largest_oriented_dsratio = dsratio[max_dsratio_index[0]][max_dsratio_index[1]];
+				if(sum_of_priorities_Uj * numerator < zeroThreshold) {
+					dsratio[i][j] = 0d;
+				} else {
+					denominator = oriented_priority[i][j] * myNode.getOutput_link()[j].get_available_space_supply_in_veh(e);
+					dsratio[i][j] = sum_of_priorities_Uj * numerator / denominator;
 				}
-				else if( dsratio[i][j] < dsratio[min_dsratio_index[0]][min_dsratio_index[1]]) {
+
+				if( dsratio[i][j] > largest_oriented_dsratio) {
+					max_dsratio_index[0] = i; max_dsratio_index[1] = j;
+					largest_oriented_dsratio = dsratio[i][j];
+				}
+				else if( dsratio[i][j] < smallest_oriented_dsratio) {
 					min_dsratio_index[0] = i; min_dsratio_index[1] = j;
+					smallest_oriented_dsratio = dsratio[i][j];
 				}
 			}
 		}
@@ -269,7 +293,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 		ArrayList<Integer> set_of_output_links_with_min_dsratio = new ArrayList<Integer>(myNode.nOut);
 		for(int j : V_tilde) {
 			for(int i : U_j_tilde[j]) {
-				if( Math.abs(dsratio[i][j] - dsratio[min_dsratio_index[0]][min_dsratio_index[1]]) <= zeroThreshold
+				if( Math.abs(dsratio[i][j] - smallest_oriented_dsratio) <= zeroThreshold
 						&& !set_of_output_links_with_min_dsratio.contains(j))
 					set_of_output_links_with_min_dsratio.add(j);
 			}
@@ -311,9 +335,10 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 		min_oriented_DSratio_i = 0;
 		for(int i : set_of_input_links_with_min_oriented_dsratio) {
 			for(int c=0;c<nVType;c++) {
-				if( unallocated_demand[i][c] < min_remaining_allocated_demand) {
+				if( unallocated_demand[i][c] < min_remaining_allocated_demand && splitRemaining[i][c] > 0) {
 					min_oriented_DSratio_i = i;
 					min_oriented_DSratio_c = c;
+					min_remaining_allocated_demand = unallocated_demand[i][c];
 				}
 			}
 		}
@@ -358,15 +383,26 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
 	}
 
 	private void updateSets() {
-		for( int j : V_tilde) {
-			if( U_j_tilde[j].contains(min_oriented_DSratio_i) &&
-					Math.abs(splitRemaining[min_oriented_DSratio_i][min_oriented_DSratio_c]) < zeroThreshold)
-				U_j_tilde[j].remove( U_j_tilde[j].indexOf(min_oriented_DSratio_i)); // remove expects the index of the object
-																					// to be removed when you pass it an int
+		for( int i=0;i<myNode.nIn;i++) {
+			for (int j : V_tilde) {
+				if (U_j_tilde[j].contains(i) && isThisInputLinkOutOfSplit(i))
+					U_j_tilde[j].remove(U_j_tilde[j].indexOf(i)); // remove expects the index of the object
+				// to be removed when you pass it an int
+			}
+		}
 
+		for( int j=0;j<myNode.nOut;j++) {
 			if( U_j_tilde[j].isEmpty())
 				V_tilde.remove(V_tilde.indexOf(j));
 		}
+	}
+
+	private boolean isThisInputLinkOutOfSplit(int i) {
+		for( int c=0;c<nVType;c++) {
+			if (Math.abs(splitRemaining[i][c]) > zeroThreshold)
+				return false;
+		}
+		return true;
 	}
 
 	private ArrayList<Integer> makeTuple(int i, int j, int c) {
